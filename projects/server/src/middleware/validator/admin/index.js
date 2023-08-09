@@ -1,5 +1,5 @@
 const { body, validationResult } = require("express-validator");
-const db = require("../../models");
+const db = require("../../../models");
 
 const validate = (validations) => {
   return async (req, res, next) => {
@@ -66,37 +66,19 @@ module.exports = {
         minSymbols: 1,
         minNumbers: 1,
       })
-      .withMessage(
-        "Password min 8 chars,1 Uppercase,1 Symbol and 1 Number"
-      ),
+      .withMessage("Password min 8 chars,1 Uppercase,1 Symbol and 1 Number"),
   ]),
 
   validateRegisterWarehouse: validate([
-    body("address_warehouse")
-      .notEmpty()
-      .withMessage("Address is required"),
-    body("warehouse_name")
-      .notEmpty()
-      .withMessage("Warehouse name is required"),
-    body("city_id")
-      .notEmpty()
-      .withMessage("City ID is required"),
-    body("subdistrict_id")
-      .notEmpty()
-      .withMessage("Subdistrict ID is required"),
-    body("province_id")
-      .notEmpty()
-      .withMessage("Province ID is required"),
-    body("latitude")
-      .notEmpty()
-      .withMessage("Latitude is required"),
-    body("longitude")
-      .notEmpty()
-      .withMessage("Longtitude is required"),
+    body("address_warehouse").notEmpty().withMessage("Address is required"),
+    body("warehouse_name").notEmpty().withMessage("Warehouse name is required"),
+    body("city_id").notEmpty().withMessage("City ID is required"),
+    body("subdistrict_id").notEmpty().withMessage("Subdistrict ID is required"),
+    body("province_id").notEmpty().withMessage("Province ID is required"),
+    body("latitude").notEmpty().withMessage("Latitude is required"),
+    body("longitude").notEmpty().withMessage("Longtitude is required"),
     body("warehouse_contact")
       .notEmpty()
-      .withMessage("Warehouse contact is required")
-  ])
-  
-
+      .withMessage("Warehouse contact is required"),
+  ]),
 };

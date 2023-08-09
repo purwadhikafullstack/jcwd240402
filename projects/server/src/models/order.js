@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
     /**
@@ -18,21 +16,24 @@ module.exports = (sequelize, DataTypes) => {
       Order.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
     }
   }
-  Order.init({
-    user_id: DataTypes.INTEGER,
-    order_status_id: DataTypes.INTEGER,
-    total_price: DataTypes.INTEGER,
-    delivery_price: DataTypes.INTEGER,
-    delivery_method: DataTypes.ENUM,
-    delivery_time: DataTypes.STRING,
-    tracking_code: DataTypes.STRING,
-    no_invoice: DataTypes.STRING,
-    user_address_id: DataTypes.INTEGER,
-    warehouse_id: DataTypes.INTEGER,
-    img_payment: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Order',
-  });
+  Order.init(
+    {
+      user_id: DataTypes.INTEGER,
+      order_status_id: DataTypes.INTEGER,
+      total_price: DataTypes.INTEGER,
+      delivery_price: DataTypes.INTEGER,
+      // delivery_method: DataTypes.ENUM,
+      delivery_time: DataTypes.STRING,
+      tracking_code: DataTypes.STRING,
+      no_invoice: DataTypes.STRING,
+      user_address_id: DataTypes.INTEGER,
+      warehouse_id: DataTypes.INTEGER,
+      img_payment: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: "Order",
+    }
+  );
   return Order;
 };

@@ -33,10 +33,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      delivery_method: {
-        allowNull: false,
-        type: Sequelize.ENUM,
-      },
+      // delivery_method: {
+      //   allowNull: false,
+      //   type: Sequelize.ENUM,
+      // },
       delivery_time: {
         type: Sequelize.STRING,
       },

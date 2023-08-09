@@ -1,7 +1,65 @@
-import React from "react";
-
+import React, { useState } from "react";
+import SearchBar from "./SearchBar";
+import { Link } from "react-router-dom";
+import { BsFillCartFill } from "react-icons/bs";
+import { BiSolidPurchaseTag } from "react-icons/bi";
+import { CgClose } from "react-icons/cg";
+import { GiHamburgerMenu } from "react-icons/gi";
 const NavbarMobile = () => {
-  return <div></div>;
+  let Links = [
+    { name: "HOME", to: "/" },
+    { name: "SERVICE", to: "/service" },
+    { name: "ABOUT", to: "/about" },
+    { name: "CONTACT", to: "/contact" },
+  ];
+  let [open, setOpen] = useState(false);
+  return (
+    <div className="sticky top-0 w-full">
+      <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
+        <div className="w-full">
+          <SearchBar
+            width="w-52 md:w-[700px]"
+            position="left-44 md:left-[670px]"
+            rounded="rounded-md"
+            height="h-7"
+            margin="ml-2"
+          />
+        </div>
+        <div className="flex w-24 justify-evenly gap-2 items-center">
+          <button>
+            <BsFillCartFill className="text-blue3" />
+          </button>
+          <button>
+            <BiSolidPurchaseTag className="text-blue3" />
+          </button>
+        </div>
+        <div className="mr-2 mt-1">
+          <button onClick={() => setOpen(!open)} className="cursor-pointer ">
+            {open ? <CgClose /> : <GiHamburgerMenu />}
+          </button>
+          <ul
+            className={`pl-8 pb-7 absolute bg-white z-[-1] left-0 w-full transition-all duration-500 ease-in shadow-lg rounded-xl ${
+              open ? "top-10" : "top-[-490px]"
+            }`}
+          >
+            {Links.map((link, idx) => (
+              <li className="my-4 font-semibold text-sm" key={idx}>
+                <Link
+                  to={link.to}
+                  className="text-gray-800 hover:text-blue-400 duration-500 "
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+            <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
+              Get Started
+            </button>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default NavbarMobile;

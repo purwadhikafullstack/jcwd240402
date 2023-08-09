@@ -24,12 +24,14 @@ app.use(express.json());
 // NOTE : Add your routes here
 
 /* USER ROUTES */
-app.use("/api", AuthRoute);
+app.use("/api", router.user);
 // ==========================
 
 /* ADMIN ROUTES */
-
+app.use("/api/admin", router.admin);
+app.use("/api/warehouse", router.warehouse);
 // ==========================
+
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);
 });
@@ -41,12 +43,6 @@ app.get("/api/greetings", (req, res, next) => {
 });
 
 // ===========================
-
-
-app.use("/api/admin", router.admin);
-app.use("/api/warehouse", router.warehouse);
-
-
 
 // not found
 app.use((req, res, next) => {

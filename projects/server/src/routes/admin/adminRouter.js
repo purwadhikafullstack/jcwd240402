@@ -1,5 +1,5 @@
-const adminController = require("../controllers/adminController");
-const validatorMiddleware = require("../middleware/validator");
+const adminController = require("../../controllers/admin/adminController");
+const validatorMiddleware = require("../../middleware/validator/admin");
 const router = require("express").Router();
 
 router.post(
@@ -19,10 +19,6 @@ router.post(
   validatorMiddleware.validatePassword,
   adminController.changeAdminPassword
 );
-router.post(
-  "/assign-warehouse/:id",
-  adminController.assignWarehouse
-);
-
+router.post("/assign-warehouse/:id", adminController.assignWarehouse);
 
 module.exports = router;

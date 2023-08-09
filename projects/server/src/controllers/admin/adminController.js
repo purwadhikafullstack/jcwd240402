@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const db = require("../models");
+const db = require("../../models");
 const jwt = require("jsonwebtoken");
 
 //move to utility later
@@ -61,15 +61,15 @@ module.exports = {
   },
 
   async registerAdmin(req, res) {
-    const { username, first_name, last_name, password, warehouse_id } = req.body;
+    const { username, first_name, last_name, password, warehouse_id } =
+      req.body;
     try {
-
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, salt);
 
       const newUser = await db.Admin.create({
         username,
-        role_id:2,
+        role_id: 2,
         first_name,
         last_name,
         password: hashPassword,

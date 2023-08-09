@@ -32,10 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    subdistrict_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     province_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

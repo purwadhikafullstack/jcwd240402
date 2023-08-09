@@ -2,48 +2,40 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Warehouses", {
+    await queryInterface.createTable("Products", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      address_warehouse: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      warehouse_name: {
+      name: {
         allowNull: false,
         type: Sequelize.STRING,
       },
-      city_id: {
+      price: {
+        allowNull: false,
         type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Cities",
-          key: "id",
-        },
       },
-      province_id: {
+      weight: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      category_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Provinces",
+          model: "Categories",
           key: "id",
         },
       },
-      latitude: {
-        type: Sequelize.STRING,
+      description: {
         allowNull: false,
+        type: Sequelize.STRING,
       },
-      longitude: {
-        type: Sequelize.STRING,
+      is_active: {
         allowNull: false,
-      },
-      warehouse_contact: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        type: Sequelize.BOOLEAN,
       },
       createdAt: {
         allowNull: false,
@@ -56,6 +48,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Warehouses");
+    await queryInterface.dropTable("Products");
   },
 };

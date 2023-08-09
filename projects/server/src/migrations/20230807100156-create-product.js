@@ -24,10 +24,10 @@ module.exports = {
       category_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Categories,
-        //   key: "id",
-        // },
+        references: {
+          model: "Categories",
+          key: "id",
+        },
       },
       description: {
         allowNull: false,
@@ -36,10 +36,10 @@ module.exports = {
       img_product_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Image_products",
-        //   key: "id",
-        // },
+        references: {
+          model: "Image_products",
+          key: "id",
+        },
       },
       is_active: {
         allowNull: false,

@@ -13,7 +13,6 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       City.hasMany(models.Warehouse, { foreignKey: "city_id"});
       City.hasMany(models.Address_user, { foreignKey: "city_id" });
-      City.hasMany(models.Subdistrict, { foreignKey: "city_id"});
       City.belongsTo(models.Province, { foreignKey: "province_id"});
     }
   }

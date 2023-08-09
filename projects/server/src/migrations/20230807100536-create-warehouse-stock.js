@@ -18,10 +18,10 @@ module.exports = {
       product_stock: {
         type: Sequelize.INTEGER,
       },
-      // status: {
-      //   type: Sequelize.ENUM('absent', 'half-day', 'full-day'),
-      //   defaultValue: null,
-      // },
+      status: {
+        type: Sequelize.ENUM('Empty', 'In Stock'),
+        defaultValue: null,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -2,6 +2,7 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
+const router = require("./routes");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -32,6 +33,12 @@ app.get("/api/greetings", (req, res, next) => {
 });
 
 // ===========================
+
+
+app.use("/api/admin", router.admin);
+app.use("/api/warehouse", router.warehouse);
+
+
 
 // not found
 app.use((req, res, next) => {

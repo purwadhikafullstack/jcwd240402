@@ -12,26 +12,26 @@ module.exports = {
       warehouse_stock_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Warehouse_stocks",
-        //   key: "id",
-        // },
+        references: {
+          model: "Warehouse_stocks",
+          key: "id",
+        },
       },
       from_warehouse_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Warehouses",
-        //   key: "id",
-        // },
+        references: {
+          model: "Warehouses",
+          key: "id",
+        },
       },
       to_warehouse_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Warehouses",
-        //   key: "id",
-        // },
+        references: {
+          model: "Warehouses",
+          key: "id",
+        },
       },
       quantity: {
         allowNull: false,

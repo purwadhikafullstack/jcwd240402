@@ -12,18 +12,18 @@ module.exports = {
       user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Users",
-        //   key: "id",
-        // },
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       order_status_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Orders",
-        //   key: "id",
-        // },
+        references: {
+          model: "Order_statuses",
+          key: "id",
+        },
       },
       total_price: {
         allowNull: false,
@@ -33,9 +33,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      delivery_method: {
+      delivery_courier: {
         allowNull: false,
-        type: Sequelize.ENUM,
+        type: Sequelize.ENUM('jne','pos','tiki'),
+        defaultValue: null,
       },
       delivery_time: {
         type: Sequelize.STRING,
@@ -48,17 +49,17 @@ module.exports = {
       },
       address_user_id: {
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Address_users",
-        //   key: "id",
-        // },
+        references: {
+          model: "Address_users",
+          key: "id",
+        },
       },
       warehouse_id: {
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Warehouses",
-        //   key: "id",
-        // },
+        references: {
+          model: "Warehouses",
+          key: "id",
+        },
       },
       img_payment: {
         type: Sequelize.STRING,

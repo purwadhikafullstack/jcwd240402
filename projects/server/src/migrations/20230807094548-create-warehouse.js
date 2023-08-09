@@ -15,37 +15,29 @@ module.exports = {
       },
       warehouse_name: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       city_id: {
         type: Sequelize.STRING,
         allowNull: false,
-        // references: {
-        //   model: "City",
-        //   key: "id",
-        // },
-      },
-      subdistrict_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Subdistricts",
-        //   key: "id",
-        // },
+        references: {
+          model: "Cities",
+          key: "id",
+        },
       },
       province_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Provinces",
-        //   key: "id",
-        // },
+        references: {
+          model: "Provinces",
+          key: "id",
+        },
       },
       latitude: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      longtitude: {
+      longitude: {
         type: Sequelize.STRING,
         allowNull: false,
       },

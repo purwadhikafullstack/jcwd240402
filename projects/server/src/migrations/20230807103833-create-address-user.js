@@ -12,34 +12,18 @@ module.exports = {
       city_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Cities",
-        //   key: "id",
-        // },
-      },
-      subdistrict_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Subdistricts",
-        //   key: "id",
-        // },
-      },
-      province_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Provinces",
-        //   key: "id",
-        // },
+        references: {
+          model: "Cities",
+          key: "id",
+        },
       },
       user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // status: {
-        //   type: Sequelize.ENUM('absent', 'half-day', 'full-day'),
-        //   defaultValue: null,
-        // },
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       address_details: {
         allowNull: false,

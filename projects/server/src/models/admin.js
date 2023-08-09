@@ -17,10 +17,16 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Admin.init({
-    firstName: DataTypes.STRING
+    username: DataTypes.STRING,
+    role_id: DataTypes.INTEGER, 
+    first_name: DataTypes.STRING,
+    last_name: DataTypes.STRING,
+    password: DataTypes.STRING,
+    warehouse_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Admin',
+    timestamps: true
   });
   return Admin;
 };

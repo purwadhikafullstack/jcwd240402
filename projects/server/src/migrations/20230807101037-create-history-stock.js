@@ -29,7 +29,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Admin",
+          model: "Admins",
           key: "id",
         },
       },

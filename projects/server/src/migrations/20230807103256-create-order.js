@@ -2,48 +2,66 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Products", {
+    await queryInterface.createTable("Orders", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      name: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      price: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-      },
-      weight: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-      },
-      category_id: {
+      user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Categories",
+          model: "Users",
           key: "id",
         },
       },
-      description: {
-        allowNull: false,
-        type: Sequelize.STRING,
-      },
-      img_product_id: {
+      order_status_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Image_products",
+          model: "Order_statuses",
           key: "id",
         },
       },
-      is_active: {
+      total_price: {
         allowNull: false,
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.INTEGER,
+      },
+      delivery_price: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      },
+      delivery_courier: {
+        allowNull: false,
+        type: Sequelize.ENUM('jne','pos','tiki'),
+      },
+      delivery_time: {
+        type: Sequelize.STRING,
+      },
+      tracking_code: {
+        type: Sequelize.STRING,
+      },
+      no_invoice: {
+        type: Sequelize.STRING,
+      },
+      address_user_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Address_users",
+          key: "id",
+        },
+      },
+      warehouse_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Warehouses",
+          key: "id",
+        },
+      },
+      img_payment: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
@@ -56,6 +74,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Products");
+    await queryInterface.dropTable("Orders");
   },
 };

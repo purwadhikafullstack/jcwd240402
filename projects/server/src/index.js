@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 const router = require("./routes");
+const AuthRoute = require("./routes/user/auth");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -22,6 +23,13 @@ app.use(express.json());
 // ===========================
 // NOTE : Add your routes here
 
+/* USER ROUTES */
+app.use("/api", AuthRoute);
+// ==========================
+
+/* ADMIN ROUTES */
+
+// ==========================
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);
 });

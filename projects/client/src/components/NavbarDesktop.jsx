@@ -5,10 +5,22 @@ import Button from "./Button";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import ModalLogin from "./ModalLogin";
+import { useLocation, useParams } from "react-router-dom";
 
 const NavbarDesktop = () => {
+  const location = useLocation();
+  console.log(location.pathname);
+
   return (
-    <div className="hidden w-full lg:grid bg-white justify-center sticky z-10 top-0">
+    <div
+      className={`hidden w-full lg:grid bg-white justify-center sticky z-10 top-0 ${
+        location.pathname === "/register" ||
+        location.pathname === "/login" ||
+        location.pathname === "/verify-page"
+          ? "lg:hidden"
+          : "lg:grid"
+      }`}
+    >
       <div className="flex w-[1200px] justify-evenly items-center">
         <div className="">
           <img src={logo} alt="" className="w-16" />

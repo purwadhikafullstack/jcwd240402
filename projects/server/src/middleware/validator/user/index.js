@@ -1,14 +1,21 @@
 const { check, body, validationResult } = require("express-validator");
 
-const runValidation = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      ok: false,
-      message: errors.array()[0].msg,
-    });
-  }
-  next();
+const validate = (validations) => {
+  return async (req, res, next) => {
+    for (let validation of validations) {
+      const result = await validation.run(req);
+      if (result.errors.length) break;
+    }
+
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+      return next();
+    }
+
+    res
+      .status(400)
+      .send({ message: "An error occurs", errors: errors.array() });
+  };
 };
 
 const registerValidation = [
@@ -46,6 +53,50 @@ const registerValidation = [
 ];
 
 module.exports = {
-  runValidation,
-  registerValidation,
+  validateRegistration: validate([
+    body("username")
+      .notEmpty()
+      .withMessage("Username is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50")
+      .custom(checkUsernameAdmin),
+    body("first_name")
+      .notEmpty()
+      .withMessage("first name is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("last_name")
+      .notEmpty()
+      .withMessage("last name is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("email", "email cannot be empty")
+      .notEmpty()
+      .withMessage("email is required")
+      .isEmail()
+      .withMessage("must to in valid email"),
+    body("phone", "phone cannot be empty")
+      .notEmpty()
+      .withMessage("phone is required")
+      .isMobilePhone()
+      .withMessage("must to in valid phone number"),
+    body("password", "password cannot be empty")
+      .notEmpty()
+      .withMessage("password is required")
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "password have to contains 8 character with lowercase, uppercase, number, dan special character"
+      ),
+    body("confirm_password")
+      .notEmpty()
+      .withMessage("You must type a confirmation password")
+      .custom((value, { req }) => value === req.body.password)
+      .withMessage("The passwords do not match"),
+  ]),
 };

@@ -8,7 +8,7 @@ import ModalLogin from "./ModalLogin";
 
 const NavbarDesktop = () => {
   return (
-    <div className="hidden w-full lg:grid bg-white justify-center sticky top-0">
+    <div className="hidden w-full lg:grid bg-white justify-center sticky z-10 top-0">
       <div className="flex w-[1200px] justify-evenly items-center">
         <div className="">
           <img src={logo} alt="" className="w-16" />
@@ -27,9 +27,9 @@ const NavbarDesktop = () => {
           />
         </div>
         <div className="flex justify-between w-20 items-center cursor-pointer">
-          <BsFillCartFill className="w-7 h-7 hover:text-blue3 transition-all" />
+          <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
           <button>
-            <BiSolidPurchaseTag className="w-7 h-7 hover:text-blue3 transition-all" />
+            <BiSolidPurchaseTag className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
           </button>
         </div>
         <div className="flex gap-4">

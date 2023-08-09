@@ -14,7 +14,7 @@ const NavbarMobile = () => {
   ];
   let [open, setOpen] = useState(false);
   return (
-    <div className="sticky top-0 w-full">
+    <div className="sticky top-0 w-full z-10">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
         <div className="w-full">
           <SearchBar
@@ -27,10 +27,10 @@ const NavbarMobile = () => {
         </div>
         <div className="flex w-24 justify-evenly gap-2 items-center">
           <button>
-            <BsFillCartFill className="text-blue3" />
+            <BsFillCartFill className="hover:text-blue3 text-base_grey transition-all" />
           </button>
           <button>
-            <BiSolidPurchaseTag className="text-blue3" />
+            <BiSolidPurchaseTag className="hover:text-blue3 text-base_grey transition-all" />
           </button>
         </div>
         <div className="mr-2 mt-1">

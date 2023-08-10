@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-const Button = ({
+const ButtonLink = ({
   buttonSize,
   buttonText = "Edit Button",
   onClick,
@@ -8,12 +9,13 @@ const Button = ({
   colorText,
   fontWeight,
   type = "button",
+  to,
 }) => {
   let sizeClasses;
 
   switch (buttonSize) {
     case "small":
-      sizeClasses = "px-2 py-1 text-xs w-24 h-8 rounded-lg";
+      sizeClasses = "px-2 py-1 text-xs w-24 h-8 rounded-lg ";
       break;
     case "medium":
       sizeClasses = "px-4 py-2 text-sm w-32 h-10 rounded-lg";
@@ -25,15 +27,16 @@ const Button = ({
       sizeClasses = "px-4 py-2 text-sm w-32 h-10 rounded-lg";
       break;
   }
+
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
-    >
-      {buttonText}
-    </button>
+    <>
+      <button
+        className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
+      >
+        <Link to={to}>{buttonText}</Link>
+      </button>
+    </>
   );
 };
 
-export default Button;
+export default ButtonLink;

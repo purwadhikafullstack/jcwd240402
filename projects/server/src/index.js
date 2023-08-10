@@ -3,24 +3,25 @@ const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 const router = require("./routes");
+const path = require("path");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
-
-app.use(express.json());
 
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
+
+/* MIDDLEWARE */
+app.use(cors());
+app.use(
+  "/photo-profile",
+  express.static(path.join(__dirname, "public/imgProfile"))
+);
+app.use(express.json());
+
+// ==========================
 
 /* USER ROUTES */
 app.use("/api", router.user);

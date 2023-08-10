@@ -12,10 +12,10 @@ module.exports = {
       user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Users",
-        //   key: "id",
-        // },
+        references: {
+          model: "Users",
+          key: "id",
+        },
       },
       first_name: {
         type: Sequelize.STRING,
@@ -31,16 +31,17 @@ module.exports = {
         unique: true,
       },
       address_user_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        // references: {
-        //   model: "Address_users",
-        //   key: "id",
-        // },
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Address_users",
+          key: "id",
+        },
       },
       img_profile: {
         type: Sequelize.STRING,
         defaultValue: null,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

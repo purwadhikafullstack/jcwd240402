@@ -1,17 +1,36 @@
 const router = require("express").Router();
 const AuthController = require("../../controllers/user/userController");
+const Verify = require("../../middleware/auth");
+const validatorMiddleware = require("../../middleware/validator/user");
+const upload = require("../../middleware/multer/user/imgProfile");
 
-router.post("/auth/register", AuthController.register);
-router.post("/auth/login", AuthController.login);
-router.get("/auth/keep-login", AuthController.keepLogin);
-router.patch(
-  "/auth/verify-account/:verify-token",
-  AuthController.verifyAccount
+router.post(
+  "/auth/register",
+  validatorMiddleware.registration,
+  AuthController.registerUser
 );
-router.patch("/auth/resend-verify", AuthController.resendVerifyAccount);
-router.post("/auth/forgot-password", AuthController.forgotPassword);
+router.get("/auth/verify/:verify_token", AuthController.updateVerify);
+router.post("/auth/login", validatorMiddleware.login, AuthController.login);
+router.get(
+  "/auth/keep-login",
+  Verify.verifyRefreshToken,
+  AuthController.keepLogin
+);
+
+router.post(
+  "/auth/resend-verify",
+  validatorMiddleware.emailInput,
+  AuthController.resendVerifyAccount
+);
+
+router.post(
+  "/auth/forgot-password",
+  validatorMiddleware.emailInput,
+  AuthController.forgotPassword
+);
 router.patch(
-  "/auth/reset-password/:reset-password-token",
+  "/auth/reset-password/:resetToken",
+  validatorMiddleware.resetPassword,
   AuthController.resetPassword
 );
 router.patch("/auth/close-account", AuthController.closeAccount);

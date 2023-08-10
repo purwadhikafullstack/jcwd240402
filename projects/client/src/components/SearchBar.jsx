@@ -23,7 +23,7 @@ const SearchBar = ({
         <button
           className={`flex justify-center items-center w-12 h-7 ${bgColor} rounded-lg`}
         >
-          <BiSearch />
+          <BiSearch className="text-base_grey" />
         </button>
       </span>
     </div>

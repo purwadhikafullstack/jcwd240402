@@ -33,11 +33,9 @@ module.exports = {
       },
       verify_token: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       reset_password_token: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       is_verify: {
         type: Sequelize.BOOLEAN,

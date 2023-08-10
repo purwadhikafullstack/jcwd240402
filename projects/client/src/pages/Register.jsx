@@ -7,6 +7,7 @@ import register from "../assets/images/register.webp";
 import InputForm from "../components/InputForm";
 import axios from "../api/axios";
 import Button from "../components/Button";
+import AuthImageCard from "../components/AuthImageCard";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const Register = () => {
             "Sign up successful. Please check your email for verification.",
         });
 
-        navigate("/verify-page");
+        navigate("/verify");
       } else {
         throw new Error("Register Failed");
       }
@@ -81,13 +82,6 @@ const Register = () => {
 
   const inputConfigs = [
     {
-      label: "username",
-      placeholder: "username",
-      name: "username",
-      type: "text",
-      value: formik.values.username,
-    },
-    {
       label: "email",
       placeholder: "email",
       name: "email",
@@ -109,26 +103,46 @@ const Register = () => {
       value: formik.values.confirm_password,
     },
   ];
+  const inputNameCongfigs = [
+    {
+      label: "first name",
+      placeholder: "first name",
+      name: "first_name",
+      type: "text",
+      value: formik.values.first_name,
+    },
+    {
+      label: "last name",
+      placeholder: "last name",
+      name: "last_name",
+      type: "text",
+      value: formik.values.last_name,
+    },
+  ];
+  const inputContactConfigs = [
+    {
+      label: "username",
+      placeholder: "username",
+      name: "username",
+      type: "text",
+      value: formik.values.username,
+    },
+    {
+      label: "phone",
+      placeholder: "phone number",
+      name: "phone",
+      type: "text",
+      value: formik.values.phone,
+    },
+  ];
 
   return (
     <div className="bg-white h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-2 lg:items-center ">
-      <div className="lg:col-span-1 lg:grid">
-        <img
-          src={register}
-          alt=""
-          className="hidden lg:block lg:w-1/2 lg:ml-52"
-        />
-        <div className="hidden lg:grid lg:justify-center ">
-          <p className="text-center font-bold">Easy Buying at Warehouse</p>
-          <p>
-            Join and experience the convenience of transacting at Warehouse.
-          </p>
-        </div>
-      </div>
-      <div className="lg:col-span-1 ">
+      <AuthImageCard imageSrc={register} />
+      <div className="lg:col-span-1">
         <div className=" lg:grid lg:justify-center lg:items-center  ">
-          <div className=" lg:w-80 lg:drop-shadow-2xl lg:rounded-xl lg:bg-blue5 ">
-            <div className="flex mt-10 justify-between items-end ">
+          <div className=" lg:w-[500px] lg:shadow-3xl lg:rounded-xl lg:h-fit ">
+            <div className="flex mt-4 px-3 justify-between items-end ">
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
                 Register
               </h1>
@@ -140,7 +154,48 @@ const Register = () => {
                     <p className="bg-inherit">{errMsg}</p>
                   </div>
                 ) : null}
-                <div className="mt-5 px-2 grid gap-y-5 lg:rounded-xl">
+                <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
+                  <div className="flex gap-x-4 ">
+                    <InputForm
+                      width="w-full"
+                      label={inputNameCongfigs[0].label}
+                      onChange={handleForm}
+                      placeholder={inputNameCongfigs[0].placeholder}
+                      name={inputNameCongfigs[0].name}
+                      type={inputNameCongfigs[0].type}
+                      value={inputNameCongfigs[0].value}
+                    />
+                    <InputForm
+                      width="w-full"
+                      label={inputNameCongfigs[1].label}
+                      onChange={handleForm}
+                      placeholder={inputNameCongfigs[1].placeholder}
+                      name={inputNameCongfigs[1].name}
+                      type={inputNameCongfigs[1].type}
+                      value={inputNameCongfigs[1].value}
+                    />
+                  </div>
+                  <div className="flex gap-x-4 ">
+                    <InputForm
+                      width="w-full"
+                      label={inputContactConfigs[0].label}
+                      onChange={handleForm}
+                      placeholder={inputContactConfigs[0].placeholder}
+                      name={inputContactConfigs[0].name}
+                      type={inputContactConfigs[0].type}
+                      value={inputContactConfigs[0].value}
+                    />
+                    <InputForm
+                      width="w-full"
+                      label={inputContactConfigs[1].label}
+                      onChange={handleForm}
+                      placeholder={inputContactConfigs[1].placeholder}
+                      name={inputContactConfigs[1].name}
+                      type={inputContactConfigs[1].type}
+                      value={inputContactConfigs[1].value}
+                    />
+                  </div>
+
                   {inputConfigs.map((config, index) => (
                     <InputForm
                       key={index}
@@ -154,15 +209,14 @@ const Register = () => {
                   ))}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
-                      buttonSize="small"
+                      buttonSize="medium"
                       buttonText="Register"
                       type="submit"
                       bgColor="bg-blue3"
                       colorText="text-white"
                       fontWeight="font-semibold"
-                    >
-                      Register Account
-                    </Button>
+                    />
+
                     <h1 className="mt-2 lg:my-4">
                       Have an account?{" "}
                       <Link

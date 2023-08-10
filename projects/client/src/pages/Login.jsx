@@ -8,24 +8,11 @@ import InputForm from "../components/InputForm";
 import axios from "../api/axios";
 import Button from "../components/Button";
 import PasswordInput from "../components/PasswordInput";
-import googleButton from "../assets/google_signin_buttons/web/1x/btn_google_signin_dark_pressed_web.png";
+import AuthImageCard from "../components/AuthImageCard";
 
 const Login = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
-
-  const googleNavigate = (url) => {
-    window.location.href = url;
-  };
-
-  const auth = async () => {
-    const response = await axios.post("/auth/google-auth");
-    const res = await axios.get("/auth/google-auth");
-    console.log(res);
-    const data = await response.data.url;
-    console.log(data);
-    googleNavigate(data);
-  };
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
@@ -44,6 +31,8 @@ const Login = () => {
         });
 
         navigate("/");
+        console.log(response.data.accessToken);
+        console.log(response.data.refreshToken);
       } else {
         throw new Error("Login Failed");
       }
@@ -93,20 +82,12 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-white h-full lg:h-screen lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
-      <div className="lg:col-span-1 lg:grid">
-        <img src={login} alt="" className="hidden lg:block lg:w-1/2 lg:ml-52" />
-        <div className="hidden lg:grid lg:justify-center ">
-          <p className="text-center font-bold">Easy Buying at Warehouse</p>
-          <p>
-            Join and experience the convenience of transacting at Warehouse.
-          </p>
-        </div>
-      </div>
+    <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
+      <AuthImageCard imageSrc={login} />
       <div className="lg:col-span-1 ">
         <div className=" lg:grid lg:justify-center lg:items-center  ">
-          <div className=" lg:w-80 lg:drop-shadow-2xl lg:rounded-xl lg:bg-blue5 ">
-            <div className="flex mt-10 justify-between items-end ">
+          <div className=" lg:w-80 lg:shadow-3xl lg:rounded-xl  ">
+            <div className="flex mt-4 px-3 justify-between items-end ">
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
                 Login
               </h1>
@@ -118,7 +99,7 @@ const Login = () => {
                     <p className="bg-inherit">{errMsg}</p>
                   </div>
                 ) : null}
-                <div className="mt-5 px-2 grid gap-y-5 lg:rounded-xl">
+                <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
                   <InputForm
                     label={config.label}
                     onChange={handleForm}
@@ -135,7 +116,7 @@ const Login = () => {
 
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
-                      buttonSize="small"
+                      buttonSize="medium"
                       buttonText="Log in"
                       type="submit"
                       bgColor="bg-blue3"
@@ -148,17 +129,6 @@ const Login = () => {
                         Sign Up
                       </Link>
                     </h1>
-                    <button
-                      className="btn-auth"
-                      type="button"
-                      onClick={() => auth()}
-                    >
-                      <img
-                        className="btn-auth-img"
-                        src={googleButton}
-                        alt="google sign in"
-                      />
-                    </button>
                   </div>
                 </div>
               </form>

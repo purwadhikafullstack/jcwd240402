@@ -41,6 +41,7 @@ module.exports = {
       img_profile: {
         type: Sequelize.STRING,
         defaultValue: null,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

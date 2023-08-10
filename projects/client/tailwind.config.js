@@ -44,6 +44,9 @@ module.exports = {
       wider: "0.2em",
       widest: "0.3em",
     },
+    boxShadow: {
+      "3xl": "0px 0px 30px 0px rgba(0, 0, 0, 0.3)",
+    },
   },
   plugins: [require("flowbite/plugin")],
 };

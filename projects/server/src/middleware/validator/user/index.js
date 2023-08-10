@@ -53,13 +53,12 @@ const registerValidation = [
 ];
 
 module.exports = {
-  validateRegistration: validate([
+  registration: validate([
     body("username")
       .notEmpty()
       .withMessage("Username is required")
       .isLength({ max: 50 })
-      .withMessage("Maximum character is 50")
-      .custom(checkUsernameAdmin),
+      .withMessage("Maximum character is 50"),
     body("first_name")
       .notEmpty()
       .withMessage("first name is required")
@@ -81,6 +80,56 @@ module.exports = {
       .isMobilePhone()
       .withMessage("must to in valid phone number"),
     body("password", "password cannot be empty")
+      .notEmpty()
+      .withMessage("password is required")
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "password have to contains 8 character with lowercase, uppercase, number, dan special character"
+      ),
+    body("confirm_password")
+      .notEmpty()
+      .withMessage("You must type a confirmation password")
+      .custom((value, { req }) => value === req.body.password)
+      .withMessage("The passwords do not match"),
+  ]),
+  login: validate([
+    body("user_identification")
+      .notEmpty()
+      .withMessage("Username or email is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("password", "password cannot be empty")
+      .notEmpty()
+      .withMessage("password is required")
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "password have to contains 8 character with lowercase, uppercase, number, dan special character"
+      ),
+  ]),
+  emailInput: validate([
+    body("email", "email cannot be empty")
+      .notEmpty()
+      .withMessage("email is required")
+      .isEmail()
+      .withMessage("must to in valid email"),
+  ]),
+  resetPassword: validate([
+    body("reset_password_token")
+      .notEmpty()
+      .withMessage("reset password code is required"),
+    body("new_password", "password cannot be empty")
       .notEmpty()
       .withMessage("password is required")
       .isStrongPassword({

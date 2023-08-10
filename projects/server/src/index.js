@@ -20,6 +20,7 @@ app.use(
   express.static(path.join(__dirname, "public/imgProfile"))
 );
 app.use(express.json());
+
 // ==========================
 
 /* USER ROUTES */

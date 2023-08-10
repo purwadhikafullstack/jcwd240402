@@ -9,7 +9,7 @@ const NavigatorMobile = () => {
   const location = useLocation();
 
   return (
-    <div className="block bottom-0 fixed lg:hidden ">
+    <div className="block bottom-0 sticky bottom-0 lg:hidden ">
       <div className="bg-blue4 w-screen h-12 grid grid-cols-4 justify-center items-center">
         <div
           className={`bg-inherit ${

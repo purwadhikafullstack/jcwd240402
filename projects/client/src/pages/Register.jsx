@@ -220,7 +220,7 @@ const Register = () => {
                     <h1 className="mt-2 lg:my-4">
                       Have an account?{" "}
                       <Link
-                        to="/login"
+                        to="/log-in"
                         className="font-semibold hover:text-blue3 transition-all"
                       >
                         Log in

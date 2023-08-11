@@ -9,8 +9,8 @@ const NavigatorMobile = () => {
   const location = useLocation();
 
   return (
-    <div className="block bottom-0 sticky bottom-0 lg:hidden ">
-      <div className="bg-blue4 w-screen h-12 grid grid-cols-4 justify-center items-center">
+    <div className="block sticky bottom-0 lg:hidden ">
+      <div className="bg-blue4 w-full h-12 grid grid-cols-4 justify-center items-center">
         <div
           className={`bg-inherit ${
             location.pathname === "/homepage" ? "text-yellow-500" : "text-white"

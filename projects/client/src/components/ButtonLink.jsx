@@ -31,7 +31,7 @@ const ButtonLink = ({
   return (
     <>
       <button
-        className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
+        className={`${bgColor} ${fontWeight}  text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
       >
         <Link to={to}>{buttonText}</Link>
       </button>

@@ -6,7 +6,10 @@ const CarouselBanner = ({ imageUrls }) => {
     <div>
       <Carousel
         slideInterval={5000}
-        className="h-[6rem] w-[17rem] md:h-[12rem] md:w-[40rem] lg:h-[15rem] lg:w-[60rem] transition-all duration-500 ease-in"
+        className="h-[5.5rem] w-[21rem] md:h-[12rem] md:w-[54rem] lg:h-[20rem] lg:w-[78rem] transition-all duration-500 ease-in"
+        indicators={false}
+        leftControl=" "
+        rightControl=" "
       >
         {imageUrls.map((url, index) => (
           <img key={index} alt="Carousel Slide" src={url} />

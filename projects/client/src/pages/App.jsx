@@ -1,8 +1,5 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavbarDesktop from "../components/NavbarDesktop";
-import NavbarMobile from "../components/NavbarMobile";
-import NavigatorMobile from "../components/NavigatorMobile";
 import Home from "../pages/Home";
 import Register from "./Register";
 import Login from "./Login";
@@ -14,8 +11,6 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <NavbarDesktop />
-        <NavbarMobile />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
@@ -24,7 +19,6 @@ function App() {
           <Route path="/verify" element={<Verify />} />
           <Route path="/verify/:verify_token" element={<Verified />} />
         </Routes>
-        <NavigatorMobile />
       </Router>
     </div>
   );

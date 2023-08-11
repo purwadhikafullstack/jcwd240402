@@ -10,6 +10,13 @@ import banner2 from "../assets/images/banner_2.png";
 import banner3 from "../assets/images/banner_3.png";
 import banner4 from "../assets/images/banner_4.png";
 import banner5 from "../assets/images/banner_5.png";
+import banner6 from "../assets/images/banner_6.png";
+import banner7 from "../assets/images/banner_7.png";
+import StaticBanner from "../components/StaticBanner";
+import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
+import { MdDraw } from "react-icons/md";
+import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
+import ServiceCard from "../components/ServiceCard";
 
 const Home = () => {
   const productsData = [
@@ -92,16 +99,73 @@ const Home = () => {
     },
   ];
   const imageUrls = [banner1, banner2, banner3, banner4, banner5];
+  const services = [
+    {
+      component: FaShippingFast,
+      title: "Delivery",
+      text: "We help deliver your purchases to your home or office.",
+    },
+    {
+      component: BsWrenchAdjustable,
+      title: "Assembling",
+      text: "We can assemble individual furniture items up to the PAX wardrobe system.",
+    },
+    {
+      component: MdDraw,
+      title: "Interior design",
+      text: "Obtain space solutions from our expert interior designers.",
+    },
+    {
+      component: FaReceipt,
+      title: "Track my order",
+      text: "Verify your delivery date and details here.",
+    },
+    {
+      component: BsFillTelephoneFill,
+      title: "Click and collect",
+      text: "Collect your online purchases at an IKEA Pick-up Point or your nearest IKEA store.",
+    },
+    {
+      component: FaTruckPickup,
+      title: "Contact us",
+      text: "Feel free to ask us, we're here to assist you.",
+    },
+  ];
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
-      <div className="min-h-screen lg:mx-32">
+      <div className="min-h-screen  lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />
         </div>
+        <StaticBanner banner6={banner6} banner7={banner7} />
         <div className="">
           <CarouselProduct productsData={productsData} />
+        </div>
+        <div>
+          <div className="grid grid-rows-2 lg:grid-rows-1 md:grid-cols-2 lg:grid-cols-2 ">
+            <div className="border-2 row-span-1 md:col-span-1 lg:col-span-1 h-96">
+              <h1>atas</h1>
+            </div>
+            <div className="grid grid-cols-2 grid-rows-2 border-2 row-span-1 md:col-span-1 lg:col-span-1">
+              <div className="border-2 cols-span-1 row-span-1">
+                <h1>1</h1>
+              </div>
+              <div className="border-2 cols-span-1 row-span-1">
+                <h1>2</h1>
+              </div>
+              <div className="border-2 cols-span-1 row-span-1">
+                <h1>3</h1>
+              </div>
+              <div className="border-2 cols-span-1 row-span-1 ">
+                <h1>4</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <ServiceCard services={services} />
         </div>
       </div>
       <FooterDesktop />

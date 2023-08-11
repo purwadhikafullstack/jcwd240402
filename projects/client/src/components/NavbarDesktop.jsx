@@ -1,11 +1,11 @@
 import React from "react";
-import logo from "../assets/images/image_example.jpg";
 import SearchBar from "./SearchBar";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import ModalLogin from "./ModalLogin";
 import { useLocation } from "react-router-dom";
 import ButtonLink from "./ButtonLink";
+import logo from "../assets/images/furniforNav.png";
 
 const NavbarDesktop = () => {
   const location = useLocation();

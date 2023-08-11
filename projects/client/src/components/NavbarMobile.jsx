@@ -53,7 +53,7 @@ const NavbarMobile = () => {
               </li>
             ))}
             <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
-              Get Started
+              <Link to="/sign-up">sign up</Link>
             </button>
           </ul>
         </div>

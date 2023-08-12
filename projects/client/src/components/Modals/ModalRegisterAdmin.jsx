@@ -1,12 +1,23 @@
 import React, { useState } from "react";
+import { useFormik } from "formik";
+import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import axios from "axios";
 import Button from "../Button";
 import InputForm from "../InputForm";
+import PasswordInput from "../PasswordInput";
 
 const RegisterAdminModal = ({ show, onClose }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [errMsg, setErrMsg] = useState("");
+
+  const handleModalClose = () => {
+    formik.resetForm();
+    setSelectedWarehouse(null); 
+    setErrMsg(""); 
+    onClose(); 
+  };
 
   const loadWarehouses = async (inputValue) => {
     try {
@@ -24,33 +35,61 @@ const RegisterAdminModal = ({ show, onClose }) => {
     }
   };
 
-  const handleRegister = async (values) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/api/admin/register",
-        {
-          ...values,
-          warehouse_id: selectedWarehouse?.value,
+  const validationSchema = yup.object().shape({
+    username: yup.string().required("Username is required"),
+    first_name: yup.string().required("First name is required"),
+    last_name: yup.string().required("Last name is required"),
+    password: yup.string().required("Password is required"),
+    confirmPassword: yup
+      .string()
+      .required("Confirm password is required")
+      .oneOf([yup.ref("password"), null], "Passwords must match"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      first_name: "",
+      last_name: "",
+      password: "",
+      confirmPassword: "",
+    },
+    validateOnChange: false,
+    validateOnBlur: false,
+    onSubmit: async (values) => {
+      try {
+        if (!selectedWarehouse) {
+          throw new Error("Please select a warehouse.");
         }
-      );
+        const response = await axios.post(
+          "http://localhost:8000/api/admin/register",
+          {
+            ...values,
+            warehouse_id: selectedWarehouse?.value,
+          }
+        );
 
-      if (response.status === 201) {
-        onClose();
-        // Reset form or perform any necessary actions
-      } else {
-        throw new Error("Admin Registration Failed");
+        if (response.status === 201) {
+          formik.resetForm(); 
+          setSelectedWarehouse(null); 
+          onClose();
+        } else {
+          throw new Error("Admin Registration Failed");
+        }
+      } catch (error) {
+        const serverError = error.response?.data?.errors?.[0];
+        if (serverError && serverError.path === "username") {
+          formik.setFieldError("username", serverError.msg);
+        } else {
+          setErrMsg(error.message || "Registration failed");
+        }
       }
-    } catch (error) {
-      console.error("Registration failed:", error.response?.data || error);
-    }
-  };
-
-  const handleSubmit = (values) => {
-    handleRegister(values);
-  };
+    },
+    validationSchema,
+  });
 
   return (
-    <Modal show={show} size="md" popup onClose={onClose}>
+    <Modal show={show} size="md" popup onClose={handleModalClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -59,31 +98,60 @@ const RegisterAdminModal = ({ show, onClose }) => {
         </div>
       </Modal.Header>
       <Modal.Body>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={formik.handleSubmit}>
+          {errMsg && (
+            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
+              <p>{errMsg}</p>
+            </div>
+          )}
           <div className="px-6 grid gap-y-3">
             <InputForm
               label="Username"
               name="username"
               type="text"
               placeholder="Enter username"
+              value={formik.values.username}
+              onChange={formik.handleChange}
+              isError={!!formik.errors.username}
+              errorMessage={formik.errors.username}
             />
             <InputForm
               label="First Name"
               name="first_name"
               type="text"
               placeholder="Enter first name"
+              value={formik.values.first_name}
+              onChange={formik.handleChange}
+              isError={!!formik.errors.first_name}
+              errorMessage={formik.errors.first_name}
             />
             <InputForm
               label="Last Name"
               name="last_name"
               type="text"
               placeholder="Enter last name"
+              value={formik.values.last_name}
+              onChange={formik.handleChange}
+              isError={!!formik.errors.last_name}
+              errorMessage={formik.errors.last_name}
             />
-            <InputForm
+            <PasswordInput
               label="Password"
               name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              isError={!!formik.errors.password}
+              errorMessage={formik.errors.password}
+            />
+            <InputForm
+              label="Confirm Password"
+              name="confirmPassword"
               type="password"
-              placeholder="Enter password"
+              placeholder="Confirm password"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              isError={!!formik.errors.confirmPassword}
+              errorMessage={formik.errors.confirmPassword}
             />
             <div className="flex-1">
               <AsyncSelect
@@ -94,7 +162,7 @@ const RegisterAdminModal = ({ show, onClose }) => {
                 placeholder="Select Warehouse"
               />
             </div>
-            <div className="flex flex-col justify-center items-center mt-3">
+            <div className="flex flex-col justify-center items-center mt-3 ">
               <Button
                 type="submit"
                 buttonSize="medium"

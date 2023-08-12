@@ -33,7 +33,9 @@ const checkUsernameAdmin = async (value, { req }) => {
 
 const checkWarehouseName = async (value, { req }) => {
   try {
-    const name = await db.Warehouse.findOne({ where: { warehouse_name: value } });
+    const name = await db.Warehouse.findOne({
+      where: { warehouse_name: value },
+    });
     if (name) {
       throw new Error("Name has already been taken");
     }
@@ -61,6 +63,25 @@ module.exports = {
       .withMessage("last name is required")
       .isLength({ max: 50 })
       .withMessage("Maximum character is 50"),
+    body("password")
+      .notEmpty()
+      .withMessage("Password is required")
+      .isStrongPassword({
+        minLength: 8,
+        minUppercase: 1,
+        minSymbols: 1,
+        minNumbers: 1,
+      })
+      .withMessage("Password min 8 chars,1 Uppercase,1 Symbol and 1 Number")
+      .custom((value, { req }) => {
+        if (value !== req.body.confirmPassword) {
+          throw new Error("Confirm password does not match with password");
+        }
+        return true;
+      }),
+    body("confirmPassword")
+      .notEmpty()
+      .withMessage("Confirm password is required")
   ]),
 
   validateLogin: validate([
@@ -94,10 +115,15 @@ module.exports = {
 
   validateRegisterWarehouse: validate([
     body("address_warehouse").notEmpty().withMessage("Address is required"),
-    body("warehouse_name").notEmpty().withMessage("Warehouse name is required").custom(checkWarehouseName),
+    body("warehouse_name")
+      .notEmpty()
+      .withMessage("Warehouse name is required")
+      .custom(checkWarehouseName),
     body("city_id").notEmpty().withMessage("City ID is required"),
     body("latitude").notEmpty().withMessage("Latitude is required"),
     body("longitude").notEmpty().withMessage("Longtitude is required"),
-    body("warehouse_contact").notEmpty().withMessage("Warehouse contact is required"),
+    body("warehouse_contact")
+      .notEmpty()
+      .withMessage("Warehouse contact is required"),
   ]),
 };

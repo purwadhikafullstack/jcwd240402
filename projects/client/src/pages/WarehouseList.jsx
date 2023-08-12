@@ -4,7 +4,7 @@ import AsyncSelect from "react-select/async";
 import TableComponent from "../components/Table";
 import Button from "../components/Button";
 import SidebarAdmin from "../components/SidebarAdminDesktop";
-import RegisterWarehouseModal from "../components/Modals/ModalReassignWarehouse";
+import RegisterWarehouseModal from "../components/Modals/ModalRegisterWarehouse";
 
 const WarehouseList = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -14,7 +14,9 @@ const WarehouseList = () => {
 
   const loadCities = (inputValue, callback) => {
     axios
-      .get(`http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`)
+      .get(
+        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
+      )
       .then((res) => {
         const results = res.data.cities.map((city) => ({
           value: city.id,
@@ -26,26 +28,44 @@ const WarehouseList = () => {
 
   const refreshWarehouseList = () => {
     if (selectedCity) {
+      const url = `http://localhost:8000/api/warehouse/warehouse-list?searchName=${warehouseName}&cityId=${selectedCity.value}`;
+      console.log("Request URL:", url);
       axios
-        .get(`http://localhost:8000/api/warehouse/warehouse-list?searchName=${warehouseName}&cityId=${selectedCity.value}`)
+        .get(url)
         .then((res) => {
+          console.log("Response Data:", res.data);
           setWarehouses(res.data.warehouses);
+        })
+        .catch((error) => {
+          console.error("An error occurred:", error);
         });
     }
   };
 
+
   useEffect(() => {
     if (selectedCity) {
       setWarehouseName("");
-      refreshWarehouseList();
+      setTimeout(refreshWarehouseList, 0);
     }
-  }, [selectedCity, warehouseName]);
+  }, [selectedCity]);
 
   const openRegisterModal = () => {
     setRegisterModalOpen(true);
   };
 
-  const headers = ["ID", "City", "Warehouse Name", "Warehouse Address", "Warehouse Contact"];
+  const onWarehouseNameChange = (e) => {
+    setWarehouseName(e.target.value);
+    setTimeout(refreshWarehouseList, 0);
+  };
+
+  const headers = [
+    "ID",
+    "City",
+    "Warehouse Name",
+    "Warehouse Address",
+    "Warehouse Contact",
+  ];
 
   return (
     <div className="bg-blue1 h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -67,7 +87,7 @@ const WarehouseList = () => {
             type="text"
             placeholder="Search Warehouse name"
             value={warehouseName}
-            onChange={(e) => setWarehouseName(e.target.value)}
+            onChange={onWarehouseNameChange} // Updated to call the new function
             className="flex-1 p-2 border rounded text-base bg-white shadow-sm"
             disabled={!selectedCity}
           />

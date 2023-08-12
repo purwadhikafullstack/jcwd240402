@@ -5,7 +5,7 @@ import TableComponent from "../components/Table";
 import Button from "../components/Button";
 import SidebarAdmin from "../components/SidebarAdminDesktop";
 import AdminProfileModal from "../components/Modals/ModalAdminEdit";
-import ChangePassword from "../components/Modals/ModalEditPassword";
+import ChangePasswordModal from "../components/Modals/ModalEditPassword";
 import ReassignWarehouseModal from "../components/Modals/ModalReassignWarehouse";
 import RegisterAdminModal from "../components/Modals/ModalRegisterAdmin";
 
@@ -16,8 +16,7 @@ const AdminListPage = () => {
   const [admins, setAdmins] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [isChangePasswordModalOpen, setChangePasswordModalOpen] =
-    useState(false);
+  const [isChangePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
   const [isReassignModalOpen, setReassignModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
 
@@ -57,11 +56,14 @@ const AdminListPage = () => {
           `http://localhost:8000/api/admin/?searchName=${adminName}&warehouseId=${selectedWarehouse.value}`
         )
         .then((res) => {
-          setAdmins(res.data.admins);
+          const newAdmins = res.data.admins;
+          if (!admins.length || admins.some((admin, index) => admin.id !== newAdmins[index]?.id)) {
+            setAdmins(newAdmins);
+          }
         });
     }
   };
-
+  
   useEffect(() => {
     if (selectedCity) {
       setSelectedWarehouse(null);
@@ -69,6 +71,7 @@ const AdminListPage = () => {
     }
   }, [selectedCity]);
 
+  
   useEffect(() => {
     refreshAdminList();
   }, [selectedWarehouse, adminName]);
@@ -114,6 +117,7 @@ const AdminListPage = () => {
     ? [
         {
           label: "Password",
+          value: "••••••••",
           onEdit: onEditPassword,
         },
         {
@@ -196,7 +200,7 @@ const AdminListPage = () => {
             }`}
             profileData={profileData}
           />
-          <ChangePassword
+          <ChangePasswordModal
             show={isChangePasswordModalOpen}
             onClose={closeChangePasswordModal}
             adminId={selectedAdmin ? selectedAdmin.ID : null}

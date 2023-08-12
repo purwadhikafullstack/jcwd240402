@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
@@ -7,7 +7,8 @@ import PasswordInput from "../PasswordInput";
 import InputForm from "../InputForm";
 import Button from "../Button";
 
-const ChangePassword = ({ show, onClose, adminId }) => {
+const ChangePasswordModal = ({ show, onClose, adminId }) => {
+  const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
   const changePassword = async (values) => {
@@ -16,6 +17,7 @@ const ChangePassword = ({ show, onClose, adminId }) => {
         `http://localhost:8000/api/admin/change-pass/${adminId}`,
         values
       );
+      console.log("Response from server:", response);
       if (response.status === 200) {
         onClose();
         formik.resetForm();
@@ -23,6 +25,7 @@ const ChangePassword = ({ show, onClose, adminId }) => {
         throw new Error("Change Password Failed");
       }
     } catch (err) {
+      console.log("Error in request:", err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -56,8 +59,11 @@ const ChangePassword = ({ show, onClose, adminId }) => {
   });
 
   useEffect(() => {
-    if (!show) {
+    if (!show && !hasResetForm.current) {
       formik.resetForm();
+      hasResetForm.current = true;
+    } else if (show) {
+      hasResetForm.current = false;
     }
   }, [show, formik]);
 
@@ -81,7 +87,10 @@ const ChangePassword = ({ show, onClose, adminId }) => {
             <PasswordInput
               label="New Password"
               name="newPassword"
-              onChange={formik.handleChange}
+              onChange={(e) => {
+                console.log("New password value:", e.target.value); // Debugging line
+                formik.handleChange(e);
+              }}
               value={formik.values.newPassword}
             />
             <InputForm
@@ -109,4 +118,4 @@ const ChangePassword = ({ show, onClose, adminId }) => {
   );
 };
 
-export default ChangePassword;
+export default ChangePasswordModal;

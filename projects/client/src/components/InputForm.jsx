@@ -2,7 +2,6 @@ import { Label, TextInput } from "flowbite-react";
 import React from "react";
 
 const InputForm = ({
-  isError = false,
   errorMessage,
   placeholder = "input placeholder",
   type = "text",
@@ -12,6 +11,7 @@ const InputForm = ({
   value = "",
   onChange,
 }) => {
+  const isError = Boolean(errorMessage);
   return (
     <div className={`${width}`}>
       <div className="block">

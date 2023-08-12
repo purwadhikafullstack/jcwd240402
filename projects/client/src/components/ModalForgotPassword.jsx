@@ -1,44 +1,38 @@
 import { Modal } from "flowbite-react";
 import { useState } from "react";
 import Button from "./Button";
-import PasswordInput from "./PasswordInput";
 import InputForm from "./InputForm";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import DismissableAlert from "./DismissableAlert";
-import ModalForgotPassword from "./ModalForgotPassword";
 
-export default function ModalLogin() {
+export default function ModalForgotPassword() {
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
   const props = { openModal, setOpenModal, email, setEmail };
-  const [token, setToken] = useState();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
 
-  const loginUser = async (values, { setStatus, setValues }) => {
+  const forgotPassword = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/auth/login", values);
-      if (response.status === 200) {
+      console.log(values);
+      const response = await axios.post("/auth/forgot-password", values);
+      if (response.status === 201) {
         setStatus({ success: true });
         setValues({
-          user_identification: "",
-          password: "",
+          email: "",
         });
         setStatus({
           success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
+          message: "Successful. Please check your email for verification.",
         });
 
         navigate("/");
         setErrMsg(null);
         props.setOpenModal(undefined);
-        console.log(response.data.accessToken);
-        console.log(response.data.refreshToken);
       } else {
+        console.log("error");
         throw new Error("Login Failed");
       }
     } catch (err) {
@@ -52,22 +46,11 @@ export default function ModalLogin() {
 
   const formik = useFormik({
     initialValues: {
-      user_identification: "",
-      password: "",
+      email: "",
     },
-    onSubmit: loginUser,
+    onSubmit: forgotPassword,
     validationSchema: yup.object().shape({
-      user_identification: yup
-        .string()
-        .required("username / email / phone is a required field"),
-      password: yup
-        .string()
-        .min(6)
-        .required()
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "The password must contain 6 character with uppercase, lowercase, numbers and special characters"
-        ),
+      email: yup.string().required("email must be filled").email(),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -79,25 +62,24 @@ export default function ModalLogin() {
   };
 
   const config = {
-    label: "username/email",
-    placeholder: "username/email",
-    name: "user_identification",
-    type: "text",
-    value: formik.values.user_identification,
+    label: "email",
+    placeholder: "email",
+    name: "email",
+    type: "email",
+    value: formik.values.email,
   };
 
   return (
     <>
-      <Button
-        onClick={() => props.setOpenModal("form-elements")}
-        buttonSize="small"
-        buttonText="Log in"
-        bgColor="bg-blue3"
-        colorText="text-white"
-        fontWeight="font-semibold"
+      <button
+        onClick={() => {
+          props.setOpenModal("form-elements");
+        }}
       >
-        Login
-      </Button>
+        <p className="underline decoration-solid text-right text-xs text-base_grey">
+          Forgot Password?
+        </p>
+      </button>
       <Modal
         show={props.openModal === "form-elements"}
         size="md"
@@ -108,7 +90,7 @@ export default function ModalLogin() {
         <Modal.Body>
           <div className="space-y-6">
             <h1 className="text-3xl font-bold  text-blue3 lg:rounded-xl">
-              Login
+              Forgot Password
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
               {/* <DismissableAlert color="failure" message={errMsg} /> */}
@@ -122,21 +104,11 @@ export default function ModalLogin() {
                   type={config.type}
                   value={config.value}
                 />
-
-                <PasswordInput
-                  width="w-full"
-                  name="password"
-                  onChange={handleForm}
-                  value={formik.values.password}
-                />
-              </div>
-              <div className="flex justify-end mb-3">
-                <ModalForgotPassword />
               </div>
               <div className="w-full">
                 <Button
                   buttonSize="small"
-                  buttonText="Log in"
+                  buttonText="submit"
                   type="submit"
                   bgColor="bg-blue3"
                   colorText="text-white"

@@ -7,20 +7,15 @@ import {
   BsInstagram,
   BsTwitter,
 } from "react-icons/bs";
+import logo from "../assets/images/furnifor.png";
 
 const FooterDesktop = () => {
   return (
     <Footer container className="bg-blue-100 w-full">
-      <div className="w-full">
+      <div className="w-full lg:px-16 md:px-16">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
-          <div>
-            {/* <Footer.Brand
-              alt="Flowbite Logo"
-              href="https://flowbite.com"
-              name="Flowbite"
-              src="https://flowbite.com/docs/images/logo.svg"
-            /> */}
-            <div className="w-40 h-40 bg-slate-300"></div>
+          <div className="w-20 lg:w-96 md:w-96 lg:mr-4 md:mr-4 m-auto ">
+            <img src={logo} alt="" />
           </div>
           <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
             <div>
@@ -29,9 +24,8 @@ const FooterDesktop = () => {
                 <Footer.Link href="#">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                   do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud{" "}
+                  Ut enim ad minim veniam, quis nostrud
                 </Footer.Link>
-                {/* <Footer.Link href="#">Tailwind CSS</Footer.Link> */}
               </Footer.LinkGroup>
             </div>
             <div>

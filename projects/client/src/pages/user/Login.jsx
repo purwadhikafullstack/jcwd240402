@@ -3,12 +3,14 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import login from "../assets/images/login.webp";
-import InputForm from "../components/InputForm";
-import axios from "../api/axios";
-import Button from "../components/Button";
-import PasswordInput from "../components/PasswordInput";
-import AuthImageCard from "../components/AuthImageCard";
+
+import login from "../../assets/images/furnifor.png";
+import axios from "../../api/axios";
+import InputForm from "../../components/InputForm";
+import Button from "../../components/Button";
+import PasswordInput from "../../components/PasswordInput";
+import AuthImageCard from "../../components/AuthImageCard";
+import ModalForgotPassword from "../../components/ModalForgotPassword";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -85,8 +87,8 @@ const Login = () => {
     <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={login} />
       <div className="lg:col-span-1 ">
-        <div className=" lg:grid lg:justify-center lg:items-center  ">
-          <div className=" lg:w-80 lg:shadow-3xl lg:rounded-xl  ">
+        <div className="h-screen flex justify-center items-center lg:h-full lg:grid lg:justify-center lg:items-center  ">
+          <div className=" shadow-3xl w-64 lg:w-80 rounded-xl  ">
             <div className="flex mt-4 px-3 justify-between items-end ">
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
                 Login
@@ -114,6 +116,8 @@ const Login = () => {
                     value={formik.values.password}
                   />
 
+                  <ModalForgotPassword />
+
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
                       buttonSize="medium"
@@ -123,7 +127,7 @@ const Login = () => {
                       colorText="text-white"
                       fontWeight="font-semibold"
                     />
-                    <h1 className="mt-2 lg:my-4">
+                    <h1 className="mt-2 text-xs lg:text-base my-4">
                       Dont have an account yet?{" "}
                       <Link to="/register" className="font-semibold">
                         Sign Up

@@ -1,6 +1,6 @@
 import React from "react";
-import verifyPage from "../assets/images/verify.webp";
-import verify from "../assets/images/verify.gif";
+import verifyPage from "../../assets/images/verify.webp";
+import verify from "../../assets/images/verify.gif";
 
 const Verify = () => {
   return (

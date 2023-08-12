@@ -1,22 +1,21 @@
 import React from "react";
-import CarouselBanner from "../components/CarouselBanner";
-import NavbarDesktop from "../components/NavbarDesktop";
-import NavbarMobile from "../components/NavbarMobile";
-import FooterDesktop from "../components/FooterDesktop";
-import NavigatorMobile from "../components/NavigatorMobile";
-import CarouselProduct from "../components/CarouselProduct";
-import banner1 from "../assets/images/banner_1.png";
-import banner2 from "../assets/images/banner_2.png";
-import banner3 from "../assets/images/banner_3.png";
-import banner4 from "../assets/images/banner_4.png";
-import banner5 from "../assets/images/banner_5.png";
-import banner6 from "../assets/images/banner_6.png";
-import banner7 from "../assets/images/banner_7.png";
-import StaticBanner from "../components/StaticBanner";
+import CarouselBanner from "../../components/CarouselBanner";
+import NavbarDesktop from "../../components/NavbarDesktop";
+import NavbarMobile from "../../components/NavbarMobile";
+import FooterDesktop from "../../components/FooterDesktop";
+import NavigatorMobile from "../../components/NavigatorMobile";
+import CarouselProduct from "../../components/CarouselProduct";
+import banner1 from "../../assets/images/banner_1.png";
+import banner2 from "../../assets/images/banner_2.png";
+import banner3 from "../../assets/images/banner_3.png";
+import banner4 from "../../assets/images/banner_4.png";
+import banner5 from "../../assets/images/banner_5.png";
+import StaticBanner from "../../components/StaticBanner";
 import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { MdDraw } from "react-icons/md";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
-import ServiceCard from "../components/ServiceCard";
+import ServiceCard from "../../components/ServiceCard";
+import FrameImage from "../../components/FrameImage";
 
 const Home = () => {
   const productsData = [
@@ -99,6 +98,7 @@ const Home = () => {
     },
   ];
   const imageUrls = [banner1, banner2, banner3, banner4, banner5];
+
   const services = [
     {
       component: FaShippingFast,
@@ -139,30 +139,12 @@ const Home = () => {
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />
         </div>
-        <StaticBanner banner6={banner6} banner7={banner7} />
+        <StaticBanner />
         <div className="">
           <CarouselProduct productsData={productsData} />
         </div>
         <div>
-          <div className="grid grid-rows-2 lg:grid-rows-1 md:grid-cols-2 lg:grid-cols-2 ">
-            <div className="border-2 row-span-1 md:col-span-1 lg:col-span-1 h-96">
-              <h1>atas</h1>
-            </div>
-            <div className="grid grid-cols-2 grid-rows-2 border-2 row-span-1 md:col-span-1 lg:col-span-1">
-              <div className="border-2 cols-span-1 row-span-1">
-                <h1>1</h1>
-              </div>
-              <div className="border-2 cols-span-1 row-span-1">
-                <h1>2</h1>
-              </div>
-              <div className="border-2 cols-span-1 row-span-1">
-                <h1>3</h1>
-              </div>
-              <div className="border-2 cols-span-1 row-span-1 ">
-                <h1>4</h1>
-              </div>
-            </div>
-          </div>
+          <FrameImage />
         </div>
         <div>
           <ServiceCard services={services} />

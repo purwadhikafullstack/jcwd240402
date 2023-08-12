@@ -1,6 +1,8 @@
 import React from "react";
+import banner6 from "../assets/images/banner_6.png";
+import banner7 from "../assets/images/banner_7.png";
 
-const StaticBanner = ({ banner6, banner7 }) => {
+const StaticBanner = () => {
   return (
     <div className="my-8">
       <div className="flex justify-evenly">

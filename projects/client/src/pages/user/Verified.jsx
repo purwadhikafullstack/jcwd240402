@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import verified from "../assets/images/verified.webp";
-import verify from "../assets/images/verify.gif";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "../api/axios";
+
+import verified from "../../assets/images/verified.webp";
+import verify from "../../assets/images/verify.gif";
+import axios from "../../api/axios";
 
 const Verified = () => {
   const { verify_token } = useParams();

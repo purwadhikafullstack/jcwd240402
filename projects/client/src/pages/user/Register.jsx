@@ -3,11 +3,12 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import register from "../assets/images/register.webp";
-import InputForm from "../components/InputForm";
-import axios from "../api/axios";
-import Button from "../components/Button";
-import AuthImageCard from "../components/AuthImageCard";
+
+import register from "../../assets/images/furnifor.png";
+import axios from "../../api/axios";
+import InputForm from "../../components/InputForm";
+import Button from "../../components/Button";
+import AuthImageCard from "../../components/AuthImageCard";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -54,7 +55,7 @@ const Register = () => {
     onSubmit: registerUser,
     validationSchema: yup.object().shape({
       username: yup.string().required().min(3).max(20),
-      email: yup.string().required("email wajib diisi").email(),
+      email: yup.string().required("email must be filled").email(),
       password: yup
         .string()
         .min(6)

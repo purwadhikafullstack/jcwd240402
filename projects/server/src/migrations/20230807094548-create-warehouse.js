@@ -16,20 +16,13 @@ module.exports = {
       warehouse_name: {
         allowNull: false,
         type: Sequelize.STRING,
+        unique: true,
       },
       city_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "Cities",
-          key: "id",
-        },
-      },
-      province_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Provinces",
           key: "id",
         },
       },

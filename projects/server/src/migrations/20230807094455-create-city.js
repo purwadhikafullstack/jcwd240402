@@ -11,10 +11,10 @@ module.exports = {
       },
       province_id: {
         type: Sequelize.INTEGER,
-        // references: {
-        //   model: "Cities",
-        //   key: "id",
-        // },
+        references: {
+          model: "Provinces",
+          key: "id",
+        },
       },
       name: {
         type: Sequelize.STRING,

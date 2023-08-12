@@ -7,6 +7,7 @@ const Button = ({
   bgColor,
   colorText,
   fontWeight,
+  type = "button",
 }) => {
   let sizeClasses;
 
@@ -26,7 +27,7 @@ const Button = ({
   }
   return (
     <button
-      type="button"
+      type={type}
       onClick={onClick}
       className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
     >

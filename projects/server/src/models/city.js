@@ -17,11 +17,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   City.init({
-    province_id: DataTypes.INTEGER,
     name: DataTypes.STRING,
+    province_id: DataTypes.STRING,
     postal_code: DataTypes.STRING
   }, {
     sequelize,
+    timestamps: false,
     modelName: 'City',
   });
   return City;

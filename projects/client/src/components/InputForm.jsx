@@ -8,18 +8,23 @@ const InputForm = ({
   type = "text",
   label,
   width,
+  name = "",
+  value = "",
+  onChange,
 }) => {
   return (
     <div className={`${width}`}>
-      <div className="mb-2 block">
+      <div className="block">
         <Label htmlFor={label} value={label} />
       </div>
       <TextInput
         color={isError ? "failure" : null}
         helperText={isError ? errorMessage : null}
-        required
         placeholder={placeholder}
         type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
       />
     </div>
   );

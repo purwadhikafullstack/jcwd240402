@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Label } from "flowbite-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const PasswordInput = ({ isError = false, width }) => {
+const PasswordInput = ({ isError = false, width, value, onChange, name }) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -25,11 +25,14 @@ const PasswordInput = ({ isError = false, width }) => {
               : "border-gray-300 rounded-lg bg-gray-50"
           }`}
           placeholder="password"
-          required
+          value={value}
+          onChange={onChange}
+          name={name}
         />
         <button
           onClick={togglePasswordVisibility}
           className="absolute right-2.5 bottom-3.5 rounded-lg text-lg"
+          type="button"
         >
           {isPasswordVisible ? <FaEye /> : <FaEyeSlash />}
         </button>

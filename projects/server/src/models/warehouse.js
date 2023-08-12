@@ -11,9 +11,8 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Warehouse.belongsTo(models.Admin, { foreignKey: "warehouse_id"});
-      Warehouse.belongsTo(models.City, { foreignKey: "city_id"});
-      Warehouse.belongsTo(models.Province, { foreignKey: "province_id"});
+      Warehouse.hasMany(models.Admin, { foreignKey: 'warehouse_id' });
+      Warehouse.belongsTo(models.City, { foreignKey: 'city_id' });
       Warehouse.hasMany(models.Order, { foreignKey: "warehouse_id" });
       Warehouse.hasMany(models.Inventory_transfer, { foreignKey: "warehouse_id" });
       Warehouse.hasMany(models.History_stock, { foreignKey: "warehouse_id" });
@@ -29,10 +28,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     city_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    province_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },

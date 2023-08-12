@@ -1,20 +1,22 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import NavbarDesktop from "../components/NavbarDesktop";
-import NavbarMobile from "../components/NavbarMobile";
-import NavigatorMobile from "../components/NavigatorMobile";
-import Home from "../pages/Home";
+import AdminHome from "./AdminHome";
+import AdminLoginPage from "./AdminLogin";
+import AdminRegister from "./RegisterForm";
+import AdminList from "./AdminList";
+import WarehouseList from "./WarehouseList";
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <NavbarDesktop />
-        <NavbarMobile />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/admin-dashboard" element={<AdminHome />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/admin/list" element={<AdminList />} />
+          <Route path="/warehouse/list" element={<WarehouseList />} />
         </Routes>
-        <NavigatorMobile />
       </Router>
     </div>
   );

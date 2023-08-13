@@ -1,8 +1,10 @@
 import React from "react";
 import logo from "../../assets/images/furnifor.png";
 import forgotpassword from "../../assets/images/forgot_password.png";
+import { removeCookie } from "../../utils";
 
 const NotifForgotPassword = () => {
+  removeCookie("access_token");
   return (
     <div className="w-full h-full flex justify-evenly items-center">
       <img src={logo} alt="" className="absolute top-14 w-20" />

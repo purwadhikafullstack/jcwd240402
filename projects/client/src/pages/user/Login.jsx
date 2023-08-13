@@ -12,17 +12,22 @@ import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
 import ModalForgotPassword from "../../components/ModalForgotPassword";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import DismissableAlert from "../../components/DismissableAlert";
+import { setCookie, removeCookie, setLocalStorage } from "../../utils";
 
 const Login = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  removeCookie("access_token");
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.post("/auth/login", values);
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.ok) {
+        const accessToken = response.data.accessToken;
+        const refreshToken = response.data.refreshToken;
+        setLocalStorage(refreshToken);
+        setCookie("access_token", accessToken, 1);
         setStatus({ success: true });
         setValues({
           user_identification: "",
@@ -89,7 +94,6 @@ const Login = () => {
               </h1>
             </div>
             <div className="lg:rounded-lg">
-              <DismissableAlert />
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
                 {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
                 <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">

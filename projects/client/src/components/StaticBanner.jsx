@@ -4,7 +4,7 @@ import banner7 from "../assets/images/banner_7.png";
 
 const StaticBanner = () => {
   return (
-    <div className="my-8">
+    <div className="mt-4 mb-2 lg:my-8">
       <div className="flex justify-evenly">
         <div className="grid grid-cols-5 w-full gap-2 mx-2 md:mx-6">
           <div className=" col-span-3">

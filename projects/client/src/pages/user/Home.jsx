@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import CarouselBanner from "../../components/CarouselBanner";
 import NavbarDesktop from "../../components/NavbarDesktop";
 import NavbarMobile from "../../components/NavbarMobile";
@@ -17,8 +17,26 @@ import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import ServiceCard from "../../components/ServiceCard";
 import FrameImage from "../../components/FrameImage";
 import SelectionCategory from "../../components/SelectionCategory";
+import { getCookie, setCookie } from "../../utils";
+import axios from "../../api/axios";
 
 const Home = () => {
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const refresh_token = localStorage.getItem("refresh_token");
+  const access_token = getCookie("access_token");
+
+  useEffect(() => {
+    if (!access_token) {
+      axios
+        .get("/auth/keep-login", {
+          headers: { Authorization: `Bearer ${refresh_token}` },
+        })
+        .then((res) => {
+          setNewAccessToken(res.data?.accessToken);
+          setCookie("access_token", newAccessToken, 1);
+        });
+    }
+  }, [access_token, newAccessToken, refresh_token]);
   const productsData = [
     {
       src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
@@ -98,6 +116,12 @@ const Home = () => {
       price: 579000,
     },
   ];
+  const listCategory = [
+    { id: 1, name: "Table" },
+    { id: 2, name: "Kitchen" },
+    { id: 3, name: "Sofa" },
+    { id: 4, name: "Chair" },
+  ];
   const imageUrls = [banner1, banner2, banner3, banner4, banner5];
 
   const services = [
@@ -142,15 +166,20 @@ const Home = () => {
         </div>
         <StaticBanner />
         <div className="">
-          <CarouselProduct productsData={productsData} />
-        </div>
-        <div>
           <SelectionCategory />
+        </div>
+        <div className="relative z-0">
+          {listCategory.map((item) => (
+            <div key={item.id}>
+              <h1 className="font-bold mx-3 lg:text-3xl">{item.name}</h1>
+              <CarouselProduct productsData={productsData} />
+            </div>
+          ))}
         </div>
         <div>
           <FrameImage />
         </div>
-        <div>
+        <div className="my-4">
           <ServiceCard services={services} />
         </div>
       </div>

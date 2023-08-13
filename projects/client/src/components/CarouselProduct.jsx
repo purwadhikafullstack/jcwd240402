@@ -36,6 +36,7 @@ const CarouselProduct = ({ productsData }) => {
       price={item.price}
     />
   ));
+
   return (
     <div className="z-0">
       <Carousel

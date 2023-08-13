@@ -4,6 +4,7 @@ const cors = require("cors");
 const { join } = require("path");
 const router = require("./routes");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -20,6 +21,7 @@ app.use(
   express.static(path.join(__dirname, "public/imgProfile"))
 );
 app.use(express.json());
+app.use(cookieParser());
 
 // ==========================
 

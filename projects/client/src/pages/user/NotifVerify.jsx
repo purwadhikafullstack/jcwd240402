@@ -2,8 +2,10 @@ import React from "react";
 import verifyPage from "../../assets/images/verify.webp";
 import verify from "../../assets/images/verify.gif";
 import logo from "../../assets/images/furnifor.png";
+import { removeCookie } from "../../utils";
 
 const NotifVerify = () => {
+  removeCookie("access_token");
   return (
     <div className="w-full h-full flex justify-evenly items-center">
       <img src={logo} alt="" className="absolute top-14 w-20" />

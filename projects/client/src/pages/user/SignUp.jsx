@@ -6,8 +6,10 @@ import ButtonLink from "../../components/ButtonLink";
 import AuthImageCard from "../../components/AuthImageCard";
 import google from "../../assets/icons/google.png";
 import facebook from "../../assets/icons/facebook.png";
+import { removeCookie } from "../../utils";
 
 const SignUp = () => {
+  removeCookie("access_token");
   return (
     <div className="bg-white h-screen lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />

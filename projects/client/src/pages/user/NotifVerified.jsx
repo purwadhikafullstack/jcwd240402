@@ -4,10 +4,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import verified from "../../assets/images/verified.webp";
 import verify from "../../assets/images/verify.gif";
 import axios from "../../api/axios";
+import { removeCookie } from "../../utils";
 
 const NotifVerified = () => {
   const { verify_token } = useParams();
   const navigate = useNavigate();
+  removeCookie("access_token");
 
   useEffect(() => {
     axios.get(`/auth/verify/${verify_token}`).then(

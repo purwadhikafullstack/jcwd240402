@@ -9,12 +9,14 @@ import SignUp from "./user/SignUp";
 import NotifForgotPassword from "./user/NotifForgotPassword";
 import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
+import NotFound from "./user/NotFound";
 
 function App() {
   return (
     <div className="App">
       <Router>
         <Routes>
+          <Route path="/*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />

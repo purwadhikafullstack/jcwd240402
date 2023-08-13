@@ -7,11 +7,13 @@ import axios from "../../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import { removeCookie } from "../../utils";
 
 const ResetPassword = () => {
   const { resetToken } = useParams();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  removeCookie("access_token");
 
   const resetPassword = async (values, { setStatus, setValues }) => {
     try {

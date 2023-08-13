@@ -10,6 +10,7 @@ import * as yup from "yup";
 import DismissableAlert from "./DismissableAlert";
 import ModalForgotPassword from "./ModalForgotPassword";
 import AlertWithIcon from "./AlertWithIcon";
+import { setCookie, setLocalStorage } from "../utils";
 
 export default function ModalLogin() {
   const [openModal, setOpenModal] = useState();
@@ -22,16 +23,20 @@ export default function ModalLogin() {
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.post("/auth/login", values);
-      if (response.status === 200) {
-        setStatus({ success: true });
+      if (response.status === 200 && response.data.ok) {
+        const accessToken = response.data.accessToken;
+        const refreshToken = response.data.refreshToken;
+        setLocalStorage(refreshToken);
+        setCookie("access_token", accessToken, 1);
+
+        setStatus({
+          success: true,
+          message: "Login successful.",
+        });
+
         setValues({
           user_identification: "",
           password: "",
-        });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
         });
 
         navigate("/");

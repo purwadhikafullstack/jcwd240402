@@ -9,8 +9,14 @@ import { Link } from "react-router-dom";
 const FrameImage = () => {
   const fourSquare = [
     { to: "", img: banner10 },
-    { to: "", img: banner9 },
-    { to: "", img: banner11 },
+    {
+      to: "https://api.whatsapp.com/send/?phone=6289652433206&text=Hi!+I+have+a+great+interior+design+idea+and+I'm+looking+for+an+expert+to+help+me+bring+it+to+life.%0AI'd+like+to+discuss+my+idea+of+(briefly+describe+your+idea+here).+Could+you+provide+me+with+some+insights+and+assistance%3F&type=phone_number&app_absent=0",
+      img: banner9,
+    },
+    {
+      to: "https://api.whatsapp.com/send/?phone=6289652433206&text=Hi!+I+want+to+ask+about+products+at+your+store.%0AThe+product+I%27m+interested+in+is+(please+input+the+product+name+here)%21&type=phone_number&app_absent=0",
+      img: banner11,
+    },
     { to: "", img: banner12 },
   ];
   return (

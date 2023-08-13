@@ -9,10 +9,12 @@ import axios from "../../api/axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import AuthImageCard from "../../components/AuthImageCard";
+import { removeCookie } from "../../utils";
 
 const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  removeCookie("access_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {

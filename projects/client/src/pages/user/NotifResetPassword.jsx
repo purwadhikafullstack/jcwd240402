@@ -2,9 +2,11 @@ import React from "react";
 import logo from "../../assets/images/furnifor.png";
 import resetPassword from "../../assets/images/reset_password_success.png";
 import { useNavigate } from "react-router-dom";
+import { removeCookie } from "../../utils";
 
 const NotifResetPassword = () => {
   const navigate = useNavigate();
+  removeCookie("access_token");
 
   setTimeout(() => {
     navigate("/log-in");

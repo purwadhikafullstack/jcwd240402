@@ -204,6 +204,7 @@ module.exports = {
         process.env.REFRESH_TOKEN_SECRET,
         "24h"
       );
+
       res.json({
         ok: true,
         message: "Log in successful",
@@ -221,11 +222,12 @@ module.exports = {
 
   keepLogin: async (req, res) => {
     const userData = req.user;
+    console.log(userData);
     try {
       const isRefreshTokenExist = await db.User.findOne({
         where: { id: userData.id },
       });
-      console.log(isRefreshTokenExist);
+
       if (!isRefreshTokenExist) {
         return res.status(401).json({
           ok: false,

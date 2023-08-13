@@ -213,6 +213,7 @@ const AdminListPage = () => {
           <RegisterAdminModal
             show={isRegisterModalOpen}
             onClose={() => setRegisterModalOpen(false)}
+            onAdminRegistered={refreshAdminList}
           />
         </div>
       </div>

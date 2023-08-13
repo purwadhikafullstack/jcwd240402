@@ -5,7 +5,7 @@ import verified from "../../assets/images/verified.webp";
 import verify from "../../assets/images/verify.gif";
 import axios from "../../api/axios";
 
-const Verified = () => {
+const NotifVerified = () => {
   const { verify_token } = useParams();
   const navigate = useNavigate();
 
@@ -35,4 +35,4 @@ const Verified = () => {
   );
 };
 
-export default Verified;
+export default NotifVerified;

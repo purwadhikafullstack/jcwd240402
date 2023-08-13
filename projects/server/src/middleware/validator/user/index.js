@@ -145,7 +145,7 @@ module.exports = {
     body("confirm_password")
       .notEmpty()
       .withMessage("You must type a confirmation password")
-      .custom((value, { req }) => value === req.body.password)
+      .custom((value, { req }) => value === req.body.new_password)
       .withMessage("The passwords do not match"),
   ]),
 };

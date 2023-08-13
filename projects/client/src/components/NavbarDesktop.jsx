@@ -6,6 +6,7 @@ import ModalLogin from "./ModalLogin";
 import { useLocation } from "react-router-dom";
 import ButtonLink from "./ButtonLink";
 import logo from "../assets/images/furniforNav.png";
+import ModalForgotPassword from "./ModalForgotPassword";
 
 const NavbarDesktop = () => {
   const location = useLocation();

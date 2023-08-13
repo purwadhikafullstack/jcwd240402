@@ -9,6 +9,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import DismissableAlert from "./DismissableAlert";
 import ModalForgotPassword from "./ModalForgotPassword";
+import AlertWithIcon from "./AlertWithIcon";
 
 export default function ModalLogin() {
   const [openModal, setOpenModal] = useState();
@@ -102,7 +103,10 @@ export default function ModalLogin() {
         show={props.openModal === "form-elements"}
         size="md"
         popup
-        onClose={() => props.setOpenModal(undefined)}
+        onClose={() => {
+          props.setOpenModal(undefined);
+          setErrMsg(false);
+        }}
       >
         <Modal.Header />
         <Modal.Body>
@@ -111,16 +115,19 @@ export default function ModalLogin() {
               Login
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {/* <DismissableAlert color="failure" message={errMsg} /> */}
+              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+
               <div className="flex flex-col gap-y-2 mb-3">
                 <InputForm
                   width="w-full"
-                  label={config.label}
+                  label="username/email"
                   onChange={handleForm}
-                  placeholder={config.placeholder}
-                  name={config.name}
-                  type={config.type}
-                  value={config.value}
+                  placeholder="username / email"
+                  name="user_identification"
+                  type="text"
+                  value={formik.values.user_identification}
+                  isError={!!formik.errors.user_identification}
+                  errorMessage={formik.errors.user_identification}
                 />
 
                 <PasswordInput
@@ -128,6 +135,8 @@ export default function ModalLogin() {
                   name="password"
                   onChange={handleForm}
                   value={formik.values.password}
+                  isError={!!formik.errors.password}
+                  errorMessage={formik.errors.password}
                 />
               </div>
               <div className="flex justify-end mb-3">
@@ -150,7 +159,9 @@ export default function ModalLogin() {
               <Link
                 to="/sign-up"
                 className="text-cyan-700 hover:underline dark:text-cyan-500"
-                onClick={() => props.setOpenModal(undefined)}
+                onClick={() => {
+                  props.setOpenModal(undefined);
+                }}
               >
                 Create account
               </Link>

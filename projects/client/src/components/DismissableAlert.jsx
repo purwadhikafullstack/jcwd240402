@@ -1,16 +1,23 @@
-"use client";
-
+import React, { useState } from "react";
 import { Alert } from "flowbite-react";
-import { useState } from "react";
 
-export default function DismissableAlert({ color, message }) {
+export default function DismissableAlert({ successMsg }) {
+  const [showAlert, setShowAlert] = useState(true);
+
+  const handleDismiss = () => {
+    setShowAlert(false);
+  };
+
   return (
-    <>
-      <Alert color={color}>
+    showAlert && (
+      <Alert color="success" onDismiss={handleDismiss}>
         <span>
-          <p>{message}.</p>
+          <p>
+            <span className="font-medium">Info alert!</span>
+            {successMsg}
+          </p>
         </span>
       </Alert>
-    </>
+    )
   );
 }

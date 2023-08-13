@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import AlertWithIcon from "./AlertWithIcon";
 
 export default function ModalForgotPassword() {
   const [openModal, setOpenModal] = useState();
@@ -28,7 +29,7 @@ export default function ModalForgotPassword() {
           message: "Successful. Please check your email for verification.",
         });
 
-        navigate("/");
+        navigate("/forgot-password");
         setErrMsg(null);
         props.setOpenModal(undefined);
       } else {
@@ -50,7 +51,7 @@ export default function ModalForgotPassword() {
     },
     onSubmit: forgotPassword,
     validationSchema: yup.object().shape({
-      email: yup.string().required("email must be filled").email(),
+      email: yup.string().required("email is required").email(),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -61,20 +62,13 @@ export default function ModalForgotPassword() {
     formik.setFieldValue(target.name, target.value);
   };
 
-  const config = {
-    label: "email",
-    placeholder: "email",
-    name: "email",
-    type: "email",
-    value: formik.values.email,
-  };
-
   return (
     <>
       <button
         onClick={() => {
           props.setOpenModal("form-elements");
         }}
+        type="button"
       >
         <p className="underline decoration-solid text-right text-xs text-base_grey">
           Forgot Password?
@@ -93,16 +87,18 @@ export default function ModalForgotPassword() {
               Forgot Password
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {/* <DismissableAlert color="failure" message={errMsg} /> */}
+              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
               <div className="flex flex-col gap-y-2 mb-3">
                 <InputForm
                   width="w-full"
-                  label={config.label}
+                  label="email"
                   onChange={handleForm}
-                  placeholder={config.placeholder}
-                  name={config.name}
-                  type={config.type}
-                  value={config.value}
+                  placeholder="email"
+                  name="email"
+                  type="email"
+                  value={formik.values.email}
+                  isError={!!formik.errors.email}
+                  errorMessage={formik.errors.email}
                 />
               </div>
               <div className="w-full">

@@ -1,11 +1,12 @@
 import React from "react";
 import verifyPage from "../../assets/images/verify.webp";
 import verify from "../../assets/images/verify.gif";
+import logo from "../../assets/images/furnifor.png";
 
-const Verify = () => {
+const NotifVerify = () => {
   return (
     <div className="w-full h-full flex justify-evenly items-center">
-      <h1 className="absolute top-24">LOGO</h1>
+      <img src={logo} alt="" className="absolute top-14 w-20" />
       <div className="absolute flex justify-center flex-col items-center w-52 lg:w-96 lg:bottom-52 bottom-52">
         <img src={verifyPage} alt="" className="" />
         <img src={verify} alt="" className="absolute top-0 w-44 lg:w-80" />
@@ -17,4 +18,4 @@ const Verify = () => {
   );
 };
 
-export default Verify;
+export default NotifVerify;

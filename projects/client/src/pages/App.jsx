@@ -3,9 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./user/Home";
 import Register from "./user/Register";
 import Login from "./user/Login";
-import Verify from "./user/Verify";
-import Verified from "./user/Verified";
+import NotifVerify from "./user/NotifVerify";
+import NotifVerified from "./user/NotifVerified";
 import SignUp from "./user/SignUp";
+import NotifForgotPassword from "./user/NotifForgotPassword";
+import ResetPassword from "./user/ResetPassword";
+import NotifResetPassword from "./user/NotifResetPassword";
 
 function App() {
   return (
@@ -16,12 +19,17 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
-          <Route path="/verify" element={<Verify />} />
-          <Route path="/verify/:verify_token" element={<Verified />} />
+          <Route path="/verify" element={<NotifVerify />} />
+          <Route path="/verify/:verify_token" element={<NotifVerified />} />
           <Route
-            path="/reset-password/:reset_password_token"
-            element={<Verified />}
+            path="/reset-password/:resetToken"
+            element={<ResetPassword />}
           />
+          <Route
+            path="/reset-password-success"
+            element={<NotifResetPassword />}
+          />
+          <Route path="/forgot-password" element={<NotifForgotPassword />} />
         </Routes>
       </Router>
     </div>

@@ -11,6 +11,8 @@ import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
 import ModalForgotPassword from "../../components/ModalForgotPassword";
+import AlertWithIcon from "../../components/AlertWithIcon";
+import DismissableAlert from "../../components/DismissableAlert";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,14 +58,14 @@ const Login = () => {
     validationSchema: yup.object().shape({
       user_identification: yup
         .string()
-        .required("username / email / phone is a required field"),
+        .required("username / email is a required field"),
       password: yup
         .string()
         .min(6)
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "The password must contain 6 character with uppercase, lowercase, numbers and special characters"
+          "password is required"
         ),
     }),
     validateOnChange: false,
@@ -73,14 +75,6 @@ const Login = () => {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
-  };
-
-  const config = {
-    label: "username/email",
-    placeholder: "username/email",
-    name: "user_identification",
-    type: "text",
-    value: formik.values.user_identification,
   };
 
   return (
@@ -95,25 +89,26 @@ const Login = () => {
               </h1>
             </div>
             <div className="lg:rounded-lg">
+              <DismissableAlert />
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? (
-                  <div className="w-screen bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2 lg:w-full">
-                    <p className="bg-inherit">{errMsg}</p>
-                  </div>
-                ) : null}
-                <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
+                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+                <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
                   <InputForm
-                    label={config.label}
                     onChange={handleForm}
-                    placeholder={config.placeholder}
-                    name={config.name}
-                    type={config.type}
-                    value={config.value}
+                    label="username/email"
+                    placeholder="username/email"
+                    name="user_identification"
+                    type="text"
+                    value={formik.values.user_identification}
+                    isError={!!formik.errors.user_identification}
+                    errorMessage={formik.errors.user_identification}
                   />
                   <PasswordInput
                     name="password"
                     onChange={handleForm}
                     value={formik.values.password}
+                    isError={!!formik.errors.password}
+                    errorMessage={formik.errors.password}
                   />
 
                   <ModalForgotPassword />
@@ -129,7 +124,7 @@ const Login = () => {
                     />
                     <h1 className="mt-2 text-xs lg:text-base my-4">
                       Dont have an account yet?{" "}
-                      <Link to="/register" className="font-semibold">
+                      <Link to="/sign-up" className="font-semibold">
                         Sign Up
                       </Link>
                     </h1>

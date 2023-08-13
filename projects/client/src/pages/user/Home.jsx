@@ -16,6 +16,7 @@ import { MdDraw } from "react-icons/md";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import ServiceCard from "../../components/ServiceCard";
 import FrameImage from "../../components/FrameImage";
+import SelectionCategory from "../../components/SelectionCategory";
 
 const Home = () => {
   const productsData = [
@@ -142,6 +143,9 @@ const Home = () => {
         <StaticBanner />
         <div className="">
           <CarouselProduct productsData={productsData} />
+        </div>
+        <div>
+          <SelectionCategory />
         </div>
         <div>
           <FrameImage />

@@ -37,7 +37,7 @@ const CarouselProduct = ({ productsData }) => {
     />
   ));
   return (
-    <div className="">
+    <div className="z-0">
       <Carousel
         responsive={responsive}
         removeArrowOnDeviceType={["tablet", "mobile"]}

@@ -402,8 +402,6 @@ module.exports = {
         where: { reset_password_token: reset_password_token },
       });
 
-      console.log("is reset token valid", isResetPasswordTokenValid);
-
       if (!isResetPasswordTokenValid) {
         return res.status(404).json({
           ok: false,

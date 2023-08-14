@@ -19,13 +19,13 @@ const InputForm = ({
       </div>
       <TextInput
         color={isError ? "failure" : null}
-        helperText={isError ? errorMessage : null}
         placeholder={placeholder}
         type={type}
         name={name}
         value={value}
         onChange={onChange}
       />
+      {isError && <div className="text-red-500 text-sm">{errorMessage}</div>}
     </div>
   );
 };

@@ -1,71 +1,80 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import AsyncSelect from "react-select/async";
 import TableComponent from "../components/Table";
-import Button from "../components/Button";
 import SidebarAdmin from "../components/SidebarAdminDesktop";
+import WarehouseModal from "../components/Modals/ModalWarehouse";
+import EditModal from "../components/Modals/ModalEdit";
 import RegisterWarehouseModal from "../components/Modals/ModalRegisterWarehouse";
+import Button from "../components/Button";
+import DefaultPagination from "../components/Pagination";
+import {
+  refreshWarehouseList,
+  loadCities,
+  updateWarehouse,
+} from "../helpers/WarehouseListHelp";
 
 const WarehouseList = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [warehouseName, setWarehouseName] = useState("");
   const [warehouses, setWarehouses] = useState([]);
-  const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
-
-  const loadCities = (inputValue, callback) => {
-    axios
-      .get(
-        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
-      )
-      .then((res) => {
-        const results = res.data.cities.map((city) => ({
-          value: city.id,
-          label: city.name,
-        }));
-        callback(results);
-      });
-  };
-
-  const refreshWarehouseList = () => {
-    if (selectedCity) {
-      const url = `http://localhost:8000/api/warehouse/warehouse-list?searchName=${warehouseName}&cityId=${selectedCity.value}`;
-      console.log("Request URL:", url);
-      axios
-        .get(url)
-        .then((res) => {
-          console.log("Response Data:", res.data);
-          setWarehouses(res.data.warehouses);
-        })
-        .catch((error) => {
-          console.error("An error occurred:", error);
-        });
-    }
-  };
-
-
-  useEffect(() => {
-    if (selectedCity) {
-      setWarehouseName("");
-      setTimeout(refreshWarehouseList, 0);
-    }
-  }, [selectedCity]);
-
-  const openRegisterModal = () => {
-    setRegisterModalOpen(true);
-  };
+  const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [editField, setEditField] = useState(null);
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [isRegisterWarehouseModalOpen, setRegisterWarehouseModalOpen] =
+    useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const onWarehouseNameChange = (e) => {
     setWarehouseName(e.target.value);
-    setTimeout(refreshWarehouseList, 0);
   };
 
-  const headers = [
-    "ID",
-    "City",
-    "Warehouse Name",
-    "Warehouse Address",
-    "Warehouse Contact",
-  ];
+  const openRegisterWarehouseModal = () => {
+    setRegisterWarehouseModalOpen(true);
+  };
+
+  const openWarehouseModal = (warehouse) => {
+    setSelectedWarehouse(warehouse);
+    setWarehouseModalOpen(true);
+  };
+
+  const openEditModal = (field) => {
+    setEditField(field);
+    setWarehouseModalOpen(false);
+    setEditModalOpen(true);
+  };
+
+  const refreshWarehouseListWrapper = () => {
+    refreshWarehouseList(
+      warehouseName,
+      selectedCity?.value,
+      currentPage,
+      setWarehouses,
+      setTotalPages
+    );
+  };
+
+  useEffect(() => {
+    refreshWarehouseListWrapper();
+  }, [selectedCity, warehouseName, currentPage]);
+
+  const closeModal = () => {
+    setSelectedWarehouse(null);
+    setWarehouseModalOpen(false);
+    refreshWarehouseListWrapper();
+  };
+
+  const closeEditModal = () => {
+    setEditField(null);
+    setEditModalOpen(false);
+    refreshWarehouseListWrapper();
+  };
+
+  const closeRegisterModal = () => {
+    setRegisterWarehouseModalOpen(false);
+    refreshWarehouseListWrapper();
+  };
 
   return (
     <div className="bg-blue1 h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -87,14 +96,14 @@ const WarehouseList = () => {
             type="text"
             placeholder="Search Warehouse name"
             value={warehouseName}
-            onChange={onWarehouseNameChange} // Updated to call the new function
+            onChange={onWarehouseNameChange}
             className="flex-1 p-2 border rounded text-base bg-white shadow-sm"
             disabled={!selectedCity}
           />
           <Button
             buttonSize="medium"
             buttonText="Register"
-            onClick={openRegisterModal}
+            onClick={openRegisterWarehouseModal}
             bgColor="bg-blue3"
             colorText="text-white"
             fontWeight="font-semibold"
@@ -102,19 +111,71 @@ const WarehouseList = () => {
         </div>
         <div className="py-4">
           <TableComponent
-            headers={headers}
+            headers={[
+              "ID",
+              "City",
+              "Warehouse Name",
+              "Warehouse Address",
+              "Warehouse Contact",
+            ]}
             data={warehouses.map((warehouse) => ({
+              warehouse,
               ID: warehouse.id,
               City: warehouse.City.name,
               "Warehouse Name": warehouse.warehouse_name,
               "Warehouse Address": warehouse.address_warehouse,
               "Warehouse Contact": warehouse.warehouse_contact,
             }))}
+            onEdit={(row) => openWarehouseModal(row.warehouse)}
           />
+          {selectedWarehouse && (
+            <WarehouseModal
+              show={isWarehouseModalOpen}
+              onClose={closeModal}
+              title={`Warehouse Details`}
+              warehouseData={[
+                { label: "City", value: selectedWarehouse.City.name || "" },
+                {
+                  label: "Warehouse Name",
+                  value: selectedWarehouse.warehouse_name || "",
+                },
+                {
+                  label: "Warehouse Address",
+                  value: selectedWarehouse.address_warehouse || "",
+                },
+                {
+                  label: "Warehouse Contact",
+                  value: selectedWarehouse.warehouse_contact || "",
+                },
+              ]}
+              onEdit={openEditModal}
+            />
+          )}
+          {editField && (
+            <EditModal
+              show={isEditModalOpen}
+              onClose={closeEditModal}
+              onSubmit={(value) =>
+                updateWarehouse(editField, value, selectedWarehouse)
+              }
+              label={editField}
+              name={editField}
+              placeholder={`Enter new ${editField}`}
+              initialValue={selectedWarehouse[editField] || ""}
+              refreshWarehouseList={refreshWarehouseListWrapper}
+            />
+          )}
           <RegisterWarehouseModal
-            show={isRegisterModalOpen}
-            onClose={() => setRegisterModalOpen(false)}
+            show={isRegisterWarehouseModalOpen}
+            onClose={closeRegisterModal}
           />
+          <div className="flex justify-center items-center w-full bottom-0">
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(newPage) => setCurrentPage(newPage)}
+            />
+          </div>
         </div>
       </div>
     </div>

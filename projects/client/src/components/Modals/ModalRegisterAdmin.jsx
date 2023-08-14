@@ -8,15 +8,15 @@ import Button from "../Button";
 import InputForm from "../InputForm";
 import PasswordInput from "../PasswordInput";
 
-const RegisterAdminModal = ({ show, onClose }) => {
+const RegisterAdminModal = ({ show, onClose,refreshAdminListWrapper }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
   const handleModalClose = () => {
     formik.resetForm();
-    setSelectedWarehouse(null); 
-    setErrMsg(""); 
-    onClose(); 
+    setSelectedWarehouse(null);
+    setErrMsg("");
+    onClose();
   };
 
   const loadWarehouses = async (inputValue) => {
@@ -39,7 +39,14 @@ const RegisterAdminModal = ({ show, onClose }) => {
     username: yup.string().required("Username is required"),
     first_name: yup.string().required("First name is required"),
     last_name: yup.string().required("Last name is required"),
-    password: yup.string().required("Password is required"),
+    password: yup
+      .string()
+      .min(8)
+      .required()
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
+        "Password min 8 chars,1 number,1 capital,1 symbol"
+      ),
     confirmPassword: yup
       .string()
       .required("Confirm password is required")
@@ -70,9 +77,10 @@ const RegisterAdminModal = ({ show, onClose }) => {
         );
 
         if (response.status === 201) {
-          formik.resetForm(); 
-          setSelectedWarehouse(null); 
+          formik.resetForm();
+          setSelectedWarehouse(null);
           onClose();
+          refreshAdminListWrapper();
         } else {
           throw new Error("Admin Registration Failed");
         }
@@ -153,7 +161,7 @@ const RegisterAdminModal = ({ show, onClose }) => {
               isError={!!formik.errors.confirmPassword}
               errorMessage={formik.errors.confirmPassword}
             />
-            <div className="flex-1">
+            <div className="flex-1 pt-3">
               <AsyncSelect
                 classNamePrefix="react-select"
                 loadOptions={loadWarehouses}

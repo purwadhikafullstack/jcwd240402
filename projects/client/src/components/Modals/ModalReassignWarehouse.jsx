@@ -4,7 +4,7 @@ import AsyncSelect from "react-select/async";
 import axios from "axios";
 import Button from "../Button";
 
-const ReassignWarehouseModal = ({ show, onClose, adminId }) => {
+const ReassignWarehouseModal = ({ show, onClose, adminId,refreshAdminListWrapper }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
 
   const loadWarehouses = async (inputValue) => {
@@ -32,6 +32,7 @@ const ReassignWarehouseModal = ({ show, onClose, adminId }) => {
         .then((res) => {
           console.log(res.data.message);
           onClose();
+          refreshAdminListWrapper(); 
         })
         .catch((error) => {
           console.error("Reassignment failed:", error.response?.data || error);

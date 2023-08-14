@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
@@ -47,7 +47,7 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "The password must contain at least 8 characters with an uppercase letter, lowercase letter, number, and special character"
+          "Password min 8 chars,1 number,1 capital,1 symbol"
         ),
       confirmPassword: yup
         .string()
@@ -87,11 +87,9 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
             <PasswordInput
               label="New Password"
               name="newPassword"
-              onChange={(e) => {
-                console.log("New password value:", e.target.value); // Debugging line
-                formik.handleChange(e);
-              }}
+              onChange={formik.handleChange}
               value={formik.values.newPassword}
+              errorMessage={formik.errors.newPassword} // Add this line
             />
             <InputForm
               label="Confirm New Password"
@@ -100,6 +98,7 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
               placeholder=""
               onChange={formik.handleChange}
               value={formik.values.confirmPassword}
+              errorMessage={formik.errors.confirmPassword} // Add this line
             />
             <div className="flex flex-col justify-center items-center mt-3">
               <Button

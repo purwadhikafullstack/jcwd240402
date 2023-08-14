@@ -37,28 +37,30 @@ export default function MultiLevelDropdown() {
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/admin-dashboard" className="flowbite-sidebar-link text-base_grey hover:text-blue4 text-center">
-            <Sidebar.Item className="hover:text-blue1 hover:border-base_black bg-blue5">Dashboard</Sidebar.Item>
+            <Sidebar.Item className=" hover:border hover-bg-blue3 hover:border-black hover:text-blue1 bg-blue5">Dashboard</Sidebar.Item>
           </Link>
           {adminRoutes.map((route, idx) => (
-            route.subRoutes ? (
-              <Sidebar.Collapse key={idx} icon={route.icon} label={route.label} className="hover:text-blue1 hover:border-b-4 hover:border-base_black">
-                {route.subRoutes.map((subItem, subIdx) => (
-                  <Link
-                    key={subIdx}
-                    to={subItem.to}
-                    className="flowbite-sidebar-link text-base_grey hover:text-blue4"
-                  >
-                    <Sidebar.Item>{subItem.label}</Sidebar.Item>
-                  </Link>
-                ))}
-              </Sidebar.Collapse>
-            ) : (
-              <Link key={idx} to={route.to} className="flowbite-sidebar-link text-base_grey hover:text-blue4 hover:border-b-4 hover:border-base_black">
-                <Sidebar.Item icon={route.icon}>{route.label}</Sidebar.Item>
-              </Link>
-            )
+            <div key={idx} className=" hover:border hover:border-black  rounded-md">
+              {route.subRoutes ? (
+                <Sidebar.Collapse icon={route.icon} label={route.label}>
+                  {route.subRoutes.map((subItem, subIdx) => (
+                    <Link
+                      key={subIdx}
+                      to={subItem.to}
+                      className="flowbite-sidebar-link text-base_grey hover:border hover:border-black   hover:text-black"
+                    >
+                      <Sidebar.Item>{subItem.label}</Sidebar.Item>
+                    </Link>
+                  ))}
+                </Sidebar.Collapse>
+              ) : (
+                <Link to={route.to} className="flowbite-sidebar-link text-base_grey">
+                  <Sidebar.Item icon={route.icon}>{route.label}</Sidebar.Item>
+                </Link>
+              )}
+            </div>
           ))}
-          <Sidebar.Item icon={AiOutlineLogout} className="hover:text-blue1 hover:border-b-4 hover:border-base_black">
+          <Sidebar.Item icon={AiOutlineLogout} className=" hover:border hover:border-black ">
             <p>Logout</p>
           </Sidebar.Item>
         </Sidebar.ItemGroup>

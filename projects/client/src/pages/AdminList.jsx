@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useCallback } from "react";
 import AsyncSelect from "react-select/async";
 import TableComponent from "../components/Table";
 import Button from "../components/Button";
@@ -8,6 +7,12 @@ import AdminProfileModal from "../components/Modals/ModalAdminEdit";
 import ChangePasswordModal from "../components/Modals/ModalEditPassword";
 import ReassignWarehouseModal from "../components/Modals/ModalReassignWarehouse";
 import RegisterAdminModal from "../components/Modals/ModalRegisterAdmin";
+import DefaultPagination from "../components/Pagination";
+import {
+  loadCities,
+  loadWarehouses,
+  refreshAdminList,
+} from "../helpers/AdminListHelp";
 
 const AdminListPage = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -16,54 +21,30 @@ const AdminListPage = () => {
   const [admins, setAdmins] = useState([]);
   const [isModalOpen, setModalOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [isChangePasswordModalOpen, setChangePasswordModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setChangePasswordModalOpen] =
+    useState(false);
   const [isReassignModalOpen, setReassignModalOpen] = useState(false);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+  });
 
-  const loadCities = (inputValue, callback) => {
-    axios
-      .get(
-        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
-      )
-      .then((res) => {
-        const results = res.data.cities.map((city) => ({
-          value: city.id,
-          label: city.name,
-        }));
-        callback(results);
-      });
-  };
+  const refreshAdminListWrapper = useCallback(
+    (newPage) => {
+      refreshAdminList(
+        selectedCity,
+        selectedWarehouse,
+        adminName,
+        newPage,
+        admins,
+        setAdmins,
+        setPagination
+      );
+    },
+    [selectedCity, selectedWarehouse, adminName, admins]
+  );
 
-  const loadWarehouses = (inputValue, callback) => {
-    if (!selectedCity || !inputValue) return callback([]);
-    axios
-      .get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=${selectedCity.value}`
-      )
-      .then((res) => {
-        const results = res.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
-        }));
-        callback(results.length ? results : []);
-      });
-  };
-
-  const refreshAdminList = () => {
-    if (selectedCity && selectedWarehouse) {
-      axios
-        .get(
-          `http://localhost:8000/api/admin/?searchName=${adminName}&warehouseId=${selectedWarehouse.value}`
-        )
-        .then((res) => {
-          const newAdmins = res.data.admins;
-          if (!admins.length || admins.some((admin, index) => admin.id !== newAdmins[index]?.id)) {
-            setAdmins(newAdmins);
-          }
-        });
-    }
-  };
-  
   useEffect(() => {
     if (selectedCity) {
       setSelectedWarehouse(null);
@@ -71,10 +52,9 @@ const AdminListPage = () => {
     }
   }, [selectedCity]);
 
-  
   useEffect(() => {
-    refreshAdminList();
-  }, [selectedWarehouse, adminName]);
+    refreshAdminListWrapper();
+  }, [refreshAdminList, selectedWarehouse, adminName]);
 
   const onEdit = (row) => {
     setSelectedAdmin(row);
@@ -115,11 +95,7 @@ const AdminListPage = () => {
 
   const profileData = selectedAdmin
     ? [
-        {
-          label: "Password",
-          value: "••••••••",
-          onEdit: onEditPassword,
-        },
+        { label: "Password", value: "••••••••", onEdit: onEditPassword },
         {
           label: "Warehouse",
           value: selectedAdmin["Warehouse Name"] || "",
@@ -156,7 +132,9 @@ const AdminListPage = () => {
           <div className="flex-1">
             <AsyncSelect
               classNamePrefix="react-select"
-              loadOptions={loadWarehouses}
+              loadOptions={(inputValue, callback) =>
+                loadWarehouses(inputValue, selectedCity, callback)
+              }
               value={selectedWarehouse}
               onChange={setSelectedWarehouse}
               placeholder="Warehouse"
@@ -209,12 +187,19 @@ const AdminListPage = () => {
             show={isReassignModalOpen}
             onClose={closeReassignModal}
             adminId={selectedAdmin ? selectedAdmin.ID : null}
+            refreshAdminListWrapper={refreshAdminListWrapper}
           />
           <RegisterAdminModal
             show={isRegisterModalOpen}
             onClose={() => setRegisterModalOpen(false)}
-            onAdminRegistered={refreshAdminList}
+            refreshAdminListWrapper={refreshAdminListWrapper}
           />
+          <div className="flex justify-center items-center w-full bottom-0">
+            <DefaultPagination
+              totalPages={pagination.totalPages}
+              onPageChange={refreshAdminListWrapper}
+            />
+          </div>
         </div>
       </div>
     </div>

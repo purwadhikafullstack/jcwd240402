@@ -1,9 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminHome from "../pages/Admin/AdminHome";
-import AdminLoginPage from "../pages/Admin/AdminLogin";
-import AdminList from "../pages/Admin/AdminList";
-import WarehouseList from "../pages/Admin/WarehouseList";
+import AdminHome from "../pages/admin/AdminHome";
+import AdminLoginPage from "../pages/admin/AdminLogin";
+import AdminList from "../pages/admin/AdminList";
+import WarehouseList from "../pages/admin/WarehouseList";
 import Home from "./user/Home";
 import Register from "./user/Register";
 import Login from "./user/Login";

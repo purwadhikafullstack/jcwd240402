@@ -1,5 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import AdminHome from "../pages/Admin/AdminHome";
+import AdminLoginPage from "../pages/Admin/AdminLogin";
+import AdminList from "../pages/Admin/AdminList";
+import WarehouseList from "../pages/Admin/WarehouseList";
 import Home from "./user/Home";
 import Register from "./user/Register";
 import Login from "./user/Login";
@@ -18,8 +22,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/*" element={<NotFound />} />
-          <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/" element={<Home />} />
+          <Route path="/redirect-login" element={<NotAuth />} />
+          <Route path="/admin-dashboard" element={<AdminHome />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin" element={<AdminList />} />
+          <Route path="/warehouse" element={<WarehouseList />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />

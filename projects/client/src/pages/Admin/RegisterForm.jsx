@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import InputForm from "../components/InputForm";
-import PasswordInput from "../components/PasswordInput";
-import Button from "../components/Button";
-import SidebarAdmin from "../components/SidebarAdminDesktop";
+import InputForm from "../../components/InputForm";
+import PasswordInput from "../../components/PasswordInput";
+import Button from "../../components/Button";
+import SidebarAdmin from "../../components/SidebarAdminDesktop";
 import axios from "axios";
 
 const RegisterForm = () => {

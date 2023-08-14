@@ -1,9 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminHome from "./AdminHome";
-import AdminLoginPage from "./AdminLogin";
-import AdminList from "./AdminList";
-import WarehouseList from "./WarehouseList";
+import AdminHome from "../pages/Admin/AdminHome";
+import AdminLoginPage from "../pages/Admin/AdminLogin";
+import AdminList from "../pages/Admin/AdminList";
+import WarehouseList from "../pages/Admin/WarehouseList";
 
 function App() {
   return (

@@ -4,9 +4,9 @@ import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import InputForm from "../components/InputForm";
-import Button from "../components/Button";
-import PasswordInput from "../components/PasswordInput";
+import InputForm from "../../components/InputForm";
+import Button from "../../components/Button";
+import PasswordInput from "../../components/PasswordInput";
 
 const AdminLogin = () => {
   const navigate = useNavigate();

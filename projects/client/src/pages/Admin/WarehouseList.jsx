@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import AsyncSelect from "react-select/async";
-import TableComponent from "../components/Table";
-import SidebarAdmin from "../components/SidebarAdminDesktop";
-import WarehouseModal from "../components/Modals/ModalWarehouse";
-import EditModal from "../components/Modals/ModalEdit";
-import RegisterWarehouseModal from "../components/Modals/ModalRegisterWarehouse";
-import Button from "../components/Button";
-import DefaultPagination from "../components/Pagination";
+import TableComponent from "../../components/Table";
+import SidebarAdmin from "../../components/SidebarAdminDesktop";
+import WarehouseModal from "../../components/Modals/ModalWarehouse";
+import EditModal from "../../components/Modals/ModalEdit";
+import RegisterWarehouseModal from "../../components/Modals/ModalRegisterWarehouse";
+import Button from "../../components/Button";
+import DefaultPagination from "../../components/Pagination";
 import {
   refreshWarehouseList,
   loadCities,
   updateWarehouse,
-} from "../helpers/WarehouseListHelp";
+} from "../../utils/WarehouseListHelp";
 
 const WarehouseList = () => {
   const [selectedCity, setSelectedCity] = useState(null);

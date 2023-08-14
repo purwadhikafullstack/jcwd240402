@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
 import AsyncSelect from "react-select/async";
-import TableComponent from "../components/Table";
-import Button from "../components/Button";
-import SidebarAdmin from "../components/SidebarAdminDesktop";
-import AdminProfileModal from "../components/Modals/ModalAdminEdit";
-import ChangePasswordModal from "../components/Modals/ModalEditPassword";
-import ReassignWarehouseModal from "../components/Modals/ModalReassignWarehouse";
-import RegisterAdminModal from "../components/Modals/ModalRegisterAdmin";
-import DefaultPagination from "../components/Pagination";
+import TableComponent from "../../components/Table";
+import Button from "../../components/Button";
+import SidebarAdmin from "../../components/SidebarAdminDesktop";
+import AdminProfileModal from "../../components/Modals/ModalAdminEdit";
+import ChangePasswordModal from "../../components/Modals/ModalEditPassword";
+import ReassignWarehouseModal from "../../components/Modals/ModalReassignWarehouse";
+import RegisterAdminModal from "../../components/Modals/ModalRegisterAdmin";
+import DefaultPagination from "../../components/Pagination";
 import {
   loadCities,
   loadWarehouses,
   refreshAdminList,
-} from "../helpers/AdminListHelp";
+} from "../../utils/AdminListHelp";
 
 const AdminListPage = () => {
   const [selectedCity, setSelectedCity] = useState(null);

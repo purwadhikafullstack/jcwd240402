@@ -2,13 +2,14 @@ import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import verified from "../../assets/images/verified.webp";
-import verify from "../../assets/images/verify.gif";
 import axios from "../../api/axios";
 import { removeCookie } from "../../utils";
+import NotifVerifies from "../../components/NotifVerifies";
 
 const NotifVerified = () => {
   const { verify_token } = useParams();
   const navigate = useNavigate();
+  const msg = "Congrats! your account verified";
   removeCookie("access_token");
 
   useEffect(() => {
@@ -24,17 +25,7 @@ const NotifVerified = () => {
       [navigate, verify_token]
     );
   });
-  return (
-    <div className="w-full h-full flex justify-evenly items-center">
-      <div className="absolute flex justify-center flex-col items-center w-52 lg:w-96  lg:m-auto bottom-52">
-        <img src={verified} alt="" className="" />
-        <img src={verify} alt="" className="absolute top-16 w-44 lg:w-80" />
-        <h1 className="text-center absolute bottom-0 lg:bottom-10">
-          Congrats! your account verified
-        </h1>
-      </div>
-    </div>
-  );
+  return <NotifVerifies imgSrc={verified} msg={msg} />;
 };
 
 export default NotifVerified;

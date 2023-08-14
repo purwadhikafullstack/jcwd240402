@@ -9,12 +9,14 @@ import axios from "../../api/axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import AuthImageCard from "../../components/AuthImageCard";
-import { removeCookie } from "../../utils";
+import { removeCookie, removeLocalStorage } from "../../utils";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   removeCookie("access_token");
+  removeLocalStorage("refresh_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
@@ -187,13 +189,7 @@ const Register = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? (
-                  <div className="flex justify-center items-center mt-4">
-                    <div className=" bg-red-200 rounded-md text-red-700 h-10 flex justify-center items-center mt-2 px-5 w-fit">
-                      <p className="bg-inherit">{errMsg}</p>
-                    </div>
-                  </div>
-                ) : null}
+                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
                 <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
                   <div className="flex gap-x-4 ">
                     <InputForm

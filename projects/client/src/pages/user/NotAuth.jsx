@@ -1,25 +1,24 @@
 import React from "react";
-import notFound from "../../assets/images/notFound.png";
-import { Link } from "react-router-dom";
 import NavbarDesktop from "../../components/NavbarDesktop";
 import NavbarMobile from "../../components/NavbarMobile";
+import NotifRedirect from "../../components/NotifRedirect";
 import FooterDesktop from "../../components/FooterDesktop";
 import NavigatorMobile from "../../components/NavigatorMobile";
-import NotifRedirect from "../../components/NotifRedirect";
+import notAuth from "../../assets/images/NotAuth.png";
 
-const NotFound = () => {
-  const msg = "No worries! Just head back to the";
+const NotAuth = () => {
+  const msg = "You need to ";
   return (
     <div className="w-screen lg:w-full h-screen">
       <NavbarDesktop />
       <NavbarMobile />
       <div>
         <NotifRedirect
-          imgSrc={notFound}
-          to="/"
+          imgSrc={notAuth}
+          to="/log-in"
           msg={msg}
-          buttonText="Go Home"
-          toPage="Home Page"
+          buttonText="Go In"
+          toPage="Loged in"
         />
       </div>
       <FooterDesktop />
@@ -28,4 +27,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default NotAuth;

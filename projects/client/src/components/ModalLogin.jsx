@@ -26,7 +26,7 @@ export default function ModalLogin() {
       if (response.status === 200 && response.data.ok) {
         const accessToken = response.data.accessToken;
         const refreshToken = response.data.refreshToken;
-        setLocalStorage(refreshToken);
+        setLocalStorage("refresh_token", refreshToken);
         setCookie("access_token", accessToken, 1);
 
         setStatus({

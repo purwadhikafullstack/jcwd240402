@@ -26,7 +26,7 @@ const Home = () => {
   const access_token = getCookie("access_token");
 
   useEffect(() => {
-    if (!access_token) {
+    if (!access_token && refresh_token) {
       axios
         .get("/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
@@ -160,7 +160,7 @@ const Home = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
-      <div className="min-h-screen  lg:mx-32">
+      <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8  lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />
         </div>
@@ -179,7 +179,7 @@ const Home = () => {
         <div>
           <FrameImage />
         </div>
-        <div className="my-4">
+        <div className="">
           <ServiceCard services={services} />
         </div>
       </div>

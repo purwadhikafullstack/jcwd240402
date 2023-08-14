@@ -1,6 +1,6 @@
 import React from "react";
 import { BsFillCartFill } from "react-icons/bs";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
@@ -9,7 +9,7 @@ import SearchBar from "./SearchBar";
 import ModalLogin from "./ModalLogin";
 import ButtonLink from "./ButtonLink";
 import logo from "../assets/images/furniforNav.png";
-import { getCookie } from "../utils";
+import { getCookie, logout } from "../utils";
 
 const user = {
   name: "Tom Cook",
@@ -19,9 +19,9 @@ const user = {
 };
 
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Your Profile", to: "#", onClick: {} },
+  { name: "Settings", to: "#", onClick: {} },
+  { name: "Sign out", to: "/log-in", onClick: () => logout() },
 ];
 
 function classNames(...classes) {
@@ -68,9 +68,6 @@ const NavbarDesktop = () => {
         </div>
         <div className="flex gap-4">
           {access_token ? (
-            // <div className="w-16 h-16">
-            //   <img src="" alt="" className="object-cover" />
-            // </div>
             <>
               <Menu as="div" className="relative">
                 <div>
@@ -97,15 +94,16 @@ const NavbarDesktop = () => {
                     {userNavigation.map((item) => (
                       <Menu.Item key={item.name}>
                         {({ active }) => (
-                          <a
-                            href={item.href}
+                          <Link
+                            to={item.to}
                             className={classNames(
                               active ? "bg-gray-100" : "",
                               "block px-4 py-2 text-sm text-gray-700"
                             )}
+                            onClick={item.onClick}
                           >
                             {item.name}
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                     ))}

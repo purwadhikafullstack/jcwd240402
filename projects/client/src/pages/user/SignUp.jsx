@@ -6,10 +6,11 @@ import ButtonLink from "../../components/ButtonLink";
 import AuthImageCard from "../../components/AuthImageCard";
 import google from "../../assets/icons/google.png";
 import facebook from "../../assets/icons/facebook.png";
-import { removeCookie } from "../../utils";
+import { removeCookie, removeLocalStorage } from "../../utils";
 
 const SignUp = () => {
   removeCookie("access_token");
+  removeLocalStorage("refresh_token");
   return (
     <div className="bg-white h-screen lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />
@@ -59,7 +60,7 @@ const SignUp = () => {
                     <h1 className="mt-2 my-4">
                       Have an account?{" "}
                       <Link
-                        to="/login"
+                        to="/log-in"
                         className="font-semibold hover:text-blue3 transition-all"
                       >
                         Log in

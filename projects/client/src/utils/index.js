@@ -21,10 +21,15 @@ export function getLocalStorage(name) {
   return localStorage.getItem(name);
 }
 
-export function setLocalStorage(name) {
-  return localStorage.setItem(name);
+export function setLocalStorage(name, refreshToken) {
+  return localStorage.setItem(name, refreshToken);
 }
 
 export function removeLocalStorage(name) {
   return localStorage.removeItem(name);
+}
+
+export function logout() {
+  removeLocalStorage("refresh_token");
+  removeCookie("access_token");
 }

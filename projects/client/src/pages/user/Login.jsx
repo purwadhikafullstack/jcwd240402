@@ -12,21 +12,27 @@ import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
 import ModalForgotPassword from "../../components/ModalForgotPassword";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import { setCookie, removeCookie, setLocalStorage } from "../../utils";
+import {
+  setCookie,
+  removeCookie,
+  setLocalStorage,
+  removeLocalStorage,
+} from "../../utils";
 
 const Login = () => {
+  removeCookie("access_token");
+  removeLocalStorage("refresh_token");
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
-  removeCookie("access_token");
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.post("/auth/login", values);
 
       if (response.status === 200 && response.data.ok) {
-        const accessToken = response.data.accessToken;
-        const refreshToken = response.data.refreshToken;
-        setLocalStorage(refreshToken);
+        const accessToken = response.data?.accessToken;
+        const refreshToken = response.data?.refreshToken;
+        setLocalStorage("refresh_token", refreshToken);
         setCookie("access_token", accessToken, 1);
         setStatus({ success: true });
         setValues({

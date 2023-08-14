@@ -35,7 +35,7 @@ const SelectionCategory = () => {
   ];
   return (
     <div>
-      <h1 className="font-bold text-center lg:text-3xl mb-3">
+      <h1 className="font-bold text-center lg:text-3xl mb-2">
         Selected Preferences
       </h1>
       <div className="flex gap-4 lg:gap-x-4 justify-center items-center flex-wrap ">

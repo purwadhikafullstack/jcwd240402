@@ -20,7 +20,7 @@ const FrameImage = () => {
     { to: "", img: banner12 },
   ];
   return (
-    <div className="grid gap-2 mx-4 lg:gap-4 md:gap-4 grid-rows-2 lg:grid-rows-1 md:grid-rows-1 md:grid-cols-2 lg:grid-cols-2 ">
+    <div className="grid gap-2  lg:gap-4 md:gap-4 grid-rows-2 lg:grid-rows-1 md:grid-rows-1 md:grid-cols-2 lg:grid-cols-2 ">
       <div className="row-span-1 md:col-span-1 lg:col-span-1 h-52 lg:h-96 md:h-96">
         <Link>
           <img src={banner8} alt="" />

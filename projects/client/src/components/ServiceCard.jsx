@@ -3,7 +3,7 @@ import React from "react";
 const ServiceCard = ({ services }) => {
   return (
     <>
-      <h1 className="font-bold text-center lg:text-3xl mb-3">
+      <h1 className="font-bold text-center lg:text-3xl">
         Service For Your Convenience
       </h1>
       <div className="mx-2 my-4 flex flex-col gap-4 md:grid md:grid-cols-3 md:grid-rows-2 lg:grid lg:grid-cols-3 lg:grid-rows-2">

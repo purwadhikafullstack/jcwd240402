@@ -16,10 +16,12 @@ const app = express();
 
 /* MIDDLEWARE */
 app.use(cors());
+
 app.use(
   "/photo-profile",
   express.static(path.join(__dirname, "public/imgProfile"))
 );
+
 app.use(express.json());
 app.use(cookieParser());
 

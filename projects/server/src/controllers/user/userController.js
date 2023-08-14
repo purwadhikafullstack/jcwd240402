@@ -350,7 +350,7 @@ module.exports = {
       );
 
       const link = `${process.env.BASEPATH_FE_REACT}/reset-password/${resetToken}`;
-      const message = `You've requested a password reset for your account. You only have 10 minutes to change new password. Please use the following code to reset your password: ${resetPasswordToken}`;
+      const message = `You've requested a password reset for your account. You only have 10 minutes to change new password. Please use the following code to reset your password: <strong>${resetPasswordToken}</strong>`;
       const mailing = {
         recipient_email: email,
         link,

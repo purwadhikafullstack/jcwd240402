@@ -10,6 +10,7 @@ import NotifForgotPassword from "./user/NotifForgotPassword";
 import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
+import NotAuth from "./user/NotAuth";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/*" element={<NotFound />} />
+          <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />

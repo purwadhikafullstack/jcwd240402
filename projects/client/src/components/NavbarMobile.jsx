@@ -1,11 +1,32 @@
-import React, { useState } from "react";
-import SearchBar from "./SearchBar";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
+
+import SearchBar from "./SearchBar";
+import { getCookie, getLocalStorage, logout, setCookie } from "../utils";
+import axios from "../api/axios";
+
 const NavbarMobile = () => {
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const refresh_token = getLocalStorage("refresh_token");
+  const access_token = getCookie("access_token");
+
+  useEffect(() => {
+    if (!access_token && refresh_token) {
+      axios
+        .get("/auth/keep-login", {
+          headers: { Authorization: `Bearer ${refresh_token}` },
+        })
+        .then((res) => {
+          setNewAccessToken(res.data?.accessToken);
+          setCookie("access_token", newAccessToken, 1);
+        });
+    }
+  }, [access_token, newAccessToken, refresh_token]);
+
   let Links = [
     { name: "HOME", to: "/" },
     { name: "SERVICE", to: "/service" },
@@ -52,9 +73,28 @@ const NavbarMobile = () => {
                 </Link>
               </li>
             ))}
-            <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
-              <Link to="/sign-up">sign up</Link>
-            </button>
+            {access_token ? (
+              <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
+                <Link
+                  to="/"
+                  onClick={() => {
+                    logout();
+                    setOpen(false);
+                  }}
+                >
+                  log out
+                </Link>
+              </button>
+            ) : (
+              <div className="flex gap-x-4">
+                <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
+                  <Link to="/sign-up">sign up</Link>
+                </button>
+                <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
+                  <Link to="/log-in">log in</Link>
+                </button>
+              </div>
+            )}
           </ul>
         </div>
       </div>

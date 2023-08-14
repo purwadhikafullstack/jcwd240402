@@ -33,6 +33,7 @@ module.exports = {
       },
       verify_token: {
         type: Sequelize.STRING,
+        allowNull: true,
       },
       reset_password_token: {
         type: Sequelize.STRING,

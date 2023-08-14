@@ -25,14 +25,6 @@ module.exports = {
           key: "id",
         },
       },
-      province_id: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Provinces",
-          key: "id",
-        },
-      },
       latitude: {
         type: Sequelize.STRING,
         allowNull: false,

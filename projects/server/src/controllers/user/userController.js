@@ -204,6 +204,7 @@ module.exports = {
         process.env.REFRESH_TOKEN_SECRET,
         "24h"
       );
+
       res.json({
         ok: true,
         message: "Log in successful",
@@ -221,11 +222,12 @@ module.exports = {
 
   keepLogin: async (req, res) => {
     const userData = req.user;
+    console.log(userData);
     try {
       const isRefreshTokenExist = await db.User.findOne({
         where: { id: userData.id },
       });
-      console.log(isRefreshTokenExist);
+
       if (!isRefreshTokenExist) {
         return res.status(401).json({
           ok: false,
@@ -348,7 +350,7 @@ module.exports = {
       );
 
       const link = `${process.env.BASEPATH_FE_REACT}/reset-password/${resetToken}`;
-      const message = `You've requested a password reset for your account. You only have 10 minutes to change new password. Please use the following code to reset your password: ${resetPasswordToken}`;
+      const message = `You've requested a password reset for your account. You only have 10 minutes to change new password. Please use the following code to reset your password: <strong>${resetPasswordToken}</strong>`;
       const mailing = {
         recipient_email: email,
         link,
@@ -401,8 +403,6 @@ module.exports = {
       const isResetPasswordTokenValid = await db.User.findOne({
         where: { reset_password_token: reset_password_token },
       });
-
-      console.log("is reset token valid", isResetPasswordTokenValid);
 
       if (!isResetPasswordTokenValid) {
         return res.status(404).json({

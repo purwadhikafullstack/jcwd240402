@@ -11,15 +11,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Province.hasMany(models.Warehouse, { foreignKey: "province_id"});
-      Province.belongsTo(models.Address_user, { foreignKey: "province_id" });
-      Province.belongsTo(models.City, { foreignKey: "province_id"});
+      Province.hasMany(models.City, { foreignKey: "province_id"});
     }
   }
   Province.init({
     name: DataTypes.STRING
-  }, {
+  },
+   {
     sequelize,
+    timestamps: false,
     modelName: 'Province',
   });
   return Province;

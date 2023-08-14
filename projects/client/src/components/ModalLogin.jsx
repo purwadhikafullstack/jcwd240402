@@ -8,6 +8,9 @@ import axios from "../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import DismissableAlert from "./DismissableAlert";
+import ModalForgotPassword from "./ModalForgotPassword";
+import AlertWithIcon from "./AlertWithIcon";
+import { setCookie, setLocalStorage } from "../utils";
 
 export default function ModalLogin() {
   const [openModal, setOpenModal] = useState();
@@ -20,16 +23,20 @@ export default function ModalLogin() {
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.post("/auth/login", values);
-      if (response.status === 200) {
-        setStatus({ success: true });
+      if (response.status === 200 && response.data.ok) {
+        const accessToken = response.data.accessToken;
+        const refreshToken = response.data.refreshToken;
+        setLocalStorage("refresh_token", refreshToken);
+        setCookie("access_token", accessToken, 1);
+
+        setStatus({
+          success: true,
+          message: "Login successful.",
+        });
+
         setValues({
           user_identification: "",
           password: "",
-        });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
         });
 
         navigate("/");
@@ -101,42 +108,44 @@ export default function ModalLogin() {
         show={props.openModal === "form-elements"}
         size="md"
         popup
-        onClose={() => props.setOpenModal(undefined)}
+        onClose={() => {
+          props.setOpenModal(undefined);
+          setErrMsg(false);
+        }}
       >
         <Modal.Header />
         <Modal.Body>
           <div className="space-y-6">
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-              Sign in to our platform
-            </h3>
+            <h1 className="text-3xl font-bold  text-blue3 lg:rounded-xl">
+              Login
+            </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {/* <DismissableAlert color="failure" message={errMsg} /> */}
-              <div>
+              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+
+              <div className="flex flex-col gap-y-2 mb-3">
                 <InputForm
                   width="w-full"
-                  label={config.label}
+                  label="username/email"
                   onChange={handleForm}
-                  placeholder={config.placeholder}
-                  name={config.name}
-                  type={config.type}
-                  value={config.value}
+                  placeholder="username / email"
+                  name="user_identification"
+                  type="text"
+                  value={formik.values.user_identification}
+                  isError={!!formik.errors.user_identification}
+                  errorMessage={formik.errors.user_identification}
                 />
-              </div>
-              <div>
+
                 <PasswordInput
                   width="w-full"
                   name="password"
                   onChange={handleForm}
                   value={formik.values.password}
+                  isError={!!formik.errors.password}
+                  errorMessage={formik.errors.password}
                 />
               </div>
-              <div className="flex justify-end">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-cyan-700 hover:underline dark:text-cyan-500"
-                >
-                  Forgot Password?
-                </Link>
+              <div className="flex justify-end mb-3">
+                <ModalForgotPassword />
               </div>
               <div className="w-full">
                 <Button
@@ -155,7 +164,9 @@ export default function ModalLogin() {
               <Link
                 to="/sign-up"
                 className="text-cyan-700 hover:underline dark:text-cyan-500"
-                onClick={() => props.setOpenModal(undefined)}
+                onClick={() => {
+                  props.setOpenModal(undefined);
+                }}
               >
                 Create account
               </Link>

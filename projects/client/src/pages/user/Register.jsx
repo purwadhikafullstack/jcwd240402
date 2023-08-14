@@ -3,15 +3,20 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import register from "../assets/images/register.webp";
-import InputForm from "../components/InputForm";
-import axios from "../api/axios";
-import Button from "../components/Button";
-import AuthImageCard from "../components/AuthImageCard";
+
+import register from "../../assets/images/furnifor.png";
+import axios from "../../api/axios";
+import InputForm from "../../components/InputForm";
+import Button from "../../components/Button";
+import AuthImageCard from "../../components/AuthImageCard";
+import { removeCookie, removeLocalStorage } from "../../utils";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  removeCookie("access_token");
+  removeLocalStorage("refresh_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
@@ -20,6 +25,9 @@ const Register = () => {
       if (response.status === 201) {
         setStatus({ success: true });
         setValues({
+          first_name: "",
+          last_name: "",
+          phone: "",
           username: "",
           email: "",
           password: "",
@@ -46,6 +54,9 @@ const Register = () => {
 
   const formik = useFormik({
     initialValues: {
+      first_name: "",
+      last_name: "",
+      phone: "",
       username: "",
       email: "",
       password: "",
@@ -53,8 +64,23 @@ const Register = () => {
     },
     onSubmit: registerUser,
     validationSchema: yup.object().shape({
-      username: yup.string().required().min(3).max(20),
-      email: yup.string().required("email wajib diisi").email(),
+      first_name: yup
+        .string()
+        .required("first name is required")
+        .min(3)
+        .max(20),
+      last_name: yup.string().required("last name is required").min(3).max(20),
+      phone: yup
+        .string()
+        .required("phone number is required")
+        .min(10)
+        .max(13)
+        .matches(
+          /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
+          "Phone number is not valid"
+        ),
+      username: yup.string().required("username is required").min(3).max(20),
+      email: yup.string().required("email is required").email(),
       password: yup
         .string()
         .min(6)
@@ -87,6 +113,8 @@ const Register = () => {
       name: "email",
       type: "email",
       value: formik.values.email,
+      error: !!formik.errors.email,
+      errorMsg: formik.errors.email,
     },
     {
       label: "password",
@@ -94,6 +122,8 @@ const Register = () => {
       name: "password",
       type: "password",
       value: formik.values.password,
+      error: !!formik.errors.password,
+      errorMsg: formik.errors.password,
     },
     {
       label: "confirm password",
@@ -101,6 +131,8 @@ const Register = () => {
       name: "confirm_password",
       type: "password",
       value: formik.values.confirm_password,
+      error: !!formik.errors.confirm_password,
+      errorMsg: formik.errors.confirm_password,
     },
   ];
   const inputNameCongfigs = [
@@ -110,6 +142,8 @@ const Register = () => {
       name: "first_name",
       type: "text",
       value: formik.values.first_name,
+      error: !!formik.errors.first_name,
+      errorMsg: formik.errors.first_name,
     },
     {
       label: "last name",
@@ -117,6 +151,8 @@ const Register = () => {
       name: "last_name",
       type: "text",
       value: formik.values.last_name,
+      error: !!formik.errors.last_name,
+      errorMsg: formik.errors.last_name,
     },
   ];
   const inputContactConfigs = [
@@ -126,6 +162,8 @@ const Register = () => {
       name: "username",
       type: "text",
       value: formik.values.username,
+      error: !!formik.errors.username,
+      errorMsg: formik.errors.username,
     },
     {
       label: "phone",
@@ -133,6 +171,8 @@ const Register = () => {
       name: "phone",
       type: "text",
       value: formik.values.phone,
+      error: !!formik.errors.phone,
+      errorMsg: formik.errors.phone,
     },
   ];
 
@@ -149,11 +189,7 @@ const Register = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? (
-                  <div className="w-screen bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2 lg:w-full">
-                    <p className="bg-inherit">{errMsg}</p>
-                  </div>
-                ) : null}
+                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
                 <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
                   <div className="flex gap-x-4 ">
                     <InputForm
@@ -164,6 +200,8 @@ const Register = () => {
                       name={inputNameCongfigs[0].name}
                       type={inputNameCongfigs[0].type}
                       value={inputNameCongfigs[0].value}
+                      isError={inputNameCongfigs[0].error}
+                      errorMessage={inputNameCongfigs[0].errorMsg}
                     />
                     <InputForm
                       width="w-full"
@@ -173,6 +211,8 @@ const Register = () => {
                       name={inputNameCongfigs[1].name}
                       type={inputNameCongfigs[1].type}
                       value={inputNameCongfigs[1].value}
+                      isError={inputNameCongfigs[1].error}
+                      errorMessage={inputNameCongfigs[1].errorMsg}
                     />
                   </div>
                   <div className="flex gap-x-4 ">
@@ -184,6 +224,8 @@ const Register = () => {
                       name={inputContactConfigs[0].name}
                       type={inputContactConfigs[0].type}
                       value={inputContactConfigs[0].value}
+                      isError={inputContactConfigs[0].error}
+                      errorMessage={inputContactConfigs[0].errorMsg}
                     />
                     <InputForm
                       width="w-full"
@@ -193,6 +235,8 @@ const Register = () => {
                       name={inputContactConfigs[1].name}
                       type={inputContactConfigs[1].type}
                       value={inputContactConfigs[1].value}
+                      isError={inputContactConfigs[1].error}
+                      errorMessage={inputContactConfigs[1].errorMsg}
                     />
                   </div>
 
@@ -205,6 +249,8 @@ const Register = () => {
                       name={config.name}
                       type={config.type}
                       value={config.value}
+                      isError={config.error}
+                      errorMessage={config.errorMsg}
                     />
                   ))}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">

@@ -6,13 +6,18 @@ const CarouselBanner = ({ imageUrls }) => {
     <div>
       <Carousel
         slideInterval={5000}
-        className="h-[5.5rem] w-[21rem] md:h-[12rem] md:w-[54rem] lg:h-[20rem] lg:w-[78rem] transition-all duration-500 ease-in"
+        className="w-72 h-32 md:w-[60rem] md:h-[15rem] lg:w-[79rem] lg:h-[20rem] transition-all duration-500 ease-in"
         indicators={false}
         leftControl=" "
         rightControl=" "
       >
         {imageUrls.map((url, index) => (
-          <img key={index} alt="Carousel Slide" src={url} />
+          <img
+            key={index}
+            alt="Carousel Slide"
+            src={url}
+            className="object-cover w-full h-full"
+          />
         ))}
       </Carousel>
     </div>

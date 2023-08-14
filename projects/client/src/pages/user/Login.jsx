@@ -3,14 +3,25 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import login from "../assets/images/login.webp";
-import InputForm from "../components/InputForm";
-import axios from "../api/axios";
-import Button from "../components/Button";
-import PasswordInput from "../components/PasswordInput";
-import AuthImageCard from "../components/AuthImageCard";
+
+import login from "../../assets/images/furnifor.png";
+import axios from "../../api/axios";
+import InputForm from "../../components/InputForm";
+import Button from "../../components/Button";
+import PasswordInput from "../../components/PasswordInput";
+import AuthImageCard from "../../components/AuthImageCard";
+import ModalForgotPassword from "../../components/ModalForgotPassword";
+import AlertWithIcon from "../../components/AlertWithIcon";
+import {
+  setCookie,
+  removeCookie,
+  setLocalStorage,
+  removeLocalStorage,
+} from "../../utils";
 
 const Login = () => {
+  removeCookie("access_token");
+  removeLocalStorage("refresh_token");
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
 
@@ -18,7 +29,11 @@ const Login = () => {
     try {
       const response = await axios.post("/auth/login", values);
 
-      if (response.status === 200) {
+      if (response.status === 200 && response.data.ok) {
+        const accessToken = response.data?.accessToken;
+        const refreshToken = response.data?.refreshToken;
+        setLocalStorage("refresh_token", refreshToken);
+        setCookie("access_token", accessToken, 1);
         setStatus({ success: true });
         setValues({
           user_identification: "",
@@ -54,14 +69,14 @@ const Login = () => {
     validationSchema: yup.object().shape({
       user_identification: yup
         .string()
-        .required("username / email / phone is a required field"),
+        .required("username / email is a required field"),
       password: yup
         .string()
         .min(6)
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "The password must contain 6 character with uppercase, lowercase, numbers and special characters"
+          "password is required"
         ),
     }),
     validateOnChange: false,
@@ -73,20 +88,12 @@ const Login = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
-  const config = {
-    label: "username/email",
-    placeholder: "username/email",
-    name: "user_identification",
-    type: "text",
-    value: formik.values.user_identification,
-  };
-
   return (
     <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={login} />
       <div className="lg:col-span-1 ">
-        <div className=" lg:grid lg:justify-center lg:items-center  ">
-          <div className=" lg:w-80 lg:shadow-3xl lg:rounded-xl  ">
+        <div className="h-screen flex justify-center items-center lg:h-full lg:grid lg:justify-center lg:items-center  ">
+          <div className=" shadow-3xl w-64 lg:w-80 rounded-xl  ">
             <div className="flex mt-4 px-3 justify-between items-end ">
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
                 Login
@@ -94,25 +101,27 @@ const Login = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? (
-                  <div className="w-screen bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2 lg:w-full">
-                    <p className="bg-inherit">{errMsg}</p>
-                  </div>
-                ) : null}
-                <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
+                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+                <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
                   <InputForm
-                    label={config.label}
                     onChange={handleForm}
-                    placeholder={config.placeholder}
-                    name={config.name}
-                    type={config.type}
-                    value={config.value}
+                    label="username/email"
+                    placeholder="username/email"
+                    name="user_identification"
+                    type="text"
+                    value={formik.values.user_identification}
+                    isError={!!formik.errors.user_identification}
+                    errorMessage={formik.errors.user_identification}
                   />
                   <PasswordInput
                     name="password"
                     onChange={handleForm}
                     value={formik.values.password}
+                    isError={!!formik.errors.password}
+                    errorMessage={formik.errors.password}
                   />
+
+                  <ModalForgotPassword />
 
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
@@ -123,9 +132,9 @@ const Login = () => {
                       colorText="text-white"
                       fontWeight="font-semibold"
                     />
-                    <h1 className="mt-2 lg:my-4">
+                    <h1 className="mt-2 text-xs lg:text-base my-4">
                       Dont have an account yet?{" "}
-                      <Link to="/register" className="font-semibold">
+                      <Link to="/sign-up" className="font-semibold">
                         Sign Up
                       </Link>
                     </h1>

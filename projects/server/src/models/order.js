@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
     /**
@@ -23,7 +21,9 @@ module.exports = (sequelize, DataTypes) => {
     order_status_id: DataTypes.INTEGER,
     total_price: DataTypes.INTEGER,
     delivery_price: DataTypes.INTEGER,
-    delivery_method: DataTypes.ENUM,
+    delivery_courier: {
+      type: DataTypes.ENUM('jne', 'pos', 'tiki'),
+    },
     delivery_time: DataTypes.STRING,
     tracking_code: DataTypes.STRING,
     no_invoice: DataTypes.STRING,

@@ -19,9 +19,13 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      role_id:{
+      role_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
+        references: {
+          model: "Roles",
+          key: "id",
+        },
       },
       password: {
         type: Sequelize.STRING,
@@ -29,11 +33,9 @@ module.exports = {
       },
       verify_token: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       reset_password_token: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       is_verify: {
         type: Sequelize.BOOLEAN,

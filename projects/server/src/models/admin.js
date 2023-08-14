@@ -11,16 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Admin.hasOne(models.Warehouse, { foreignKey: "warehouse_id"});
+      Admin.belongsTo(models.Warehouse, { as: 'warehouse', foreignKey: 'warehouse_id' });
       Admin.belongsTo(models.Role, { foreignKey: "role_id"});
       Admin.hasMany(models.History_stock, { foreignKey: "admin_id" });
     }
   }
   Admin.init({
-    firstName: DataTypes.STRING
+    username: DataTypes.STRING,
+    role_id: DataTypes.INTEGER, 
+    first_name: DataTypes.STRING,
+    last_name: DataTypes.STRING,
+    password: DataTypes.STRING,
+    warehouse_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Admin',
+    timestamps: true
   });
   return Admin;
 };

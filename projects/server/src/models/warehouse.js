@@ -11,17 +11,38 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Warehouse.belongsTo(models.Admin, { foreignKey: "warehouse_id"});
-      Warehouse.belongsTo(models.City, { foreignKey: "city_id"});
-      Warehouse.belongsTo(models.Subdistrict, { foreignKey: "subdistrict_id"});
-      Warehouse.belongsTo(models.Province, { foreignKey: "province_id"});
+      Warehouse.hasMany(models.Admin, { foreignKey: 'warehouse_id' });
+      Warehouse.belongsTo(models.City, { foreignKey: 'city_id' });
       Warehouse.hasMany(models.Order, { foreignKey: "warehouse_id" });
       Warehouse.hasMany(models.Inventory_transfer, { foreignKey: "warehouse_id" });
       Warehouse.hasMany(models.History_stock, { foreignKey: "warehouse_id" });
     }
   }
   Warehouse.init({
-    name: DataTypes.STRING
+    address_warehouse: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    warehouse_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    city_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    latitude: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    longitude: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    warehouse_contact: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'Warehouse',

@@ -11,6 +11,7 @@ import Button from "../../components/Button";
 import AuthImageCard from "../../components/AuthImageCard";
 import { removeCookie, removeLocalStorage } from "../../utils";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import withOutAuth from "../../components/withoutAuth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -283,4 +284,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default withOutAuth(Register);

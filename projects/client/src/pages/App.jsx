@@ -18,7 +18,7 @@ import NotAuth from "./user/NotAuth";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App font-poppins">
       <Router>
         <Routes>
           <Route path="/*" element={<NotFound />} />

@@ -34,7 +34,7 @@ const SelectionCategory = () => {
     },
   ];
   return (
-    <div>
+    <div className="">
       <h1 className="font-bold text-center lg:text-3xl mb-2">
         Selected Preferences
       </h1>

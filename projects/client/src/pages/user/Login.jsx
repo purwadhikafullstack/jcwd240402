@@ -18,6 +18,7 @@ import {
   setLocalStorage,
   removeLocalStorage,
 } from "../../utils";
+import withOutAuth from "../../components/withoutAuth";
 
 const Login = () => {
   removeCookie("access_token");
@@ -46,8 +47,6 @@ const Login = () => {
         });
 
         navigate("/");
-        console.log(response.data.accessToken);
-        console.log(response.data.refreshToken);
       } else {
         throw new Error("Login Failed");
       }
@@ -149,4 +148,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withOutAuth(Login);

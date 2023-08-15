@@ -31,7 +31,12 @@ const AdminListPage = () => {
   });
 
   const refreshAdminListWrapper = useCallback(
-    (newPage) => {
+    (newPage = pagination.currentPage) => {
+      console.log("Refreshing admin list with params: ", {
+        selectedCity,
+        selectedWarehouse,
+        adminName,
+      });
       refreshAdminList(
         selectedCity,
         selectedWarehouse,
@@ -42,7 +47,7 @@ const AdminListPage = () => {
         setPagination
       );
     },
-    [selectedCity, selectedWarehouse, adminName, admins]
+    [selectedCity, selectedWarehouse, adminName, admins, pagination.currentPage]
   );
 
   useEffect(() => {
@@ -114,7 +119,7 @@ const AdminListPage = () => {
   ];
 
   return (
-    <div className="bg-blue1 h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="shadow-axl h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
         <SidebarAdmin />
       </div>
@@ -145,14 +150,14 @@ const AdminListPage = () => {
             placeholder="Search Admin name"
             value={adminName}
             onChange={(e) => setAdminName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white shadow-sm"
+            className="flex-1 p-2 border rounded text-base bg-white shadow-sm border-gray-200"
             disabled={!selectedCity || !selectedWarehouse}
           />
           <Button
             buttonSize="medium"
             buttonText="Register"
             onClick={openRegisterModal}
-            bgColor="bg-blue3"
+            bgColor="bg-blue4"
             colorText="text-white"
             fontWeight="font-semibold"
           />
@@ -191,15 +196,17 @@ const AdminListPage = () => {
           />
           <RegisterAdminModal
             show={isRegisterModalOpen}
-            onClose={() => setRegisterModalOpen(false)}
+            onClose={() => {
+                setRegisterModalOpen(false);
+            }}
             refreshAdminListWrapper={refreshAdminListWrapper}
-          />
-          <div className="flex justify-center items-center w-full bottom-0">
+        />
+          </div>
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
             <DefaultPagination
               totalPages={pagination.totalPages}
               onPageChange={refreshAdminListWrapper}
             />
-          </div>
         </div>
       </div>
     </div>

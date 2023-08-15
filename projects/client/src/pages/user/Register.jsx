@@ -21,7 +21,7 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/auth/register", values);
+      const response = await axios.post("/user/auth/register", values);
 
       if (response.status === 201) {
         setStatus({ success: true });

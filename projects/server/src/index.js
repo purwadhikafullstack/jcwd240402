@@ -23,7 +23,7 @@ app.use(
     target: "https://api.opencagedata.com/geocode/v1/json",
     changeOrigin: true,
     pathRewrite: {
-      "^/api/opencage": `?key=f2f57cc907854a3cb36d25b445d148e6`,
+      "^/api/opencage": `${process.env.KEY_OPENCAGE}`,
     },
   })
 );
@@ -31,14 +31,15 @@ app.use(
 app.use(cors());
 app.use(
   "/photo-profile",
-  express.static(path.join(__dirname, "public/imgProfile"))
+  express.static(path.join(__dirname, "public", "imgProfile"))
 );
+
 app.use(cookieParser());
 app.use(express.json());
 // ==========================
 
 /* USER ROUTES */
-app.use("/api", router.user);
+app.use("/api/user", router.user);
 // ==========================
 
 /* ADMIN ROUTES */

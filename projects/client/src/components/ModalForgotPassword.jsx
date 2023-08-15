@@ -18,7 +18,7 @@ export default function ModalForgotPassword() {
   const forgotPassword = async (values, { setStatus, setValues }) => {
     try {
       console.log(values);
-      const response = await axios.post("/auth/forgot-password", values);
+      const response = await axios.post("/user/auth/forgot-password", values);
       if (response.status === 201) {
         setStatus({ success: true });
         setValues({

@@ -17,7 +17,7 @@ const NavbarMobile = () => {
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
-        .get("/auth/keep-login", {
+        .get("/user/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
         })
         .then((res) => {

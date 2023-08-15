@@ -5,6 +5,8 @@ const crypto = require("crypto");
 const Generate = require("../../utils");
 const Mailer = require("../../utils/mailer");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   registerUser: async (req, res) => {
@@ -114,7 +116,6 @@ module.exports = {
   updateVerify: async (req, res) => {
     const { verify_token } = req.params;
     const transaction = await db.sequelize.transaction();
-    console.log(verify_token);
 
     try {
       const isVerifyTokenExist = await db.User.findOne({
@@ -165,6 +166,7 @@ module.exports = {
 
   login: async (req, res) => {
     const { user_identification, password } = req.body;
+
     try {
       const user = await db.User.findOne({
         where: {
@@ -222,7 +224,6 @@ module.exports = {
 
   keepLogin: async (req, res) => {
     const userData = req.user;
-    console.log(userData);
     try {
       const isRefreshTokenExist = await db.User.findOne({
         where: { id: userData.id },
@@ -264,7 +265,6 @@ module.exports = {
       const isVerified = await db.User.findOne({
         where: { email },
       });
-      console.log(isVerified);
       if (!isVerified) {
         return res.status(404).json({
           ok: false,
@@ -391,7 +391,6 @@ module.exports = {
         resetToken,
         process.env.RESET_PASSWORD_TOKEN_SECRET
       );
-      console.log("token result", tokenVerification);
 
       if (!tokenVerification) {
         return res.status(400).json({
@@ -443,5 +442,332 @@ module.exports = {
 
   closeAccount: (req, res) => {
     res.json("deleteAccount");
+  },
+
+  userInformation: async (req, res) => {
+    const userData = req.user;
+    try {
+      const user = await db.User.findOne({
+        where: { id: userData.id },
+        include: [
+          {
+            model: db.User_detail,
+          },
+        ],
+      });
+      if (!user) {
+        return res.status(401).json({
+          ok: false,
+          message: "user not found",
+        });
+      }
+      res.json({ ok: true, result: user });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  registerAddress: async (req, res) => {
+    const userData = req.user;
+
+    const transaction = await db.sequelize.transaction();
+    const {
+      city_id,
+      user_id = userData.id,
+      longitude,
+      latitude,
+      address_details,
+      postal_code,
+      address_title,
+    } = req.body;
+    try {
+      const newAddress = await db.Address_user.create(
+        {
+          city_id,
+          user_id,
+          longitude,
+          latitude,
+          address_details,
+          postal_code,
+          address_title,
+        },
+        { transaction }
+      );
+
+      if (!newAddress) {
+        await transaction.rollback();
+        return res.status(401).json({
+          ok: false,
+          message: "register address failed",
+        });
+      }
+      await transaction.commit();
+      res.status(201).json({
+        ok: true,
+        message: "register address successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  regionUserForProvince: async (req, res) => {
+    try {
+      const result = await db.Province.findAll();
+
+      res.json({
+        ok: true,
+        result: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  regionUserForCity: async (req, res) => {
+    const { province_id } = req.query;
+
+    try {
+      let result;
+
+      if (province_id) {
+        const cityListInProvince = await db.City.findAll({
+          where: { province_id },
+        });
+        result = cityListInProvince;
+      } else {
+        const allProvince = await db.Province.findAll();
+        result = allProvince;
+      }
+
+      res.json({
+        ok: true,
+        result: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  updateUserInformation: async (req, res) => {
+    const userData = req.user;
+    const data = JSON.parse(req.body.data);
+    console.log("data", data);
+    const image = req.file?.filename;
+    console.log("image", image);
+    const transaction = await db.sequelize.transaction();
+    try {
+      const user = await db.User.findOne({ where: { id: userData.id } });
+      if (!user) {
+        return res.status(404).json({
+          ok: false,
+          message: "user not found",
+        });
+      }
+
+      if (data?.username) {
+        await db.User.update(
+          { username: data.username },
+          { where: { id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change username successful",
+        });
+      }
+
+      if (data?.email) {
+        const verifyToken =
+          crypto.randomBytes(16).toString("hex") +
+          Math.random() +
+          new Date().getTime();
+
+        await db.User.update(
+          { email: data.email, verify_token: verifyToken, is_verify: false },
+          { where: { id: user.id }, transaction }
+        );
+        const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
+        const message =
+          "you've updated your email. Please verify the new email to ensure account security";
+        const mailing = {
+          recipient_email: data.email,
+          link,
+          subject: "EMAIL CHANGED",
+          receiver: user.username,
+          message,
+        };
+        await transaction.commit();
+        Mailer.sendEmail(mailing)
+          .then((response) =>
+            res.status(201).json({
+              ok: true,
+              message: `${response.message}, change email successful ${user.username} successful `,
+              verify_token: verifyToken,
+            })
+          )
+          .catch((error) =>
+            res
+              .status(400)
+              .json({ ok: false, message: error.message, error: error.message })
+          );
+      }
+
+      if (data?.new_password && data?.new_confirm_password) {
+        if (data.new_password !== data.new_confirm_password) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "password and confirm password have to match",
+          });
+        }
+
+        const match = await bcrypt.compare(data.password, user.password);
+        if (!match) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "wrong password",
+          });
+        }
+
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(data.new_password, salt);
+
+        await db.User.update(
+          { password: hashPassword },
+          { where: { id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change password successful",
+        });
+      }
+
+      if (data?.first_name) {
+        await db.User_detail.update(
+          { first_name: data.first_name },
+          { where: { user_id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change first name successful",
+        });
+      }
+
+      if (data?.last_name) {
+        await db.User_detail.update(
+          { last_name: data.last_name },
+          { where: { user_id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change last name successful",
+        });
+      }
+
+      if (data?.phone) {
+        await db.User_detail.update(
+          { phone: data.phone },
+          { where: { user_id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change phone successful",
+        });
+      }
+
+      if (data?.address_user_id) {
+        await db.User_detail.update(
+          { address_user_id: data.address_user_id },
+          { where: { user_id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change address successful",
+        });
+      }
+
+      if (image) {
+        const userDetail = await db.User_detail.findOne({
+          where: { user_id: user.id },
+        });
+
+        if (!userDetail) {
+          await transaction.rollback();
+          res.status(401).json({
+            ok: false,
+            message: "user data not found",
+          });
+        }
+
+        const previousImageName = userDetail
+          .getDataValue("img_profile")
+          ?.split("/")[1];
+
+        if (!previousImageName) {
+          await db.User_detail.update(
+            {
+              img_profile: `photo-profile/${image}`,
+            },
+            { where: { user_id: user.id }, transaction }
+          );
+        }
+
+        if (previousImageName) {
+          const imagePath = path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "src",
+            "public",
+            "imgProfile",
+            previousImageName
+          );
+          fs.unlinkSync(imagePath);
+          await db.User_detail.update(
+            {
+              img_profile: `photo-profile/${image}`,
+            },
+            { where: { user_id: user.id }, transaction }
+          );
+        }
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change photo profile successful",
+        });
+      }
+    } catch (error) {
+      await transaction.commit();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
   },
 };

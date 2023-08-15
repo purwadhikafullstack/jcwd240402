@@ -18,7 +18,7 @@ const ResetPassword = () => {
   const resetPassword = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.patch(
-        `/auth/reset-password/${resetToken}`,
+        `/user/auth/reset-password/${resetToken}`,
         values
       );
       console.log(response);

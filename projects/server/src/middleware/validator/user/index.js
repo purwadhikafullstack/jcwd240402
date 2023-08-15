@@ -18,40 +18,6 @@ const validate = (validations) => {
   };
 };
 
-const registerValidation = [
-  check("username", "username cannot be empty")
-    .notEmpty()
-    .isLength({ min: 3 })
-    .withMessage("minimum 3 character"),
-  check("first_name", "first name cannot be empty").notEmpty(),
-  check("last_name", "last name cannot be empty").notEmpty(),
-  check("email", "email cannot be empty")
-    .notEmpty()
-    .isEmail()
-    .withMessage("must to in valid email"),
-  check("phone", "phone cannot be empty")
-    .notEmpty()
-    .isMobilePhone()
-    .withMessage("must to in valid phone number"),
-  check("password", "password cannot be empty")
-    .notEmpty()
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1,
-    })
-    .withMessage(
-      "password have to contains 8 character with lowercase, uppercase, number, dan special character"
-    ),
-  check("confirmPassword")
-    .notEmpty()
-    .withMessage("You must type a confirmation password")
-    .custom((value, { req }) => value === req.body.password)
-    .withMessage("The passwords do not match"),
-];
-
 module.exports = {
   registration: validate([
     body("username")
@@ -98,6 +64,7 @@ module.exports = {
       .custom((value, { req }) => value === req.body.password)
       .withMessage("The passwords do not match"),
   ]),
+
   login: validate([
     body("user_identification")
       .notEmpty()
@@ -118,6 +85,7 @@ module.exports = {
         "password have to contains 8 character with lowercase, uppercase, number, dan special character"
       ),
   ]),
+
   emailInput: validate([
     body("email", "email cannot be empty")
       .notEmpty()
@@ -125,6 +93,7 @@ module.exports = {
       .isEmail()
       .withMessage("must to in valid email"),
   ]),
+
   resetPassword: validate([
     body("reset_password_token")
       .notEmpty()
@@ -147,5 +116,50 @@ module.exports = {
       .withMessage("You must type a confirmation password")
       .custom((value, { req }) => value === req.body.new_password)
       .withMessage("The passwords do not match"),
+  ]),
+
+  registerAddress: validate([
+    body("city_id").notEmpty().withMessage("City ID is required"),
+    body("address_details").notEmpty().withMessage("Address is required"),
+    body("postal_code").notEmpty().withMessage("postal code is required"),
+    body("address_title").notEmpty().withMessage("address title is required"),
+  ]),
+
+  updateProfile: validate([
+    body("data")
+      .notEmpty()
+      .withMessage("edit form cannot be empty")
+      .custom((value) => {
+        try {
+          const jsonData = JSON.parse(value);
+          if (!jsonData.username) {
+            throw new Error("username is required");
+          }
+          if (!isEmail(jsonData.email)) {
+            throw new Error("email is required");
+          }
+          if (!jsonData.first_name) {
+            throw new Error("first name is required");
+          }
+          if (!jsonData.last_name) {
+            throw new Error("last name is required");
+          }
+          if (!isMobilePhone(jsonData.phone)) {
+            throw new Error("invalid phone number");
+          }
+          if (!jsonData.password) {
+            throw new Error("invalid phone number");
+          }
+          return true;
+        } catch (error) {
+          throw new Error(`${error}`);
+        }
+      }),
+    body("file").custom((value, { req }) => {
+      if (!req.file) {
+        throw new Error("Photo is required");
+      }
+      return true;
+    }),
   ]),
 };

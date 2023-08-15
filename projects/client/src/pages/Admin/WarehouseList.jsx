@@ -77,7 +77,7 @@ const WarehouseList = () => {
   };
 
   return (
-    <div className="bg-blue1 h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="shadow-2xl h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
         <SidebarAdmin />
       </div>
@@ -97,7 +97,7 @@ const WarehouseList = () => {
             placeholder="Search Warehouse name"
             value={warehouseName}
             onChange={onWarehouseNameChange}
-            className="flex-1 p-2 border rounded text-base bg-white shadow-sm"
+            className="flex-1 p-2 border rounded text-base bg-white shadow-sm border-gray-200"
             disabled={!selectedCity}
           />
           <Button
@@ -169,7 +169,7 @@ const WarehouseList = () => {
             show={isRegisterWarehouseModalOpen}
             onClose={closeRegisterModal}
           />
-          <div className="flex justify-center items-center w-full bottom-0">
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
             <DefaultPagination
               currentPage={currentPage}
               totalPages={totalPages}

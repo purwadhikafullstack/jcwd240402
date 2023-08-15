@@ -31,6 +31,7 @@ const ReassignWarehouseModal = ({ show, onClose, adminId,refreshAdminListWrapper
         .post(url, payload)
         .then((res) => {
           console.log(res.data.message);
+          setSelectedWarehouse(null); 
           onClose();
           refreshAdminListWrapper(); 
         })

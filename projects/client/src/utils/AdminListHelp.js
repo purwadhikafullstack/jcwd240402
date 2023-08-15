@@ -38,23 +38,28 @@ export const refreshAdminList = (
   setAdmins,
   setPagination
 ) => {
+  console.log("Refreshing with parameters:", {
+    selectedCity,
+    selectedWarehouse,
+    adminName,
+    newPage,
+  }); // Log the parameters
+
   if (selectedCity && selectedWarehouse) {
-    axios
-      .get(
-        `http://localhost:8000/api/admin/?searchName=${adminName}&warehouseId=${selectedWarehouse.value}&page=${newPage}`
-      )
-      .then((res) => {
-        const newAdmins = res.data.admins;
-        if (
-          !admins.length ||
-          admins.some((admin, index) => admin.id !== newAdmins[index]?.id)
-        ) {
-          setAdmins(newAdmins);
-          setPagination({
-            currentPage: res.data.pagination.page,
-            totalPages: res.data.pagination.totalPages,
-          });
-        }
-      });
+    const url = `http://localhost:8000/api/admin/?searchName=${adminName}&warehouseId=${selectedWarehouse.value}&page=${newPage}`;
+    console.log("Making API call to:", url); // Log the URL
+
+    axios.get(url).then((res) => {
+      console.log("Received response from API:", res.data); // Log the response data
+
+      const newAdmins = res.data.admins;
+        console.log("Updating admin list with:", newAdmins); // Log the new admins
+        setAdmins(newAdmins);
+        setPagination({
+          currentPage: res.data.pagination.page,
+          totalPages: res.data.pagination.totalPages,
+        });
+      
+    });
   }
 };

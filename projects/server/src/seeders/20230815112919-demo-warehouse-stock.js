@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    return queryInterface.bulkInsert("Categories", [
+    return queryInterface.bulkInsert("Warehouse_stocks", [
       {
         id: 1,
         warehouse_id: 1,
@@ -68,6 +68,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    return queryInterface.bulkDelete("Categories", null, {});
+    return queryInterface.bulkDelete("Warehouse_stocks", null, {});
   }
 };

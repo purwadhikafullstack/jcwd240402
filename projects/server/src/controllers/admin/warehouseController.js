@@ -121,4 +121,43 @@ module.exports = {
       });
     }
   },
+
+  async newStockHistory(req, res) {
+
+    const timestamp = new Date();
+  
+    const {
+      warehouse_stock_id,
+      warehouse_id,
+      admin_id,
+      stock_before_transfer,
+      stock_after_transfer,
+      increment_decrement,
+      journal,
+    } = req.body;
+  
+    try {
+      const newHistory = await db.History_stock.create({
+      warehouse_stock_id,
+      warehouse_id,
+      admin_id,
+      stock_before_transfer,
+      stock_after_transfer,
+      increment_decrement,
+      journal,
+      timestamp,
+      });
+  
+      return res.status(200).send({
+        message: "Stock History created successfully",
+        data: newHistory,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
 };

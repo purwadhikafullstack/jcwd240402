@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
     warehouse_id: DataTypes.INTEGER,
     admin_id: DataTypes.INTEGER,
     stock_before_transfer: DataTypes.INTEGER,
+    stock_after_transfer: DataTypes.INTEGER,
+    increment_decrement: {
+      type: DataTypes.ENUM('Increment', 'Decrement'),
+    },
     quantity: DataTypes.INTEGER,
     journal: DataTypes.STRING,
     timestamp: DataTypes.STRING

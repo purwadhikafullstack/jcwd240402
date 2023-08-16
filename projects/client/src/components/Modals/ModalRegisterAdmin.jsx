@@ -8,7 +8,7 @@ import Button from "../Button";
 import InputForm from "../InputForm";
 import PasswordInput from "../PasswordInput";
 
-const RegisterAdminModal = ({ show, onClose,refreshAdminListWrapper }) => {
+const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
@@ -80,7 +80,7 @@ const RegisterAdminModal = ({ show, onClose,refreshAdminListWrapper }) => {
           formik.resetForm();
           setSelectedWarehouse(null);
           onClose();
-          refreshAdminListWrapper();
+          onSuccessfulRegister();
         } else {
           throw new Error("Admin Registration Failed");
         }

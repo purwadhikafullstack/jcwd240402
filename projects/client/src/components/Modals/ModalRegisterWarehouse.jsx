@@ -12,7 +12,10 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   const [errMsg, setErrMsg] = useState("");
 
   const validationSchema = yup.object().shape({
-    warehouse_name: yup.string().required("Warehouse Name is required"),
+    warehouse_name: yup
+      .string()
+      .required("Warehouse Name is required")
+      .min(8, "Warehouse Name must be at least 8 characters"),
     address_warehouse: yup.string().required("Address is required"),
     warehouse_contact: yup.string().required("Contact is required"),
   });

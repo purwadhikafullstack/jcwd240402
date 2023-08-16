@@ -9,7 +9,7 @@ import {
   AiOutlineBarChart,
 } from "react-icons/ai";
 
-export default function MultiLevelDropdown() {
+export default function SidebarAdminDesktop() {
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser },
     { to: "/warehouse", label: "Warehouse", icon: AiOutlineShop },
@@ -37,7 +37,7 @@ export default function MultiLevelDropdown() {
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link to="/admin-dashboard" className="flowbite-sidebar-link text-base_grey hover:text-blue4 text-center">
-            <Sidebar.Item className=" hover:border hover-bg-blue3 hover:border-black hover:text-blue1 bg-blue5">Dashboard</Sidebar.Item>
+            <Sidebar.Item className=" hover:border hover-bg-blue3 hover:border-black hover:text-blue1 bg-blue4 text-white">Dashboard</Sidebar.Item>
           </Link>
           {adminRoutes.map((route, idx) => (
             <div key={idx} className=" hover:border hover:border-black  rounded-md">

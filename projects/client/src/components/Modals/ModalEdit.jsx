@@ -4,6 +4,8 @@ import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import InputForm from "../InputForm";
 import Button from "../Button";
+import AsyncSelect from "react-select/async";
+import { loadCities } from "../../utils/WarehouseListHelp";
 
 const EditModal = ({
   show,
@@ -12,32 +14,45 @@ const EditModal = ({
   label,
   name,
   placeholder,
-  initialValue = "",
+  initialValue = null,
   validationSchema = null,
   refreshWarehouseList,
 }) => {
   const [errMsg, setErrMsg] = React.useState("");
+  const [selectedCity, setSelectedCity] = React.useState(initialValue);
+
+  const getValidationSchema = (label) => {
+    switch (label) {
+      case "Warehouse Name":
+        return yup.object().shape({
+          [name]: yup
+            .string()
+            .required(`${label} is required`)
+            .min(8, `${label} must be at least 8 characters`),
+        });
+      default:
+        return yup.object().shape({
+          [name]: yup.string().required(`${label} is required`),
+        });
+    } 
+  };
 
   const formik = useFormik({
     initialValues: {
-      [name]: initialValue,
+      [name]: selectedCity?.value || "",
     },
     onSubmit: async (values) => {
       try {
         await onSubmit(values[name]);
         setErrMsg("");
         formik.resetForm();
-        onClose();
         refreshWarehouseList();
+        onClose();
       } catch (error) {
         setErrMsg(error.message || "Edit failed");
       }
     },
-    validationSchema:
-      validationSchema ||
-      yup.object().shape({
-        [name]: yup.string().required(`${label} is required`),
-      }),
+    validationSchema: validationSchema || getValidationSchema(label),
   });
 
   return (
@@ -57,16 +72,32 @@ const EditModal = ({
             </div>
           )}
           <div className="mt-5 px-6 grid gap-y-3">
-            <InputForm
-              label={label}
-              name={name}
-              type="text"
-              placeholder={placeholder}
-              onChange={formik.handleChange}
-              value={formik.values[name]}
-              isError={!!formik.errors[name]}
-              errorMessage={formik.errors[name]}
-            />
+            {label === "City" ? (
+              <>
+                <label>{label}</label>
+                <AsyncSelect
+                  classNamePrefix="react-select"
+                  loadOptions={loadCities}
+                  value={selectedCity}
+                  onChange={(selectedOption) => {
+                    setSelectedCity(selectedOption);
+                    formik.setFieldValue(name, selectedOption?.value || "");
+                  }}
+                  placeholder="Select City"
+                />
+              </>
+            ) : (
+              <InputForm
+                label={label}
+                name={name}
+                type="text"
+                placeholder={placeholder}
+                onChange={formik.handleChange}
+                value={formik.values[name]}
+                isError={!!formik.errors[name]}
+                errorMessage={formik.errors[name]}
+              />
+            )}
             <div className="flex flex-col justify-center items-center mt-3">
               <Button
                 type="submit"

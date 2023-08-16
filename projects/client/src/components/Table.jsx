@@ -1,9 +1,10 @@
 import React from 'react';
 import { Table } from 'flowbite-react';
 
+
 const TableComponent = ({ headers, data, onEdit }) => {
   return (
-    <Table>
+    <Table className="custom-table">
       <Table.Head>
         {headers.map((header) => (
           <Table.HeadCell key={header}>{header}</Table.HeadCell>
@@ -14,10 +15,10 @@ const TableComponent = ({ headers, data, onEdit }) => {
       </Table.Head>
       <Table.Body className="divide-y">
         {data.map((row, rowIndex) => (
-          <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800" key={rowIndex}>
+          <Table.Row className="custom-row" key={rowIndex}>
             {headers.map((header) => (
               <Table.Cell
-                className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
+                className="custom-cell"
                 key={header}
               >
                 {row[header]}
@@ -25,7 +26,7 @@ const TableComponent = ({ headers, data, onEdit }) => {
             ))}
             <Table.Cell>
               <a
-                className="font-medium text-cyan-600 hover:underline dark:text-cyan-500"
+                className="custom-edit-link"
                 onClick={() => onEdit(row)}
                 href="#"
               >

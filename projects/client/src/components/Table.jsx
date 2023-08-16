@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table } from 'flowbite-react';
+import { FaEdit, FaTrash } from 'react-icons/fa'; // Importing the Edit and Trash icons from Font Awesome
 
-
-const TableComponent = ({ headers, data, onEdit }) => {
+const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
   return (
     <Table className="custom-table">
       <Table.Head>
@@ -10,7 +10,7 @@ const TableComponent = ({ headers, data, onEdit }) => {
           <Table.HeadCell key={header}>{header}</Table.HeadCell>
         ))}
         <Table.HeadCell>
-          <span className="sr-only">Edit</span>
+          <span className="sr-only">Actions</span>
         </Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
@@ -26,11 +26,18 @@ const TableComponent = ({ headers, data, onEdit }) => {
             ))}
             <Table.Cell>
               <a
-                className="custom-edit-link"
+                className="custom-edit-link mr-2" // Added margin for spacing
                 onClick={() => onEdit(row)}
                 href="#"
               >
-                Edit
+                <FaEdit />
+              </a>
+              <a
+                className="custom-trash-link"
+                onClick={() => onDelete(row)}
+                href="#"
+              >
+                <FaTrash />
               </a>
             </Table.Cell>
           </Table.Row>

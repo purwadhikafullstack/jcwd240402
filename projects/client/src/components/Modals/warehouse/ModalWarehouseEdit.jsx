@@ -2,12 +2,12 @@ import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import InputForm from "../InputForm";
-import Button from "../Button";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
 import AsyncSelect from "react-select/async";
-import { loadCities } from "../../utils/WarehouseListHelp";
+import { loadCities } from "../../../utils/WarehouseListHelp";
 
-const EditModal = ({
+const WarehouseProfileModal = ({
   show,
   onClose,
   onSubmit,
@@ -115,4 +115,4 @@ const EditModal = ({
   );
 };
 
-export default EditModal;
+export default WarehouseProfileModal ;

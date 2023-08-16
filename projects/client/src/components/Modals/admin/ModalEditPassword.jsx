@@ -3,11 +3,16 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "axios";
-import PasswordInput from "../PasswordInput";
-import InputForm from "../InputForm";
-import Button from "../Button";
+import PasswordInput from "../../PasswordInput";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
 
-const ChangePasswordModal = ({ show, onClose, adminId,handleSuccessfulEdit }) => {
+const ChangePasswordModal = ({
+  show,
+  onClose,
+  adminId,
+  handleSuccessfulEdit,
+}) => {
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 

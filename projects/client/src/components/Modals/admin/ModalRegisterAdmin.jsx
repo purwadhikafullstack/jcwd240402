@@ -4,9 +4,9 @@ import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import axios from "axios";
-import Button from "../Button";
-import InputForm from "../InputForm";
-import PasswordInput from "../PasswordInput";
+import Button from "../../Button";
+import InputForm from "../../InputForm";
+import PasswordInput from "../../PasswordInput";
 
 const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);

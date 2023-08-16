@@ -1,5 +1,5 @@
-const admin = require("./adminController.js");
-const warehouse = require("./warehouseController.js");
+const admin = require("./admin/adminController.js");
+const warehouse = require("./warehouse/warehouseController.js");
 
 module.exports = {
   admin,

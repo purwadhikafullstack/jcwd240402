@@ -745,8 +745,6 @@ module.exports = {
 
   registerAddress: async (req, res) => {
     const userData = req.user;
-
-    const transaction = await db.sequelize.transaction();
     const {
       city_id,
       user_id = userData.id,
@@ -756,6 +754,7 @@ module.exports = {
       postal_code,
       address_title,
     } = req.body;
+    const transaction = await db.sequelize.transaction();
     try {
       const newAddress = await db.Address_user.create(
         {
@@ -800,7 +799,7 @@ module.exports = {
       data = JSON.parse(req.body.data);
     }
     const transaction = await db.sequelize.transaction();
-    console.log(data);
+
     try {
       if (data.city_id) {
         await db.Address_user.update(
@@ -815,6 +814,8 @@ module.exports = {
         await db.Address_user.update(
           {
             address_details: data.address_details,
+            longitude: data.longitude,
+            latitude: data.latitude,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }
         );
@@ -839,9 +840,90 @@ module.exports = {
       }
 
       await transaction.commit();
-      res.json({
+      res.status(201).json({
         ok: true,
         message: "change address successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  changePrimaryAddress: async (req, res) => {
+    const userData = req.user;
+    const { address_id } = req.params;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const isAddressExist = await db.Address_user.findOne({
+        where: { id: address_id, user_id: userData.id },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+      if (!isAddressExist) {
+        await transaction.rollback();
+        return res.status(404).json({
+          ok: false,
+          message: "address not found",
+        });
+      }
+
+      await db.User_detail.update(
+        { address_user_id: address_id },
+        {
+          where: { user_id: userData.id },
+          transaction,
+        }
+      );
+
+      await transaction.commit();
+      return res.status(201).json({
+        ok: true,
+        message: "set primary address successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  deleteAddress: async (req, res) => {
+    const userData = req.user;
+    const { address_id } = req.params;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const address = await db.Address_user.findOne({
+        where: { id: address_id, user_id: userData.id },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+      if (!address) {
+        await transaction.rollback();
+        return res.status(404).json({
+          ok: false,
+          message: "address not found",
+        });
+      }
+
+      await db.Address_user.destroy({
+        where: { id: address_id, user_id: userData.id },
+        transaction,
+      });
+
+      await transaction.commit();
+      res.status(200).json({
+        ok: true,
+        message: "delete address successful",
       });
     } catch (error) {
       await transaction.rollback();

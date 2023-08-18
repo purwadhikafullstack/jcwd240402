@@ -9,7 +9,11 @@ import NavigatorSetting from "../../components/NavigatorSetting";
 import CardProfile from "../../components/CardProfile";
 import { profileUser } from "../../features/userDataSlice";
 import axios from "../../api/axios";
-import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import ModalEditUsername from "../../components/Modals/ModalEditUsername";
 import ModalEditFirstName from "../../components/Modals/ModalEditFirstName";
 import ModalEditLastName from "../../components/Modals/ModalEditLastName";
@@ -24,7 +28,7 @@ import { Link } from "react-router-dom";
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
   const [newAccessToken, setNewAccessToken] = useState("");
-  const refresh_token = localStorage.getItem("refresh_token");
+  const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
 

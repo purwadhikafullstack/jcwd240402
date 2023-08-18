@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { profileUser } from "../../features/userDataSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../Button";
+import { addressUser } from "../../features/userAddressSlice";
 
 const ModalChangeAddress = ({ id }) => {
   const access_token = getCookie("access_token");
@@ -42,17 +43,23 @@ const ModalChangeAddress = ({ id }) => {
   }, [selectedProvince]);
 
   const addAddress = async (values, { setStatus, setValues }) => {
+    const formData = new FormData();
     values.city_id = Number(selectedCity);
+    formData.append("data", JSON.stringify(values));
 
     try {
-      const response = await axios.post("/user/profile/address", values, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      const response = await axios.patch(
+        `/user/profile/address/${id}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
       if (response.status === 201) {
         setStatus({
           success: true,
-          message: "Login successful.",
+          message: "update address successful.",
         });
 
         setValues({
@@ -63,12 +70,13 @@ const ModalChangeAddress = ({ id }) => {
         });
 
         axios
-          .get("/user/profile", {
+          .get("/user/profile/address", {
             headers: { Authorization: `Bearer ${access_token}` },
           })
-          .then((res) => dispatch(profileUser(res.data.result)));
+          .then((res) => {
+            dispatch(addressUser(res.data?.result));
+          });
 
-        console.log("success");
         setErrMsg(null);
         props.setOpenModal(undefined);
       } else {
@@ -91,13 +99,9 @@ const ModalChangeAddress = ({ id }) => {
     },
     onSubmit: addAddress,
     validationSchema: yup.object().shape({
-      address_details: yup
-        .string()
-        .required("address detail is a required field"),
-      postal_code: yup.string().required("postal code is a required field"),
-      address_title: yup
-        .string()
-        .required("address detail is a required field"),
+      address_details: yup.string().optional(),
+      postal_code: yup.string().optional(),
+      address_title: yup.string().optional(),
     }),
     validateOnChange: false,
     validateOnBlur: false,

@@ -4,6 +4,7 @@ const Verify = require("../../middleware/auth");
 const validatorMiddleware = require("../../middleware/validator/user");
 const upload = require("../../middleware/multer/user/imgProfile");
 const addressUserCoordinate = require("../../middleware/openCage/addressUserCoordinate");
+const addressUserCoordinateUpdate = require("../../middleware/openCage/addressUserCoordinateUpdate");
 
 /* AUTH */
 router.post(
@@ -69,9 +70,22 @@ router.patch(
   "/profile/address/:address_id",
   Verify.verifyAccessToken,
   upload.single("file"),
-  addressUserCoordinate,
+  addressUserCoordinateUpdate,
   UserController.changeAddress
 );
+
+router.patch(
+  "/profile/address/primary/:address_id",
+  Verify.verifyAccessToken,
+  UserController.changePrimaryAddress
+);
+
+router.delete(
+  "/profile/address/:address_id",
+  Verify.verifyAccessToken,
+  UserController.deleteAddress
+);
+
 router.get(
   "/profile/address/:address_id",
   Verify.verifyAccessToken,

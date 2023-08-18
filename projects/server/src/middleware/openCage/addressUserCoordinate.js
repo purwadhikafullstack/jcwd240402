@@ -11,8 +11,10 @@ const addressUserCoordinate = async (req, res, next) => {
         address
       )}&key=${process.env.KEY_OPENCAGE}`
     );
+    console.log(response);
 
-    const location = response.data.results[0].geometry;
+    const location = response.data?.results[0]?.geometry;
+
     req.body.latitude = location.lat;
     req.body.longitude = location.lng;
 

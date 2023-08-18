@@ -7,23 +7,54 @@ import FooterDesktop from "../../components/FooterDesktop";
 import NavigatorMobile from "../../components/NavigatorMobile";
 import ModalAddAddress from "../../components/Modals/ModalAddAddress";
 import axios from "../../api/axios";
-import { getCookie } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import CardAddress from "../../components/CardAddress";
+import { useDispatch, useSelector } from "react-redux";
+import { addressUser } from "../../features/userAddressSlice";
+import { profileUser } from "../../features/userDataSlice";
 
 const SettingAddress = () => {
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
-  const [userAddress, setUserAddress] = useState([]);
+  const dispatch = useDispatch();
+  const addressData = useSelector((state) => state.addresser.value);
+
+  useEffect(() => {
+    if (!access_token && refresh_token) {
+      axios
+        .get("/user/auth/keep-login", {
+          headers: { Authorization: `Bearer ${refresh_token}` },
+        })
+        .then((res) => {
+          setNewAccessToken(res.data?.accessToken);
+          setCookie("access_token", newAccessToken, 1);
+        });
+    }
+  }, [access_token, newAccessToken, refresh_token]);
+
+  useEffect(() => {
+    axios
+      .get("/user/profile", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => dispatch(profileUser(res.data?.result)));
+  }, [access_token, dispatch]);
 
   useEffect(() => {
     axios
       .get("/user/profile/address", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => setUserAddress(res.data?.result))
-      .catch((err) => console.log(err));
-  }, [access_token]);
+      .then((res) => {
+        dispatch(addressUser(res.data?.result));
+      });
+  }, [access_token, dispatch]);
 
-  console.log(userAddress);
   return (
     <div>
       <NavbarDesktop />
@@ -39,7 +70,7 @@ const SettingAddress = () => {
                 <ModalAddAddress />
               </div>
               <>
-                {userAddress.map((address) => (
+                {addressData.map((address) => (
                   <CardAddress
                     key={address.id}
                     address_title={address.address_title}

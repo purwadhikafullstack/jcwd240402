@@ -35,12 +35,21 @@ router.patch(
 );
 router.patch("/auth/close-account", UserController.closeAccount);
 
-/* PROFILING */
+/* PROFILING USER */
 router.get(
   "/profile",
   Verify.verifyAccessToken,
   UserController.userInformation
 );
+
+router.patch(
+  "/profile",
+  Verify.verifyAccessToken,
+  upload.single("file"),
+  UserController.updateUserInformation
+);
+
+/* PROFILING USER ADDRESS */
 
 router.post(
   "/profile/address",
@@ -50,12 +59,26 @@ router.post(
   UserController.registerAddress
 );
 
+router.get(
+  "/profile/address",
+  Verify.verifyAccessToken,
+  UserController.userAddress
+);
+
 router.patch(
-  "/profile",
+  "/profile/address/:address_id",
   Verify.verifyAccessToken,
   upload.single("file"),
-  UserController.updateUserInformation
+  addressUserCoordinate,
+  UserController.changeAddress
 );
+router.get(
+  "/profile/address/:address_id",
+  Verify.verifyAccessToken,
+  UserController.getAddressById
+);
+
+/* REGION QUERY */
 
 router.get("/region-city", UserController.regionUserForCity);
 router.get("/region-province", UserController.regionUserForProvince);

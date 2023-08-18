@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import { MdDraw } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 import CarouselBanner from "../../components/CarouselBanner";
 import NavbarDesktop from "../../components/NavbarDesktop";
@@ -18,13 +19,15 @@ import StaticBanner from "../../components/StaticBanner";
 import ServiceCard from "../../components/ServiceCard";
 import FrameImage from "../../components/FrameImage";
 import SelectionCategory from "../../components/SelectionCategory";
-import { getCookie, setCookie } from "../../utils";
+import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
+import { profileUser } from "../../features/userDataSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const refresh_token = localStorage.getItem("refresh_token");
   const access_token = getCookie("access_token");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -38,6 +41,16 @@ const Home = () => {
         });
     }
   }, [access_token, newAccessToken, refresh_token]);
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)));
+    }
+  }, [access_token, dispatch, refresh_token]);
 
   const productsData = [
     {

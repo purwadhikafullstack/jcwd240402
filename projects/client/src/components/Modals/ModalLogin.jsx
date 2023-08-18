@@ -1,22 +1,20 @@
 import { Modal } from "flowbite-react";
 import { useState } from "react";
-import Button from "./Button";
-import PasswordInput from "./PasswordInput";
-import InputForm from "./InputForm";
+import Button from "../Button";
+import PasswordInput from "../PasswordInput";
+import InputForm from "../InputForm";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "../api/axios";
+import axios from "../../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import DismissableAlert from "./DismissableAlert";
 import ModalForgotPassword from "./ModalForgotPassword";
-import AlertWithIcon from "./AlertWithIcon";
-import { setCookie, setLocalStorage } from "../utils";
+import AlertWithIcon from "../AlertWithIcon";
+import { setCookie, setLocalStorage } from "../../utils/tokenSetterGetter";
 
 export default function ModalLogin() {
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
   const props = { openModal, setOpenModal, email, setEmail };
-  const [token, setToken] = useState();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
 
@@ -42,8 +40,6 @@ export default function ModalLogin() {
         navigate("/");
         setErrMsg(null);
         props.setOpenModal(undefined);
-        console.log(response.data.accessToken);
-        console.log(response.data.refreshToken);
       } else {
         throw new Error("Login Failed");
       }
@@ -82,14 +78,6 @@ export default function ModalLogin() {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
-  };
-
-  const config = {
-    label: "username/email",
-    placeholder: "username/email",
-    name: "user_identification",
-    type: "text",
-    value: formik.values.user_identification,
   };
 
   return (
@@ -139,6 +127,8 @@ export default function ModalLogin() {
                   width="w-full"
                   name="password"
                   onChange={handleForm}
+                  placeholder="password"
+                  label="password"
                   value={formik.values.password}
                   isError={!!formik.errors.password}
                   errorMessage={formik.errors.password}

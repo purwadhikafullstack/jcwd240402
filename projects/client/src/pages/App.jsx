@@ -15,6 +15,8 @@ import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
+import SettingProfile from "./user/SettingProfile";
+import SettingAddress from "./user/SettingAddress";
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/user/setting" element={<SettingProfile />} />
+          <Route path="/user/setting/address" element={<SettingAddress />} />
         </Routes>
       </Router>
     </div>

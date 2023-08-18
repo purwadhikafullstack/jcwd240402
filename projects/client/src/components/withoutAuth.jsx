@@ -1,4 +1,4 @@
-import { getCookie } from "../utils";
+import { getCookie } from "../utils/tokenSetterGetter";
 import NotifRedirect from "./NotifRedirect";
 import noAuth from "../assets/images/withOutAuth.png";
 import NavbarDesktop from "./NavbarDesktop";

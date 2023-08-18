@@ -9,6 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 module.exports = {
+  /* AUTH */
   registerUser: async (req, res) => {
     const transaction = await db.sequelize.transaction();
     try {
@@ -21,6 +22,7 @@ module.exports = {
         is_verify = false,
         first_name,
         last_name,
+        img_profile = "photo-profile/imgprofiledefault.png",
         phone,
       } = req.body;
 
@@ -35,6 +37,7 @@ module.exports = {
       const hashPassword = await bcrypt.hash(password, salt);
       const isEmailExist = await db.User.findOne({ where: { email } });
       const isUsernameExist = await db.User.findOne({ where: { username } });
+      const isPhoneExist = await db.User_detail.findOne({ where: { phone } });
 
       if (isEmailExist) {
         await transaction.rollback();
@@ -49,6 +52,14 @@ module.exports = {
         return res.status(409).json({
           ok: false,
           message: "username already used",
+        });
+      }
+
+      if (isPhoneExist) {
+        await transaction.rollback();
+        return res.status(409).json({
+          ok: false,
+          message: "phone already used",
         });
       }
 
@@ -74,6 +85,7 @@ module.exports = {
           user_id: newUser.id,
           first_name,
           last_name,
+          img_profile,
           phone,
         },
         { transaction }
@@ -452,8 +464,28 @@ module.exports = {
         include: [
           {
             model: db.User_detail,
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+            include: [
+              {
+                model: db.Address_user,
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "address_user_id"],
+                },
+              },
+            ],
           },
         ],
+        attributes: {
+          exclude: [
+            "verify_token",
+            "password",
+            "createdAt",
+            "updatedAt",
+            "reset_password_token",
+          ],
+        },
       });
       if (!user) {
         return res.status(401).json({
@@ -471,107 +503,17 @@ module.exports = {
     }
   },
 
-  registerAddress: async (req, res) => {
-    const userData = req.user;
-
-    const transaction = await db.sequelize.transaction();
-    const {
-      city_id,
-      user_id = userData.id,
-      longitude,
-      latitude,
-      address_details,
-      postal_code,
-      address_title,
-    } = req.body;
-    try {
-      const newAddress = await db.Address_user.create(
-        {
-          city_id,
-          user_id,
-          longitude,
-          latitude,
-          address_details,
-          postal_code,
-          address_title,
-        },
-        { transaction }
-      );
-
-      if (!newAddress) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "register address failed",
-        });
-      }
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "register address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForProvince: async (req, res) => {
-    try {
-      const result = await db.Province.findAll();
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForCity: async (req, res) => {
-    const { province_id } = req.query;
-
-    try {
-      let result;
-
-      if (province_id) {
-        const cityListInProvince = await db.City.findAll({
-          where: { province_id },
-        });
-        result = cityListInProvince;
-      } else {
-        const allProvince = await db.Province.findAll();
-        result = allProvince;
-      }
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
+  /* PROFILING USER */
 
   updateUserInformation: async (req, res) => {
     const userData = req.user;
-    const data = JSON.parse(req.body.data);
-    console.log("data", data);
+    let data;
+    if (req.body.data) {
+      data = JSON.parse(req.body.data);
+    }
+
     const image = req.file?.filename;
-    console.log("image", image);
+
     const transaction = await db.sequelize.transaction();
     try {
       const user = await db.User.findOne({ where: { id: userData.id } });
@@ -628,6 +570,7 @@ module.exports = {
               .status(400)
               .json({ ok: false, message: error.message, error: error.message })
           );
+        return;
       }
 
       if (data?.new_password && data?.new_confirm_password) {
@@ -761,8 +704,226 @@ module.exports = {
           message: "change photo profile successful",
         });
       }
+      res.json({
+        ok: true,
+        messaeg: "you did not update anything",
+      });
     } catch (error) {
       await transaction.commit();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  /* PROFILING USER ADDRESS */
+  userAddress: async (req, res) => {
+    const userData = req.user;
+    try {
+      const userAddressData = await db.Address_user.findAll({
+        where: { user_id: userData.id },
+        include: { model: db.City },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+
+      res.status(200).json({
+        ok: true,
+        result: userAddressData,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  registerAddress: async (req, res) => {
+    const userData = req.user;
+
+    const transaction = await db.sequelize.transaction();
+    const {
+      city_id,
+      user_id = userData.id,
+      longitude,
+      latitude,
+      address_details,
+      postal_code,
+      address_title,
+    } = req.body;
+    try {
+      const newAddress = await db.Address_user.create(
+        {
+          city_id,
+          user_id,
+          longitude,
+          latitude,
+          address_details,
+          postal_code,
+          address_title,
+        },
+        { transaction }
+      );
+
+      if (!newAddress) {
+        await transaction.rollback();
+        return res.status(401).json({
+          ok: false,
+          message: "register address failed",
+        });
+      }
+      await transaction.commit();
+      res.status(201).json({
+        ok: true,
+        message: "register address successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  changeAddress: async (req, res) => {
+    const userData = req.user;
+    const { address_id } = req.params;
+    let data;
+    if (req.body.data) {
+      data = JSON.parse(req.body.data);
+    }
+    const transaction = await db.sequelize.transaction();
+    console.log(data);
+    try {
+      if (data.city_id) {
+        await db.Address_user.update(
+          {
+            city_id: data.city_id,
+          },
+          { where: { user_id: userData.id, id: address_id }, transaction }
+        );
+      }
+
+      if (data.address_details) {
+        await db.Address_user.update(
+          {
+            address_details: data.address_details,
+          },
+          { where: { user_id: userData.id, id: address_id }, transaction }
+        );
+      }
+
+      if (data.postal_code) {
+        await db.Address_user.update(
+          {
+            postal_code: data.postal_code,
+          },
+          { where: { user_id: userData.id, id: address_id }, transaction }
+        );
+      }
+
+      if (data.address_title) {
+        await db.Address_user.update(
+          {
+            address_title: data.address_title,
+          },
+          { where: { user_id: userData.id, id: address_id }, transaction }
+        );
+      }
+
+      await transaction.commit();
+      res.json({
+        ok: true,
+        message: "change address successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  getAddressById: async (req, res) => {
+    const userData = req.user;
+    const { address_id } = req.params;
+    console.log(userData);
+    try {
+      const userAddressData = await db.Address_user.findOne({
+        where: { user_id: userData.id, id: address_id },
+        include: { model: db.City },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+
+      if (!userAddressData) {
+        return res.status(404).json({
+          ok: false,
+          message: "address not found",
+        });
+      }
+
+      res.status(200).json({
+        ok: true,
+        result: userAddressData,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  regionUserForProvince: async (req, res) => {
+    try {
+      const result = await db.Province.findAll();
+
+      res.json({
+        ok: true,
+        result: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  regionUserForCity: async (req, res) => {
+    const { province_id } = req.query;
+
+    try {
+      let result;
+
+      if (province_id) {
+        const cityListInProvince = await db.City.findAll({
+          where: { province_id },
+        });
+        result = cityListInProvince;
+      } else {
+        const allProvince = await db.Province.findAll();
+        result = allProvince;
+      }
+
+      res.json({
+        ok: true,
+        result: result,
+      });
+    } catch (error) {
       res.status(500).json({
         ok: false,
         message: "something bad happened",

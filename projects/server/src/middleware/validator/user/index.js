@@ -45,6 +45,7 @@ module.exports = {
       .withMessage("phone is required")
       .isMobilePhone()
       .withMessage("must to in valid phone number"),
+    body("img_profile").optional(),
     body("password", "password cannot be empty")
       .notEmpty()
       .withMessage("password is required")

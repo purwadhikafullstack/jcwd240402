@@ -3,7 +3,10 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import verified from "../../assets/images/verified.webp";
 import axios from "../../api/axios";
-import { removeCookie, removeLocalStorage } from "../../utils";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
 import NotifVerifies from "../../components/NotifVerifies";
 
 const NotifVerified = () => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Badge } from "flowbite-react";
 import { FaCartArrowDown } from "react-icons/fa";
+import BadgeTag from "./BadgeTag";
 
 const CardProduct = ({ src, category, name, desc, price }) => {
   return (

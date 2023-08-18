@@ -6,7 +6,12 @@ import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import SearchBar from "./SearchBar";
-import { getCookie, getLocalStorage, logout, setCookie } from "../utils";
+import {
+  getCookie,
+  getLocalStorage,
+  logout,
+  setCookie,
+} from "../utils/tokenSetterGetter";
 import axios from "../api/axios";
 
 const NavbarMobile = () => {

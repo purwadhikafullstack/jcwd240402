@@ -30,7 +30,7 @@ app.use(
 
 app.use(cors());
 app.use(
-  "/photo-profile",
+  "/api/photo-profile",
   express.static(path.join(__dirname, "public", "imgProfile"))
 );
 

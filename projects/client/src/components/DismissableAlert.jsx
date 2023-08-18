@@ -13,7 +13,7 @@ export default function DismissableAlert({ successMsg }) {
       <Alert color="success" onDismiss={handleDismiss}>
         <span>
           <p>
-            <span className="font-medium">Info alert!</span>
+            <span className="font-semibold">Info alert! </span>
             {successMsg}
           </p>
         </span>

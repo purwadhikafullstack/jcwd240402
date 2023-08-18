@@ -6,7 +6,10 @@ import ButtonLink from "../../components/ButtonLink";
 import AuthImageCard from "../../components/AuthImageCard";
 import google from "../../assets/icons/google.png";
 import facebook from "../../assets/icons/facebook.png";
-import { removeCookie, removeLocalStorage } from "../../utils";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
 import withOutAuth from "../../components/withoutAuth";
 
 const SignUp = () => {

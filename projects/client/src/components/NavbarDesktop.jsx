@@ -3,23 +3,17 @@ import { BsFillCartFill } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Menu, Transition } from "@headlessui/react";
 
 import SearchBar from "./SearchBar";
-import ModalLogin from "./ModalLogin";
+import ModalLogin from "./Modals/ModalLogin";
 import ButtonLink from "./ButtonLink";
 import logo from "../assets/images/furniforNav.png";
-import { getCookie, logout } from "../utils";
-
-const user = {
-  name: "Tom Cook",
-  email: "tom@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
+import { getCookie, logout } from "../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 
 const userNavigation = [
-  { name: "Your Profile", to: "#", onClick: {} },
+  { name: "Your Profile", to: "/user/setting", onClick: {} },
   { name: "Settings", to: "#", onClick: {} },
   { name: "Sign out", to: "/log-in", onClick: () => logout() },
 ];
@@ -29,6 +23,7 @@ function classNames(...classes) {
 }
 
 const NavbarDesktop = () => {
+  const userData = useSelector((state) => state.profiler.value);
   const location = useLocation();
   const access_token = getCookie("access_token");
 
@@ -43,10 +38,10 @@ const NavbarDesktop = () => {
           : "lg:grid"
       }`}
     >
-      <div className="flex w-[1200px] justify-evenly items-center">
-        <div className="">
-          <img src={logo} alt="" className="w-16" />
-        </div>
+      <div className="flex w-[1200px] justify-evenly items-center h-16">
+        <Link to="/" className="">
+          <img src={logo} alt="" className=" h-10" />
+        </Link>
         <div className="flex w-60 justify-around">
           <button>Category</button>
           <button>Inspiration</button>
@@ -76,7 +71,7 @@ const NavbarDesktop = () => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={user.imageUrl}
+                      src={`${process.env.REACT_APP_API_BASE_URL}/${userData.User_detail?.img_profile}`}
                       alt=""
                     />
                   </Menu.Button>

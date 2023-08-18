@@ -10,14 +10,14 @@ import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
-import ModalForgotPassword from "../../components/ModalForgotPassword";
+import ModalForgotPassword from "../../components/Modals/ModalForgotPassword";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import {
   setCookie,
   removeCookie,
   setLocalStorage,
   removeLocalStorage,
-} from "../../utils";
+} from "../../utils/tokenSetterGetter";
 import withOutAuth from "../../components/withoutAuth";
 
 const Login = () => {
@@ -114,10 +114,12 @@ const Login = () => {
                   />
                   <PasswordInput
                     name="password"
+                    label="password"
                     onChange={handleForm}
                     value={formik.values.password}
                     isError={!!formik.errors.password}
                     errorMessage={formik.errors.password}
+                    placeholder="password"
                   />
 
                   <ModalForgotPassword />

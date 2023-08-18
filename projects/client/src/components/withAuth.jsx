@@ -1,5 +1,5 @@
 import NotAuth from "../pages/user/NotAuth";
-import { getCookie } from "../utils";
+import { getCookie } from "../utils/tokenSetterGetter";
 
 function withAuth(Component) {
   const access_token = getCookie("access_token");

@@ -9,7 +9,7 @@ import {
   AiOutlineBarChart,
 } from "react-icons/ai";
 
-export default function MultiLevelDropdown() {
+export default function SidebarAdminDesktop() {
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser },
     { to: "/warehouse", label: "Warehouse", icon: AiOutlineShop },

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
-import Button from "../Button";
-import InputForm from "../InputForm";
+import Button from "../../Button";
+import InputForm from "../../InputForm";
 import { useFormik } from "formik";
 import * as yup from "yup";
 

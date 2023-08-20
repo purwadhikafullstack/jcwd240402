@@ -1,8 +1,8 @@
 import React from "react";
 import { Modal } from "flowbite-react";
-import Button from "../Button";
+import Button from "../../Button";
 
-const AdminProfileModal = ({ show, onClose, title, profileData }) => {
+const WarehouseModal = ({ show, onClose, title, warehouseData, onEdit }) => {
   return (
     <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header>
@@ -14,14 +14,14 @@ const AdminProfileModal = ({ show, onClose, title, profileData }) => {
       </Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          {profileData.map((item, index) => (
+          {warehouseData.map((item, index) => (
             <div key={index} className="flex justify-between items-center">
               <span className="text-base font-medium text-gray-600">
                 {item.label}:
               </span>
               <span>{item.value}</span>
               <Button
-                onClick={item.onEdit}
+                onClick={() => onEdit(item.label)}
                 buttonSize="small"
                 buttonText="Edit"
                 bgColor="bg-blue3"
@@ -36,4 +36,5 @@ const AdminProfileModal = ({ show, onClose, title, profileData }) => {
   );
 };
 
-export default AdminProfileModal;
+export default WarehouseModal;
+

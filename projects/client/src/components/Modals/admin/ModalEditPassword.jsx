@@ -3,11 +3,16 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "axios";
-import PasswordInput from "../PasswordInput";
-import InputForm from "../InputForm";
-import Button from "../Button";
+import PasswordInput from "../../PasswordInput";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
 
-const ChangePasswordModal = ({ show, onClose, adminId }) => {
+const ChangePasswordModal = ({
+  show,
+  onClose,
+  adminId,
+  handleSuccessfulEdit,
+}) => {
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
@@ -21,6 +26,7 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
       if (response.status === 200) {
         onClose();
         formik.resetForm();
+        handleSuccessfulEdit();
       } else {
         throw new Error("Change Password Failed");
       }
@@ -89,7 +95,7 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
               name="newPassword"
               onChange={formik.handleChange}
               value={formik.values.newPassword}
-              errorMessage={formik.errors.newPassword} // Add this line
+              errorMessage={formik.errors.newPassword}
             />
             <InputForm
               label="Confirm New Password"
@@ -98,7 +104,7 @@ const ChangePasswordModal = ({ show, onClose, adminId }) => {
               placeholder=""
               onChange={formik.handleChange}
               value={formik.values.confirmPassword}
-              errorMessage={formik.errors.confirmPassword} // Add this line
+              errorMessage={formik.errors.confirmPassword}
             />
             <div className="flex flex-col justify-center items-center mt-3">
               <Button

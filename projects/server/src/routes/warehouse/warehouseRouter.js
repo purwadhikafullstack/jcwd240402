@@ -1,4 +1,4 @@
-const warehouseController = require("../../controllers/admin/warehouseController");
+const warehouseController = require("../../controllers/warehouse/warehouseController");
 const validatorMiddleware = require("../../middleware/validator/admin");
 const coordinatesMiddleware =  require("../../middleware/openCage/setCoordinates")
 const router = require("express").Router();

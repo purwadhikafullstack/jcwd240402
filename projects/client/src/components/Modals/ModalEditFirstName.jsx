@@ -1,35 +1,49 @@
+import React, { useState } from "react";
 import { Modal } from "flowbite-react";
-import { useState } from "react";
-import Button from "./Button";
-import InputForm from "./InputForm";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import AlertWithIcon from "./AlertWithIcon";
 
-export default function ModalForgotPassword() {
+import AlertWithIcon from "../AlertWithIcon";
+import axios from "../../api/axios";
+import InputForm from "../InputForm";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import Button from "../Button";
+import DismissableAlert from "../DismissableAlert";
+import { useDispatch } from "react-redux";
+import { profileUser } from "../../features/userDataSlice";
+
+const ModalEditFirstName = ({ last_name }) => {
+  const access_token = getCookie("access_token");
+  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
-  const [email, setEmail] = useState("");
-  const props = { openModal, setOpenModal, email, setEmail };
-  const navigate = useNavigate();
+  const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
+  const [isSuccess, setIsSuccess] = useState("update username successful");
 
-  const forgotPassword = async (values, { setStatus, setValues }) => {
+  const editFirstName = async (values, { setStatus, setValues }) => {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(values));
     try {
-      console.log(values);
-      const response = await axios.post("/auth/forgot-password", values);
+      const response = await axios.patch("/user/profile", formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       if (response.status === 201) {
         setStatus({ success: true });
         setValues({
-          email: "",
+          first_name: "",
         });
         setStatus({
           success: true,
           message: "Successful. Please check your email for verification.",
         });
 
-        navigate("/forgot-password");
+        axios
+          .get("/user/profile", {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((res) => dispatch(profileUser(res.data.result)));
+
+        setIsSuccess("update first name successful");
         setErrMsg(null);
         props.setOpenModal(undefined);
       } else {
@@ -47,11 +61,15 @@ export default function ModalForgotPassword() {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      first_name: "",
     },
-    onSubmit: forgotPassword,
+    onSubmit: editFirstName,
     validationSchema: yup.object().shape({
-      email: yup.string().required("email is required").email(),
+      first_name: yup
+        .string()
+        .required("first name is required")
+        .min(3)
+        .max(20),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -61,7 +79,6 @@ export default function ModalForgotPassword() {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
   };
-
   return (
     <>
       <button
@@ -69,9 +86,10 @@ export default function ModalForgotPassword() {
           props.setOpenModal("form-elements");
         }}
         type="button"
+        className="ml-4"
       >
-        <p className="underline decoration-solid text-right text-xs text-base_grey">
-          Forgot Password?
+        <p className="underline decoration-solid text-right text-xs text-blue3">
+          Edit
         </p>
       </button>
       <Modal
@@ -84,21 +102,21 @@ export default function ModalForgotPassword() {
         <Modal.Body>
           <div className="space-y-6">
             <h1 className="text-3xl font-bold  text-blue3 lg:rounded-xl">
-              Forgot Password
+              first name
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
               {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
               <div className="flex flex-col gap-y-2 mb-3">
                 <InputForm
                   width="w-full"
-                  label="email"
+                  label="first name"
                   onChange={handleForm}
-                  placeholder="email"
-                  name="email"
-                  type="email"
-                  value={formik.values.email}
-                  isError={!!formik.errors.email}
-                  errorMessage={formik.errors.email}
+                  placeholder="first name"
+                  name="first_name"
+                  type="text"
+                  value={formik.values.first_name}
+                  isError={!!formik.errors.first_name}
+                  errorMessage={formik.errors.first_name}
                 />
               </div>
               <div className="w-full">
@@ -112,20 +130,11 @@ export default function ModalForgotPassword() {
                 />
               </div>
             </form>
-
-            <div className="flex justify-between text-sm font-medium text-gray-500 dark:text-gray-300">
-              Not registered?&nbsp;
-              <Link
-                to="/sign-up"
-                className="text-cyan-700 hover:underline dark:text-cyan-500"
-                onClick={() => props.setOpenModal(undefined)}
-              >
-                Create account
-              </Link>
-            </div>
           </div>
         </Modal.Body>
       </Modal>
     </>
   );
-}
+};
+
+export default ModalEditFirstName;

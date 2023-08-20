@@ -1,9 +1,9 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AdminHome from "../pages/Admin/AdminHome";
-import AdminLoginPage from "../pages/Admin/AdminLogin";
-import AdminList from "../pages/Admin/AdminList";
-import WarehouseList from "../pages/Admin/WarehouseList";
+import AdminHome from "../pages/admin/AdminHome";
+import AdminLoginPage from "../pages/admin/AdminLogin";
+import AdminList from "../pages/admin/AdminList";
+import WarehouseList from "../pages/admin/WarehouseList";
 import Home from "./user/Home";
 import Register from "./user/Register";
 import Login from "./user/Login";
@@ -15,10 +15,12 @@ import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
+import SettingProfile from "./user/SettingProfile";
+import SettingAddress from "./user/SettingAddress";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App font-poppins">
       <Router>
         <Routes>
           <Route path="/*" element={<NotFound />} />
@@ -42,6 +44,8 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/user/setting" element={<SettingProfile />} />
+          <Route path="/user/setting/address" element={<SettingAddress />} />
         </Routes>
       </Router>
     </div>

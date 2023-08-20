@@ -10,14 +10,15 @@ import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
-import ModalForgotPassword from "../../components/ModalForgotPassword";
+import ModalForgotPassword from "../../components/Modals/ModalForgotPassword";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import {
   setCookie,
   removeCookie,
   setLocalStorage,
   removeLocalStorage,
-} from "../../utils";
+} from "../../utils/tokenSetterGetter";
+import withOutAuth from "../../components/withoutAuth";
 
 const Login = () => {
   removeCookie("access_token");
@@ -27,7 +28,7 @@ const Login = () => {
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/auth/login", values);
+      const response = await axios.post("/user/auth/login", values);
 
       if (response.status === 200 && response.data.ok) {
         const accessToken = response.data?.accessToken;
@@ -46,8 +47,6 @@ const Login = () => {
         });
 
         navigate("/");
-        console.log(response.data.accessToken);
-        console.log(response.data.refreshToken);
       } else {
         throw new Error("Login Failed");
       }
@@ -115,10 +114,12 @@ const Login = () => {
                   />
                   <PasswordInput
                     name="password"
+                    label="password"
                     onChange={handleForm}
                     value={formik.values.password}
                     isError={!!formik.errors.password}
                     errorMessage={formik.errors.password}
+                    placeholder="password"
                   />
 
                   <ModalForgotPassword />
@@ -149,4 +150,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default withOutAuth(Login);

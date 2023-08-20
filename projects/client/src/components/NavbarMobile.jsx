@@ -6,7 +6,12 @@ import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import SearchBar from "./SearchBar";
-import { getCookie, getLocalStorage, logout, setCookie } from "../utils";
+import {
+  getCookie,
+  getLocalStorage,
+  logout,
+  setCookie,
+} from "../utils/tokenSetterGetter";
 import axios from "../api/axios";
 
 const NavbarMobile = () => {
@@ -17,7 +22,7 @@ const NavbarMobile = () => {
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
-        .get("/auth/keep-login", {
+        .get("/user/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
         })
         .then((res) => {

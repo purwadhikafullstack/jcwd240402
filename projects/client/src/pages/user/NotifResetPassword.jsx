@@ -1,8 +1,7 @@
 import React from "react";
-import logo from "../../assets/images/furnifor.png";
 import resetPassword from "../../assets/images/reset_password_success.png";
 import { useNavigate } from "react-router-dom";
-import { removeCookie } from "../../utils";
+import { removeCookie } from "../../utils/tokenSetterGetter";
 import Notif from "../../components/NotifForgotResetPassword";
 
 const NotifResetPassword = () => {

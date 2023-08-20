@@ -4,7 +4,7 @@ import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { BiPurchaseTag, BiSolidPurchaseTag } from "react-icons/bi";
 import { BsCart, BsCartFill } from "react-icons/bs";
 import { FaRegUser, FaUser } from "react-icons/fa";
-import { getCookie } from "../utils";
+import { getCookie } from "../utils/tokenSetterGetter";
 
 const NavigatorMobile = () => {
   const location = useLocation();
@@ -89,12 +89,14 @@ const NavigatorMobile = () => {
 
         <div
           className={`bg-inherit ${
-            location.pathname === "/profile" ? "text-yellow2" : "text-white"
+            location.pathname === "/user/setting"
+              ? "text-yellow2"
+              : "text-white"
           } col-span-1`}
         >
-          {location.pathname === "/profile" ? (
+          {location.pathname === "/user/setting" ? (
             <Link
-              to={`${access_token ? "/profile" : "/redirect-login"}`}
+              to={`${access_token ? "/user/setting" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
               <FaUser />
@@ -102,7 +104,7 @@ const NavigatorMobile = () => {
             </Link>
           ) : (
             <Link
-              to={`${access_token ? "/profile" : "/redirect-login"}`}
+              to={`${access_token ? "/user/setting" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
               <FaRegUser />

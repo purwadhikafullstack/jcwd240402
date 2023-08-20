@@ -1,6 +1,6 @@
 import React from "react";
 import verifyPage from "../../assets/images/verify.webp";
-import { removeCookie } from "../../utils";
+import { removeCookie } from "../../utils/tokenSetterGetter";
 import NotifVerifies from "../../components/NotifVerifies";
 
 const NotifVerify = () => {

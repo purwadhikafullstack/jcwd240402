@@ -1,8 +1,18 @@
 const multer = require("multer");
+const path = require("path");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "src/public/imgProfile");
+    const static = path.join(
+      __dirname,
+      "..",
+      "..",
+      "..",
+      "public",
+      "imgProfile"
+    );
+
+    cb(null, static);
   },
   filename: (req, file, cb) => {
     const timestamp = new Date().getTime();
@@ -15,9 +25,7 @@ const imageFilter = (req, file, cb) => {
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
-    file.mimetype === "image/gif" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/webp"
+    file.mimetype === "image/jpg"
   ) {
     cb(null, true);
   } else {

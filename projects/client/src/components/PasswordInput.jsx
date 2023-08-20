@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import { Label } from "flowbite-react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const PasswordInput = ({ errorMessage, width, value, onChange, name }) => {
+const PasswordInput = ({
+  errorMessage,
+  width,
+  value,
+  onChange,
+  name,
+  placeholder = "password",
+  label = "password",
+}) => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const isError = Boolean(errorMessage);
 
@@ -13,7 +21,7 @@ const PasswordInput = ({ errorMessage, width, value, onChange, name }) => {
   return (
     <div className={`${width}`}>
       <div className="block">
-        <Label htmlFor="Password" value="Password" />
+        <Label htmlFor="Password" value={label} />
       </div>
       <div className="relative">
         <input
@@ -24,7 +32,7 @@ const PasswordInput = ({ errorMessage, width, value, onChange, name }) => {
               ? "bg-red-50 border-red-500 text-red-900 placeholder-red-700 focus:ring-red-500 dark:bg-gray-700 focus:border-red-500"
               : " rounded-lg bg-gray-50"
           }`}
-          placeholder="Password"
+          placeholder={placeholder}
           value={value}
           onChange={onChange}
           name={name}

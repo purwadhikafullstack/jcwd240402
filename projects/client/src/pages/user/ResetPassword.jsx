@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import logo from "../../assets/images/furnifor.png";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../api/axios";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import { removeCookie } from "../../utils";
+import { removeCookie } from "../../utils/tokenSetterGetter";
 
 const ResetPassword = () => {
   const { resetToken } = useParams();
@@ -18,7 +17,7 @@ const ResetPassword = () => {
   const resetPassword = async (values, { setStatus, setValues }) => {
     try {
       const response = await axios.patch(
-        `/auth/reset-password/${resetToken}`,
+        `/user/auth/reset-password/${resetToken}`,
         values
       );
       console.log(response);

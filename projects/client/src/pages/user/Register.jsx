@@ -9,8 +9,12 @@ import axios from "../../api/axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import AuthImageCard from "../../components/AuthImageCard";
-import { removeCookie, removeLocalStorage } from "../../utils";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import withOutAuth from "../../components/withoutAuth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +24,7 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/auth/register", values);
+      const response = await axios.post("/user/auth/register", values);
 
       if (response.status === 201) {
         setStatus({ success: true });
@@ -283,4 +287,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default withOutAuth(Register);

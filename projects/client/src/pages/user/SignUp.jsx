@@ -6,7 +6,11 @@ import ButtonLink from "../../components/ButtonLink";
 import AuthImageCard from "../../components/AuthImageCard";
 import google from "../../assets/icons/google.png";
 import facebook from "../../assets/icons/facebook.png";
-import { removeCookie, removeLocalStorage } from "../../utils";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
+import withOutAuth from "../../components/withoutAuth";
 
 const SignUp = () => {
   removeCookie("access_token");
@@ -47,6 +51,7 @@ const SignUp = () => {
                     <h1 className="text-gray-300">OR</h1>
                     <hr className="border-2 border-gray-200 rounded-full w-full" />
                   </div>
+
                   <div className="flex flex-col justify-center items-center lg:rounded-lg">
                     <ButtonLink
                       buttonSize="medium"
@@ -77,4 +82,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default withOutAuth(SignUp);

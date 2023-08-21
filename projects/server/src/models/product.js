@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     weight: DataTypes.INTEGER,
     category_id: DataTypes.INTEGER,
     description: DataTypes.STRING,
-    img_product_id: DataTypes.INTEGER,
     is_active: DataTypes.BOOLEAN
   }, {
     sequelize,

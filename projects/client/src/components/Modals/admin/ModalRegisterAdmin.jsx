@@ -4,11 +4,11 @@ import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import axios from "axios";
-import Button from "../Button";
-import InputForm from "../InputForm";
-import PasswordInput from "../PasswordInput";
+import Button from "../../Button";
+import InputForm from "../../InputForm";
+import PasswordInput from "../../PasswordInput";
 
-const RegisterAdminModal = ({ show, onClose,refreshAdminListWrapper }) => {
+const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
@@ -80,7 +80,7 @@ const RegisterAdminModal = ({ show, onClose,refreshAdminListWrapper }) => {
           formik.resetForm();
           setSelectedWarehouse(null);
           onClose();
-          refreshAdminListWrapper();
+          onSuccessfulRegister();
         } else {
           throw new Error("Admin Registration Failed");
         }

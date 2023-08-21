@@ -9,7 +9,7 @@ const DefaultPagination = ({ totalPages, onPageChange }) => {
   };
 
   return (
-    <div style={{ backgroundColor: 'white' }}>
+    <div>
       <Pagination
         currentPage={currentPage}
         onPageChange={handlePageChange}

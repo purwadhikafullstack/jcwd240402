@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
-import Button from "../Button";
-import InputForm from "../InputForm";
+import Button from "../../Button";
+import InputForm from "../../InputForm";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import axios from "../../../api/axios";
 
-const RegisterWarehouseModal = ({ show, onClose }) => {
+const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
   const validationSchema = yup.object().shape({
-    warehouse_name: yup.string().required("Warehouse Name is required"),
+    warehouse_name: yup.string().required("Warehouse Name is required").min(8, "Warehouse Name must be at least 8 characters"),
     address_warehouse: yup.string().required("Address is required"),
     warehouse_contact: yup.string().required("Contact is required"),
   });
@@ -25,62 +25,54 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
     },
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit: async (values) => {
-      try {
-        if (!selectedCity) {
-          throw new Error("Please select a city.");
-        }
-        const coordinates = await getCoordinates(values.address_warehouse);
-        if (!coordinates) {
-          throw new Error("Address not found");
-        }
-        const response = await axios.post(
-          "http://localhost:8000/api/warehouse/register",
-          {
-            ...values,
-            city_id: selectedCity.value,
-            latitude: coordinates.latitude,
-            longitude: coordinates.longitude,
-          }
-        );
-
-        if (response.status === 201) {
-          formik.resetForm();
-          setSelectedCity(null);
-          onClose();
-        } else {
-          throw new Error("Warehouse Registration Failed");
-        }
-      } catch (error) {
-        setErrMsg(error.message || "Registration failed");
-      }
-    },
+    onSubmit: handleFormSubmit,
     validationSchema,
   });
 
-  const loadCities = async (inputValue) => {
+  async function handleFormSubmit(values) {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/admin/city/?page=1`
-      );
-      const results = response.data.cities.map((city) => ({
+      if (!selectedCity) {
+        throw new Error("Please select a city.");
+      }
+      const coordinates = await getCoordinates(values.address_warehouse);
+      if (!coordinates) {
+        throw new Error("Address not found");
+      }
+      const response = await axios.post("/warehouse/register", {
+        ...values,
+        city_id: selectedCity.value,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      });
+      if (response.status === 201) {
+        formik.resetForm();
+        setSelectedCity(null);
+        onClose();
+        onSuccessfulRegister();
+      } else {
+        throw new Error("Warehouse Registration Failed");
+      }
+    } catch (error) {
+      setErrMsg(error.message || "Registration failed");
+    }
+  }
+
+  async function loadCities(inputValue) {
+    try {
+      const response = await axios.get(`/admin/city/?searchName=${inputValue}&page=1`);
+      return response.data.cities.map(city => ({
         value: city.id,
         label: city.name,
       }));
-      return results.filter((city) =>
-        city.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
     } catch (error) {
       console.error("Error loading cities:", error);
       return [];
     }
-  };
+  }
 
-  const getCoordinates = async (address) => {
+  async function getCoordinates(address) {
     const apiKey = "f2f57cc907854a3cb36d25b445d148e6";
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
-      address
-    )}&key=${apiKey}`;
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
     try {
       const response = await axios.get(url);
       if (response.data.results && response.data.results.length > 0) {
@@ -95,7 +87,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
       console.error(error);
       return null;
     }
-  };
+  }
 
   return (
     <Modal show={show} size="md" popup onClose={onClose}>
@@ -121,7 +113,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
               placeholder="Enter warehouse name"
               value={formik.values.warehouse_name}
               onChange={formik.handleChange}
-              isError={!!formik.errors.warehouse_name}
+              isError={formik.errors.warehouse_name}
               errorMessage={formik.errors.warehouse_name}
             />
             <InputForm
@@ -131,7 +123,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
               placeholder="Enter address"
               value={formik.values.address_warehouse}
               onChange={formik.handleChange}
-              isError={!!formik.errors.address_warehouse}
+              isError={formik.errors.address_warehouse}
               errorMessage={formik.errors.address_warehouse}
             />
             <InputForm
@@ -141,19 +133,17 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
               placeholder="Enter contact"
               value={formik.values.warehouse_contact}
               onChange={formik.handleChange}
-              isError={!!formik.errors.warehouse_contact}
+              isError={formik.errors.warehouse_contact}
               errorMessage={formik.errors.warehouse_contact}
             />
-            <div className="flex-1">
-              <AsyncSelect
-                classNamePrefix="react-select"
-                loadOptions={loadCities}
-                value={selectedCity}
-                onChange={setSelectedCity}
-                placeholder="Select City"
-              />
-            </div>
-            <div className="flex flex-col justify-center items-center mt-3 ">
+            <AsyncSelect
+              classNamePrefix="react-select"
+              loadOptions={loadCities}
+              value={selectedCity}
+              onChange={setSelectedCity}
+              placeholder="Select City"
+            />
+            <div className="flex flex-col justify-center items-center mt-3">
               <Button
                 type="submit"
                 buttonSize="medium"

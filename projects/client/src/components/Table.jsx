@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table } from 'flowbite-react';
-import { FaEdit, FaTrash } from 'react-icons/fa'; // Importing the Edit and Trash icons from Font Awesome
+import { PiTrashLight} from 'react-icons/pi'; 
 
 const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
   return (
@@ -26,20 +26,18 @@ const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
             ))}
             <Table.Cell>
               <a
-                className="custom-edit-link mr-2" // Added margin for spacing
+                className="custom-edit-link"
                 onClick={() => onEdit(row)}
                 href="#"
               >
-                <FaEdit />
-              </a>
-              <a
-                className="custom-trash-link"
-                onClick={() => onDelete(row)}
-                href="#"
-              >
-                <FaTrash />
+                Edit
               </a>
             </Table.Cell>
+              <PiTrashLight
+                size={20} 
+                className="mt-4 cursor-pointer" 
+                onClick={() => onDelete && onDelete(row)}
+              />
           </Table.Row>
         ))}
       </Table.Body>
@@ -48,3 +46,4 @@ const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
 };
 
 export default TableComponent;
+

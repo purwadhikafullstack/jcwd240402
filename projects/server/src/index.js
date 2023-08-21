@@ -33,6 +33,8 @@ app.use(
   "/photo-profile",
   express.static(path.join(__dirname, "public/imgProfile"))
 );
+app.use('/src/public/imgCategory', express.static(path.join(__dirname, 'public', 'imgCategory')));
+
 app.use(cookieParser());
 app.use(express.json());
 // ==========================

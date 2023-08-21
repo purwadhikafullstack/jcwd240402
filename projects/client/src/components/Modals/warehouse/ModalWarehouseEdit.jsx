@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+import { Modal } from "flowbite-react";
+import AsyncSelect from "react-select/async";
+import Button from "../../Button";
+import InputForm from "../../InputForm";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Modal } from "flowbite-react";
-import InputForm from "../../InputForm";
-import Button from "../../Button";
-import AsyncSelect from "react-select/async";
+import axios from "../../../api/axios";
 import { loadCities } from "../../../utils/WarehouseListHelp";
 
 const WarehouseProfileModal = ({
@@ -17,9 +18,31 @@ const WarehouseProfileModal = ({
   initialValue = null,
   validationSchema = null,
   refreshWarehouseList,
+  warehouseId,
 }) => {
-  const [errMsg, setErrMsg] = React.useState("");
-  const [selectedCity, setSelectedCity] = React.useState(initialValue);
+  const [errMsg, setErrMsg] = useState("");
+  const [selectedCity, setSelectedCity] = useState(initialValue);
+
+  const getCoordinates = async (address) => {
+    const apiKey = "f2f57cc907854a3cb36d25b445d148e6";
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
+    try {
+      const response = await axios.get(url);
+      if (response.data.results && response.data.results.length > 0) {
+        return {
+          latitude: response.data.results[0].geometry.lat,
+          longitude: response.data.results[0].geometry.lng,
+        };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
 
   const getValidationSchema = (label) => {
     switch (label) {
@@ -34,7 +57,7 @@ const WarehouseProfileModal = ({
         return yup.object().shape({
           [name]: yup.string().required(`${label} is required`),
         });
-    } 
+    }
   };
 
   const formik = useFormik({
@@ -43,11 +66,39 @@ const WarehouseProfileModal = ({
     },
     onSubmit: async (values) => {
       try {
-        await onSubmit(values[name]);
-        setErrMsg("");
-        formik.resetForm();
-        refreshWarehouseList();
-        onClose();
+        if (label === "Warehouse Address" && values[name] !== initialValue?.value) {
+          const coordinates = await getCoordinates(values[name]);
+          if (coordinates) {
+
+            const updatedValues = {
+              ...values,
+              longitude: coordinates.longitude,
+              latitude: coordinates.latitude,
+            };
+            const response = await axios.patch(`/api/warehouse/${warehouseId}`, updatedValues);
+            if (response.status === 200) {
+              setErrMsg("");
+              formik.resetForm();
+              refreshWarehouseList();
+              onClose();
+            } else {
+              throw new Error("Warehouse update failed");
+            }
+          } else {
+            throw new Error("Address not found");
+          }
+        } else {
+
+          const response = await axios.patch(`/api/warehouse/${warehouseId}`, values);
+          if (response.status === 200) {
+            setErrMsg("");
+            formik.resetForm();
+            refreshWarehouseList();
+            onClose();
+          } else {
+            throw new Error("Warehouse update failed");
+          }
+        }
       } catch (error) {
         setErrMsg(error.message || "Edit failed");
       }
@@ -73,7 +124,7 @@ const WarehouseProfileModal = ({
           )}
           <div className="mt-5 px-6 grid gap-y-3">
             {label === "City" ? (
-              <>
+                <>
                 <label>{label}</label>
                 <AsyncSelect
                   classNamePrefix="react-select"
@@ -115,4 +166,4 @@ const WarehouseProfileModal = ({
   );
 };
 
-export default WarehouseProfileModal ;
+export default WarehouseProfileModal;

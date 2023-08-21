@@ -63,21 +63,29 @@ module.exports = {
     }
   },
 
-  async registerAdmin(req, res) {
+  async  registerAdmin(req, res) {
     const { username, first_name, last_name, password, warehouse_id } = req.body;
+  
+    const t = await db.sequelize.transaction();
+  
     try {
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, salt);
-
-      const newUser = await db.Admin.create({
-        username,
-        role_id: 2,
-        first_name,
-        last_name,
-        password: hashPassword,
-        warehouse_id,
-      });
-
+  
+      const newUser = await db.Admin.create(
+        {
+          username,
+          role_id: 2,
+          first_name,
+          last_name,
+          password: hashPassword,
+          warehouse_id,
+        },
+        { transaction: t }
+      );
+  
+      await t.commit();
+  
       return res.status(201).send({
         message: "Registration Admin successful",
         data: {
@@ -86,6 +94,7 @@ module.exports = {
         },
       });
     } catch (error) {
+      await t.rollback();
       res.status(500).send({
         message: "Fatal error on server",
         errors: error.message,

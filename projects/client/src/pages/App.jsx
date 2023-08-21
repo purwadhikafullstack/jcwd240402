@@ -15,6 +15,7 @@ import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
+import AdminProductDetail from "./Admin/ProductList";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/admin-dashboard" element={<AdminHome />} />
+          <Route path="/admin/product" element={<AdminProductDetail />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
           <Route path="/warehouse" element={<WarehouseList />} />

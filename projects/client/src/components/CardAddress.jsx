@@ -6,10 +6,8 @@ import ModalConfirmationPrimaryAddress from "./Modals/ModalConfirmationPrimaryAd
 
 const CardAddress = ({ address_title, address_details, city, id }) => {
   const userData = useSelector((state) => state.profiler.value);
-  console.log(userData);
 
   const primaryAddress = userData.User_detail?.address_user_id;
-  console.log(primaryAddress);
 
   return (
     <div className="w-full pb-4">

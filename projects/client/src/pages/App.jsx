@@ -17,6 +17,7 @@ import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
+import ProductDetail from "./user/ProductDetail";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
         </Routes>
       </Router>
     </div>

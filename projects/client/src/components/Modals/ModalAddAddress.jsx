@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { profileUser } from "../../features/userDataSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Button from "../Button";
+import { addressUser } from "../../features/userAddressSlice";
 
 const ModalAddAddress = () => {
   const access_token = getCookie("access_token");
@@ -50,6 +51,14 @@ const ModalAddAddress = () => {
       });
 
       if (response.status === 201) {
+        axios
+          .get("/user/profile/address", {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((res) => {
+            dispatch(addressUser(res.data?.result));
+          });
+
         setStatus({
           success: true,
           message: "register address successful.",
@@ -62,13 +71,6 @@ const ModalAddAddress = () => {
           city_id: "",
         });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
-
-        console.log("success");
         setErrMsg(null);
         props.setOpenModal(undefined);
       } else {

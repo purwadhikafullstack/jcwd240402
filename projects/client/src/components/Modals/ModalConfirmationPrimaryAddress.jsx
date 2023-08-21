@@ -13,13 +13,12 @@ export default function ModalConfirmationPrimaryAddress({ id }) {
   const dispatch = useDispatch();
   const access_token = getCookie("access_token");
 
-  const [openModal, setOpenModal] = useState(false); // Mengubah default value menjadi `false` untuk menghindari `undefined` pada render awal
+  const [openModal, setOpenModal] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
   const setPrimaryAddress = async () => {
-    // Menggunakan async/await untuk pemanggilan API
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `/user/profile/address/primary/${id}`,
         {},
         {
@@ -37,7 +36,8 @@ export default function ModalConfirmationPrimaryAddress({ id }) {
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
-        setErrMsg("Set primary address failed");
+        setErrMsg(error.response?.data?.message);
+        console.log(error.response?.data?.message);
       }
     }
   };

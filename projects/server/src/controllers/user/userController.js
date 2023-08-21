@@ -508,6 +508,7 @@ module.exports = {
   updateUserInformation: async (req, res) => {
     const userData = req.user;
     let data;
+
     if (req.body.data) {
       data = JSON.parse(req.body.data);
     }
@@ -525,10 +526,21 @@ module.exports = {
       }
 
       if (data?.username) {
+        const isUsernameExist = await db.User.findOne({
+          where: { username: data.username },
+        });
+        if (isUsernameExist) {
+          return res.status(400).json({
+            ok: false,
+            message: "username already taken",
+          });
+        }
+
         await db.User.update(
           { username: data.username },
           { where: { id: user.id }, transaction }
         );
+
         await transaction.commit();
         return res.status(201).json({
           ok: true,
@@ -536,7 +548,30 @@ module.exports = {
         });
       }
 
+      if (data?.first_name) {
+        await db.User_detail.update(
+          { first_name: data.first_name },
+          { where: { user_id: user.id }, transaction }
+        );
+        await transaction.commit();
+        return res.status(201).json({
+          ok: true,
+          message: "change first name successful",
+        });
+      }
+
       if (data?.email) {
+        const isEmailExist = await db.User.findOne({
+          where: { email: data.email },
+        });
+
+        if (isEmailExist) {
+          return res.status(400).json({
+            ok: false,
+            message: "email already taken",
+          });
+        }
+
         const verifyToken =
           crypto.randomBytes(16).toString("hex") +
           Math.random() +
@@ -605,18 +640,6 @@ module.exports = {
         });
       }
 
-      if (data?.first_name) {
-        await db.User_detail.update(
-          { first_name: data.first_name },
-          { where: { user_id: user.id }, transaction }
-        );
-        await transaction.commit();
-        return res.status(201).json({
-          ok: true,
-          message: "change first name successful",
-        });
-      }
-
       if (data?.last_name) {
         await db.User_detail.update(
           { last_name: data.last_name },
@@ -630,6 +653,17 @@ module.exports = {
       }
 
       if (data?.phone) {
+        const isPhoneExist = await db.User_detail.findOne({
+          where: { phone: data?.phone },
+        });
+
+        if (isPhoneExist) {
+          return res.status(400).json({
+            ok: false,
+            message: "phone number already taken",
+          });
+        }
+
         await db.User_detail.update(
           { phone: data.phone },
           { where: { user_id: user.id }, transaction }
@@ -704,13 +738,13 @@ module.exports = {
           message: "change photo profile successful",
         });
       }
-      res.json({
-        ok: true,
-        messaeg: "you did not update anything",
+      return res.json({
+        ok: false,
+        message: "you did not update anything",
       });
     } catch (error) {
       await transaction.commit();
-      res.status(500).json({
+      return res.status(500).json({
         ok: false,
         message: "something bad happened",
         error: error.message,
@@ -859,6 +893,18 @@ module.exports = {
     const { address_id } = req.params;
     const transaction = await db.sequelize.transaction();
     try {
+      const isPrimary = await db.User_detail.findOne({
+        where: { address_user_id: address_id },
+      });
+
+      if (isPrimary) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "this address already primary",
+        });
+      }
+
       const isAddressExist = await db.Address_user.findOne({
         where: { id: address_id, user_id: userData.id },
         attributes: {
@@ -900,6 +946,7 @@ module.exports = {
     const userData = req.user;
     const { address_id } = req.params;
     const transaction = await db.sequelize.transaction();
+
     try {
       const address = await db.Address_user.findOne({
         where: { id: address_id, user_id: userData.id },
@@ -907,12 +954,27 @@ module.exports = {
           exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
         },
       });
+
       if (!address) {
         await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "address not found",
+          message: "Address not found",
         });
+      }
+
+      const isPrimaryAddress = await db.User_detail.findOne({
+        where: { user_id: userData.id, address_user_id: address_id },
+      });
+
+      if (isPrimaryAddress) {
+        await db.User_detail.update(
+          { address_user_id: null },
+          {
+            where: { user_id: userData.id, address_user_id: address_id },
+            transaction,
+          }
+        );
       }
 
       await db.Address_user.destroy({
@@ -921,15 +983,16 @@ module.exports = {
       });
 
       await transaction.commit();
+
       res.status(200).json({
         ok: true,
-        message: "delete address successful",
+        message: "Delete address successful",
       });
     } catch (error) {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }

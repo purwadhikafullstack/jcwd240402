@@ -16,6 +16,7 @@ import CardAddress from "../../components/CardAddress";
 import { useDispatch, useSelector } from "react-redux";
 import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
+import addressEmpty from "../../assets/images/addressEmpty.png";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -70,15 +71,29 @@ const SettingAddress = () => {
                 <ModalAddAddress />
               </div>
               <>
-                {addressData.map((address) => (
-                  <CardAddress
-                    key={address.id}
-                    address_title={address.address_title}
-                    address_details={address.address_details}
-                    city={address.City?.name}
-                    id={address.id}
-                  />
-                ))}
+                {addressData.length === 0 ? (
+                  <div className="p-4 w-full flex flex-col justify-center items-center">
+                    <div>
+                      <img src={addressEmpty} alt="" />
+                    </div>
+                    <div className="text-center text-xs ">
+                      <h4>
+                        Your address has not been registered yet. Please kindly
+                        add your address by clicking the 'Add Address' button
+                      </h4>
+                    </div>
+                  </div>
+                ) : (
+                  addressData.map((address) => (
+                    <CardAddress
+                      key={address.id}
+                      address_title={address.address_title}
+                      address_details={address.address_details}
+                      city={address.City?.name}
+                      id={address.id}
+                    />
+                  ))
+                )}
               </>
             </div>
           </div>

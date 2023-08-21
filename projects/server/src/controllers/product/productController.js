@@ -34,7 +34,8 @@ async function moveUploadedFileToDestination(image) {
 
 module.exports = {
   async createProduct(req, res) {
-    const { name, price, weight, category_id, description } = req.body;
+    const { name, price, weight, category_id, description, is_active } =
+      req.body;
     const images = req.files;
 
     const t = await db.sequelize.transaction();
@@ -47,6 +48,7 @@ module.exports = {
           weight,
           category_id,
           description,
+          is_active,
         },
         { transaction: t }
       );
@@ -122,48 +124,48 @@ module.exports = {
   async updateProductImage(req, res) {
     const product_id = req.params.id;
     const imgProductId = req.body.img_product_id;
-  
+
     if (!imgProductId || !req.file) {
       return res.status(400).send({ message: "Missing required data" });
     }
-  
+
     const t = await db.sequelize.transaction();
-  
+
     try {
       const product = await db.Product.findByPk(product_id, { transaction: t });
-  
+
       if (!product) {
         await t.rollback();
         return res.status(404).send({ message: "Product not found!" });
       }
-  
+
       const image = await db.Image_product.findByPk(imgProductId, {
         where: { product_id: product_id },
         transaction: t,
       });
-  
+
       if (!image) {
         await t.rollback();
         return res.status(404).send({ message: "Image not found!" });
       }
-  
+
       if (image.img_product) {
         const oldImageFilename = extractFilenameFromDBPath(image.img_product);
         const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
-        
+
         try {
           await fs.unlink(oldImagePath);
         } catch (err) {
           console.error("Error deleting old image file:", err);
         }
       }
-  
+
       const newFilename = await moveUploadedFileToDestination(req.file);
       image.img_product = createProductImageDBPath(newFilename);
       await image.save({ transaction: t });
-  
+
       await t.commit();
-  
+
       return res.status(200).send({
         message: "Product image updated successfully",
         data: product,
@@ -177,7 +179,7 @@ module.exports = {
       });
     }
   },
-  
+
   async deleteProduct(req, res) {
     const { id } = req.params;
     const t = await db.sequelize.transaction();
@@ -210,9 +212,9 @@ module.exports = {
   },
 
   async getProductsList(req, res) {
-    const page = parseInt(req.query.page, 10) || 1; 
+    const page = parseInt(req.query.page, 10) || 1;
     const pageSize = parseInt(req.query.pageSize, 10) || 10;
-    const options = {}; 
+    const options = {};
 
     try {
       const result = await getAllProducts(options, page, pageSize);
@@ -233,6 +235,31 @@ module.exports = {
         errors: error.message,
       });
     }
-  }
+  },
 
+  getProductById: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const productById = await db.Product.findByPk(id, {
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: [
+          {
+            model: db.Image_product,
+            as: "Image_products",
+            attributes: ["img_product"],
+          },
+        ],
+      });
+      res.status(200).json({
+        ok: true,
+        result: productById,
+      });
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "Fatal error on server.",
+        errors: error.message,
+      });
+    }
+  },
 };

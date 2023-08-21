@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import CardProduct from "./CardProduct";
 
 import { FaCartArrowDown } from "react-icons/fa";
 import { Badge } from "flowbite-react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../api/axios";
+import { productsUser } from "../features/productListUserSlice";
 
-const CarouselProduct = ({ productsData }) => {
+const CarouselProduct = () => {
+  const dispatch = useDispatch();
+  const productsData = useSelector((state) => state.producter.value);
+
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 1024 },
@@ -26,14 +32,21 @@ const CarouselProduct = ({ productsData }) => {
     },
   };
 
+  useEffect(() => {
+    axios.get("/admin/products").then((res) => {
+      dispatch(productsUser(res.data?.data));
+    });
+  }, [dispatch]);
+
   const products = productsData.map((item, index) => (
     <CardProduct
       key={index}
-      src={item.src}
+      src={`${process.env.REACT_APP_API_BASE_URL}${item?.Image_products[0]?.img_product}`}
       category={item.category}
       name={item.name}
-      desc={item.desc}
+      desc={item.description}
       price={item.price}
+      id={item.id}
     />
   ));
 

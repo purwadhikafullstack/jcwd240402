@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const UserController = require("../../controllers/user/userController");
+const ProductController = require("../../controllers/product/productController");
 const Verify = require("../../middleware/auth");
 const validatorMiddleware = require("../../middleware/validator/user");
 const upload = require("../../middleware/multer/user/imgProfile");
@@ -96,5 +97,8 @@ router.get(
 
 router.get("/region-city", UserController.regionUserForCity);
 router.get("/region-province", UserController.regionUserForProvince);
+
+/* PRODUCT */
+router.get("/product/:id", ProductController.getProductById);
 
 module.exports = router;

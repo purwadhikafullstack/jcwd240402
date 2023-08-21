@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import { MdDraw } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import CarouselBanner from "../../components/CarouselBanner";
 import NavbarDesktop from "../../components/NavbarDesktop";
@@ -22,13 +22,20 @@ import SelectionCategory from "../../components/SelectionCategory";
 import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
-import { addressUser } from "../../features/userAddressSlice";
+import { productsUser } from "../../features/productListUserSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const refresh_token = localStorage.getItem("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const productsData = useSelector((state) => state.producter.value);
+
+  useEffect(() => {
+    axios.get("/admin/products").then((res) => {
+      dispatch(productsUser(res.data?.data));
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -52,86 +59,6 @@ const Home = () => {
         .then((res) => dispatch(profileUser(res.data.result)));
     }
   }, [access_token, dispatch, refresh_token]);
-
-  const productsData = [
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-  ];
 
   const listCategory = [
     { id: 1, name: "Table" },

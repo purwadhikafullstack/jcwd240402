@@ -18,7 +18,7 @@ import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductDetail from "./user/ProductDetail";
-import AdminProductDetail from "./Admin/ProductList";
+import AdminProductDetail from "./admin/AdminList";
 
 function App() {
   return (

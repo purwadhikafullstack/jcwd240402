@@ -34,9 +34,9 @@ const NavbarMobile = () => {
 
   let Links = [
     { name: "HOME", to: "/" },
-    { name: "SERVICE", to: "/service" },
-    { name: "ABOUT", to: "/about" },
-    { name: "CONTACT", to: "/contact" },
+    { name: "PROFILE", to: "/user/setting" },
+    { name: "CART", to: "/cart" },
+    { name: "ORDER", to: "/order" },
   ];
   let [open, setOpen] = useState(false);
   return (

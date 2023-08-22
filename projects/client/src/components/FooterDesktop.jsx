@@ -7,6 +7,7 @@ import {
   BsInstagram,
   BsTwitter,
 } from "react-icons/bs";
+
 import logo from "../assets/images/furnifor.png";
 
 const FooterDesktop = () => {

@@ -1,4 +1,5 @@
 import React from "react";
+
 import forgotpassword from "../../assets/images/forgot_password.png";
 import { removeCookie } from "../../utils/tokenSetterGetter";
 import Notif from "../../components/NotifForgotResetPassword";

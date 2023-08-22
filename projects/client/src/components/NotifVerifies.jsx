@@ -1,4 +1,5 @@
 import React from "react";
+
 import verify from "../assets/images/verify.gif";
 import logo from "../assets/images/furnifor.png";
 

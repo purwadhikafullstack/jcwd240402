@@ -1,4 +1,5 @@
 import React from "react";
+
 import NavbarDesktop from "../../components/NavbarDesktop";
 import NavbarMobile from "../../components/NavbarMobile";
 import NotifRedirect from "../../components/NotifRedirect";

@@ -4,6 +4,7 @@ import { AiOutlineHome, AiFillHome } from "react-icons/ai";
 import { BiPurchaseTag, BiSolidPurchaseTag } from "react-icons/bi";
 import { BsCart, BsCartFill } from "react-icons/bs";
 import { FaRegUser, FaUser } from "react-icons/fa";
+
 import { getCookie } from "../utils/tokenSetterGetter";
 
 const NavigatorMobile = () => {

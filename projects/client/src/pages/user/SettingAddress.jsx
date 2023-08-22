@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import NavbarDesktop from "../../components/NavbarDesktop";
 import NavbarMobile from "../../components/NavbarMobile";
 import CardProfile from "../../components/CardProfile";

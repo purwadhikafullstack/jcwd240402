@@ -22,8 +22,6 @@ const ProductDetail = () => {
       setDataImage(res.data?.result?.Image_products);
     });
   }, [id]);
-  console.log(detailProduct);
-  console.log(dataImage);
 
   if (detailProduct.length === 0 || dataImage.length === 0) {
     return <p></p>;
@@ -36,8 +34,6 @@ const ProductDetail = () => {
     };
     return image;
   });
-
-  console.log(product);
 
   const productsData = [
     {

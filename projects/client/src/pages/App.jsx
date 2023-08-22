@@ -19,6 +19,7 @@ import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductDetail from "./user/ProductDetail";
 import AdminProductDetail from "./admin/AdminList";
+import Cart from "./user/Cart";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </Router>
     </div>

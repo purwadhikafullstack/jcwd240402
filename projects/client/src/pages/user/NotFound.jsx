@@ -1,6 +1,6 @@
 import React from "react";
+
 import notFound from "../../assets/images/notFound.png";
-import { Link } from "react-router-dom";
 import NavbarDesktop from "../../components/NavbarDesktop";
 import NavbarMobile from "../../components/NavbarMobile";
 import FooterDesktop from "../../components/FooterDesktop";

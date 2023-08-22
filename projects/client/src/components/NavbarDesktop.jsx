@@ -4,13 +4,13 @@ import { Link, useLocation } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
+import { useSelector } from "react-redux";
 
 import SearchBar from "./SearchBar";
 import ModalLogin from "./Modals/ModalLogin";
 import ButtonLink from "./ButtonLink";
 import logo from "../assets/images/furniforNav.png";
 import { getCookie, logout } from "../utils/tokenSetterGetter";
-import { useSelector } from "react-redux";
 
 const userNavigation = [
   { name: "Your Profile", to: "/user/setting", onClick: {} },
@@ -56,7 +56,9 @@ const NavbarDesktop = () => {
           />
         </div>
         <div className="flex justify-between w-20 items-center cursor-pointer">
-          <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+          <Link to="/cart">
+            <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+          </Link>
           <button>
             <BiSolidPurchaseTag className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
           </button>

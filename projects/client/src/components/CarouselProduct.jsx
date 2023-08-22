@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import CardProduct from "./CardProduct";
-
 import { FaCartArrowDown } from "react-icons/fa";
 import { Badge } from "flowbite-react";
 import { useDispatch, useSelector } from "react-redux";
+
+import CardProduct from "./CardProduct";
 import axios from "../api/axios";
 import { productsUser } from "../features/productListUserSlice";
 

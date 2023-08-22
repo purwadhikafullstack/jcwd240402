@@ -1,8 +1,9 @@
 import React from "react";
-import coupon from "../assets/icons/coupon.png";
 import { useSelector } from "react-redux";
-import BadgeTag from "./BadgeTag";
 import { BiUser } from "react-icons/bi";
+
+import coupon from "../assets/icons/coupon.png";
+import BadgeTag from "./BadgeTag";
 
 const CardProfile = () => {
   const userData = useSelector((state) => state.profiler.value);

@@ -1,10 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
 import banner8 from "../assets/images/banner_8.png";
 import banner9 from "../assets/images/banner_9.png";
 import banner10 from "../assets/images/banner_10.png";
 import banner11 from "../assets/images/banner_11.png";
 import banner12 from "../assets/images/banner_12.png";
-import { Link } from "react-router-dom";
 
 const FrameImage = () => {
   const fourSquare = [

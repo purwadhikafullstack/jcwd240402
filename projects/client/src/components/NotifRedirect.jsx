@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 import ButtonLink from "./ButtonLink";
 
 const NotifRedirect = ({ imgSrc, to, msg, buttonText, toPage }) => {

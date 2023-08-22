@@ -23,6 +23,7 @@ import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
 import { productsUser } from "../../features/productListUserSlice";
+import { addressUser } from "../../features/userAddressSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");

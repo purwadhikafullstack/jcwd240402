@@ -4,9 +4,16 @@ import toRupiah from "@develoka/angka-rupiah-js";
 const TableCart = ({ img, name, price, weight, setValueCount }) => {
   const [count, setCount] = useState(1);
 
+  const handleInputChange = (event) => {
+    const newValue = parseInt(event.target.value);
+    if (!isNaN(newValue)) {
+      setCount(newValue);
+    }
+  };
+
   return (
     <>
-      <div className="col-span-2 md:col-span-3 lg:col-span-3">
+      <div className="col-span-2 md:col-span-3 lg:col-span-3 ">
         <div className="flex gap-2 h-full justify-center items-center md:justify-start lg:justify-start mt-2 md:mt-0 lg:mt-0">
           <img
             src={img}
@@ -24,15 +31,25 @@ const TableCart = ({ img, name, price, weight, setValueCount }) => {
         </div>
       </div>
       <div className="col-span-2 md:col-span-1 lg:col-span-1 grid justify-center">
-        <div className="flex justify-evenly items-center w-20 text-xs h-full rounded-full">
+        <div className="flex justify-evenly items-center  w-20 text-xs h-full rounded-full ">
           <button
-            onClick={() => (count <= 0 ? 0 : setCount(count - 1))}
-            className=""
+            onClick={() => (count > 1 ? setCount(count - 1) : null)}
+            className="bg-blue3 rounded-l-full w-5 text-white text-base md:text-lg lg:text-xl"
           >
             -
           </button>
-          <p>{count}</p>
-          <button onClick={() => setCount(count + 1)} className="">
+          <input
+            type=""
+            className="w-10 h-7  text-black text-center font-bold text-sm md:text-base lg:text-base"
+            value={count}
+            onChange={handleInputChange}
+            min={1}
+            max={59}
+          />
+          <button
+            onClick={() => setCount(count + 1)}
+            className="bg-blue3 rounded-r-full w-5 text-white text-base md:text-lg lg:text-xl"
+          >
             +
           </button>
         </div>

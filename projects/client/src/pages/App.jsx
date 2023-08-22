@@ -20,6 +20,7 @@ import SettingAddress from "./user/SettingAddress";
 import ProductDetail from "./user/ProductDetail";
 import AdminProductDetail from "./admin/AdminList";
 import Cart from "./user/Cart";
+import CheckOut from "./user/CheckOut";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path="/user/setting/address" element={<SettingAddress />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
         </Routes>
       </Router>
     </div>

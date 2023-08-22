@@ -36,7 +36,7 @@ const NavbarMobile = () => {
     { name: "HOME", to: "/" },
     { name: "PROFILE", to: "/user/setting" },
     { name: "CART", to: "/cart" },
-    { name: "ORDER", to: "/order" },
+    { name: "ORDER", to: "/checkout" },
   ];
   let [open, setOpen] = useState(false);
   return (

@@ -2,33 +2,40 @@ import React, { useEffect, useState } from "react";
 import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import { MdDraw } from "react-icons/md";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-import CarouselBanner from "../../components/CarouselBanner";
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import CarouselProduct from "../../components/CarouselProduct";
+import CarouselBanner from "../../components/user/carousel/CarouselBanner";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import CarouselProduct from "../../components/user/carousel/CarouselProduct";
 import banner1 from "../../assets/images/banner_1.png";
 import banner2 from "../../assets/images/banner_2.png";
 import banner3 from "../../assets/images/banner_3.png";
 import banner4 from "../../assets/images/banner_4.png";
 import banner5 from "../../assets/images/banner_5.png";
-import StaticBanner from "../../components/StaticBanner";
-import ServiceCard from "../../components/ServiceCard";
-import FrameImage from "../../components/FrameImage";
-import SelectionCategory from "../../components/SelectionCategory";
+import StaticBanner from "../../components/user/StaticBanner";
+import ServiceCard from "../../components/user/ServiceCard";
+import FrameImage from "../../components/user/FrameImage";
+import SelectionCategory from "../../components/user/SelectionCategory";
 import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
-import { addressUser } from "../../features/userAddressSlice";
+import { productsUser } from "../../features/productListUserSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const refresh_token = localStorage.getItem("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const productsData = useSelector((state) => state.producter.value);
+
+  useEffect(() => {
+    axios.get("/admin/products").then((res) => {
+      dispatch(productsUser(res.data?.data));
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -52,86 +59,6 @@ const Home = () => {
         .then((res) => dispatch(profileUser(res.data.result)));
     }
   }, [access_token, dispatch, refresh_token]);
-
-  const productsData = [
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-  ];
 
   const listCategory = [
     { id: 1, name: "Table" },

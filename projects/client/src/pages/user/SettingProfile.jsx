@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import NavigatorSetting from "../../components/NavigatorSetting";
-import CardProfile from "../../components/CardProfile";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import NavigatorSetting from "../../components/user/navbar/NavigatorSetting";
+import CardProfile from "../../components/user/card/CardProfile";
 import { profileUser } from "../../features/userDataSlice";
 import axios from "../../api/axios";
 import {
@@ -14,16 +15,14 @@ import {
   getLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
-import ModalEditUsername from "../../components/Modals/ModalEditUsername";
-import ModalEditFirstName from "../../components/Modals/ModalEditFirstName";
-import ModalEditLastName from "../../components/Modals/ModalEditLastName";
-import ModalEditPhone from "../../components/Modals/ModalEditPhone";
-import BadgeTag from "../../components/BadgeTag";
-import ModalEditEmail from "../../components/Modals/ModalEditEmail";
-import ModalEditPasswordUser from "../../components/Modals/ModalEditPasswordUser";
-import ModalUpload from "../../components/Modals/ModalUpload";
-import ModalUploadProfileImage from "../../components/Modals/ModalUploadProfileImage";
-import { Link } from "react-router-dom";
+import ModalEditUsername from "../../components/user/modal/ModalEditUsername";
+import ModalEditFirstName from "../../components/user/modal/ModalEditFirstName";
+import ModalEditLastName from "../../components/user/modal/ModalEditLastName";
+import ModalEditPhone from "../../components/user/modal/ModalEditPhone";
+import ModalEditEmail from "../../components/user/modal/ModalEditEmail";
+import ModalEditPasswordUser from "../../components/user/modal/ModalEditPasswordUser";
+import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProfileImage";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -175,4 +174,4 @@ const SettingProfile = () => {
   );
 };
 
-export default SettingProfile;
+export default withAuthUser(SettingProfile);

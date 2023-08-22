@@ -10,7 +10,7 @@ import {
   removeCookie,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import withOutAuth from "../../components/withoutAuth";
+import withOutAuth from "../../components/user/withoutAuth";
 
 const SignUp = () => {
   removeCookie("access_token");

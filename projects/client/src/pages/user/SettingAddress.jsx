@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import CardProfile from "../../components/CardProfile";
-import NavigatorSetting from "../../components/NavigatorSetting";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import ModalAddAddress from "../../components/Modals/ModalAddAddress";
+import { useDispatch, useSelector } from "react-redux";
+
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import CardProfile from "../../components/user/card/CardProfile";
+import NavigatorSetting from "../../components/user/navbar/NavigatorSetting";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import ModalAddAddress from "../../components/user/modal/ModalAddAddress";
 import axios from "../../api/axios";
 import {
   getCookie,
   getLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
-import CardAddress from "../../components/CardAddress";
-import { useDispatch, useSelector } from "react-redux";
+import CardAddress from "../../components/user/card/CardAddress";
 import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
+import addressEmpty from "../../assets/images/addressEmpty.png";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -70,15 +73,29 @@ const SettingAddress = () => {
                 <ModalAddAddress />
               </div>
               <>
-                {addressData.map((address) => (
-                  <CardAddress
-                    key={address.id}
-                    address_title={address.address_title}
-                    address_details={address.address_details}
-                    city={address.City?.name}
-                    id={address.id}
-                  />
-                ))}
+                {addressData.length === 0 ? (
+                  <div className="p-4 w-full flex flex-col justify-center items-center">
+                    <div>
+                      <img src={addressEmpty} alt="" />
+                    </div>
+                    <div className="text-center text-xs ">
+                      <h4>
+                        Your address has not been registered yet. Please kindly
+                        add your address by clicking the 'Add Address' button
+                      </h4>
+                    </div>
+                  </div>
+                ) : (
+                  addressData.map((address) => (
+                    <CardAddress
+                      key={address.id}
+                      address_title={address.address_title}
+                      address_details={address.address_details}
+                      city={address.City?.name}
+                      id={address.id}
+                    />
+                  ))
+                )}
               </>
             </div>
           </div>
@@ -90,4 +107,4 @@ const SettingAddress = () => {
   );
 };
 
-export default SettingAddress;
+export default withAuthUser(SettingAddress);

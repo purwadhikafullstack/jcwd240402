@@ -1,8 +1,9 @@
 import React from "react";
-import resetPassword from "../../assets/images/reset_password_success.png";
 import { useNavigate } from "react-router-dom";
+
+import resetPassword from "../../assets/images/reset_password_success.png";
 import { removeCookie } from "../../utils/tokenSetterGetter";
-import Notif from "../../components/NotifForgotResetPassword";
+import Notif from "../../components/user/notif/NotifForgotResetPassword";
 
 const NotifResetPassword = () => {
   const msg = "Congrats! change password successful. Please Log in";

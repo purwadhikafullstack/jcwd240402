@@ -1,11 +1,11 @@
 import React from "react";
+
 import notFound from "../../assets/images/notFound.png";
-import { Link } from "react-router-dom";
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import NotifRedirect from "../../components/NotifRedirect";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import NotifRedirect from "../../components/user/notif/NotifRedirect";
 
 const NotFound = () => {
   const msg = "No worries! Just head back to the";

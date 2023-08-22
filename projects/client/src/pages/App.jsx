@@ -20,6 +20,9 @@ import SettingAddress from "./user/SettingAddress";
 import ProductForm from "../components/ProductEdit";
 import AdminCardProduct from "../components/AdminCardProduct";
 import ProductList from "./Admin/ProductList";
+import ProductDetail from "./user/ProductDetail";
+import AdminProductDetail from "./admin/AdminList";
+import Cart from "./user/Cart";
 
 function App() {
   return (
@@ -52,6 +55,8 @@ function App() {
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </Router>
     </div>

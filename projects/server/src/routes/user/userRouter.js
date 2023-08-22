@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const UserController = require("../../controllers/user/userController");
+const ProductController = require("../../controllers/product/productController");
 const Verify = require("../../middleware/auth");
 const validatorMiddleware = require("../../middleware/validator/user");
 const upload = require("../../middleware/multer/user/imgProfile");
@@ -37,15 +38,16 @@ router.patch(
 router.patch("/auth/close-account", UserController.closeAccount);
 
 /* PROFILING USER */
+
 router.get(
   "/profile",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.userInformation
 );
 
 router.patch(
   "/profile",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   upload.single("file"),
   UserController.updateUserInformation
 );
@@ -54,7 +56,7 @@ router.patch(
 
 router.post(
   "/profile/address",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   validatorMiddleware.registerAddress,
   addressUserCoordinate,
   UserController.registerAddress
@@ -62,13 +64,13 @@ router.post(
 
 router.get(
   "/profile/address",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.userAddress
 );
 
 router.patch(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   upload.single("file"),
   addressUserCoordinateUpdate,
   UserController.changeAddress
@@ -76,19 +78,19 @@ router.patch(
 
 router.patch(
   "/profile/address/primary/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.changePrimaryAddress
 );
 
 router.delete(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.deleteAddress
 );
 
 router.get(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.getAddressById
 );
 
@@ -96,5 +98,8 @@ router.get(
 
 router.get("/region-city", UserController.regionUserForCity);
 router.get("/region-province", UserController.regionUserForProvince);
+
+/* PRODUCT */
+router.get("/product/:id", ProductController.getProductById);
 
 module.exports = router;

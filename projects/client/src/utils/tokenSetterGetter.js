@@ -33,3 +33,4 @@ export function logout() {
   removeLocalStorage("refresh_token");
   removeCookie("access_token");
 }
+

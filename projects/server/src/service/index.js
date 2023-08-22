@@ -2,6 +2,7 @@ const admin = require("./admin");
 const warehouse = require("./warehouse");
 const city = require("./city");
 const province = require("./province");
+const product = require("./product");
 
 
 module.exports = {
@@ -9,4 +10,5 @@ module.exports = {
   warehouse,
   city,
   province,
+  product,
 };

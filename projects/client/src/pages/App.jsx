@@ -17,6 +17,7 @@ import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
+import ProductForm from "../components/ProductEdit";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/admin-dashboard" element={<AdminHome />} />
+          <Route path="/admin/product" element={<ProductForm />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
           <Route path="/warehouse" element={<WarehouseList />} />

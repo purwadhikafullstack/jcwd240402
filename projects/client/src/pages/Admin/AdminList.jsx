@@ -9,25 +9,25 @@ import AdminProfileModal from "../../components/Modals/admin/ModalAdminEdit";
 import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword";
 import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
 import DefaultPagination from "../../components/Pagination";
-import {
-  loadWarehousesAction,
-  loadAdminsAction,
-} from "../../features/adminListActions";
+import {loadWarehousesAction, loadAdminsAction} from "../../features/adminListActions";
 import moment from "moment";
 
 const AdminList = () => {
   const dispatch = useDispatch();
   const { warehouses, admins, error } = useSelector((state) => state.admin);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [searchName, setSearchName] = useState("");
+
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
+  
+  
   useEffect(() => {
     refreshAdminList();
   }, [searchName, selectedWarehouse, currentPage]);
@@ -74,17 +74,8 @@ const AdminList = () => {
 
   const profileData = selectedAdmin
     ? [
-        {
-          label: "Password",
-          value: "••••••••",
-          onEdit: setPasswordModalOpen.bind(null, true),
-        },
-        {
-          label: "Warehouse",
-          value: selectedAdmin["warehouse name"] || "",
-          onEdit: setWarehouseModalOpen.bind(null, true),
-        },
-      ]
+        { label: "Password", value: "••••••••", onEdit: setPasswordModalOpen.bind(null, true),},
+        {label: "Warehouse",value: selectedAdmin["warehouse name"] || "",onEdit: setWarehouseModalOpen.bind(null, true),},]
     : [];
 
   return (
@@ -106,7 +97,7 @@ const AdminList = () => {
             placeholder="Search Admin name"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white shadow-sm mx-4"
+            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
           />
           <Button
             buttonSize="medium"

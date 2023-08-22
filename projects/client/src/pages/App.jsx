@@ -18,6 +18,8 @@ import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductForm from "../components/ProductEdit";
+import AdminCardProduct from "../components/AdminCardProduct";
+import ProductList from "./Admin/ProductList";
 
 function App() {
   return (
@@ -37,6 +39,8 @@ function App() {
           <Route path="/log-in" element={<Login />} />
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
+          <Route path="/card" element={<AdminCardProduct />} />
+          <Route path="/admin/product-list" element={<ProductList />} />
           <Route
             path="/reset-password/:resetToken"
             element={<ResetPassword />}

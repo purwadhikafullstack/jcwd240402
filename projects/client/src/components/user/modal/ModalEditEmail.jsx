@@ -92,7 +92,7 @@ const ModalEditEmail = () => {
           props.setOpenModal("form-elements");
         }}
         type="button"
-        className="ml-4"
+        className="ml-2 md:ml-4 lg:ml-4"
       >
         <p className="underline decoration-solid text-right text-xs text-blue3">
           Edit

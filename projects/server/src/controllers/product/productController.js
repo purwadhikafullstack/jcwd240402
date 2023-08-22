@@ -36,6 +36,7 @@ module.exports = {
   async createProduct(req, res) {
     const { name, price, weight, category_id, description } = req.body;
     const images = req.files;
+    console.log(req.files);
 
     const t = await db.sequelize.transaction();
 

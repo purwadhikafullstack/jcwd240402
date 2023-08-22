@@ -38,6 +38,7 @@ router.patch(
 router.patch("/auth/close-account", UserController.closeAccount);
 
 /* PROFILING USER */
+
 router.get(
   "/profile",
   Verify.verifyAccessTokenUser,

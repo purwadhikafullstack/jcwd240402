@@ -10,7 +10,7 @@ import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
 import AuthImageCard from "../../components/AuthImageCard";
-import ModalForgotPassword from "../../components/Modals/ModalForgotPassword";
+import ModalForgotPassword from "../../components/user/modal/ModalForgotPassword";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import {
   setCookie,
@@ -18,7 +18,7 @@ import {
   setLocalStorage,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import withOutAuth from "../../components/withoutAuth";
+import withOutAuth from "../../components/user/withoutAuth";
 
 const Login = () => {
   removeCookie("access_token");

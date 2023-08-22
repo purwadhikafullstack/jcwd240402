@@ -1,10 +1,10 @@
 import React from "react";
 
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import NotifRedirect from "../../components/NotifRedirect";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import NotifRedirect from "../../components/user/notif/NotifRedirect";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import notAuth from "../../assets/images/NotAuth.png";
 
 const NotAuth = () => {

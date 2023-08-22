@@ -7,7 +7,7 @@ import {
   removeCookie,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import NotifVerifies from "../../components/NotifVerifies";
+import NotifVerifies from "../../components/user/notif/NotifVerifies";
 
 const NotifVerified = () => {
   const { verify_token } = useParams();

@@ -14,7 +14,7 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import withOutAuth from "../../components/withoutAuth";
+import withOutAuth from "../../components/user/withoutAuth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -198,7 +198,7 @@ const Register = () => {
                   <div className="flex gap-x-4 ">
                     <InputForm
                       width="w-full"
-                      label={inputNameCongfigs[0].label}
+                      label={`${inputNameCongfigs[0].label}*`}
                       onChange={handleForm}
                       placeholder={inputNameCongfigs[0].placeholder}
                       name={inputNameCongfigs[0].name}
@@ -209,7 +209,7 @@ const Register = () => {
                     />
                     <InputForm
                       width="w-full"
-                      label={inputNameCongfigs[1].label}
+                      label={`${inputNameCongfigs[1].label}*`}
                       onChange={handleForm}
                       placeholder={inputNameCongfigs[1].placeholder}
                       name={inputNameCongfigs[1].name}
@@ -222,7 +222,7 @@ const Register = () => {
                   <div className="flex gap-x-4 ">
                     <InputForm
                       width="w-full"
-                      label={inputContactConfigs[0].label}
+                      label={`${inputContactConfigs[0].label}*`}
                       onChange={handleForm}
                       placeholder={inputContactConfigs[0].placeholder}
                       name={inputContactConfigs[0].name}
@@ -233,7 +233,7 @@ const Register = () => {
                     />
                     <InputForm
                       width="w-full"
-                      label={inputContactConfigs[1].label}
+                      label={`${inputContactConfigs[1].label}*`}
                       onChange={handleForm}
                       placeholder={inputContactConfigs[1].placeholder}
                       name={inputContactConfigs[1].name}
@@ -247,7 +247,7 @@ const Register = () => {
                   {inputConfigs.map((config, index) => (
                     <InputForm
                       key={index}
-                      label={config.label}
+                      label={`${config.label}*`}
                       onChange={handleForm}
                       placeholder={config.placeholder}
                       name={config.name}

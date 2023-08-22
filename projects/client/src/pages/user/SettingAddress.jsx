@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import CardProfile from "../../components/CardProfile";
-import NavigatorSetting from "../../components/NavigatorSetting";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import ModalAddAddress from "../../components/Modals/ModalAddAddress";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import CardProfile from "../../components/user/card/CardProfile";
+import NavigatorSetting from "../../components/user/navbar/NavigatorSetting";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import ModalAddAddress from "../../components/user/modal/ModalAddAddress";
 import axios from "../../api/axios";
 import {
   getCookie,
   getLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
-import CardAddress from "../../components/CardAddress";
-import { useDispatch, useSelector } from "react-redux";
+import CardAddress from "../../components/user/card/CardAddress";
 import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
 import addressEmpty from "../../assets/images/addressEmpty.png";
-import withAuthUser from "../../components/withAuthUser";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");

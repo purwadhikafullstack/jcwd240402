@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import CarouselProductDetail from "../../components/CarouselProductDetail";
-import AccordionProduct from "../../components/AccordionProduct";
-import CarouselProduct from "../../components/CarouselProduct";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
+import AccordionProduct from "../../components/user/AccordionProduct";
+import CarouselProduct from "../../components/user/carousel/CarouselProduct";
 import axios from "../../api/axios";
 
 const ProductDetail = () => {

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import TableCart from "../../components/TableCart";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import TableCart from "../../components/user/TableCart";
 
 const Cart = () => {
   const [count, setCount] = useState(1);
@@ -31,7 +31,9 @@ const Cart = () => {
       <NavbarDesktop />
       <NavbarMobile />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        <h1>Your Shopping Cart</h1>
+        <h1 className="text-xl font-bold md:text-2xl lg:text-3xl">
+          Your Shopping Cart
+        </h1>
         {/* PHONE CART */}
         <div className="p-4 w-full border-b-2 h-20 flex justify-between items-center sticky top-14 md:hidden lg:hidden bg-white rounded-lg">
           <h1 className="text-xs">{productData.length} products: </h1>

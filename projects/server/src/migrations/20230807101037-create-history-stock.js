@@ -47,7 +47,7 @@ module.exports = {
       },
       timestamp: {
         allowNull: false,
-        type: Sequelize.STRING,
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,

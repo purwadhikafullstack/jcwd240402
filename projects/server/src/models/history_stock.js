@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     quantity: DataTypes.INTEGER,
     journal: DataTypes.STRING,
-    timestamp: DataTypes.STRING
+    timestamp: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'History_stock',

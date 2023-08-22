@@ -21,42 +21,7 @@ module.exports = {
      * }], {});
     */
     return queryInterface.bulkInsert("Users", [
-      // {
-      //   id: 1,
-      //   username: "andret",
-      //   email: "andret@admin.com",
-      //   role_id: 1,
-      //   password: password,
-      //   verify_token: null,
-      //   reset_password_token: null,
-      //   is_verify: true,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // },
-      // {
-      //   id: 2,
-      //   username: "sule",
-      //   email: "sule@gmail.com",
-      //   role_id: 2,
-      //   password: password,
-      //   verify_token: null,
-      //   reset_password_token: null,
-      //   is_verify: true,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // },
-      // {
-      //   id: 3,
-      //   username: "danielk",
-      //   email: "danielk@gmail.com",
-      //   role_id: 2,
-      //   password: password,
-      //   verify_token: null,
-      //   reset_password_token: null,
-      //   is_verify: true,
-      //   createdAt: new Date(),
-      //   updatedAt: new Date(),
-      // },
+
       {
         id: 1,
         username: "kevin09",

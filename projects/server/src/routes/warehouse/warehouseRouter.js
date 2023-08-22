@@ -5,6 +5,8 @@ const router = require("express").Router();
 
 router.post("/register",validatorMiddleware.validateRegisterWarehouse,warehouseController.registerWarehouse);
 router.get("/warehouse-list", warehouseController.getWarehouseList);
-router.patch("/:id",coordinatesMiddleware,warehouseController.updateWarehouse)
+router.patch("/:id",coordinatesMiddleware,warehouseController.updateWarehouse);
+router.get("/testaddstock", warehouseController.testAddStockHistoryStock);
+router.get("/stock-history", warehouseController.getStockHistoryList);
 
 module.exports = router;

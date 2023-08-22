@@ -16,7 +16,7 @@ module.exports = {
       {
         id: 1,
         address_warehouse: "Sampora, Cisauk, Tangerang Regency, Banten 15345",
-        warehouse_name: "Furnifor",
+        warehouse_name: "Furnifor BSD",
         city_id: 455,
         latitude: "-6.308524",
         longitude: "106.655045",
@@ -27,7 +27,7 @@ module.exports = {
       {
         id: 2,
         address_warehouse: "Surabaya, Balongsari, Tandes, Surabaya, East Java 60186",
-        warehouse_name: "Furnifor",
+        warehouse_name: "Furnifor Surabaya",
         city_id: 444,
         latitude: "-7.251686",
         longitude: "112.679671",

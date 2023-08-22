@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
 import addressEmpty from "../../assets/images/addressEmpty.png";
+import withAuthUser from "../../components/withAuthUser";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -105,4 +106,4 @@ const SettingAddress = () => {
   );
 };
 
-export default SettingAddress;
+export default withAuthUser(SettingAddress);

@@ -40,13 +40,13 @@ router.patch("/auth/close-account", UserController.closeAccount);
 /* PROFILING USER */
 router.get(
   "/profile",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.userInformation
 );
 
 router.patch(
   "/profile",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   upload.single("file"),
   UserController.updateUserInformation
 );
@@ -55,7 +55,7 @@ router.patch(
 
 router.post(
   "/profile/address",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   validatorMiddleware.registerAddress,
   addressUserCoordinate,
   UserController.registerAddress
@@ -63,13 +63,13 @@ router.post(
 
 router.get(
   "/profile/address",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.userAddress
 );
 
 router.patch(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   upload.single("file"),
   addressUserCoordinateUpdate,
   UserController.changeAddress
@@ -77,19 +77,19 @@ router.patch(
 
 router.patch(
   "/profile/address/primary/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.changePrimaryAddress
 );
 
 router.delete(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.deleteAddress
 );
 
 router.get(
   "/profile/address/:address_id",
-  Verify.verifyAccessToken,
+  Verify.verifyAccessTokenUser,
   UserController.getAddressById
 );
 

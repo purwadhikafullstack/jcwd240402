@@ -24,6 +24,7 @@ import ModalEditPasswordUser from "../../components/Modals/ModalEditPasswordUser
 import ModalUpload from "../../components/Modals/ModalUpload";
 import ModalUploadProfileImage from "../../components/Modals/ModalUploadProfileImage";
 import { Link } from "react-router-dom";
+import withAuthUser from "../../components/withAuthUser";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -175,4 +176,4 @@ const SettingProfile = () => {
   );
 };
 
-export default SettingProfile;
+export default withAuthUser(SettingProfile);

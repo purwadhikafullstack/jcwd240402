@@ -3,22 +3,17 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 
 const ImageGalleryEdit = ({ productData, onImagesChange }) => {
-  // Initialize state with the images from productData
+  console.log(productData)
   const [images, setImages] = useState(productData?.images || []);
-  console.log(images)
+  console.log("Loaded Images: ", images);
 
-  // Function to handle image click
   const handleImageClick = (index) => {
-    // Remove the clicked image
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
-
-    // If you have any callback function to handle this change, you can call it here
     onImagesChange && onImagesChange(newImages);
   };
 
-  // Define carousel responsiveness settings
   const responsive = {
     superLargeDesktop: {
         breakpoint: { max: 4000, min: 1024 },

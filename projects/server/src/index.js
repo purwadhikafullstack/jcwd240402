@@ -47,6 +47,7 @@ app.use("/api", router.user);
 /* ADMIN ROUTES */
 app.use("/api/admin", router.admin);
 app.use("/api/warehouse", router.warehouse);
+app.use("/api/warehouse-stock", router.warehouseStock);
 // ==========================
 
 app.get("/api", (req, res) => {

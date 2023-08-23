@@ -227,7 +227,7 @@ module.exports = {
 
   async getProductsList(req, res) {
     const page = parseInt(req.query.page, 10) || 1;
-    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+    const pageSize = parseInt(req.query.pageSize, 9) || 9;
     const categoryId = req.query.category_id;
     const priceRange = parseInt(req.query.priceRange, 10);
 

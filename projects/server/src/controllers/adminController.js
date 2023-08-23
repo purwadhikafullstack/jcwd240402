@@ -297,7 +297,7 @@ module.exports = {
 
   async getCategories(req, res) {
     const page = parseInt(req.query.page, 10) || 1;
-    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+    const pageSize = parseInt(req.query.pageSize, 9) || 9;
     const name = req.query.name;
   
     const query = name ? { where: { name: name } } : {};

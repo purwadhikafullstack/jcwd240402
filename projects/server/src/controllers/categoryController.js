@@ -14,11 +14,13 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
-      let category_img = "";
-
-      if (req.file) {
-        category_img = createCategoryImageDBPath(req.file.filename);
+      if (!req.file) {
+        return res.status(400).send({
+          message: "Image is required for category creation",
+        });
       }
+
+      const category_img = createCategoryImageDBPath(req.file.filename);
 
       const newCategory = await db.Category.create(
         {
@@ -42,27 +44,21 @@ module.exports = {
       });
     }
   },
-
-  async updateCategory(req, res) {
+  async updateCategoryImage(req, res) {
     const categoryId = req.params.id;
-    const { name } = req.body;
-  
+
     const t = await db.sequelize.transaction();
-  
+
     try {
       const category = await db.Category.findByPk(categoryId);
-  
+
       if (!category) {
         await t.rollback();
         return res.status(404).send({
           message: "Category not found",
         });
       }
-  
-      if (name) {
-        category.name = name;
-      }
-  
+
       if (req.file) {
         if (category.category_img) {
           const oldImagePath = getAbsoluteCategoryImagePath(
@@ -70,21 +66,18 @@ module.exports = {
           );
           await fs.unlink(oldImagePath);
         }
-  
+
         category.category_img = createCategoryImageDBPath(req.file.filename);
-      }
-  
-      if (name || req.file) {
         await category.save({ transaction: t });
         await t.commit();
-  
+
         return res.status(200).send({
-          message: "Category updated successfully",
+          message: "Category image updated successfully",
           data: category,
         });
       } else {
         return res.status(400).send({
-          message: "No updates provided",
+          message: "No image provided for update",
         });
       }
     } catch (error) {
@@ -95,7 +88,45 @@ module.exports = {
       });
     }
   },
-  
+
+  async updateCategoryName(req, res) {
+    const categoryId = req.params.id;
+    const { name } = req.body;
+
+    const t = await db.sequelize.transaction();
+
+    try {
+      const category = await db.Category.findByPk(categoryId);
+
+      if (!category) {
+        await t.rollback();
+        return res.status(404).send({
+          message: "Category not found",
+        });
+      }
+
+      if (name !== undefined) {
+        category.name = name;
+        await category.save({ transaction: t });
+        await t.commit();
+
+        return res.status(200).send({
+          message: "Category name updated successfully",
+          data: category,
+        });
+      } else {
+        return res.status(400).send({
+          message: "No name provided for update",
+        });
+      }
+    } catch (error) {
+      await t.rollback();
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
 
   async deleteCategory(req, res) {
     const categoryId = req.params.id;
@@ -123,5 +154,4 @@ module.exports = {
     }
   },
 
-  
 };

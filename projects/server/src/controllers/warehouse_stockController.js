@@ -2,150 +2,170 @@ const db = require("../models");
 const { getAllWarehouseStocks } = require("../service/warehouse_stock");
 
 module.exports = {
-  async createStock(req, res) {
-    const { warehouse_id, product_id, product_stock } = req.body;
+  async createStockForWarehouse(req, res) {
+    const { warehouseId, productId, productStock } = req.body;
+
     const t = await db.sequelize.transaction();
 
     try {
-      const existingStock = await warehouseStockService.getOneWarehouseStock({
-        warehouse_id,
-        product_id,
+      const existingStock = await db.Warehouse_stock.findOne({
+        where: { warehouse_id: warehouseId, product_id: productId },
+        transaction: t, 
       });
 
-      if (existingStock.success) {
-        await t.rollback();
-        return res
-          .status(400)
-          .send({
-            message: "Stock already exists for this warehouse and product.",
-          });
+      if (existingStock) {
+        await t.rollback(); 
+        return res.status(400).send({
+          message:
+            "Stock already exists for the selected product in this warehouse.",
+        });
       }
 
-      const newStock = {
-        warehouse_id,
-        product_id,
-        product_stock,
-        status: product_stock > 0 ? "In Stock" : "Empty",
+      const newStock = await db.Warehouse_stock.create(
+        {
+          warehouse_id: warehouseId,
+          product_id: productId,
+          product_stock: productStock,
+        },
+        { transaction: t }
+      ); 
+
+      await t.commit(); 
+
+      res.status(201).send({
+        message: "Stock created successfully.",
+        stock: newStock,
+      });
+    } catch (error) {
+      await t.rollback(); 
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while creating stock.",
+        error: error.message,
+      });
+    }
+  },
+
+  async updateStockForWarehouse(req, res) {
+    const warehouseId = parseInt(req.params.warehouseId, 10);
+    const productId = parseInt(req.params.productId, 10); 
+    const { productStock, operation } = req.body;
+
+    const t = await db.sequelize.transaction();
+
+    try {
+      const existingStock = await db.Warehouse_stock.findOne({
+        where: { warehouse_id: warehouseId, product_id: productId },
+        transaction: t 
+      });
+
+      if (!existingStock) {
+        await t.rollback();
+        return res.status(404).send({
+          message:
+            "Stock does not exist for the selected product in this warehouse.",
+        });
+      }
+
+      switch (operation) {
+        case "increase":
+          existingStock.product_stock += parseInt(productStock, 10); 
+          break;
+        case "decrease":
+          existingStock.product_stock -= parseInt(productStock, 10);
+          if (existingStock.product_stock < 0) {
+            await t.rollback();
+            return res.status(400).send({
+              message: "Operation would result in negative stock.",
+            });
+          }
+          break;
+      }
+      await existingStock.save({ transaction: t });  
+      await t.commit();
+
+      res.status(200).send({
+        message: "Stock updated successfully.",
+        stock: existingStock,
+      });
+    } catch (error) {
+      await t.rollback(); 
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while updating stock.",
+        error: error.message,
+      });
+    }
+},
+
+  async getWarehouseStocks(req, res) {
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 20;
+    const searchWarehouseName = req.query.warehouseName;
+
+    const options = {
+      where: {},
+      include: [
+        {
+          model: db.Product,
+          as: "Product",
+          attributes: ["name", "description"],
+        },
+        {
+          model: db.Warehouse,
+          as: "Warehouse",
+          attributes: ["warehouse_name"],
+        },
+      ],
+    };
+
+    if (searchWarehouseName) {
+      options.where["$Warehouse.warehouse_name$"] = {
+        [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
       };
-
-      const createResult = await db.Warehouse_stocks.create(newStock, {
-        transaction: t,
-      });
-      await t.commit();
-
-      return res.status(201).send({
-        message: "Stock created successfully",
-        data: createResult,
-      });
-    } catch (error) {
-      await t.rollback();
-      res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
-      });
     }
-  },
-
-  async editStock(req, res) {
-    const stockId = req.params.id;
-    const { warehouse_id, product_id, product_stock, status } = req.body;
-    const t = await db.sequelize.transaction();
 
     try {
-      const stock = await warehouseStockService.getOneWarehouseStock({
-        id: stockId,
-      });
-
-      if (!stock.success) {
-        await t.rollback();
-        return res.status(404).send({ message: "Stock not found" });
-      }
-
-      stock.warehouse_id = warehouse_id || stock.warehouse_id;
-      stock.product_id = product_id || stock.product_id;
-      stock.product_stock = product_stock || stock.product_stock;
-      stock.status = status || stock.status;
-
-      await stock.save({ transaction: t });
-      await t.commit();
-
-      return res.status(200).send({
-        message: "Stock updated successfully",
-        data: stock,
-      });
-    } catch (error) {
-      await t.rollback();
-      res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
-      });
-    }
-  },
-
-  async updateStockQuantity(req, res) {
-    const stockId = req.params.id;
-    const { quantity } = req.body;
-
-    const t = await db.sequelize.transaction();
-
-    try {
-      const stockResponse = await warehouseStockService.getOneWarehouseStock({
-        id: stockId,
-      });
-
-      if (!stockResponse.success || !stockResponse.data) {
-        await t.rollback();
-        return res.status(404).send({ message: "Stock not found" });
-      }
-
-      const stock = stockResponse.data;
-
-      stock.product_stock = Math.max(quantity, 0); // Ensure stock is not less than 0
-      stock.status = stock.product_stock > 0 ? "In Stock" : "Empty";
-
-      await stock.save({ transaction: t });
-      await t.commit();
-
-      return res.status(200).send({
-        message: `Stock quantity updated successfully`,
-        data: stock,
-      });
-    } catch (error) {
-      await t.rollback();
-      res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
-      });
-    }
-  },
-
-  async getStockListByWarehouse(req, res) {
-    const { page = 1, pageSize = 10 } = req.query;
-
-    try {
-      const stockResponse = await getAllWarehouseStocks({}, page, pageSize);
+      const stockResponse = await getAllWarehouseStocks(
+        options,
+        page,
+        pageSize
+      );
 
       if (!stockResponse.success) {
         throw new Error(stockResponse.error);
       }
+
       const stocks = stockResponse.data;
+
+      // Reformatting the response to match the desired format
       const groupedStocks = stocks.reduce((acc, stock) => {
-        if (!acc[stock.warehouse_id]) {
-          acc[stock.warehouse_id] = [];
+        const warehouseName = stock.Warehouse.warehouse_name;
+
+        if (!acc[warehouseName]) {
+          acc[warehouseName] = [];
         }
-        acc[stock.warehouse_id].push(stock);
+
+        acc[warehouseName].push({
+          product_stock: stock.product_stock,
+          createdAt: stock.createdAt,
+          updatedAt: stock.updatedAt,
+          Product: stock.Product,
+        });
+
         return acc;
       }, {});
 
-      return res.status(200).send({
-        message: "Fetched stock list successfully",
-        data: groupedStocks,
+      res.status(200).send({
+        message: "Warehouse stocks fetched successfully",
+        stocks: groupedStocks,
         pagination: stockResponse.pagination,
       });
     } catch (error) {
+      console.error(error);
       res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
       });
     }
   },

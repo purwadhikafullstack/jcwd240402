@@ -201,8 +201,8 @@ module.exports = {
 
       if (response.success) {
         res.status(200).send({
-          message: "Warehouse list retrieved successfully",
-          warehouses: response.data,
+          message: "stock history retrieved successfully",
+          history: response.data,
           pagination: response.pagination,
         });
       } else {

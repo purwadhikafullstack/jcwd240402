@@ -19,10 +19,11 @@ import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductForm from "../components/ProductEdit";
 import AdminCardProduct from "../components/AdminCardProduct";
-import ProductList from "./Admin/ProductList";
+import ProductList from "./admin/ProductList";
 import ProductDetail from "./user/ProductDetail";
 import AdminProductDetail from "./admin/AdminList";
 import Cart from "./user/Cart";
+import StockHistory from "./admin/StockHistory";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin/product" element={<ProductForm />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
+          <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />

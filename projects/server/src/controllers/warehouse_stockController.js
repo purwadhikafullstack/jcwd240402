@@ -226,10 +226,51 @@ module.exports = {
     try {
       const response = await getAllStockHistory(options, page, perPage);
 
+      const stockHistory = response.data;
+
+      const amountIncrement = stockHistory.reduce((amountIncrement, stock) => {
+        if(stock.increment_decrement === "Increment"){
+          amountIncrement.push(stock.quantity);
+        }
+        return amountIncrement
+      }, []);
+
+      const amountDecrement = stockHistory.reduce((amountDecrement, stock) => {
+        if(stock.increment_decrement === "Decrement"){
+          amountDecrement.push(stock.quantity);
+        }
+        return amountDecrement
+      }, []);
+
+      const totalIncrement = amountIncrement.reduce((total, n) => total + n, 0)
+      const totalDecrement = amountDecrement.reduce((total, n) => total + n, 0)
+
+      const lastStock = stockHistory.map(item => {
+        const container = {};
+        container.warehouse_stock_id = item.warehouse_stock_id;
+        container.stock_after_transfer = item.stock_after_transfer; 
+
+        return container
+      })
+
+      function removeDuplicates(array, property) {
+        return array.filter((item, index, self) => {
+          const value = item[property];
+          return index === self.findIndex((obj) => obj[property] === value);
+        });
+      }
+
+      const lastStockUnique = removeDuplicates(lastStock, "warehouse_stock_id")
+
+      const totalLastStock = lastStockUnique.reduce((total, n) => total + n.stock_after_transfer, 0)
+
       if (response.success) {
         res.status(200).send({
           message: "stock history retrieved successfully",
-          history: response.data,
+          history: stockHistory,
+          total_last_stock: totalLastStock,
+          total_increment: totalIncrement,
+          total_decrement: totalDecrement,
           pagination: response.pagination,
         });
       } else {
@@ -243,4 +284,5 @@ module.exports = {
       });
     }
   },
+
 };

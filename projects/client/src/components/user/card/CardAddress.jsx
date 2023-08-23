@@ -40,13 +40,13 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
             <div className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20">
               <ul className="list-none">
                 <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                  <ModalChangeAddress />
+                  <ModalChangeAddress idAddress={idAddress} />
                 </li>
                 <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                  <ModalConfirmationPrimaryAddress />
+                  <ModalConfirmationPrimaryAddress idAddress={idAddress} />
                 </li>
                 <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                  <ModalConfirmationDelete />
+                  <ModalConfirmationDelete idAddress={idAddress} />
                 </li>
               </ul>
             </div>

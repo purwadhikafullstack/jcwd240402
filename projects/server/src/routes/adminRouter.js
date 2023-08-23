@@ -5,24 +5,23 @@ const productController = require("../controllers/productController");
 const multerMiddleware = require("../middleware/multer/category/category");
 const router = require("express").Router();
 
-//admin
 router.get("/profile", adminController.getAdminProfile);
 router.post(
   "/register",
-  validatorMiddlewareAdmin.validateRegistration,
+  validatorMiddleware.validateRegistration,
   adminController.registerAdmin
-); //check
+);
 router.post(
   "/login",
-  validatorMiddlewareAdmin.validateLogin,
+  validatorMiddleware.validateLogin,
   adminController.loginAdmin
-); //check
+);
 router.post(
   "/change-pass/:id",
-  validatorMiddlewareAdmin.validatePassword,
+  validatorMiddleware.validatePassword,
   adminController.changeAdminPassword
-); //check
-router.post("/assign-warehouse/:id", adminController.assignWarehouse); //check
+);
+router.post("/assign-warehouse/:id", adminController.assignWarehouse);
 router.get("/", adminController.getAdminList);
 
 router.post(
@@ -53,7 +52,6 @@ router.get("/products", productController.getProductsList);
 router.patch("/product/delete/:id", productController.deleteProduct);
 router.get("/single-product/", productController.getSingleProduct);
 
-//list
 router.get("/city", adminController.getCitiesList);
 router.get("/province", adminController.getProvincesList);
 

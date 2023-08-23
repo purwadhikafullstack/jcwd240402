@@ -713,6 +713,14 @@ module.exports = {
         }
 
         if (previousImageName) {
+          if (previousImageName === "imgprofiledefault.png") {
+            await db.User_detail.update(
+              {
+                img_profile: `photo-profile/${image}`,
+              },
+              { where: { user_id: user.id }, transaction }
+            );
+          }
           const imagePath = path.join(
             __dirname,
             "..",
@@ -724,8 +732,15 @@ module.exports = {
             "imgProfile",
             previousImageName
           );
-          console.log(imagePath);
-          fs.unlinkSync(imagePath);
+          if (previousImageName !== "imgprofiledefault.png") {
+            fs.unlinkSync(imagePath);
+            await db.User_detail.update(
+              {
+                img_profile: `photo-profile/${image}`,
+              },
+              { where: { user_id: user.id }, transaction }
+            );
+          }
           await db.User_detail.update(
             {
               img_profile: `photo-profile/${image}`,

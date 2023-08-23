@@ -19,7 +19,7 @@ export default function SidebarAdminDesktop() {
     { to: "/admin/products", label: "Product", icon: AiOutlineShopping },
     { to: "/category", label: "Category", icon: AiOutlineAppstoreAdd },
     { to: "/order", label: "Order", icon: AiOutlineOrderedList },
-    { to: "/stock-management", label: "Stock Management", icon: AiFillDatabase },
+    { to: "/admin/stock", label: "Stock Management", icon: AiFillDatabase },
     {
       label: "Report",
       icon: AiOutlineBarChart,

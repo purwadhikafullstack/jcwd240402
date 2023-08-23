@@ -98,75 +98,70 @@ module.exports = {
     }
 },
 
-  async getWarehouseStocks(req, res) {
-    const page = Number(req.query.page) || 1;
-    const pageSize = Number(req.query.pageSize) || 20;
-    const searchWarehouseName = req.query.warehouseName;
+async getWarehouseStocks(req, res) {
+  const page = Number(req.query.page) || 1;
+  const pageSize = Number(req.query.pageSize) || 20;
+  const searchWarehouseName = req.query.warehouseName;
 
-    const options = {
-      where: {},
-      include: [
-        {
-          model: db.Product,
-          as: "Product",
-          attributes: ["name", "description"],
-        },
-        {
-          model: db.Warehouse,
-          as: "Warehouse",
-          attributes: ["warehouse_name"],
-        },
-      ],
-    };
+  const options = {
+    where: {},
+    include: [
+      {
+        model: db.Product,
+        as: "Product",
+        attributes: ["name", "description"],
+      },
+      {
+        model: db.Warehouse,
+        as: "Warehouse",
+        attributes: ["warehouse_name"],
+        ...(searchWarehouseName && {
+          where: {
+            warehouse_name: {
+              [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
+            },
+          },
+        }),
+      },
+    ],
+  };
 
-    if (searchWarehouseName) {
-      options.where["$Warehouse.warehouse_name$"] = {
-        [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
-      };
+  try {
+    const stockResponse = await getAllWarehouseStocks(options, page, pageSize);
+    const stocks = stockResponse.data;
+
+    if (!stockResponse.success) {
+      throw new Error(stockResponse.error);
     }
 
-    try {
-      const stockResponse = await getAllWarehouseStocks(
-        options,
-        page,
-        pageSize
-      );
-
-      if (!stockResponse.success) {
-        throw new Error(stockResponse.error);
+    const groupedStocks = stocks.reduce((acc, stock) => {
+      const warehouseName = stock.Warehouse.warehouse_name;
+      if (!acc[warehouseName]) {
+        acc[warehouseName] = [];
       }
-
-      const stocks = stockResponse.data;
-
-      // Reformatting the response to match the desired format
-      const groupedStocks = stocks.reduce((acc, stock) => {
-        const warehouseName = stock.Warehouse.warehouse_name;
-
-        if (!acc[warehouseName]) {
-          acc[warehouseName] = [];
-        }
-
-        acc[warehouseName].push({
-          product_stock: stock.product_stock,
-          createdAt: stock.createdAt,
-          updatedAt: stock.updatedAt,
-          Product: stock.Product,
-        });
-
-        return acc;
-      }, {});
-
-      res.status(200).send({
-        message: "Warehouse stocks fetched successfully",
-        stocks: groupedStocks,
-        pagination: stockResponse.pagination,
+      acc[warehouseName].push({
+        product_stock: stock.product_stock,
+        createdAt: stock.createdAt,
+        updatedAt: stock.updatedAt,
+        Product: stock.Product,
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({
-        message: "An error occurred while fetching warehouse stocks",
-        error: error.message,
-      });
-    }
-  },
+      return acc;
+    }, {});
+
+    res.status(200).send({
+      message: "Warehouse stocks fetched successfully",
+      stocks: groupedStocks,
+      pagination: stockResponse.pagination,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "An error occurred while fetching warehouse stocks",
+      error: error.message,
+    });
+  }
+}
+
+
 };

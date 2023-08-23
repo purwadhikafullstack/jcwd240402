@@ -20,6 +20,9 @@ import ProductList from "../components/Product/ProductList";
 import AdminProductPage from "./Admin/AdminProductPage";
 import ProductEdit from "../components/Product/ProductEdit"
 import CategoryList from "./Admin/CategoryList";
+import AdminStockPage from "./Admin/AdminStockPage";
+import StockList from "../components/stock/StockList";
+import CreateStock from "../components/stock/CreateStock";
 
 function App() {
   return (
@@ -41,11 +44,20 @@ function App() {
           <Route path="/reset-password-success" element={<NotifResetPassword />} />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
           <Route path="/category" element={<CategoryList/>} />
+
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
             <Route path="create" element={<ProductRegister />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
           </Route>
+          <Route path="/admin/stock/*" element={<AdminStockPage/>}>
+            <Route index element={<StockList />} />
+            <Route path="management" element={<CreateStock />} />
+            <Route path="edit/:productName" element={<ProductEdit />} />
+          </Route>
+
+
+
           <Route path="/*" element={<NotFound />} />
         </Routes>
       </Router>

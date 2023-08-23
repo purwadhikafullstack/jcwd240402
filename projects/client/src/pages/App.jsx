@@ -21,20 +21,24 @@ import ProductForm from "../components/ProductEdit";
 import AdminCardProduct from "../components/AdminCardProduct";
 import ProductList from "./admin/ProductList";
 import ProductDetail from "./user/ProductDetail";
-import AdminProductDetail from "./admin/AdminList";
+// import AdminProductDetail from "./admin/AdminList";
 import Cart from "./user/Cart";
 import StockHistory from "./admin/StockHistory";
+import CheckOut from "./user/CheckOut";
+import ProductRegister from "../components/Product/ProductRegister";
+import ProductList from "../components/Product/ProductList";
+import AdminProductPage from "./admin/AdminProductPage";
+import ProductEdit from "../components/Product/ProductEdit";
+import CategoryList from "./admin/CategoryList";
 
 function App() {
   return (
     <div className="App font-poppins">
       <Router>
         <Routes>
-          <Route path="/*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/admin-dashboard" element={<AdminHome />} />
-          <Route path="/admin/product" element={<ProductForm />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
           <Route path="/stock-history" element={<StockHistory />} />
@@ -44,8 +48,6 @@ function App() {
           <Route path="/log-in" element={<Login />} />
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
-          <Route path="/card" element={<AdminCardProduct />} />
-          <Route path="/admin/product-list" element={<ProductList />} />
           <Route
             path="/reset-password/:resetToken"
             element={<ResetPassword />}
@@ -55,10 +57,18 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/category" element={<CategoryList />} />
+          <Route path="/admin/products/*" element={<AdminProductPage />}>
+            <Route index element={<ProductList />} />
+            <Route path="create" element={<ProductRegister />} />
+            <Route path="edit/:productName" element={<ProductEdit />} />
+          </Route>
+          <Route path="/*" element={<NotFound />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
         </Routes>
       </Router>
     </div>

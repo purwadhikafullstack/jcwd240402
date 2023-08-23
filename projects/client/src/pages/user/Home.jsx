@@ -23,6 +23,7 @@ import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
 import { productsUser } from "../../features/productListUserSlice";
+import { addressUser } from "../../features/userAddressSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
@@ -36,6 +37,8 @@ const Home = () => {
       dispatch(productsUser(res.data?.data));
     });
   }, [dispatch]);
+
+  console.log(productsData);
 
   useEffect(() => {
     if (!access_token && refresh_token) {

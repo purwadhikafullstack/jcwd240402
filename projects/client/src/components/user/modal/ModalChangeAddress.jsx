@@ -12,10 +12,11 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
-const ModalChangeAddress = ({ id }) => {
+const ModalChangeAddress = ({ idAddress }) => {
   const access_token = getCookie("access_token");
-  const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  console.log(idAddress);
 
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
@@ -46,7 +47,7 @@ const ModalChangeAddress = ({ id }) => {
 
     try {
       const response = await axios.patch(
-        `/user/profile/address/${id}`,
+        `/user/profile/address/${idAddress}`,
         formData,
         {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -112,7 +113,7 @@ const ModalChangeAddress = ({ id }) => {
   return (
     <>
       <button onClick={() => props.setOpenModal("form-elements")}>
-        <p className="text-xs">Change Address</p>
+        <p className="">Change Address</p>
       </button>
 
       <Modal
@@ -128,7 +129,7 @@ const ModalChangeAddress = ({ id }) => {
         <Modal.Body>
           <div className="space-y-6">
             <h1 className="text-3xl font-bold  text-blue3 lg:rounded-xl">
-              Register Address
+              Change Address
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
               {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}

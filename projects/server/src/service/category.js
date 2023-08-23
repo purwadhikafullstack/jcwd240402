@@ -24,6 +24,12 @@ module.exports = {
   getAllCategories: async (options = {}, page = 1, pageSize = 10) => {
     const filter = options.where || {};
     const include = options.include || [];
+    
+    if (filter.name) {
+      filter.name = {
+          [db.Sequelize.Op.like]: `%${filter.name}%`
+      };
+  }
 
     const queryOptions = {
       where: filter,
@@ -53,5 +59,6 @@ module.exports = {
         error: error.message,
       };
     }
-  },
+}
+
 };

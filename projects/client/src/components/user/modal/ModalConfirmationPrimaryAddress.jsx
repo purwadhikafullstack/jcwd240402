@@ -10,7 +10,7 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
 import { profileUser } from "../../../features/userDataSlice";
 
-export default function ModalConfirmationPrimaryAddress({ id }) {
+export default function ModalConfirmationPrimaryAddress({ idAddress }) {
   const dispatch = useDispatch();
   const access_token = getCookie("access_token");
 
@@ -20,7 +20,7 @@ export default function ModalConfirmationPrimaryAddress({ id }) {
   const setPrimaryAddress = async () => {
     try {
       await axios.patch(
-        `/user/profile/address/primary/${id}`,
+        `/user/profile/address/primary/${idAddress}`,
         {},
         {
           headers: { Authorization: `Bearer ${access_token}` },

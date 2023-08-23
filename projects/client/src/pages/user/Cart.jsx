@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+import addtocart from "../../assets/images/addtocart.png";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -42,28 +44,48 @@ const Cart = () => {
           </button>
         </div>
         {/* TAB AND DESKTOP */}
-        <div className="w-full  grid grid-cols-4 md:grid-cols-5 lg:grid-cols-5 ">
-          <div className="col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold">
-            <h1>Product item</h1>
+        <div className="h-full py-4 border-b-2">
+          <div className="w-full  grid grid-cols-4 md:grid-cols-5 lg:grid-cols-5 ">
+            <div className="col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold">
+              <h1>Product item</h1>
+            </div>
+            <div className="col-span-2 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
+              <h1>Amount</h1>
+            </div>
+            <div className="hidden md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
+              <h1>Subtotal</h1>
+            </div>
+            {productData.length === 0 ? (
+              <div className="flex flex-col justify-center items-center w-[21rem] md:w-[47rem] lg:w-[79rem]">
+                <img src={addtocart} alt="" className="w-56 md:w-96" />
+                <h1 className="text-gray-400 text-center text-xs md:text-sm lg:text-sm mt-2">
+                  Your Shopping Cart is empty. You do not have any products in
+                  your shopping list
+                </h1>
+              </div>
+            ) : (
+              productData.map((item) => (
+                <TableCart
+                  key={item.id}
+                  img={item.img}
+                  name={item.name}
+                  price={item.price}
+                  weight={item.weight}
+                  count={count}
+                  setCount={setCount}
+                  setValueCount={setValueCount}
+                />
+              ))
+            )}
           </div>
-          <div className="col-span-2 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
-            <h1>Amount</h1>
+        </div>
+        <div>
+          <div className="hidden md:flex lg:flex justify-between items-center">
+            <h1>Total Amount</h1>
+            <button className="bg-blue3 text-white w-96 h-10 rounded-full">
+              check out
+            </button>
           </div>
-          <div className="hidden md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
-            <h1>Subtotal</h1>
-          </div>
-          {productData.map((item) => (
-            <TableCart
-              key={item.id}
-              img={item.img}
-              name={item.name}
-              price={item.price}
-              weight={item.weight}
-              count={count}
-              setCount={setCount}
-              setValueCount={setValueCount}
-            />
-          ))}
         </div>
       </div>
       <FooterDesktop />

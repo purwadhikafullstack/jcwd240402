@@ -14,7 +14,7 @@ import { getCookie, logout } from "../../../utils/tokenSetterGetter";
 
 const userNavigation = [
   { name: "Your Profile", to: "/user/setting", onClick: {} },
-  { name: "Settings", to: "#", onClick: {} },
+  { name: "Settings", to: "/checkout", onClick: {} },
   { name: "Sign out", to: "/log-in", onClick: () => logout() },
 ];
 

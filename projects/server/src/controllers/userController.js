@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
-const db = require("../../models");
+const db = require("../models");
 const crypto = require("crypto");
-const Generate = require("../../utils");
-const Mailer = require("../../utils/mailer");
+const Generate = require("../utils");
+const Mailer = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
@@ -178,7 +178,6 @@ module.exports = {
 
   login: async (req, res) => {
     const { user_identification, password } = req.body;
-
     try {
       const user = await db.User.findOne({
         where: {
@@ -719,11 +718,13 @@ module.exports = {
             "..",
             "..",
             "..",
+            "server",
             "src",
             "public",
             "imgProfile",
             previousImageName
           );
+          console.log(imagePath);
           fs.unlinkSync(imagePath);
           await db.User_detail.update(
             {

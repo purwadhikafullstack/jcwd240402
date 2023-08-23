@@ -10,7 +10,8 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
 import { addressUser } from "../../../features/userAddressSlice";
 
-export default function ModalConfirmationDelete({ id }) {
+export default function ModalConfirmationDelete({ idAddress }) {
+  console.log(idAddress);
   const dispatch = useDispatch();
   const access_token = getCookie("access_token");
 
@@ -22,7 +23,7 @@ export default function ModalConfirmationDelete({ id }) {
   const deleteAddress = () => {
     try {
       axios
-        .delete(`/user/profile/address/${id}`, {
+        .delete(`/user/profile/address/${idAddress}`, {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {

@@ -1,9 +1,9 @@
-const db = require("../../models");
+const db = require("../models");
 const {
   createCategoryImageDBPath,
   extractFilenameFromDBPath,
   getAbsoluteCategoryImagePath,
-} = require("../../utils/helper/multer");
+} = require("../utils/helper/multer");
 const fs = require("fs").promises;
 const path = require("path");
 
@@ -46,23 +46,23 @@ module.exports = {
   async updateCategory(req, res) {
     const categoryId = req.params.id;
     const { name } = req.body;
-  
+
     const t = await db.sequelize.transaction();
-  
+
     try {
       const category = await db.Category.findByPk(categoryId);
-  
+
       if (!category) {
         await t.rollback();
         return res.status(404).send({
           message: "Category not found",
         });
       }
-  
+
       if (name) {
         category.name = name;
       }
-  
+
       if (req.file) {
         if (category.category_img) {
           const oldImagePath = getAbsoluteCategoryImagePath(
@@ -70,14 +70,14 @@ module.exports = {
           );
           await fs.unlink(oldImagePath);
         }
-  
+
         category.category_img = createCategoryImageDBPath(req.file.filename);
       }
-  
+
       if (name || req.file) {
         await category.save({ transaction: t });
         await t.commit();
-  
+
         return res.status(200).send({
           message: "Category updated successfully",
           data: category,
@@ -95,7 +95,6 @@ module.exports = {
       });
     }
   },
-  
 
   async deleteCategory(req, res) {
     const categoryId = req.params.id;
@@ -122,4 +121,6 @@ module.exports = {
       });
     }
   },
+
+  
 };

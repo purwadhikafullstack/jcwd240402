@@ -10,10 +10,10 @@ import NotifRedirect from "../../components/user/notif/NotifRedirect";
 const NotFound = () => {
   const msg = "No worries! Just head back to the";
   return (
-    <div className="w-screen lg:w-full h-screen">
+    <div className="w-full lg:w-full h-screen">
       <NavbarDesktop />
       <NavbarMobile />
-      <div>
+      <div className="min-h-screen flex flex-col justify-center items-center">
         <NotifRedirect
           imgSrc={notFound}
           to="/"

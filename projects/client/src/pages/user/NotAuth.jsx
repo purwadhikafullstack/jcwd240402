@@ -10,10 +10,10 @@ import notAuth from "../../assets/images/NotAuth.png";
 const NotAuth = () => {
   const msg = "You need to ";
   return (
-    <div className="w-screen lg:w-full h-screen">
+    <div className="w-screen lg:w-full min-h-screen">
       <NavbarDesktop />
       <NavbarMobile />
-      <div>
+      <div className="min-h-screen flex flex-col justify-center items-center">
         <NotifRedirect
           imgSrc={notAuth}
           to="/log-in"

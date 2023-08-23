@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
-const db = require("../../models");
+const db = require("../models");
 const crypto = require("crypto");
-const Generate = require("../../utils");
-const Mailer = require("../../utils/mailer");
+const Generate = require("../utils");
+const Mailer = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 
 module.exports = {

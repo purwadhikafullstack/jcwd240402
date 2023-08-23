@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 
 function MainImageDisplay({ image }) {
@@ -44,14 +44,18 @@ function SubImageDisplay({ image, onHover, onDelete }) {
 }
 
 function ImageUploader({ onUpload, remaining }) {
+  const [inputKey, setInputKey] = useState(Date.now());
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files).slice(0, remaining);
     onUpload(files);
+    setInputKey(Date.now());
   };
 
   return (
     <div className="image-uploader mt-5">
       <input
+        key={inputKey}
         className="border p-2 rounded"
         type="file"
         multiple
@@ -63,9 +67,11 @@ function ImageUploader({ onUpload, remaining }) {
 }
 
 function ImageGallery({ images, onUpload }) {
-  const [mainImage, setMainImage] = useState(
-    images && images.length ? images[0] : null
-  );
+  const [mainImage, setMainImage] = useState(null);
+
+  useEffect(() => {
+    setMainImage(images.length ? images[0] : null);
+  }, [images]);
 
   const handleImageUpload = (uploadedFiles) => {
     const combinedImages = [...images, ...uploadedFiles];
@@ -87,27 +93,28 @@ const handleImageDelete = (imageToDelete) => {
   }
 };
 
-  return (
-    <div className="image-gallery-container flex flex-col items-center">
-      <MainImageDisplay image={mainImage} />
-      <div className="sub-images-container flex h-24 mb-5">
-        {images.slice(0, 5).map((imageFile, idx) => (
-          <SubImageDisplay
-            key={idx}
-            image={imageFile}
-            onHover={handleImageHover}
-            onDelete={handleImageDelete}
-          />
-        ))}
-      </div>
-      {images.length < 5 && (
-        <ImageUploader
-          onUpload={handleImageUpload}
-          remaining={5 - images.length}
+return (
+  <div className="image-gallery-container flex flex-col items-center max-h-[600px] overflow-y-auto">
+    <MainImageDisplay image={mainImage} />
+    <div className="sub-images-container flex h-24 mb-5 overflow-y-auto flex-nowrap">
+      {images.slice(0, 5).map((imageFile, idx) => (
+        <SubImageDisplay
+        key={idx}
+        image={imageFile}
+        onHover={handleImageHover}
+        onDelete={handleImageDelete}
         />
-      )}
+        ))}
     </div>
-  );
+        {images.length < 5 && (
+          <ImageUploader
+            onUpload={handleImageUpload}
+            remaining={5 - images.length}
+          />
+        )}
+  </div>
+);
+
 }
 
 ImageGallery.defaultProps = {

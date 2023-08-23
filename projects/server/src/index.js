@@ -34,6 +34,7 @@ app.use(
   express.static(path.join(__dirname, "public/imgProfile"))
 );
 app.use('/src/public/imgCategory', express.static(path.join(__dirname, 'public', 'imgCategory')));
+app.use('/src/public/imgProduct', express.static(path.join(__dirname, 'public', 'imgProduct')))
 
 app.use(cookieParser());
 app.use(express.json());

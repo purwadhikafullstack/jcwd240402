@@ -3,36 +3,57 @@ const db = require("../models");
 module.exports = {
   getOneProduct: async (filter) => {
     const options = {
-      where: filter,
+        where: filter,
+        include: [
+            {
+                model: db.Image_product,
+                as: "Image_products",
+                attributes: ["img_product","id"],
+            },
+            {
+                model: db.Category,
+                as: 'category',
+                attributes: ['id','name']
+            }
+        ],
     };
 
     try {
-      const result = await db.Product.findOne(options);
-      return {
-        success: true,
-        data: result,
-      };
+        const result = await db.Product.findOne(options);
+        return {
+            success: true,
+            data: result,
+        };
     } catch (error) {
-      console.error(error);
-      return {
-        success: false,
-        error: error.message,
-      };
+        console.error(error);
+        return {
+            success: false,
+            error: error.message,
+        };
     }
-  },
+},
 
   async getAllProducts(options = {}, page = 1, pageSize = 10) {
     const filter = options.where || {};
 
-    const queryOptions = {
-      where: filter,
-      include: [
+    const defaultInclude = [
         {
           model: db.Image_product,
           as: "Image_products",
           attributes: ["img_product"],
         },
-      ],
+        {
+          model: db.Category,
+          as: 'category',
+          attributes: ['name','id']
+        }
+    ];
+
+    const includeOptions = options.include ? [...defaultInclude, ...options.include] : defaultInclude;
+
+    const queryOptions = {
+      where: filter,
+      include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,
     };
@@ -58,5 +79,5 @@ module.exports = {
         error: error.message,
       };
     }
-  },
+}
 };

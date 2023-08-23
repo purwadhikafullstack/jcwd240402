@@ -1,5 +1,5 @@
-const db = require("../../models");
-const { getAllWarehouses } = require("../../service/warehouse");
+const db = require("../models");
+const { getAllWarehouses } = require("../service/warehouse");
 
 module.exports = {
   async registerWarehouse(req, res) {

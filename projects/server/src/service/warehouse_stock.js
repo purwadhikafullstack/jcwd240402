@@ -113,11 +113,16 @@ module.exports = {
 
   getAllStockHistory: async (options = {}, page = 1, pageSize = 10) => {
     const filter = options.where || {};
-    const include = options.include || [];
   
     const queryOptions = {
       where: filter,
-      include: include,
+      include:[
+        {model: db.Admin, attributes: ['username'], as: "Admin"},
+        {model: db.Warehouse_stock, attributes: ['product_stock'], as: "Warehouse_stock", 
+        include:[
+          {model: db.Product, attributes: ['name'], as: "Product"}
+        ]}
+      ],
       offset: (page - 1) * pageSize,
       limit: pageSize,
       order: [

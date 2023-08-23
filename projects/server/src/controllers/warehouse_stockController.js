@@ -1,5 +1,9 @@
 const db = require("../models");
+const warehouse_stock = require("../service/warehouse_stock");
+
 const { getAllWarehouseStocks, newStockHistory, getAllStockHistory } = require("../service/warehouse_stock");
+const { Sequelize } = require("sequelize");
+
 
 module.exports = {
   async createStock(req, res) {

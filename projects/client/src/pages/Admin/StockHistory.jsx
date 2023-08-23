@@ -14,9 +14,14 @@ const StockHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [stockHistoryList, setStockHistoryList] = useState([]);
+  const [totalLastStock, setTotalLastStock] = useState("");
+  const [totalIncrement, setTotalIncrement] = useState("");
+  const [totalDecrement, setTotalDecrement] = useState("");
   const [error, setError] = useState("");
 
   const monthOptions = [
+    { value: "", label: 'any month' },
+
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },
     { value: 3, label: 'March' },
@@ -31,12 +36,23 @@ const StockHistory = () => {
     { value: 12, label: 'December' }
   ]
 
+  const yearOptions = [
+    { value: "", label: 'any year' },
+    { value: 2020, label: "2020" },
+    { value: 2021, label: "2021" },
+    { value: 2022, label: "2022" },
+    { value: 2023, label: "2023" },
+  ]
+
 
   useEffect(() => {
 
     axios.get(`http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`)
     .then((response) => {
       setStockHistoryList(response.data.history);
+      setTotalLastStock(response.data.total_last_stock);
+      setTotalIncrement(response.data.total_increment);
+      setTotalDecrement(response.data.total_decrement)
       setTotalPages(response.pagination.totalPages);
     })
     .catch((err) => {
@@ -48,6 +64,12 @@ const StockHistory = () => {
   const handleChange = (month) =>{
     setMonth(month.value)
   }
+  const handleChangeMonth = (month) =>{
+    setMonth(month.value)
+  }
+  const handleChangeYear = (year) =>{
+    setYear(year.value)
+  }
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -55,15 +77,19 @@ const StockHistory = () => {
         <Sidebar />
       </div>
       <div className="px-8 pt-8">
-        <div className="flex items-center">
-            <Select options={monthOptions} onChange={handleChange} />
+            <div className="flex items-center gap-4">
+            <Select options={monthOptions} placeholder={<div>month</div>} onChange={handleChangeMonth} />
+            <Select options={yearOptions} placeholder={<div>year</div>} onChange={handleChangeYear} />
+            <div>Last Stock: {totalLastStock}</div>
+            <div>Total Increment: {totalIncrement}</div>
+            <div>Total Decrement: {totalDecrement}</div>
         </div>
         <div className="py-4">
           <TableComponent
             headers={[
-              "Warehouse Stock Id",
+                "Product",
               "Warehouse Id",
-              "Warehouse Admin Id",
+              "Admin Username",
               "Stock Before",
               "Stock After",
               "Increment/Decrement",
@@ -72,9 +98,9 @@ const StockHistory = () => {
               "Timestamp",
             ]}
             data={stockHistoryList.map((history) => ({
-            "Warehouse Stock Id": history.warehouse_stock_id || "",
-            "Warehouse Id": history.warehouse_id || "",
-            "Warehouse Admin Id": history.admin_id || "",
+                "Product": history.Warehouse_stock.Product.name || "",
+                "Warehouse Id": history.warehouse_id || "",
+            "Admin Username": history.Admin.username || "",
             "Stock Before": history.stock_before_transfer || "",
             "Stock After": history.stock_after_transfer || "",
             "Increment/Decrement": history.increment_decrement || "",

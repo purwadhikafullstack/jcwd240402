@@ -1,6 +1,6 @@
-import React from 'react';
-import { Table } from 'flowbite-react';
-import { PiTrashLight} from 'react-icons/pi'; 
+import React from "react";
+import { Table } from "flowbite-react";
+import { PiTrashLight } from "react-icons/pi";
 
 const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
   return (
@@ -17,27 +17,24 @@ const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
         {data.map((row, rowIndex) => (
           <Table.Row className="custom-row" key={rowIndex}>
             {headers.map((header) => (
-              <Table.Cell
-                className="custom-cell"
-                key={header}
-              >
+              <Table.Cell className="custom-cell" key={header}>
                 {row[header]}
               </Table.Cell>
             ))}
             <Table.Cell>
-              <a
+              <button
                 className="custom-edit-link"
                 onClick={() => onEdit(row)}
                 href="#"
               >
                 Edit
-              </a>
+              </button>
             </Table.Cell>
-              <PiTrashLight
-                size={20} 
-                className="mt-4 cursor-pointer" 
-                onClick={() => onDelete && onDelete(row)}
-              />
+            <PiTrashLight
+              size={20}
+              className="mt-4 cursor-pointer"
+              onClick={() => onDelete(row)}
+            />
           </Table.Row>
         ))}
       </Table.Body>
@@ -46,4 +43,3 @@ const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
 };
 
 export default TableComponent;
-

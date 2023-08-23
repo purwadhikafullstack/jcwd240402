@@ -106,7 +106,7 @@ const AdminCategoryCard = ({
         show={showDeleteModal}
         onClose={handleDeleteModalClose}
         categoryId={id}
-        onDeleteConfirm={onDelete}
+        handleSuccessfulEdit={handleSuccessfulEdit}
       />
     </div>
   );

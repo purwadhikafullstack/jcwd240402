@@ -70,25 +70,11 @@ const CategoryList = () => {
     }
   };
 
-  const handleSuccessfulEdit = (editedCategory) => {
-    const editedIndex = categories.findIndex(
-      (category) => category.id === editedCategory.id
-    );
-    if (editedIndex !== -1) {
-      const updatedCategories = [...categories];
-      updatedCategories[editedIndex] = editedCategory; 
-      setCategories(updatedCategories);
-      fetchCategories();
-    }
-  };
+  const handleSuccessfulEdit = () => {
+    fetchCategories()
+};
 
   const handleRegisterSuccess = () => {
-    fetchCategories();
-  };
-
-  
-
-  const handleDeleteSuccess = () => {
     fetchCategories();
   };
 

@@ -16,15 +16,18 @@ const AdminList = () => {
   const dispatch = useDispatch();
   const { warehouses, admins, error } = useSelector((state) => state.admin);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [searchName, setSearchName] = useState("");
+
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
+  
+  
   useEffect(() => {
     refreshAdminList();
   }, [searchName, selectedWarehouse, currentPage]);

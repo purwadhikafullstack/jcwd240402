@@ -38,6 +38,8 @@ const Home = () => {
     });
   }, [dispatch]);
 
+  console.log(productsData);
+
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios

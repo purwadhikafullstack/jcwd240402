@@ -178,7 +178,6 @@ module.exports = {
 
   login: async (req, res) => {
     const { user_identification, password } = req.body;
-
     try {
       const user = await db.User.findOne({
         where: {

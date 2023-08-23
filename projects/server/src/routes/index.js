@@ -1,4 +1,4 @@
-const admin = require("./adminRouter");
+const admin = require("../routes/adminRouter");
 const warehouse = require("./warehouseRouter");
 const user = require("./userRouter");
 

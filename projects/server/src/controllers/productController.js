@@ -6,7 +6,7 @@ const {
   extractFilenameFromDBPath,
   getAbsoluteProductImagePath,
 } = require("../utils/helper/multer");
-const { getAllProducts } = require("../service/product");
+const { getAllProducts, getOneProduct } = require("../service/product");
 
 //move to utils
 async function moveUploadedFilesToDestination(images) {
@@ -37,6 +37,7 @@ module.exports = {
     const { name, price, weight, category_id, description, is_active } =
       req.body;
     const images = req.files;
+    console.log(req.files);
 
     const t = await db.sequelize.transaction();
 
@@ -125,8 +126,8 @@ module.exports = {
     const product_id = req.params.id;
     const imgProductId = req.body.img_product_id;
 
-    if (!imgProductId || !req.file) {
-      return res.status(400).send({ message: "Missing required data" });
+    if (!req.file) {
+      return res.status(400).send({ message: "No image uploaded" });
     }
 
     const t = await db.sequelize.transaction();
@@ -139,25 +140,38 @@ module.exports = {
         return res.status(404).send({ message: "Product not found!" });
       }
 
-      const image = await db.Image_product.findByPk(imgProductId, {
-        where: { product_id: product_id },
-        transaction: t,
-      });
+      let image;
 
-      if (!image) {
-        await t.rollback();
-        return res.status(404).send({ message: "Image not found!" });
-      }
+      if (imgProductId) {
+        image = await db.Image_product.findByPk(imgProductId, {
+          where: { product_id: product_id },
+          transaction: t,
+        });
 
-      if (image.img_product) {
-        const oldImageFilename = extractFilenameFromDBPath(image.img_product);
-        const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
-
-        try {
-          await fs.unlink(oldImagePath);
-        } catch (err) {
-          console.error("Error deleting old image file:", err);
+        if (!image) {
+          await t.rollback();
+          return res.status(404).send({ message: "Image not found!" });
         }
+
+        if (image.img_product) {
+          const oldImageFilename = extractFilenameFromDBPath(image.img_product);
+          const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
+
+          try {
+            await fs.unlink(oldImagePath);
+          } catch (err) {
+            console.error("Error deleting old image file:", err);
+          }
+        }
+      } else {
+        image = await db.Image_product.create(
+          {
+            product_id,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          { transaction: t }
+        );
       }
 
       const newFilename = await moveUploadedFileToDestination(req.file);
@@ -167,7 +181,9 @@ module.exports = {
       await t.commit();
 
       return res.status(200).send({
-        message: "Product image updated successfully",
+        message: imgProductId
+          ? "Product image updated successfully"
+          : "Product image added successfully",
         data: product,
       });
     } catch (error) {
@@ -214,7 +230,36 @@ module.exports = {
   async getProductsList(req, res) {
     const page = parseInt(req.query.page, 10) || 1;
     const pageSize = parseInt(req.query.pageSize, 10) || 10;
-    const options = {};
+    const categoryId = req.query.category_id;
+    const priceRange = parseInt(req.query.priceRange, 10);
+
+    const options = {
+      where: {},
+    };
+
+    if (categoryId) {
+      options.where.category_id = categoryId;
+    }
+
+    switch (priceRange) {
+      case 1:
+        options.where.price = {
+          [db.Sequelize.Op.between]: [1, 100000],
+        };
+        break;
+      case 2:
+        options.where.price = {
+          [db.Sequelize.Op.between]: [100000, 500000],
+        };
+        break;
+      case 3:
+        options.where.price = {
+          [db.Sequelize.Op.gt]: 500000,
+        };
+        break;
+      default:
+        break;
+    }
 
     try {
       const result = await getAllProducts(options, page, pageSize);
@@ -260,6 +305,33 @@ module.exports = {
         message: "Fatal error on server.",
         errors: error.message,
       });
+    }
+  },
+
+  async getSingleProduct(req, res) {
+    try {
+      let filter = {};
+      if (req.params.id) {
+        filter.id = req.params.id;
+      } else if (req.query.name) {
+        filter.name = req.query.name;
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Provide either product name or ID.",
+        });
+      }
+      const result = await getOneProduct(filter);
+      if (result.success) {
+        return res.status(200).json(result.data);
+      } else {
+        return res.status(500).json({ success: false, message: result.error });
+      }
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
     }
   },
 };

@@ -18,20 +18,23 @@ import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductDetail from "./user/ProductDetail";
-import AdminProductDetail from "./admin/AdminList";
+// import AdminProductDetail from "./admin/AdminList";
 import Cart from "./user/Cart";
 import CheckOut from "./user/CheckOut";
+import ProductRegister from "../components/Product/ProductRegister";
+import ProductList from "../components/Product/ProductList";
+import AdminProductPage from "./admin/AdminProductPage";
+import ProductEdit from "../components/Product/ProductEdit";
+import CategoryList from "./admin/CategoryList";
 
 function App() {
   return (
     <div className="App font-poppins">
       <Router>
         <Routes>
-          <Route path="/*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/admin-dashboard" element={<AdminHome />} />
-          <Route path="/admin/product" element={<AdminProductDetail />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
           <Route path="/warehouse" element={<WarehouseList />} />
@@ -49,6 +52,13 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/category" element={<CategoryList />} />
+          <Route path="/admin/products/*" element={<AdminProductPage />}>
+            <Route index element={<ProductList />} />
+            <Route path="create" element={<ProductRegister />} />
+            <Route path="edit/:productName" element={<ProductEdit />} />
+          </Route>
+          <Route path="/*" element={<NotFound />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
           <Route path="/product/:id" element={<ProductDetail />} />

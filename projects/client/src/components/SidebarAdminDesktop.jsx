@@ -7,13 +7,19 @@ import {
   AiOutlineShop,
   AiOutlineOrderedList,
   AiOutlineBarChart,
+  AiOutlineAppstoreAdd,
+  AiOutlineShopping,
+  AiFillDatabase,
 } from "react-icons/ai";
 
 export default function SidebarAdminDesktop() {
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser },
     { to: "/warehouse", label: "Warehouse", icon: AiOutlineShop },
+    { to: "/admin/products", label: "Product", icon: AiOutlineShopping },
+    { to: "/category", label: "Category", icon: AiOutlineAppstoreAdd },
     { to: "/order", label: "Order", icon: AiOutlineOrderedList },
+    { to: "/stock-management", label: "Stock Management", icon: AiFillDatabase },
     {
       label: "Report",
       icon: AiOutlineBarChart,

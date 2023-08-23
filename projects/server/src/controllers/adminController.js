@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
+const { getAllCategories } = require("../service/category");
 
 //move to utility later
 const generateAccessToken = (user) => {
@@ -290,6 +291,34 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  async getCategories(req, res) {
+    const page = parseInt(req.query.page, 10) || 1;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
+    const name = req.query.name;
+
+    const query = name ? { where: { name: name } } : {};
+
+    try {
+      const result = await getAllCategories(query, page, pageSize);
+      if (result.success) {
+        res.status(200).send(result);
+      } else {
+        res.status(500).send({
+          success: false,
+          message: "Error fetching categories.",
+          errors: result.error,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        success: false,
+        message: "Fatal error on server.",
         errors: error.message,
       });
     }

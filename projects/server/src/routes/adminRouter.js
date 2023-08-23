@@ -1,6 +1,5 @@
 const adminController = require("../controllers/adminController");
 const validatorMiddleware = require("../middleware/validator/admin");
-const service = require("../service/index");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const multerMiddleware = require("../middleware/multer/category/category");
@@ -36,6 +35,7 @@ router.patch(
   categoryController.updateCategory
 );
 router.patch("/category/delete/:id", categoryController.deleteCategory);
+router.get("/categories", adminController.getCategories);
 
 router.post(
   "/product",
@@ -50,6 +50,7 @@ router.patch(
 );
 router.get("/products", productController.getProductsList);
 router.patch("/product/delete/:id", productController.deleteProduct);
+router.get("/single-product/", productController.getSingleProduct);
 
 router.get("/city", adminController.getCitiesList);
 router.get("/province", adminController.getProvincesList);

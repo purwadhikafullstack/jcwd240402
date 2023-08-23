@@ -10,11 +10,11 @@ module.exports = {
     try {
       const existingStock = await db.Warehouse_stock.findOne({
         where: { warehouse_id: warehouseId, product_id: productId },
-        transaction: t, 
+        transaction: t,
       });
 
       if (existingStock) {
-        await t.rollback(); 
+        await t.rollback();
         return res.status(400).send({
           message:
             "Stock already exists for the selected product in this warehouse.",
@@ -28,16 +28,16 @@ module.exports = {
           product_stock: productStock,
         },
         { transaction: t }
-      ); 
+      );
 
-      await t.commit(); 
+      await t.commit();
 
       res.status(201).send({
         message: "Stock created successfully.",
         stock: newStock,
       });
     } catch (error) {
-      await t.rollback(); 
+      await t.rollback();
       console.error(error);
       res.status(500).send({
         message: "An error occurred while creating stock.",
@@ -48,7 +48,7 @@ module.exports = {
 
   async updateStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
-    const productId = parseInt(req.params.productId, 10); 
+    const productId = parseInt(req.params.productId, 10);
     const { productStock, operation } = req.body;
 
     const t = await db.sequelize.transaction();
@@ -56,7 +56,7 @@ module.exports = {
     try {
       const existingStock = await db.Warehouse_stock.findOne({
         where: { warehouse_id: warehouseId, product_id: productId },
-        transaction: t 
+        transaction: t,
       });
 
       if (!existingStock) {
@@ -69,7 +69,7 @@ module.exports = {
 
       switch (operation) {
         case "increase":
-          existingStock.product_stock += parseInt(productStock, 10); 
+          existingStock.product_stock += parseInt(productStock, 10);
           break;
         case "decrease":
           existingStock.product_stock -= parseInt(productStock, 10);
@@ -81,7 +81,7 @@ module.exports = {
           }
           break;
       }
-      await existingStock.save({ transaction: t });  
+      await existingStock.save({ transaction: t });
       await t.commit();
 
       res.status(200).send({
@@ -89,79 +89,84 @@ module.exports = {
         stock: existingStock,
       });
     } catch (error) {
-      await t.rollback(); 
+      await t.rollback();
       console.error(error);
       res.status(500).send({
         message: "An error occurred while updating stock.",
         error: error.message,
       });
     }
-},
+  },
 
-async getWarehouseStocks(req, res) {
-  const page = Number(req.query.page) || 1;
-  const pageSize = Number(req.query.pageSize) || 20;
-  const searchWarehouseName = req.query.warehouseName;
+  async getWarehouseStocks(req, res) {
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.pageSize) || 20;
+    const searchWarehouseName = req.query.warehouseName;
 
-  const options = {
-    where: {},
-    include: [
-      {
-        model: db.Product,
-        as: "Product",
-        attributes: ["name", "description"],
-      },
-      {
-        model: db.Warehouse,
-        as: "Warehouse",
-        attributes: ["warehouse_name"],
-        ...(searchWarehouseName && {
-          where: {
-            warehouse_name: {
-              [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
+    const options = {
+      where: {},
+      include: [
+        {
+          model: db.Product,
+          as: "Product",
+          attributes: ["name", "description", "is_active"],
+          include: [
+            { model: db.Category, as: "category" },
+            { model: db.Image_product },
+          ],
+        },
+        {
+          model: db.Warehouse,
+          as: "Warehouse",
+          attributes: ["warehouse_name"],
+          ...(searchWarehouseName && {
+            where: {
+              warehouse_name: {
+                [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
+              },
             },
-          },
-        }),
-      },
-    ],
-  };
+          }),
+        },
+      ],
+    };
 
-  try {
-    const stockResponse = await getAllWarehouseStocks(options, page, pageSize);
-    const stocks = stockResponse.data;
+    try {
+      const stockResponse = await getAllWarehouseStocks(
+        options,
+        page,
+        pageSize
+      );
+      const stocks = stockResponse.data;
 
-    if (!stockResponse.success) {
-      throw new Error(stockResponse.error);
-    }
-
-    const groupedStocks = stocks.reduce((acc, stock) => {
-      const warehouseName = stock.Warehouse.warehouse_name;
-      if (!acc[warehouseName]) {
-        acc[warehouseName] = [];
+      if (!stockResponse.success) {
+        throw new Error(stockResponse.error);
       }
-      acc[warehouseName].push({
-        product_stock: stock.product_stock,
-        createdAt: stock.createdAt,
-        updatedAt: stock.updatedAt,
-        Product: stock.Product,
+
+      const groupedStocks = stocks.reduce((acc, stock) => {
+        const warehouseName = stock.Warehouse.warehouse_name;
+        if (!acc[warehouseName]) {
+          acc[warehouseName] = [];
+        }
+        acc[warehouseName].push({
+          product_stock: stock.product_stock,
+          createdAt: stock.createdAt,
+          updatedAt: stock.updatedAt,
+          Product: stock.Product,
+        });
+        return acc;
+      }, {});
+
+      res.status(200).send({
+        message: "Warehouse stocks fetched successfully",
+        stocks: groupedStocks,
+        pagination: stockResponse.pagination,
       });
-      return acc;
-    }, {});
-
-    res.status(200).send({
-      message: "Warehouse stocks fetched successfully",
-      stocks: groupedStocks,
-      pagination: stockResponse.pagination,
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({
-      message: "An error occurred while fetching warehouse stocks",
-      error: error.message,
-    });
-  }
-}
-
-
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
+    }
+  },
 };

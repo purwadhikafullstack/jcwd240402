@@ -29,11 +29,11 @@ router.post(
   multerMiddleware.single("category_img"),
   categoryController.createCategory
 );
-router.patch(
-  "/category/:id",
-  multerMiddleware.single("category_img"),
-  categoryController.updateCategory
-);
+// router.patch(
+//   "/category/:id",
+//   multerMiddleware.single("category_img"),
+//   categoryController.updateCategory
+// );
 router.patch("/category/delete/:id", categoryController.deleteCategory);
 router.get("/categories", adminController.getCategories);
 

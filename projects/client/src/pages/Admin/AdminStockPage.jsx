@@ -6,13 +6,13 @@ import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
 const AdminStockPage = () => {
     const tabData = [
         {
-          label: "Inventory", 
-          isActive: window.location.pathname === "/admin/products",
+          label: "Stock Overview", 
+          isActive: window.location.pathname === "/admin/stock",
           to: "/admin/stock",
         },
         {
-          label: "Add Stock", 
-          isActive: window.location.pathname === "/admin/products/create",
+          label: "Manage Stock", 
+          isActive: window.location.pathname === "/admin/stock/management",
           to: "/admin/stock/management",
         }
     ];

@@ -35,12 +35,12 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
         if (categoryImg) {
           formData.append("category_img", categoryImg);
         }
-
+    
         const response = await axios.post(
           "http://localhost:8000/api/admin/category",
           formData
         );
-
+    
         if (response.status === 201) {
           formik.resetForm();
           setCategoryImg(null);
@@ -50,11 +50,23 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
           throw new Error("Category Registration Failed");
         }
       } catch (error) {
-        const serverError = error.response?.data?.errors?.[0];
-        if (serverError && serverError.path === "name") {
-          formik.setFieldError("name", serverError.msg);
-        } else {
-          setErrMsg(error.message || "Registration failed");
+        let displayedError = false; 
+    
+        if (error.response?.data?.errors) {
+          error.response.data.errors.forEach(err => {
+            if (err.path === "name") {
+              formik.setFieldError("name", err.msg);
+              displayedError = true; 
+            }
+          });
+        }
+        
+        if (!displayedError && error.response?.data?.message) {
+          if (error.response.data.message === "Image is required for category creation") {
+            setErrMsg("Image is required for category creation");
+          } else {
+            setErrMsg("An unexpected error occurred. Please try again.");
+          }
         }
       }
     },
@@ -89,8 +101,8 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
               errorMessage={formik.errors.name}
             />
             <div className="relative">
-              <InputForm
-                label="Category Image"
+
+              <input
                 name="category_img"
                 type="file"
                 onChange={(event) => {
@@ -99,14 +111,8 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
                     event.target.files[0]?.name || "Choose a file"
                   );
                 }}
-                className="opacity-0 absolute z-0 w-full h-full cursor-pointer"
+                className="form-input"
               />
-              <label
-                htmlFor="category_img"
-                className="block border border-gray-300 px-4 py-2 rounded bg-white cursor-pointer"
-              >
-                {selectedFileName}
-              </label>
             </div>
             <div className="flex flex-col justify-center items-center mt-3">
               <Button

@@ -1,47 +1,49 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import DefaultPagination from "../../components/Pagination";
 import AsyncSelect from "react-select/async";
-import moment from "moment";
 import RegisterCategoryModal from "../../components/Modals/category/ModalRegisterCategory";
 import Button from "../../components/Button";
+import AdminCategoryCard from "../../components/AdminCardCategory";
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchName, setSearchName] = useState("");
+  const searchNameRef = useRef("");
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [currentPage, searchName]);
-
-  const onSuccessfulRegister = () => {
-    fetchCategories();
-  };
-
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(
         `http://localhost:8000/api/admin/categories`,
         {
           params: {
             page: currentPage,
-            name: searchName,
+            name: searchNameRef.current,
           },
         }
       );
 
       if (response.data.success) {
         setCategories(response.data.data);
-        setTotalPages(response.data.pagination.totalPages);
+        const { page, pageSize, totalItems, totalPages } =
+          response.data.pagination;
+        setTotalPages(totalPages);
+        if ((page - 1) * pageSize + response.data.data.length > totalItems) {
+          setCurrentPage(Math.max(1, totalPages));
+        }
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
-  };
+  }, [currentPage, searchName]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const loadCategories = async (inputValue, callback) => {
     try {
@@ -66,7 +68,29 @@ const CategoryList = () => {
     } catch (error) {
       console.error("Error fetching category names:", error);
     }
-};
+  };
+
+  const handleSuccessfulEdit = (editedCategory) => {
+    const editedIndex = categories.findIndex(
+      (category) => category.id === editedCategory.id
+    );
+    if (editedIndex !== -1) {
+      const updatedCategories = [...categories];
+      updatedCategories[editedIndex] = editedCategory; 
+      setCategories(updatedCategories);
+      fetchCategories();
+    }
+  };
+
+  const handleRegisterSuccess = () => {
+    fetchCategories();
+  };
+
+  
+
+  const handleDeleteSuccess = () => {
+    fetchCategories();
+  };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -81,9 +105,11 @@ const CategoryList = () => {
               cacheOptions
               defaultOptions
               loadOptions={loadCategories}
-              onChange={(selectedOption) =>
-                setSearchName(selectedOption ? selectedOption.value : "")
-              }
+              onChange={(selectedOption) => {
+                const selectedName = selectedOption ? selectedOption.value : "";
+                setSearchName(selectedName);
+                searchNameRef.current = selectedName;
+              }}
               placeholder="Category Name"
             />
           </div>
@@ -96,20 +122,16 @@ const CategoryList = () => {
             fontWeight="font-semibold"
           />
         </div>
-        <div className="flex justify-end px-8 py-4"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
           {categories.map((category) => (
-            <div key={category.id} className="p-4 border rounded shadow-sm">
-              <img
-                src={`http://localhost:8000${category.category_img}`}
-                alt={category.name}
-                className="w-full h-48 object-cover"
-              />
-              <h3 className="text-lg font-semibold mt-2">{category.name}</h3>
-              <p className="text-sm text-gray-500">
-                Created: {moment(category.createdAt).format("MMMM D, YYYY")}
-              </p>
-            </div>
+            <AdminCategoryCard
+              key={category.id}
+              src={category.category_img}
+              name={category.name}
+              createdAt={category.createdAt}
+              id={category.id}
+              handleSuccessfulEdit={handleSuccessfulEdit}
+            />
           ))}
         </div>
         <div className="flex justify-center items-center w-full mt-8">
@@ -121,7 +143,7 @@ const CategoryList = () => {
         <RegisterCategoryModal
           show={showModal}
           onClose={() => setShowModal(false)}
-          onSuccessfulRegister={onSuccessfulRegister}
+          onSuccessfulRegister={handleRegisterSuccess} 
         />
       </div>
     </div>

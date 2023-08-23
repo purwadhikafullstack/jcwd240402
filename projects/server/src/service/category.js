@@ -21,7 +21,7 @@ module.exports = {
     }
   },
 
-  getAllCategories: async (options = {}, page = 1, pageSize = 10) => {
+  getAllCategories: async (options = {}, page = 1, pageSize = 9) => {
     const filter = options.where || {};
     const include = options.include || [];
     

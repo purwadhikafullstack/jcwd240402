@@ -33,7 +33,7 @@ module.exports = {
     }
 },
 
-  async getAllProducts(options = {}, page = 1, pageSize = 10) {
+  async getAllProducts(options = {}, page = 1, pageSize = 9) {
     const filter = options.where || {};
 
     const defaultInclude = [

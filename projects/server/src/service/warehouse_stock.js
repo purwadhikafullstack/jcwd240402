@@ -13,7 +13,7 @@ module.exports = {
         {
           model: db.Warehouse,
           as: 'Warehouse',
-          attributes: ['id', 'name', 'location'],
+          attributes: ['id', 'warehouse_name'],
         }
       ],
     };
@@ -33,7 +33,7 @@ module.exports = {
     }
   },
 
-  getAllWarehouseStocks: async (options = {}, page = 1, pageSize = 10) => {
+  getAllWarehouseStocks: async (options = {}, page = 1, pageSize = 20) => {
     const filter = options.where || {};
 
     const defaultInclude = [
@@ -45,7 +45,7 @@ module.exports = {
       {
         model: db.Warehouse,
         as: 'Warehouse',
-        attributes: ['id', 'name', 'location'],
+        attributes: ['id', 'warehouse_name'],
       }
     ];
 

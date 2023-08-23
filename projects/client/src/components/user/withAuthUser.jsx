@@ -7,7 +7,7 @@ function withAuthUser(Component) {
   const access_token = getCookie("access_token");
   return (props) => {
     const userData = useSelector((state) => state.profiler.value);
-
+    console.log(userData);
     if (access_token && userData?.role_id === 3) {
       return <Component {...props} />;
     }

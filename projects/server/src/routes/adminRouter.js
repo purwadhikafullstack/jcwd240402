@@ -1,9 +1,9 @@
-const adminController = require("../../controllers/admin/adminController");
-const validatorMiddleware = require("../../middleware/validator/admin");
-const service = require("../../service/index");
-const categoryController = require("../../controllers/category/categoryController");
-const productController = require("../../controllers/product/productController");
-const multerMiddleware = require("../../middleware/multer/category/category");
+const adminController = require("../controllers/adminController");
+const validatorMiddleware = require("../middleware/validator/admin");
+const service = require("../service/index");
+const categoryController = require("../controllers/categoryController");
+const productController = require("../controllers/productController");
+const multerMiddleware = require("../middleware/multer/category/category");
 const router = require("express").Router();
 
 router.get("/profile", adminController.getAdminProfile);

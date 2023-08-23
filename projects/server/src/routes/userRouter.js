@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const UserController = require("../../controllers/user/userController");
-const ProductController = require("../../controllers/product/productController");
-const Verify = require("../../middleware/auth");
-const validatorMiddleware = require("../../middleware/validator/user");
-const upload = require("../../middleware/multer/user/imgProfile");
-const addressUserCoordinate = require("../../middleware/openCage/addressUserCoordinate");
-const addressUserCoordinateUpdate = require("../../middleware/openCage/addressUserCoordinateUpdate");
+
+const UserController = require("../controllers/userController");
+const ProductController = require("../controllers/productController");
+const Verify = require("../middleware/auth");
+const validatorMiddleware = require("../middleware/validator/user");
+const upload = require("../middleware/multer/user/imgProfile");
+const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
+const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 
 /* AUTH */
 router.post(

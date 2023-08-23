@@ -1,6 +1,6 @@
-const admin = require("../routes/admin/adminRouter");
-const warehouse = require("../routes/warehouse/warehouseRouter");
-const user = require("../routes/user/userRouter");
+const admin = require("./adminRouter");
+const warehouse = require("./warehouseRouter");
+const user = require("./userRouter");
 
 module.exports = {
   admin,

@@ -1,12 +1,12 @@
 const fs = require("fs").promises;
 const path = require("path");
-const db = require("../../models");
+const db = require("../models");
 const {
   createProductImageDBPath,
   extractFilenameFromDBPath,
   getAbsoluteProductImagePath,
-} = require("../../utils/helper/multer");
-const { getAllProducts } = require("../../service/product");
+} = require("../utils/helper/multer");
+const { getAllProducts } = require("../service/product");
 
 //move to utils
 async function moveUploadedFilesToDestination(images) {

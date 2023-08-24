@@ -3,9 +3,9 @@ const validatorMiddlewareWarehouseStock = require("../middleware/validator/wareh
 
 const router = require("express").Router();
 
-router.get("/", warehouseStockController.getWarehouseStocks);
-router.post("/",validatorMiddlewareWarehouseStock.validateCreateStock,warehouseStockController.createStockForWarehouse)
-router.patch("/:warehouseId/:productId",validatorMiddlewareWarehouseStock.validateUpdateStock,warehouseStockController.updateStockForWarehouse)
-router.delete("/:warehouseId/:productId",validatorMiddlewareWarehouseStock.validateDeleteStock,warehouseStockController.deleteStockForWarehouse)
+router.get("/", warehouseStockController.getWarehouseStocks);//check ok
+router.post("/",validatorMiddlewareWarehouseStock.validateCreateStock,warehouseStockController.createStockForWarehouse)//check ok
+router.patch("/:warehouseId/:productId",validatorMiddlewareWarehouseStock.validateUpdateStock,warehouseStockController.updateStockForWarehouse)//check ok
+router.delete("/:warehouseId/:productId",validatorMiddlewareWarehouseStock.validateDeleteStock,warehouseStockController.deleteStockForWarehouse)//check ok
 
 module.exports = router;

@@ -57,18 +57,7 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
 
   const handleGalleryChange = (updatedImages) => {
     setUploadedImages(updatedImages);
-    console.log(uploadedImages) // Update the uploadedImages state
-  };
-
-  const fetchImageAsBlob = async (url) => {
-    try {
-      const response = await fetch(url);
-      const imageBlob = await response.blob();
-      return imageBlob;
-    } catch (error) {
-      console.error("Error fetching image as blob:", error);
-      return null;
-    }
+    console.log(uploadedImages) 
   };
 
   const handleSubmit = async (event) => {
@@ -102,7 +91,6 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
               <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
                 <div className=" w-full flex flex-col justify-center items-center mt-6">
                 <ImageGalleryEdit productData={product} onImagesChange={handleGalleryChange} />
-
                 </div>
                 <div className="w-full flex flex-col items-center">
                   <ProductInputs

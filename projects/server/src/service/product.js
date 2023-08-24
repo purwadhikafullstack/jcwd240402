@@ -45,7 +45,8 @@ module.exports = {
         {
           model: db.Category,
           as: 'category',
-          attributes: ['name','id']
+          attributes: ['name','id'],
+          paranoid:false
         }
     ];
 
@@ -53,6 +54,7 @@ module.exports = {
 
     const queryOptions = {
       where: filter,
+      paranoid:false,
       include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,

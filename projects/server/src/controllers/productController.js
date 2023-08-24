@@ -123,65 +123,40 @@ module.exports = {
   async updateProductImage(req, res) {
     const product_id = req.params.id;
     const imgProductId = req.body.img_product_id;
+    const newImageFile = req.file;
 
-    if (!req.file) {
-      return res.status(400).send({ message: "No image uploaded" });
-    }
-
+  
     const t = await db.sequelize.transaction();
-
+  
     try {
       const product = await db.Product.findByPk(product_id, { transaction: t });
-
       if (!product) {
         await t.rollback();
         return res.status(404).send({ message: "Product not found!" });
       }
-
-      let image;
-
-      if (imgProductId) {
-        image = await db.Image_product.findByPk(imgProductId, {
-          where: { product_id: product_id },
-          transaction: t,
-        });
-
-        if (!image) {
-          await t.rollback();
-          return res.status(404).send({ message: "Image not found!" });
-        }
-
-        if (image.img_product) {
-          const oldImageFilename = extractFilenameFromDBPath(image.img_product);
-          const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
-
-          try {
-            await fs.unlink(oldImagePath);
-          } catch (err) {
-            console.error("Error deleting old image file:", err);
-          }
-        }
-      } else {
-        image = await db.Image_product.create(
-          {
-            product_id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          { transaction: t }
-        );
+  
+      const updatedImage = await db.Image_product.findByPk(imgProductId, { transaction: t });
+      if (!updatedImage) {
+        await t.rollback();
+        return res.status(404).send({ message: "Image not found!" });
       }
-
-      const newFilename = await moveUploadedFileToDestination(req.file);
-      image.img_product = createProductImageDBPath(newFilename);
-      await image.save({ transaction: t });
-
+  
+      if (updatedImage.img_product) {
+        const oldImageFilename = extractFilenameFromDBPath(updatedImage.img_product);
+        const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
+  
+        try {
+          await fs.unlink(oldImagePath);
+        } catch (err) {
+          console.error("Error deleting old image file:", err);
+        }
+      }
+      await updatedImage.save({ transaction: t });
+  
       await t.commit();
-
+  
       return res.status(200).send({
-        message: imgProductId
-          ? "Product image updated successfully"
-          : "Product image added successfully",
+        message: "Product image updated successfully",
         data: product,
       });
     } catch (error) {
@@ -193,6 +168,94 @@ module.exports = {
       });
     }
   },
+
+  async addImagesToProduct(req, res) {
+    const product_id = req.params.id;
+    const newImageFiles = req.files;
+  
+    const t = await db.sequelize.transaction();
+  
+    try {
+      const product = await db.Product.findByPk(product_id, { transaction: t });
+      if (!product) {
+        await t.rollback();
+        return res.status(404).send({ message: "Product not found!" });
+      }
+  
+      const newImages = await db.Image_product.bulkCreate(
+        newImageFiles.map((file) => ({
+          product_id: product_id,
+          img_product: createProductImageDBPath(file.filename),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })),
+        { transaction: t }
+      );
+  
+      await t.commit();
+  
+      return res.status(200).send({
+        message: "Images added to product successfully",
+        data: newImages,
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error("Error:", error);
+      return res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  async deleteProductImage(req, res) {
+    const product_id = req.params.id;
+    const imgProductId = req.body.img_product_id;
+  
+    const t = await db.sequelize.transaction();
+  
+    try {
+      const product = await db.Product.findByPk(product_id, { transaction: t });
+      if (!product) {
+        await t.rollback();
+        return res.status(404).send({ message: "Product not found!" });
+      }
+  
+      const deletedImage = await db.Image_product.findByPk(imgProductId, { transaction: t });
+      if (!deletedImage) {
+        await t.rollback();
+        return res.status(404).send({ message: "Image not found!" });
+      }
+      await deletedImage.destroy({ transaction: t });
+
+      if (deletedImage.img_product) {
+        const deletedImageFilename = extractFilenameFromDBPath(deletedImage.img_product);
+        const deletedImagePath = getAbsoluteProductImagePath(deletedImageFilename);
+  
+        try {
+          await fs.unlink(deletedImagePath);
+        } catch (err) {
+          console.error("Error deleting image file:", err);
+        }
+      }
+  
+      await t.commit();
+  
+      return res.status(200).send({
+        message: "Product image deleted successfully",
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error("Error:", error);
+      return res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+  
+  
+  
 
   async deleteProduct(req, res) {
     const { id } = req.params;
@@ -229,36 +292,22 @@ module.exports = {
     const page = parseInt(req.query.page, 10) || 1;
     const pageSize = parseInt(req.query.pageSize, 9) || 9;
     const categoryId = req.query.category_id;
-    const priceRange = parseInt(req.query.priceRange, 10);
-
+    const productName = req.query.product_name;
+  
     const options = {
       where: {},
     };
-
+  
     if (categoryId) {
       options.where.category_id = categoryId;
     }
-
-    switch (priceRange) {
-      case 1:
-        options.where.price = {
-          [db.Sequelize.Op.between]: [1, 100000],
-        };
-        break;
-      case 2:
-        options.where.price = {
-          [db.Sequelize.Op.between]: [100000, 500000],
-        };
-        break;
-      case 3:
-        options.where.price = {
-          [db.Sequelize.Op.gt]: 500000,
-        };
-        break;
-      default:
-        break;
+  
+    if (productName) {
+      options.where.name = {
+        [db.Sequelize.Op.like]: `%${productName}%`
+      };
     }
-
+  
     try {
       const result = await getAllProducts(options, page, pageSize);
       if (result.success) {
@@ -279,6 +328,7 @@ module.exports = {
       });
     }
   },
+  
 
   async getSingleProduct(req, res) {
     try {

@@ -1,6 +1,7 @@
 const adminController = require("../controllers/adminController");
 const validatorMiddlewareAdmin = require("../middleware/validator/admin");
 const validatorMiddlewareCategory = require("../middleware/validator/category");
+const validatorMiddlewareProduct = require("../middleware/validator/product");
 const categoryController = require("../controllers/categoryController")
 const productController = require("../controllers/productController")
 const multerMiddleware = require("../middleware/multer/category/category")
@@ -20,11 +21,11 @@ router.post("/category",multerMiddleware.single("category_img"),validatorMiddlew
 router.patch("/category/img/:id", multerMiddleware.single("category_img"), categoryController.updateCategoryImage);// Check OK
 router.patch("/category/name/:id", validatorMiddlewareCategory.validateCategory, categoryController.updateCategoryName);// CHeck OK
 router.patch("/category/:id",categoryController.deleteCategory); //Check Ok
-router.get("/categories",adminController.getCategories);//Check OK (Pindah)
+router.get("/categories",adminController.getCategories);//Check OK
 
 //product
-router.post("/product",multerMiddleware.array("images", 5),productController.createProduct);
-router.patch("/product/:id",productController.updateProductDetails);
+router.post("/product",multerMiddleware.array("images", 5),validatorMiddlewareProduct.validateProduct,productController.createProduct);//check ok
+router.patch("/product/:id",validatorMiddlewareProduct.validateUpdateProduct,productController.updateProductDetails);
 router.patch("/product/image/:id",multerMiddleware.single("image"),productController.updateProductImage);
 router.get("/products",productController.getProductsList);
 router.patch("/product/delete/:id",productController.deleteProduct);

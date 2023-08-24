@@ -27,9 +27,9 @@ import ProductList from "../components/Product/ProductList";
 import AdminProductPage from "./admin/AdminProductPage";
 import ProductEdit from "../components/Product/ProductEdit";
 import CategoryList from "./admin/CategoryList";
-import AdminStockPage from "./Admin/AdminStockPage";
 import StockList from "../components/stock/StockList";
 import CreateStock from "../components/stock/CreateStock";
+import AdminStockPage from "../pages/admin/AdminStockPage";
 
 function App() {
   return (
@@ -57,7 +57,7 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
-          <Route path="/category" element={<CategoryList />} />
+          <Route path="/category" element={<CategoryList/>} />
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
             <Route path="create" element={<ProductRegister />} />

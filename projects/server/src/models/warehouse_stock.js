@@ -31,7 +31,10 @@ module.exports = (sequelize, DataTypes) => {
   Warehouse_stock.init({
     warehouse_id: DataTypes.INTEGER,
     product_id: DataTypes.INTEGER,
-    product_stock: DataTypes.INTEGER
+    product_stock: DataTypes.INTEGER,
+    status: {
+      type: DataTypes.ENUM('Empty', 'In Stock'),
+    },
   }, {
     sequelize,
     modelName: 'Warehouse_stock',

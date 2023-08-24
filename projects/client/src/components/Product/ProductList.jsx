@@ -4,13 +4,32 @@ import AdminCardProduct from "../AdminCardProduct";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/admin/categories");
+        setCategories(response.data.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/admin/products"
-        );
+        const response = await axios.get("http://localhost:8000/api/admin/products", {
+          params: {
+            category_id: selectedCategory,
+            product_name: search
+          }
+        });
         const data = response.data.data;
         setProducts(data);
       } catch (error) {
@@ -19,7 +38,7 @@ const ProductList = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [search, selectedCategory]);
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid">
@@ -29,20 +48,18 @@ const ProductList = () => {
             type="text"
             placeholder="Search Product"
             className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-          <select className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4">
-            <option value="all">All Categories</option>
-            <option value="living-room">Living Room</option>
-            <option value="bedroom">Bedroom</option>
-            <option value="kitchen">Kitchen</option>
-            <option value="office">Office</option>
-          </select>
-          <select className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm">
-            <option value="all">All Prices</option>
-            <option value="0-1000">0 - 1,000</option>
-            <option value="1000-5000">1,000 - 5,000</option>
-            <option value="5000-10000">5,000 - 10,000</option>
-            <option value="10000+">10,000+</option>
+          <select
+            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+          >
+            <option value="">All Categories</option>
+            {categories.map(cat => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            ))}
           </select>
         </div>
 
@@ -68,3 +85,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+

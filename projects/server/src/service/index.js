@@ -4,6 +4,7 @@ const city = require("./city");
 const province = require("./province");
 const product = require("./product");
 const category = require("./category");
+const warehouseStock = require("./warehouseStock");
 
 
 module.exports = {
@@ -13,4 +14,5 @@ module.exports = {
   province,
   product,
   category,
+  warehouseStock,
 };

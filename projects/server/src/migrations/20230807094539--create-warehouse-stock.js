@@ -11,9 +11,21 @@ module.exports = {
       },
       warehouse_id: {
         type: Sequelize.INTEGER,
+        references: {
+          model: 'Warehouses',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE', 
+        onDelete: 'SET NULL',
       },
       product_id: {
         type: Sequelize.INTEGER,
+        references: {
+          model: 'Products', 
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       product_stock: {
         type: Sequelize.INTEGER,

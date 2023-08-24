@@ -27,6 +27,9 @@ import ProductList from "../components/Product/ProductList";
 import AdminProductPage from "./admin/AdminProductPage";
 import ProductEdit from "../components/Product/ProductEdit";
 import CategoryList from "./admin/CategoryList";
+import AdminStockPage from "./Admin/AdminStockPage";
+import StockList from "../components/stock/StockList";
+import CreateStock from "../components/stock/CreateStock";
 
 function App() {
   return (
@@ -60,6 +63,14 @@ function App() {
             <Route path="create" element={<ProductRegister />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
           </Route>
+          <Route path="/admin/stock/*" element={<AdminStockPage/>}>
+            <Route index element={<StockList />} />
+            <Route path="management" element={<CreateStock />} />
+            <Route path="edit/:productName" element={<ProductEdit />} />
+          </Route>
+
+
+
           <Route path="/*" element={<NotFound />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />

@@ -7,12 +7,21 @@ import axios from "axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
+import {
+  setCookie,
+  removeCookie,
+  setLocalStorage,
+  removeLocalStorage,
+} from "../../utils";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  
 
   const loginUser = async (values, { setStatus, setValues }) => {
+    removeCookie("access_token");
+    removeLocalStorage("refresh_token");
     try {
       const response = await axios.post(
         "http://localhost:8000/api/admin/login",
@@ -20,6 +29,10 @@ const AdminLogin = () => {
       );
 
       if (response.status === 200) {
+        const accessToken = response.data?.accessToken;
+        const refreshToken = response.data?.refreshToken;
+        setLocalStorage("refresh_token", refreshToken);
+        setCookie("access_token", accessToken, 1);
         setStatus({ success: true });
         setValues({
           username: "",
@@ -27,8 +40,6 @@ const AdminLogin = () => {
         });
         setStatus({
           success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
         });
         navigate("/admin-dashboard");
       } else {

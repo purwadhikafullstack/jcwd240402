@@ -33,7 +33,7 @@ module.exports = {
     }
 },
 
-  async getAllProducts(options = {}, page = 1, pageSize = 10) {
+  async getAllProducts(options = {}, page = 1, pageSize = 9) {
     const filter = options.where || {};
 
     const defaultInclude = [
@@ -45,7 +45,8 @@ module.exports = {
         {
           model: db.Category,
           as: 'category',
-          attributes: ['name','id']
+          attributes: ['name','id'],
+          paranoid:false
         }
     ];
 
@@ -53,6 +54,7 @@ module.exports = {
 
     const queryOptions = {
       where: filter,
+      paranoid:false,
       include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,

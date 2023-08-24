@@ -1,0 +1,121 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { Modal } from "flowbite-react";
+import axios from "axios";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
+
+const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEdit }) => {
+  const hasResetForm = useRef(false);
+  const [errMsg, setErrMsg] = useState("");
+  console.log(productId)
+  console.log(warehouseId)
+
+  const updateStock = async (values) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/warehouse-stock/${warehouseId}/${productId}`,
+        {
+          productStock: values.productStock,
+          operation: values.operation,
+        }
+      );
+      console.log("Response from server:", response);
+      if (response.status === 200) {
+        onClose();
+        formik.resetForm();
+        handleSuccessfulEdit();
+      } else {
+        throw new Error("Update Stock Failed");
+      }
+    } catch (err) {
+      console.log("Error in request:", err);
+      if (!err.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(err.response?.data?.message);
+      }
+    }
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      productStock: '',
+      operation: 'increase',
+    },
+    onSubmit: updateStock,
+    validationSchema: yup.object().shape({
+      productStock: yup.number().min(1, "Product stock must be at least 1").required("Product stock is required"),
+      operation: yup.string().oneOf(['increase', 'decrease'], 'Invalid operation').required('Operation is required'),
+    }),
+    validateOnChange: false,
+    validateOnBlur: false,
+  });
+
+  useEffect(() => {
+    if (!show && !hasResetForm.current) {
+      formik.resetForm();
+      hasResetForm.current = true;
+    } else if (show) {
+      hasResetForm.current = false;
+    }
+  }, [show, formik]);
+
+  return (
+    <Modal show={show} size="md" popup onClose={onClose}>
+      <Modal.Header>
+        <div className="text-center">
+          <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+            Update Stock
+          </h3>
+        </div>
+      </Modal.Header>
+      <Modal.Body>
+        <form onSubmit={formik.handleSubmit}>
+          {errMsg && (
+            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
+              <p className="bg-inherit">{errMsg}</p>
+            </div>
+          )}
+          <div className="mt-5 px-6 grid gap-y-3">
+            <InputForm
+              label="Product Stock"
+              name="productStock"
+              type="number"
+              placeholder="Enter Stock Quantity"
+              onChange={formik.handleChange}
+              value={formik.values.productStock}
+              errorMessage={formik.errors.productStock}
+            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Operation</label>
+              <select
+                name="operation"
+                onChange={formik.handleChange}
+                value={formik.values.operation}
+                className="mt-1 p-2 w-full border rounded"
+              >
+                <option value="increase">Increase</option>
+                <option value="decrease">Decrease</option>
+              </select>
+              {formik.errors.operation && <p className="text-red-500">{formik.errors.operation}</p>}
+            </div>
+            <div className="flex flex-col justify-center items-center mt-3">
+              <Button
+                type="submit"
+                buttonSize="medium"
+                buttonText="Update"
+                bgColor="bg-blue3"
+                colorText="text-white"
+                fontWeight="font-semibold"
+              />
+            </div>
+          </div>
+        </form>
+      </Modal.Body>
+    </Modal>
+  );
+};
+
+export default UpdateStock;

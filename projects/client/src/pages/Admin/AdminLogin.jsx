@@ -12,7 +12,7 @@ import {
   removeCookie,
   setLocalStorage,
   removeLocalStorage,
-} from "../../utils";
+} from "../../utils/tokenSetterGetter";
 
 const AdminLogin = () => {
   const navigate = useNavigate();

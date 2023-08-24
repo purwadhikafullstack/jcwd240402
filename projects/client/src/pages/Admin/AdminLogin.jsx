@@ -12,13 +12,12 @@ import {
   removeCookie,
   setLocalStorage,
   removeLocalStorage,
-} from "../../utils";
+} from "../../utils/tokenSetterGetter";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   
-
   const loginUser = async (values, { setStatus, setValues }) => {
     removeCookie("access_token");
     removeLocalStorage("refresh_token");
@@ -27,7 +26,6 @@ const AdminLogin = () => {
         "http://localhost:8000/api/admin/login",
         values
       );
-
       if (response.status === 200) {
         const accessToken = response.data?.accessToken;
         const refreshToken = response.data?.refreshToken;

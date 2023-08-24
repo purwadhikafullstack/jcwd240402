@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
-const db = require("../models");
 const jwt = require("jsonwebtoken");
 const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
@@ -323,7 +322,44 @@ module.exports = {
         errors: error.message,
       });
     }
-  }
+  },
+
+  async keepLogin (req, res) {
+    const adminData = req.user;
+    try {
+      const isRefreshTokenExist = await db.User.findOne({
+        where: { id: userData.id },
+      });
+
+      if (!isRefreshTokenExist) {
+        return res.status(401).json({
+          ok: false,
+          message: "token unauthorized",
+        });
+      }
+      const accessToken = Generate.token(
+        {
+          id: isRefreshTokenExist.id,
+          username: isRefreshTokenExist.username,
+          email: isRefreshTokenExist.email,
+          role_id: isRefreshTokenExist.role_id,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        "1h"
+      );
+      res.json({
+        ok: true,
+        message: "Access Token refreshed",
+        accessToken,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
   
   
   

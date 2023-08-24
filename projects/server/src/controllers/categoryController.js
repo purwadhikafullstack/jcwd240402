@@ -1,10 +1,8 @@
 const db = require("../models");
-const db = require("../models");
 const {
   createCategoryImageDBPath,
   extractFilenameFromDBPath,
   getAbsoluteCategoryImagePath,
-} = require("../utils/helper/multer");
 } = require("../utils/helper/multer");
 const fs = require("fs").promises;
 const path = require("path");
@@ -46,6 +44,7 @@ module.exports = {
       });
     }
   },
+  
   async updateCategoryImage(req, res) {
     const categoryId = req.params.id;
 

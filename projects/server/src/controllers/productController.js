@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
-const db = require("../../models");
+const db = require("../models");
 const {
   createProductImageDBPath,
   extractFilenameFromDBPath,
@@ -256,9 +256,6 @@ module.exports = {
     }
   },
   
-  
-  
-
   async deleteProduct(req, res) {
     const { id } = req.params;
     const t = await db.sequelize.transaction();
@@ -331,7 +328,6 @@ module.exports = {
     }
   },
   
-
   async getSingleProduct(req, res) {
     try {
       let filter = {};
@@ -360,4 +356,31 @@ module.exports = {
         .json({ success: false, message: "Internal Server Error" });
     }
   },
+
+  getProductById: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const productById = await db.Product.findByPk(id, {
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: [
+          {
+            model: db.Image_product,
+            as: "Image_products",
+            attributes: ["img_product"],
+          },
+        ],
+      });
+      res.status(200).json({
+        ok: true,
+        result: productById,
+      });
+    } catch (error) {
+      res.status(500).send({
+        success: false,
+        message: "Fatal error on server.",
+        errors: error.message,
+      });
+    }
+  },
+  
 };

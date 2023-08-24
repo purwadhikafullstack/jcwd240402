@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "../Button";
-import ImageGalleryEdit from "../Image/ImageGalleryEdit";
+import ImageGalleryEdit from "../image/ImageGalleryEdit";
 import axios from "../../api/axios";
 import ProductInputs from "./ProductInputs";
 import { useParams } from "react-router-dom";
@@ -20,23 +20,22 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-        try {
-            const response = await axios.get("/admin/single-product", {
-                params: { name: productName },
-            });
-            console.log(response)
-            const productData = response.data;
-            const imagesURL = productData.Image_products.map((img) => {
-                return `http://localhost:8000${img.img_product}`;
-            });
-            setProduct({ ...productData, images: imagesURL });
-        } catch (error) {
-            console.error("Error fetching the product details:", error);
-        }
+      try {
+        const response = await axios.get("/admin/single-product", {
+          params: { name: productName },
+        });
+        console.log(response);
+        const productData = response.data;
+        const imagesURL = productData.Image_products.map((img) => {
+          return `http://localhost:8000${img.img_product}`;
+        });
+        setProduct({ ...productData, images: imagesURL });
+      } catch (error) {
+        console.error("Error fetching the product details:", error);
+      }
     };
     fetchProductDetails();
-}, [productName]);
-
+  }, [productName]);
 
   const resetForm = () => {
     setProduct({
@@ -57,7 +56,7 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
 
   const handleGalleryChange = (updatedImages) => {
     setUploadedImages(updatedImages);
-    console.log(uploadedImages) 
+    console.log(uploadedImages);
   };
 
   const handleSubmit = async (event) => {
@@ -90,7 +89,10 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
                 <div className=" w-full flex flex-col justify-center items-center mt-6">
-                <ImageGalleryEdit productData={product} onImagesChange={handleGalleryChange} />
+                  <ImageGalleryEdit
+                    productData={product}
+                    onImagesChange={handleGalleryChange}
+                  />
                 </div>
                 <div className="w-full flex flex-col items-center">
                   <ProductInputs

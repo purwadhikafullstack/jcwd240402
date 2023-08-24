@@ -59,11 +59,12 @@ module.exports = {
           return;
         }
 
-        const { role_id } = payload;
-        if (role_id !== 2) {
+        const { role } = payload;
+        if (role !== 2) {
           return res.status(403).send({
             ok: false,
             message: "Unauthorized role",
+            role: payload
           });
         }
         req.user = payload;

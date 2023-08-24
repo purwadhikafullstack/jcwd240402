@@ -247,12 +247,14 @@ module.exports = {
 
   async getStockHistoryList(req, res) {
 
+    const adminWarehouseId = req.user.warehouse
+
     const d = new Date();
 
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
     const loggedAdmin = req.query.loggedAdmin;
-    const warehouseId = req.query.warehouseId;
+    // const warehouseId = req.query.warehouseId;
     const year = req.query.year
     const month = req.query.month
 
@@ -264,8 +266,8 @@ module.exports = {
       options.where.admin_id = loggedAdmin;
     }
 
-    if (warehouseId) {
-      options.where.warehouse_id = warehouseId;
+    if (adminWarehouseId) {
+      options.where.warehouse_id = adminWarehouseId;
     }
 
     if (year) {
@@ -309,6 +311,8 @@ module.exports = {
 
         return container
       })
+
+      lastStock.reverse();
 
       function removeDuplicates(array, property) {
         return array.filter((item, index, self) => {

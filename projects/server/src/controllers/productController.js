@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const path = require("path");
-const db = require("../models");
+const db = require("../../models");
 const {
   createProductImageDBPath,
   extractFilenameFromDBPath,
@@ -34,7 +34,8 @@ async function moveUploadedFileToDestination(image) {
 
 module.exports = {
   async createProduct(req, res) {
-    const { name, price, weight, category_id, description } = req.body;
+    const { name, price, weight, category_id, description, is_active } =
+      req.body;
     const images = req.files;
     console.log(req.files);
 
@@ -48,6 +49,7 @@ module.exports = {
           weight,
           category_id,
           description,
+          is_active,
         },
         { transaction: t }
       );
@@ -127,7 +129,7 @@ module.exports = {
 
   
     const t = await db.sequelize.transaction();
-  
+
     try {
       const product = await db.Product.findByPk(product_id, { transaction: t });
       if (!product) {
@@ -154,7 +156,7 @@ module.exports = {
       await updatedImage.save({ transaction: t });
   
       await t.commit();
-  
+
       return res.status(200).send({
         message: "Product image updated successfully",
         data: product,

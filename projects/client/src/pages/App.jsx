@@ -23,10 +23,16 @@ import CategoryList from "./Admin/CategoryList";
 import AdminStockPage from "./Admin/AdminStockPage";
 import StockList from "../components/stock/StockList";
 import CreateStock from "../components/stock/CreateStock";
+import SettingProfile from "./user/SettingProfile";
+import SettingAddress from "./user/SettingAddress";
+import ProductDetail from "./user/ProductDetail";
+import AdminProductDetail from "./admin/AdminList";
+import Cart from "./user/Cart";
+import CheckOut from "./user/CheckOut";
 
 function App() {
   return (
-    <div className="App">
+    <div className="App font-poppins">
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -43,6 +49,11 @@ function App() {
           <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
           <Route path="/reset-password-success" element={<NotifResetPassword />} />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/user/setting" element={<SettingProfile />} />
+          <Route path="/user/setting/address" element={<SettingAddress />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
           <Route path="/category" element={<CategoryList/>} />
 
           <Route path="/admin/products/*" element={<AdminProductPage />}>

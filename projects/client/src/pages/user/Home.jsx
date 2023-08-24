@@ -1,34 +1,47 @@
 import React, { useEffect, useState } from "react";
-import CarouselBanner from "../../components/CarouselBanner";
-import NavbarDesktop from "../../components/NavbarDesktop";
-import NavbarMobile from "../../components/NavbarMobile";
-import FooterDesktop from "../../components/FooterDesktop";
-import NavigatorMobile from "../../components/NavigatorMobile";
-import CarouselProduct from "../../components/CarouselProduct";
+import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
+import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
+import { MdDraw } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+
+import CarouselBanner from "../../components/user/carousel/CarouselBanner";
+import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
+import NavbarMobile from "../../components/user/navbar/NavbarMobile";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
+import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import CarouselProduct from "../../components/user/carousel/CarouselProduct";
 import banner1 from "../../assets/images/banner_1.png";
 import banner2 from "../../assets/images/banner_2.png";
 import banner3 from "../../assets/images/banner_3.png";
 import banner4 from "../../assets/images/banner_4.png";
 import banner5 from "../../assets/images/banner_5.png";
-import StaticBanner from "../../components/StaticBanner";
-import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
-import { MdDraw } from "react-icons/md";
-import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
-import ServiceCard from "../../components/ServiceCard";
-import FrameImage from "../../components/FrameImage";
-import SelectionCategory from "../../components/SelectionCategory";
-import { getCookie, setCookie } from "../../utils";
+import StaticBanner from "../../components/user/StaticBanner";
+import ServiceCard from "../../components/user/ServiceCard";
+import FrameImage from "../../components/user/FrameImage";
+import SelectionCategory from "../../components/user/SelectionCategory";
+import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
+import { profileUser } from "../../features/userDataSlice";
+import { productsUser } from "../../features/productListUserSlice";
+import { addressUser } from "../../features/userAddressSlice";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const refresh_token = localStorage.getItem("refresh_token");
   const access_token = getCookie("access_token");
+  const dispatch = useDispatch();
+  const productsData = useSelector((state) => state.producter.value);
+
+  useEffect(() => {
+    axios.get("/admin/products").then((res) => {
+      dispatch(productsUser(res.data?.data));
+    });
+  }, [dispatch]);
 
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
-        .get("/auth/keep-login", {
+        .get("/user/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
         })
         .then((res) => {
@@ -37,91 +50,24 @@ const Home = () => {
         });
     }
   }, [access_token, newAccessToken, refresh_token]);
-  const productsData = [
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-  ];
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)));
+    }
+  }, [access_token, dispatch, refresh_token]);
+
   const listCategory = [
     { id: 1, name: "Table" },
     { id: 2, name: "Kitchen" },
     { id: 3, name: "Sofa" },
     { id: 4, name: "Chair" },
   ];
+
   const imageUrls = [banner1, banner2, banner3, banner4, banner5];
 
   const services = [
@@ -156,11 +102,12 @@ const Home = () => {
       text: "Feel free to ask us, we're here to assist you.",
     },
   ];
+
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
-      <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8  lg:mx-32">
+      <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />
         </div>

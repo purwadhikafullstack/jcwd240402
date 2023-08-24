@@ -36,14 +36,10 @@ module.exports = {
 
   async updateWarehouse(req, res) {
     const warehouseId = req.params.id;
-  
-    const {
-      warehouse_name,
-      city_id,
-      warehouse_contact,
-      address_warehouse,
-    } = req.body;
-  
+
+    const { warehouse_name, city_id, warehouse_contact, address_warehouse } =
+      req.body;
+
     try {
       const warehouse = await db.Warehouse.findByPk(warehouseId);
       if (!warehouse) {
@@ -51,7 +47,7 @@ module.exports = {
           message: "Warehouse not found",
         });
       }
-  
+
       if (warehouse_name) warehouse.warehouse_name = warehouse_name;
       if (city_id) warehouse.city_id = city_id;
       if (warehouse_contact) warehouse.warehouse_contact = warehouse_contact;
@@ -60,9 +56,9 @@ module.exports = {
         warehouse.latitude = req.body.latitude;
         warehouse.longitude = req.body.longitude;
       }
-  
+
       await warehouse.save();
-  
+
       return res.status(200).send({
         message: "Warehouse updated successfully",
         data: warehouse,

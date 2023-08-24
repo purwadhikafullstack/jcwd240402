@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
+const db = require("../models");
 const jwt = require("jsonwebtoken");
 const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
@@ -64,15 +65,16 @@ module.exports = {
     }
   },
 
-  async  registerAdmin(req, res) {
-    const { username, first_name, last_name, password, warehouse_id } = req.body;
-  
+  async registerAdmin(req, res) {
+    const { username, first_name, last_name, password, warehouse_id } =
+      req.body;
+
     const t = await db.sequelize.transaction();
-  
+
     try {
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(password, salt);
-  
+
       const newUser = await db.Admin.create(
         {
           username,
@@ -84,9 +86,9 @@ module.exports = {
         },
         { transaction: t }
       );
-  
+
       await t.commit();
-  
+
       return res.status(201).send({
         message: "Registration Admin successful",
         data: {

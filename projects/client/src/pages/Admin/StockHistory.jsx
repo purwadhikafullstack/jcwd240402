@@ -19,6 +19,8 @@ const StockHistory = () => {
   const [totalDecrement, setTotalDecrement] = useState("");
   const [error, setError] = useState("");
 
+  const token = localStorage.getItem("token");
+
   const monthOptions = [
     { value: "", label: 'any month' },
 
@@ -47,7 +49,13 @@ const StockHistory = () => {
 
   useEffect(() => {
 
-    axios.get(`http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`)
+    axios.get(`http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+    )
     .then((response) => {
       setStockHistoryList(response.data.history);
       setTotalLastStock(response.data.total_last_stock);
@@ -61,9 +69,6 @@ const StockHistory = () => {
 
   }, [month, year, warehouseId, currentPage])
 
-  const handleChange = (month) =>{
-    setMonth(month.value)
-  }
   const handleChangeMonth = (month) =>{
     setMonth(month.value)
   }

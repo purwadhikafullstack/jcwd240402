@@ -40,12 +40,12 @@ module.exports = {
         {
           model: db.Image_product,
           as: "Image_products",
-          attributes: ["img_product"],
+          attributes: ["id","img_product"],
         },
         {
           model: db.Category,
           as: 'category',
-          attributes: ['name','id'],
+          attributes: ['id','name'],
           paranoid:false
         }
     ];

@@ -55,8 +55,8 @@ const ProductEdit = ({ initialData, onSubmit, isEditMode = false }) => {
   };
 
   const handleGalleryChange = (updatedImages) => {
-    setUploadedImages(updatedImages);
-    console.log(uploadedImages);
+    setUploadedImages(updatedImages); 
+    setProduct(prev => ({ ...prev, images: updatedImages }));
   };
 
   const handleSubmit = async (event) => {

@@ -1,11 +1,14 @@
-import React, { useState,useEffect } from "react";
-import { FaTrash } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaTrash, FaUpload } from "react-icons/fa";
 
 function MainImageDisplay({ image }) {
-  if (!image) {
+  if (!image || !(image instanceof Blob || image instanceof File)) {
     return (
-      <div className="main-image-placeholder border-2 border-dashed border-gray-300 w-72 h-72 flex items-center justify-center mb-5">
-        No Image
+      <div className="main-image-placeholder w-80 h-80 border-2 border-dashed border-gray-300 flex items-center justify-center m-5">
+        <div className="text-gray-800 flex flex-col items-center justify-center">
+          <FaUpload size={32} />
+          <p>No Image</p>
+        </div>
       </div>
     );
   }
@@ -20,48 +23,49 @@ function MainImageDisplay({ image }) {
   );
 }
 
-function SubImageDisplay({ image, onHover, onDelete }) {
+function SubImageBox({ image, onHover, onDelete, onUpload }) {
   const handleDelete = () => {
     onDelete(image);
   };
 
-  return (
-    <div className="sub-image relative inline-block m-2 shadow-md rounded-md overflow-hidden">
-      <img
-        className="w-20 h-20"
-        src={URL.createObjectURL(image)}
-        alt="Sub Preview"
-        onMouseOver={() => onHover(image)}
-      />
-      <span
-        className="absolute top-1 right-1 cursor-pointer bg-white p-1 rounded-full"
-        onClick={handleDelete}
-      >
-        <FaTrash />
-      </span>
-    </div>
-  );
-}
-
-function ImageUploader({ onUpload, remaining }) {
-  const [inputKey, setInputKey] = useState(Date.now());
-
-  const handleFileChange = (event) => {
-    const files = Array.from(event.target.files).slice(0, remaining);
-    onUpload(files);
-    setInputKey(Date.now());
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      onUpload(file);
+    }
   };
 
   return (
-    <div className="image-uploader mt-5">
-      <input
-        key={inputKey}
-        className="border p-2 rounded"
-        type="file"
-        multiple
-        onChange={handleFileChange}
-        accept="image/*"
-      />
+    <div className="sub-image-box relative inline-block m-2 shadow-md rounded-md overflow-hidden">
+      {image && (image instanceof Blob || image instanceof File) ? (
+        <div className="sub-image-preview">
+          <img
+            className="w-20 h-20"
+            src={URL.createObjectURL(image)}
+            alt="Sub Preview"
+            onMouseOver={() => onHover(image)}
+          />
+          <div className="flex justify-center p-1">
+            <span className="cursor-pointer" onClick={handleDelete}>
+              <FaTrash />
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="w-20 h-20 object-cover border-2 border-dashed border-gray-300 flex items-center justify-center">
+          <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center">
+            <FaUpload />
+            <p>Upload</p>
+            <input
+              id="image-upload"
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleUpload}
+            />
+          </label>
+        </div>
+      )}
     </div>
   );
 }
@@ -73,53 +77,49 @@ function ImageGallery({ images, onUpload }) {
     setMainImage(images.length ? images[0] : null);
   }, [images]);
 
-  const handleImageUpload = (uploadedFiles) => {
-    const combinedImages = [...images, ...uploadedFiles];
+  const handleImageUpload = (uploadedFile) => {
+    const combinedImages = [...images, uploadedFile];
     onUpload(combinedImages);
     if (!mainImage) {
-      setMainImage(uploadedFiles[0]);
+      setMainImage(uploadedFile);
     }
   };
 
-  const handleImageHover = (imageFile) => {
-    setMainImage(imageFile);
+  const handleImageHover = (hoveredImage) => {
+    setMainImage(hoveredImage);
   };
 
-const handleImageDelete = (imageToDelete) => {
-  const updatedImages = images.filter((image) => image !== imageToDelete);
-  onUpload(updatedImages);
-  if (mainImage === imageToDelete) {
-    setMainImage(updatedImages[0]);
-  }
-};
+  const handleImageDelete = (imageToDelete) => {
+    const updatedImages = images.filter((image) => image !== imageToDelete);
+    onUpload(updatedImages);
+    if (mainImage === imageToDelete) {
+      setMainImage(updatedImages[0]);
+    }
+  };
 
-return (
-  <div className="image-gallery-container flex flex-col items-center max-h-[600px] overflow-y-auto">
-    <MainImageDisplay image={mainImage} />
-    <div className="sub-images-container flex h-24 mb-5 overflow-y-auto flex-nowrap">
-      {images.slice(0, 5).map((imageFile, idx) => (
-        <SubImageDisplay
-        key={idx}
-        image={imageFile}
-        onHover={handleImageHover}
-        onDelete={handleImageDelete}
-        />
-        ))}
-    </div>
-        {images.length < 5 && (
-          <ImageUploader
+  return (
+    <div className="image-gallery-container flex flex-col items-center">
+      <div className="main-image-container flex items-center justify-center w-80 h-80 relative overflow-hidden">
+        <MainImageDisplay image={mainImage || images[0]} />
+      </div>
+
+      <div className="sub-images-container">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <SubImageBox
+            key={index}
+            image={images[index] || null}
+            onDelete={handleImageDelete}
+            onHover={handleImageHover}
             onUpload={handleImageUpload}
-            remaining={5 - images.length}
           />
-        )}
-  </div>
-);
-
+        ))}
+      </div>
+    </div>
+  );
 }
 
 ImageGallery.defaultProps = {
   images: [],
-  setImages: () => {},
 };
 
 export default ImageGallery;

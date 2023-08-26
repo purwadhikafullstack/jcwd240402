@@ -270,13 +270,16 @@ module.exports = {
       options.where.warehouse_id = adminWarehouseId;
     }
 
-    if (year) {
+    if (month && year) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('timestamp')), month),
+        Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('timestamp')), year),
+      ];
+    }else if (year) {
       options.where[db.Sequelize.Op.and] = [
         Sequelize.where(Sequelize.fn('YEAR', Sequelize.col('timestamp')), year),
       ];
-    }
-
-    if (month) {
+    }else if (month) {
       options.where[db.Sequelize.Op.and] = [
         Sequelize.where(Sequelize.fn('MONTH', Sequelize.col('timestamp')), month),
       ];

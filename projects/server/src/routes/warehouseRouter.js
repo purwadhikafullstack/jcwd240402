@@ -11,6 +11,7 @@ router.post(
   warehouseController.registerWarehouse
 );
 router.get("/warehouse-list", warehouseController.getWarehouseList);
+
 router.patch(
   "/:id",
   coordinatesMiddleware,

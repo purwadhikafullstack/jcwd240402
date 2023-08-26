@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "../Button";
-import ImageGallery from "../Image/ImageGallery";
+import ImageGallery from "../image/ImageGallery";
 import axios from "../../api/axios";
 import ProductInputs from "./ProductInputs";
 

@@ -15,6 +15,14 @@ import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
+import ProductRegister from "../components/product/ProductRegister";
+import ProductList from "../components/product/ProductList";
+import AdminProductPage from "./admin/AdminProductPage";
+import ProductEdit from "../components/product/ProductEdit"
+import CategoryList from "./admin/CategoryList";
+import AdminStockPage from "./admin/AdminStockPage";
+import StockList from "../components/stock/StockList";
+import CreateStock from "../components/stock/CreateStock";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import AdminCardProduct from "../components/AdminCardProduct";
@@ -22,14 +30,6 @@ import ProductDetail from "./user/ProductDetail";
 import Cart from "./user/Cart";
 import StockHistory from "./admin/StockHistory";
 import CheckOut from "./user/CheckOut";
-import ProductRegister from "../components/Product/ProductRegister";
-import ProductList from "../components/Product/ProductList";
-import AdminProductPage from "./admin/AdminProductPage";
-import ProductEdit from "../components/Product/ProductEdit";
-import CategoryList from "./admin/CategoryList";
-import StockList from "../components/stock/StockList";
-import CreateStock from "../components/stock/CreateStock";
-import AdminStockPage from "../pages/admin/AdminStockPage";
 
 function App() {
   return (
@@ -57,6 +57,11 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/user/setting" element={<SettingProfile />} />
+          <Route path="/user/setting/address" element={<SettingAddress />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<CheckOut />} />
           <Route path="/category" element={<CategoryList/>} />
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
@@ -72,11 +77,6 @@ function App() {
 
 
           <Route path="/*" element={<NotFound />} />
-          <Route path="/user/setting" element={<SettingProfile />} />
-          <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
         </Routes>
       </Router>
     </div>

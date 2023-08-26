@@ -72,6 +72,7 @@ module.exports = {
       } catch (error) {
         res.status(401).send({
           message: "Invalid token",
+          payload: authorization,
           error,
         });
       }

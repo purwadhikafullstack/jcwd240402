@@ -19,7 +19,11 @@ const StockHistory = () => {
   const [totalDecrement, setTotalDecrement] = useState("");
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
+  const getCookieValue = (name) => (
+    document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)')?.pop() || ''
+  )
+
+  const token = getCookieValue("access_token")
 
   const monthOptions = [
     { value: "", label: 'any month' },

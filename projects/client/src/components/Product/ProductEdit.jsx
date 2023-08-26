@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "../Button";
-import ImageGalleryEdit from "../image/ImageGalleryEdit";
+import ImageGalleryEdit from "../Image/ImageGalleryEdit";
 import axios from "../../api/axios";
 import ProductInputs from "./ProductInputs";
 import { useParams } from "react-router-dom";

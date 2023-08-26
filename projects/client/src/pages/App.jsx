@@ -15,10 +15,10 @@ import ResetPassword from "./user/ResetPassword";
 import NotifResetPassword from "./user/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
-import ProductRegister from "../components/product/ProductRegister";
-import ProductList from "../components/product/ProductList";
+import ProductRegister from "../components/Product/ProductRegister";
+import ProductList from "../components/Product/ProductList";
 import AdminProductPage from "./admin/AdminProductPage";
-import ProductEdit from "../components/product/ProductEdit"
+import ProductEdit from "../components/Product/ProductEdit"
 import CategoryList from "./admin/CategoryList";
 import AdminStockPage from "./admin/AdminStockPage";
 import StockList from "../components/stock/StockList";

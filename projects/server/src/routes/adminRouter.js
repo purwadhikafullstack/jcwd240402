@@ -29,7 +29,7 @@ router.post("/product",multerProduct.array("images", 5),validatorMiddlewareProdu
 router.patch("/product/:id",validatorMiddlewareProduct.validateUpdateProduct,productController.updateProductDetails);
 
 router.post("/product/:id/image",multerProduct.single("image"),productController.addImageToProduct);
-router.patch("/product/image/:id",multerProduct.single("image"),productController.updateProductImage);
+// router.patch("/product/image/:id",multerProduct.single("image"),productController.updateProductImage);
 router.delete("/product/image/:id",productController.deleteProductImage);
 
 router.get("/products",productController.getProductsList);

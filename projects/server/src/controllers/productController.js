@@ -125,17 +125,14 @@ module.exports = {
   async addImageToProduct(req, res) {
     const product_id = req.params.id;
     const imgProductId = req.body.img_product_id;
-<<<<<<<<< Temporary merge branch 1
+
 
     if (!imgProductId || !req.file) {
       return res.status(400).send({ message: "Missing required data" });
     }
 
-=========
     const newImageFile = req.file;
 
-  
->>>>>>>>> Temporary merge branch 2
     const t = await db.sequelize.transaction();
   
     try {
@@ -155,20 +152,17 @@ module.exports = {
         const oldImageFilename = extractFilenameFromDBPath(updatedImage.img_product);
         const oldImagePath = getAbsoluteProductImagePath(oldImageFilename);
   
->>>>>>>>> Temporary merge branch 2
         try {
           await fs.unlink(oldImagePath);
         } catch (err) {
           console.error("Error deleting old image file:", err);
         }
       }
-<<<<<<<<< Temporary merge branch 1
 
       const newFilename = await moveUploadedFileToDestination(req.file);
       image.img_product = createProductImageDBPath(newFilename);
       await image.save({ transaction: t });
 
-=========
       await updatedImage.save({ transaction: t });
   
       await t.commit();
@@ -187,8 +181,6 @@ module.exports = {
     }
   },
 
-<<<<<<<<< Temporary merge branch 1
-=========
   async addImagesToProduct(req, res) {
     const product_id = req.params.id;
     const newImageFiles = req.files;
@@ -275,10 +267,6 @@ module.exports = {
     }
   },
   
-  
-  
-
->>>>>>>>> Temporary merge branch 2
   async deleteProduct(req, res) {
     const { id } = req.params;
     const t = await db.sequelize.transaction();
@@ -428,8 +416,8 @@ module.exports = {
         success: false,
         message: "Fatal error on server.",
         errors: error.message,
-      });
-    }
-  },
+     });
+    }
+  },
   
 };

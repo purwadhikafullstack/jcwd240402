@@ -18,6 +18,7 @@ import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
 import SettingAddress from "./user/SettingAddress";
 import ProductDetail from "./user/ProductDetail";
+import StockHistory from "./admin/StockHistory";
 import Cart from "./user/Cart";
 import CheckOut from "./user/CheckOut";
 import ProductRegister from "../components/admin/product/ProductRegister";
@@ -41,7 +42,8 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminHome />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
-          <Route path="/warehouse" element={<WarehouseList />} /> {/* admin */}
+          <Route path="/stock-history" element={<StockHistory />} />
+          <Route path="/warehouse" element={<WarehouseList />} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />

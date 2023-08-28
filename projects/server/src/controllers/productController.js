@@ -42,11 +42,9 @@ module.exports = {
 
     try {
       if (images && images.length > 5) {
-        return res
-          .status(400)
-          .json({
-            message: "Maximum image count exceeded for the new product.",
-          });
+        return res.status(400).json({
+          message: "Maximum image count exceeded for the new product.",
+        });
       }
 
       const newProduct = await db.Product.create(
@@ -366,7 +364,6 @@ module.exports = {
         [db.Sequelize.Op.like]: `%${productName}%`,
       };
     }
-
     try {
       const result = await getAllProducts(options, page, pageSize);
       if (result.success) {

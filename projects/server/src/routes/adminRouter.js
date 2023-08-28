@@ -1,4 +1,5 @@
 const adminController = require("../controllers/adminController");
+
 const validatorMiddlewareAdmin = require("../middleware/validator/admin");
 const validatorMiddlewareCategory = require("../middleware/validator/category");
 const validatorMiddlewareProduct = require("../middleware/validator/product");
@@ -72,7 +73,6 @@ router.patch(
   productController.updateProductImage
 );
 router.delete("/product/image/:id", productController.deleteProductImage);
-router.patch("/product/status/:name", productController.toggleProductStatus);
 
 router.get("/products", productController.getProductsList);
 router.patch("/product/delete/:id", productController.deleteProduct);

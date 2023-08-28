@@ -6,12 +6,13 @@ const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
 
-//move to utility later
+// move to utility later
 const generateAccessToken = (user) => {
   const token = jwt.sign(
     {
       id: user.id,
       role: user.role_id,
+      warehouse: user.warehouse_id,
     },
     process.env.ACCESS_KEY,
     { expiresIn: "1h" }

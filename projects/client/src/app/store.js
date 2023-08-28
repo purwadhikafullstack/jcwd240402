@@ -1,11 +1,16 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import thunk from 'redux-thunk';
-import { adminReducer } from '../features/adminReducer';
+import { configureStore } from "@reduxjs/toolkit";
+import userDataReducer from "../features/userDataSlice";
+import userAddressReducer from "../features/userAddressSlice";
+import productListUserReducer from "../features/productListUserSlice";
+import counterReducer from "../features/counterSlice";
+import productReducer from "../features/productReducer";
 
-const rootReducer = combineReducers({
-    admin: adminReducer
+export const store = configureStore({
+  reducer: {
+    profiler: userDataReducer,
+    addresser: userAddressReducer,
+    producter: productListUserReducer,
+    counter: counterReducer,
+    product:productReducer
+  },
 });
-
-export const store = createStore(rootReducer, applyMiddleware(thunk));
-
-

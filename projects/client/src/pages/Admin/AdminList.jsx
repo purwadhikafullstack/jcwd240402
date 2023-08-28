@@ -1,119 +1,72 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import RegisterAdminModal from "../../components/Modals/ModalRegisterAdmin";
+import RegisterAdminModal from "../../components/Modals/admin/ModalRegisterAdmin";
 import Button from "../../components/Button";
-import AdminProfileModal from "../../components/Modals/ModalAdminEdit";
-import ChangePasswordModal from "../../components/Modals/ModalEditPassword";
-import ReassignWarehouseModal from "../../components/Modals/ModalReassignWarehouse";
+import AdminProfileModal from "../../components/Modals/admin/ModalAdminEdit";
+import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword";
+import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
 import DefaultPagination from "../../components/Pagination";
-import {
-  loadCitiesAction,
-  loadWarehousesAction,
-  loadAdminsAction,
-} from "../../utils/Actions";
+import moment from "moment";
+import axios from "axios";
 
 const AdminList = () => {
-  const dispatch = useDispatch();
-  const { cities, warehouses, admins, error } = useSelector(
-    (state) => state.admin
-  );
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [warehouses, setWarehouses] = useState([]);
+  const [admins, setAdmins] = useState([]);
+  const [selectedWarehouse, setSelectedWarehouse] = useState("");
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [searchName, setSearchName] = useState("");
+
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const loadCities = async (inputValue, callback) => {
-    const citiesData = await dispatch(loadCitiesAction(inputValue));
-    const formattedCities = citiesData.map((city) => ({
-      value: city.id,
-      label: city.name,
-    }));
-    callback(formattedCities);
+  useEffect(() => {
+    refreshAdminList();
+  }, [searchName, selectedWarehouse, currentPage]);
+
+  const handleWarehouseChange = (selectedOption) => {
+    setSelectedWarehouse(selectedOption.value);
   };
 
-  const loadWarehouses = async (inputValue, callback) => {
-    if (selectedCity) {
-      await dispatch(loadWarehousesAction(inputValue, selectedCity.value));
-      const formattedWarehouses = warehouses.map((warehouse) => ({
-        value: warehouse.id,
-        label: warehouse.warehouse_name,
-      }));
-      callback(formattedWarehouses);
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`);
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
     }
   };
 
-  const openRegisterModal = () => {
-    setRegisterModalOpen(true);
-  };
-
-  const closeRegisterModal = () => {
-    setRegisterModalOpen(false);
-  };
-
-  const onEditPassword = () => {
-    setPasswordModalOpen(true);
-  };
-
-  const onEditWarehouse = () => {
-    setWarehouseModalOpen(true);
-  };
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  const handleSuccessfulRegister = async () => {
-    await refreshAdminList();
-    closeRegisterModal(); 
-};
-
-const handleSuccessfulEdit = async () => {
-  await refreshAdminList();
-  setWarehouseModalOpen(false);
-  setProfileModalOpen(false);
-};
-
-  const handleEditAdmin = (admin) => {
-    setSelectedAdmin(admin);
-    setProfileModalOpen(true);
-  };
-
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      if (selectedWarehouse) {
-        const response = await dispatch(
-          loadAdminsAction(searchName, selectedWarehouse.value, currentPage)
-        );
-        if (response && response.pagination) {
-          const { page, totalPages } = response.pagination;
-          setCurrentPage(page);
-          setTotalPages(totalPages);
-        }
-      }
-    };
-
-    fetchAdmins();
-  }, [selectedWarehouse, searchName, dispatch, currentPage]);
-
-  const refreshAdminList = async () => {
-    if (selectedWarehouse) {
-      const response = await dispatch(loadAdminsAction(searchName, selectedWarehouse.value, currentPage));
-      if (response && response.pagination) {
-        const { totalPages } = response.pagination;
+  const fetchAdmins = async () => {
+    try {
+      const warehouseId = selectedWarehouse || "";
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`
+      );
+      setAdmins(response.data.admins);
+      if (response.data.pagination) {
+        const { totalPages } = response.data.pagination;
         setTotalPages(totalPages);
         if (currentPage > totalPages) {
           setCurrentPage(totalPages);
         }
       }
-      return response;
+    } catch (error) {
+      console.error("Error loading admins:", error);
     }
   };
 
@@ -123,63 +76,54 @@ const handleSuccessfulEdit = async () => {
     "first name": admin.first_name,
     "last name": admin.last_name,
     "warehouse name": admin.warehouse?.warehouse_name,
+    "Created at": moment(admin.createdAt).format("MMMM D, YYYY"),
   }));
 
   const profileData = selectedAdmin
     ? [
-        { label: "Password", value: "••••••••", onEdit: onEditPassword },
+        {
+          label: "Password",
+          value: "••••••••",
+          onEdit: () => setPasswordModalOpen(true),
+        },
         {
           label: "Warehouse",
-
-          value: selectedAdmin["warehouse name"] || "",
-          onEdit: onEditWarehouse,
+          value: selectedAdmin.warehouse?.warehouse_name || "N/A",
+          onEdit: () => setWarehouseModalOpen(true),
         },
       ]
     : [];
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+
+  const refreshAdminList = async () => {
+    await fetchAdmins();
+  };
 
   return (
-    <div className=" h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
       <div className="px-8 pt-8">
-        <div className="flex items-center ">
-          <div className="flex-1">
-            <AsyncSelect
-              cacheOptions={false}
-              loadOptions={loadCities}
-              onChange={(city) => {
-                setSelectedCity(city);
-              }}
-              placeholder="City"
-            />
-          </div>
-          <div className="flex-1">
-            <AsyncSelect
-              minLength={1}
-              cacheOptions
-              loadOptions={loadWarehouses}
-              onChange={(warehouse) => {
-                setSelectedWarehouse(warehouse);
-              }}
-              placeholder="Warehouse"
-            />
-          </div>
+        <div className="flex items-center">
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadWarehouseOptions}
+            onChange={handleWarehouseChange}
+            placeholder="All Warehouses"
+            className="flex-1"
+          />
           <input
             type="text"
             placeholder="Search Admin name"
             value={searchName}
             onChange={(e) => setSearchName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white shadow-sm"
-            disabled={!selectedCity || !selectedWarehouse}
+            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
           />
           <Button
             buttonSize="medium"
             buttonText="Register"
-            onClick={openRegisterModal}
+            onClick={() => setRegisterModalOpen(true)}
             bgColor="bg-blue3"
             colorText="text-white"
             fontWeight="font-semibold"
@@ -193,15 +137,22 @@ const handleSuccessfulEdit = async () => {
               "first name",
               "last name",
               "warehouse name",
+              "Created at",
             ]}
             data={formattedAdmins}
-            onEdit={handleEditAdmin}
+            onEdit={(admin) => {
+              setSelectedAdmin(admin);
+              setProfileModalOpen(true);
+            }}
           />
         </div>
         <RegisterAdminModal
           show={isRegisterModalOpen}
-          onClose={closeRegisterModal}
-          onSuccessfulRegister={handleSuccessfulRegister}
+          onClose={() => setRegisterModalOpen(false)}
+          onSuccessfulRegister={() => {
+            refreshAdminList();
+            setRegisterModalOpen(false);
+          }}
         />
         <AdminProfileModal
           show={isProfileModalOpen}
@@ -219,12 +170,16 @@ const handleSuccessfulEdit = async () => {
           show={isWarehouseModalOpen}
           onClose={() => setWarehouseModalOpen(false)}
           adminId={selectedAdmin?.id}
-          refreshAdminListWrapper={handleSuccessfulEdit}
+          refreshAdminListWrapper={() => {
+            refreshAdminList();
+            setWarehouseModalOpen(false);
+            setProfileModalOpen(false);
+          }}
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            onPageChange={setCurrentPage}
           />
         </div>
       </div>

@@ -3,24 +3,27 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import verified from "../../assets/images/verified.webp";
 import axios from "../../api/axios";
-import { removeCookie } from "../../utils";
-import NotifVerifies from "../../components/NotifVerifies";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
+import NotifVerifies from "../../components/user/notif/NotifVerifies";
 
 const NotifVerified = () => {
   const { verify_token } = useParams();
   const navigate = useNavigate();
   const msg = "Congrats! your account verified";
   removeCookie("access_token");
-
+  removeLocalStorage("refresh_token");
   useEffect(() => {
-    axios.get(`/auth/verify/${verify_token}`).then(
+    axios.get(`user/auth/verify/${verify_token}`).then(
       (res) => {
         if (res.data.ok) {
           setTimeout(() => {
-            navigate("/");
+            navigate("/log-in");
           }, 4000);
         }
-        navigate("/register");
+        // navigate("/register");
       },
       [navigate, verify_token]
     );

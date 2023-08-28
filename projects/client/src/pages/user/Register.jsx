@@ -9,8 +9,12 @@ import axios from "../../api/axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import AuthImageCard from "../../components/AuthImageCard";
-import { removeCookie, removeLocalStorage } from "../../utils";
+import {
+  removeCookie,
+  removeLocalStorage,
+} from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import withOutAuth from "../../components/user/withoutAuth";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,7 +24,7 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/auth/register", values);
+      const response = await axios.post("/user/auth/register", values);
 
       if (response.status === 201) {
         setStatus({ success: true });
@@ -194,7 +198,7 @@ const Register = () => {
                   <div className="flex gap-x-4 ">
                     <InputForm
                       width="w-full"
-                      label={inputNameCongfigs[0].label}
+                      label={`${inputNameCongfigs[0].label}*`}
                       onChange={handleForm}
                       placeholder={inputNameCongfigs[0].placeholder}
                       name={inputNameCongfigs[0].name}
@@ -205,7 +209,7 @@ const Register = () => {
                     />
                     <InputForm
                       width="w-full"
-                      label={inputNameCongfigs[1].label}
+                      label={`${inputNameCongfigs[1].label}*`}
                       onChange={handleForm}
                       placeholder={inputNameCongfigs[1].placeholder}
                       name={inputNameCongfigs[1].name}
@@ -218,7 +222,7 @@ const Register = () => {
                   <div className="flex gap-x-4 ">
                     <InputForm
                       width="w-full"
-                      label={inputContactConfigs[0].label}
+                      label={`${inputContactConfigs[0].label}*`}
                       onChange={handleForm}
                       placeholder={inputContactConfigs[0].placeholder}
                       name={inputContactConfigs[0].name}
@@ -229,7 +233,7 @@ const Register = () => {
                     />
                     <InputForm
                       width="w-full"
-                      label={inputContactConfigs[1].label}
+                      label={`${inputContactConfigs[1].label}*`}
                       onChange={handleForm}
                       placeholder={inputContactConfigs[1].placeholder}
                       name={inputContactConfigs[1].name}
@@ -243,7 +247,7 @@ const Register = () => {
                   {inputConfigs.map((config, index) => (
                     <InputForm
                       key={index}
-                      label={config.label}
+                      label={`${config.label}*`}
                       onChange={handleForm}
                       placeholder={config.placeholder}
                       name={config.name}
@@ -283,4 +287,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default withOutAuth(Register);

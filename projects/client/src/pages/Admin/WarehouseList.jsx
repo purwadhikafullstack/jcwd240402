@@ -1,109 +1,131 @@
 import React, { useState, useEffect } from "react";
-import AsyncSelect from "react-select/async";
 import TableComponent from "../../components/Table";
-import SidebarAdmin from "../../components/SidebarAdminDesktop";
-import WarehouseModal from "../../components/Modals/ModalWarehouse";
-import EditModal from "../../components/Modals/ModalEdit";
-import RegisterWarehouseModal from "../../components/Modals/ModalRegisterWarehouse";
+import AsyncSelect from "react-select/async";
+import Sidebar from "../../components/SidebarAdminDesktop";
+import RegisterWarehouseModal from "../../components/Modals/warehouse/ModalRegisterWarehouse";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
-import {
-  refreshWarehouseList,
-  loadCities,
-  updateWarehouse,
-} from "../../utils/WarehouseListHelp";
+import WarehouseModal from "../../components/Modals/warehouse/ModalWarehouse";
+import WarehouseProfileModal from "../../components/Modals/warehouse/ModalWarehouseEdit";
+import axios from "axios";
 
 const WarehouseList = () => {
+  const [warehouses, setWarehouses] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [warehouseName, setWarehouseName] = useState("");
-  const [warehouses, setWarehouses] = useState([]);
-  const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [editField, setEditField] = useState(null);
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-  const [isRegisterWarehouseModalOpen, setRegisterWarehouseModalOpen] =
-    useState(false);
+  const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const onWarehouseNameChange = (e) => {
-    setWarehouseName(e.target.value);
-  };
-
-  const openRegisterWarehouseModal = () => {
-    setRegisterWarehouseModalOpen(true);
-  };
-
-  const openWarehouseModal = (warehouse) => {
-    setSelectedWarehouse(warehouse);
-    setWarehouseModalOpen(true);
-  };
-
-  const openEditModal = (field) => {
-    setEditField(field);
-    setWarehouseModalOpen(false);
-    setEditModalOpen(true);
-  };
-
-  const refreshWarehouseListWrapper = () => {
-    refreshWarehouseList(
-      warehouseName,
-      selectedCity?.value,
-      currentPage,
-      setWarehouses,
-      setTotalPages
-    );
-  };
-
   useEffect(() => {
-    refreshWarehouseListWrapper();
+    refreshWarehouseList();
   }, [selectedCity, warehouseName, currentPage]);
 
-  const closeModal = () => {
-    setSelectedWarehouse(null);
-    setWarehouseModalOpen(false);
-    refreshWarehouseListWrapper();
+  const loadCities = async (inputValue, callback) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
+      );
+      const cityOptions = [
+        { value: "", label: "All Cities" },
+        ...response.data.cities.map((city) => ({
+          value: city.id,
+          label: city.name,
+        })),
+      ];
+  
+      callback(cityOptions);
+    } catch (error) {
+      console.error("Error loading cities:", error);
+      callback([]);
+    }
   };
 
-  const closeEditModal = () => {
-    setEditField(null);
-    setEditModalOpen(false);
-    refreshWarehouseListWrapper();
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=${selectedCity?.value || ""}`
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
   };
 
-  const closeRegisterModal = () => {
-    setRegisterWarehouseModalOpen(false);
-    refreshWarehouseListWrapper();
+  const fetchWarehouses = async () => {
+    try {
+      const cityId = selectedCity ? selectedCity.value : "";
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list`,
+        {
+          params: {
+            searchName: warehouseName,
+            cityId: cityId,
+            page: currentPage,
+            pageSize: 10,
+          },
+        }
+      );
+      setWarehouses(response.data.warehouses);
+      if (response.data.pagination) {
+        const { totalPages } = response.data.pagination;
+        setTotalPages(totalPages);
+        if (currentPage > totalPages) {
+          setCurrentPage(totalPages);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+    }
+  };
+
+  const formattedWarehouses = warehouses.map((warehouse) => ({
+    id: warehouse.id,
+    city: warehouse.City?.name || "",
+    "Warehouse Name": warehouse.warehouse_name || "",
+    "Warehouse Address": warehouse.address_warehouse || "",
+    "Warehouse Contact": warehouse.warehouse_contact || "",
+  }));
+
+  const refreshWarehouseList = async () => {
+    await fetchWarehouses();
   };
 
   return (
-    <div className="shadow-2xl h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
-        <SidebarAdmin />
+        <Sidebar />
       </div>
       <div className="px-8 pt-8">
-        <div className="flex items-center ">
-          <div className="flex-1">
-            <AsyncSelect
-              classNamePrefix="react-select"
-              loadOptions={loadCities}
-              value={selectedCity}
-              onChange={setSelectedCity}
-              placeholder="City"
-            />
-          </div>
-          <input
-            type="text"
-            placeholder="Search Warehouse name"
-            value={warehouseName}
-            onChange={onWarehouseNameChange}
-            className="flex-1 p-2 border rounded text-base bg-white shadow-sm border-gray-200"
-            disabled={!selectedCity}
+        <div className="flex items-center">
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCities}
+            onChange={setSelectedCity}
+            placeholder="All Cities"
+            className="flex-1"
+          />
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadWarehouseOptions}
+            placeholder="All Warehouses"
+            className="flex-1 mx-4"
+            value={null}
           />
           <Button
             buttonSize="medium"
             buttonText="Register"
-            onClick={openRegisterWarehouseModal}
+            onClick={() => setRegisterModalOpen(true)}
             bgColor="bg-blue3"
             colorText="text-white"
             fontWeight="font-semibold"
@@ -112,70 +134,31 @@ const WarehouseList = () => {
         <div className="py-4">
           <TableComponent
             headers={[
-              "ID",
-              "City",
+              "id",
+              "city",
               "Warehouse Name",
               "Warehouse Address",
               "Warehouse Contact",
             ]}
-            data={warehouses.map((warehouse) => ({
-              warehouse,
-              ID: warehouse.id,
-              City: warehouse.City.name,
-              "Warehouse Name": warehouse.warehouse_name,
-              "Warehouse Address": warehouse.address_warehouse,
-              "Warehouse Contact": warehouse.warehouse_contact,
-            }))}
-            onEdit={(row) => openWarehouseModal(row.warehouse)}
+            data={formattedWarehouses}
+            onEdit={(warehouse) => {
+              // Handle edit action for warehouse
+            }}
           />
-          {selectedWarehouse && (
-            <WarehouseModal
-              show={isWarehouseModalOpen}
-              onClose={closeModal}
-              title={`Warehouse Details`}
-              warehouseData={[
-                { label: "City", value: selectedWarehouse.City.name || "" },
-                {
-                  label: "Warehouse Name",
-                  value: selectedWarehouse.warehouse_name || "",
-                },
-                {
-                  label: "Warehouse Address",
-                  value: selectedWarehouse.address_warehouse || "",
-                },
-                {
-                  label: "Warehouse Contact",
-                  value: selectedWarehouse.warehouse_contact || "",
-                },
-              ]}
-              onEdit={openEditModal}
-            />
-          )}
-          {editField && (
-            <EditModal
-              show={isEditModalOpen}
-              onClose={closeEditModal}
-              onSubmit={(value) =>
-                updateWarehouse(editField, value, selectedWarehouse)
-              }
-              label={editField}
-              name={editField}
-              placeholder={`Enter new ${editField}`}
-              initialValue={selectedWarehouse[editField] || ""}
-              refreshWarehouseList={refreshWarehouseListWrapper}
-            />
-          )}
-          <RegisterWarehouseModal
-            show={isRegisterWarehouseModalOpen}
-            onClose={closeRegisterModal}
+        </div>
+        <RegisterWarehouseModal
+          show={isRegisterModalOpen}
+          onClose={() => setRegisterModalOpen(false)}
+          onSuccessfulRegister={() => {
+            refreshWarehouseList();
+            setRegisterModalOpen(false);
+          }}
+        />
+        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+          <DefaultPagination
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
           />
-          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-            <DefaultPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={(newPage) => setCurrentPage(newPage)}
-            />
-          </div>
         </div>
       </div>
     </div>

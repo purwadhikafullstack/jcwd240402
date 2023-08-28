@@ -52,5 +52,6 @@ module.exports = {
           error: error.message,
         };
       }
-    }
+    },
+
   };

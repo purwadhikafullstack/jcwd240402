@@ -1,0 +1,106 @@
+import React, { useState } from "react";
+import InputForm from "../../InputForm";
+import TextArea from "../../TextArea";
+import AsyncSelect from "react-select/async";
+import axios from "../../../api/axios";
+
+const ProductInputs = ({ formik }) => {
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const loadCategoryOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `/admin/categories`,
+        {
+          params: {
+            name: inputValue,
+          },
+        }
+      );
+      const categoryOptions = response.data.data.map((category) => ({
+        value: category.id,
+        label: category.name,
+      }));
+      return categoryOptions;
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      return [];
+    }
+  };
+
+  const handleCategoryChange = (selectedOption) => {
+    formik.setFieldValue("category_id", selectedOption.value);
+    setSelectedCategory(selectedOption);
+  };
+
+  return (
+    <div className="w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 mx-5">
+      <InputForm
+        label="Product Name"
+        placeholder="Enter product name"
+        value={formik.values.name}
+        name="name"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        errorMessage={formik.touched.name && formik.errors.name}
+        width="w-full"
+      />
+      
+      <div className="flex mt-4">
+        <div className="block font-poppins">Description</div>
+      </div>
+      <TextArea
+        placeholder="Enter product description"
+        value={formik.values.description}
+        name="description"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        error={formik.touched.description && formik.errors.description}
+      />
+
+      <div className="flex my-4 gap-5 justify-center content-evenly">
+        <InputForm
+          label="Weight"
+          placeholder="Enter product weight"
+          value={formik.values.weight}
+          name="weight"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          errorMessage={formik.touched.weight && formik.errors.weight}
+          width="w-full"
+        />
+        <InputForm
+          label="Price"
+          placeholder="Enter product price"
+          value={formik.values.price}
+          name="price"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          errorMessage={formik.touched.price && formik.errors.price}
+          width="w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block font-poppins mb-1 text-gray-700">Category</label>
+        <AsyncSelect
+          cacheOptions
+          defaultOptions
+          loadOptions={loadCategoryOptions}
+          value={selectedCategory || null}
+          onChange={(selectedOption) => {
+            handleCategoryChange(selectedOption);
+            formik.setFieldValue("category_label", selectedOption.label);
+          }}
+          onBlur={formik.handleBlur}
+          placeholder="Select a category"
+        />
+        {formik.touched.category_id && formik.errors.category_id && (
+          <p className="text-red-500 mt-2">{formik.errors.category_id}</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ProductInputs;

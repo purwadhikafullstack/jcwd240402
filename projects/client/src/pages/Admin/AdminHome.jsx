@@ -1,6 +1,6 @@
 import React from "react";
 import SidebarAdmin from "../../components/SidebarAdminDesktop";
-import AdminCardProduct from "../../components/AdminCardProduct";
+import AdminCardProduct from "../../components/admin/card/AdminCardProduct";
 
 const AdminHome = () => {
   return (

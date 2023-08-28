@@ -3,6 +3,7 @@ import userDataReducer from "../features/userDataSlice";
 import userAddressReducer from "../features/userAddressSlice";
 import productListUserReducer from "../features/productListUserSlice";
 import counterReducer from "../features/counterSlice";
+import productReducer from "../features/productReducer";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     addresser: userAddressReducer,
     producter: productListUserReducer,
     counter: counterReducer,
+    product:productReducer
   },
 });

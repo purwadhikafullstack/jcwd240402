@@ -105,6 +105,7 @@ router.get("/region-city", UserController.regionUserForCity);
 router.get("/region-province", UserController.regionUserForProvince);
 
 /* PRODUCT */
+
 router.get("/product/:name", ProductController.getProductById);
 router.get("/products", ProductController.getProductsList);
 
@@ -117,5 +118,7 @@ router.get(
   "/warehouse-stock/filter",
   warehouse_stockController.getAllWarehouseStockFilter
 );
+
+>>>>>>> 2afc9de9afca00ff7751b7e55d8f5be4b3a69ae3
 
 module.exports = router;

@@ -3,26 +3,31 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "axios";
-import InputForm from "../../InputForm"; 
-import Button from "../../Button"; 
+import InputForm from "../../InputForm";
+import Button from "../../Button";
 
-const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEdit }) => {
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
+  console.log(productId)
+  console.log(warehouseId)
 
-  const editCategoryName = async (values) => {
+  const updateStock = async (values) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/category/name/${categoryId}`,
-        { name: values.categoryName }
+        `http://localhost:8000/api/warehouse-stock/${warehouseId}/${productId}`,
+        {
+          productStock: values.productStock,
+          operation: values.operation,
+        }
       );
       console.log("Response from server:", response);
       if (response.status === 200) {
         onClose();
-        handleSuccessfulEdit();
         formik.resetForm();
+        handleSuccessfulEdit();
       } else {
-        throw new Error("Edit Category Name Failed");
+        throw new Error("Update Stock Failed");
       }
     } catch (err) {
       console.log("Error in request:", err);
@@ -36,11 +41,13 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
 
   const formik = useFormik({
     initialValues: {
-      categoryName: "", 
+      productStock: '',
+      operation: 'increase',
     },
-    onSubmit: editCategoryName,
+    onSubmit: updateStock,
     validationSchema: yup.object().shape({
-      categoryName: yup.string().required("Category Name is required"),
+      productStock: yup.number().min(1, "Product stock must be at least 1").required("Product stock is required"),
+      operation: yup.string().oneOf(['increase', 'decrease'], 'Invalid operation').required('Operation is required'),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -60,7 +67,7 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category Name
+            Update Stock
           </h3>
         </div>
       </Modal.Header>
@@ -73,17 +80,32 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
           )}
           <div className="mt-5 px-6 grid gap-y-3">
             <InputForm
-              label="Category Name"
-              name="categoryName"
+              label="Product Stock"
+              name="productStock"
+              type="number"
+              placeholder="Enter Stock Quantity"
               onChange={formik.handleChange}
-              value={formik.values.categoryName}
-              errorMessage={formik.errors.categoryName}
+              value={formik.values.productStock}
+              errorMessage={formik.errors.productStock}
             />
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Operation</label>
+              <select
+                name="operation"
+                onChange={formik.handleChange}
+                value={formik.values.operation}
+                className="mt-1 p-2 w-full border rounded"
+              >
+                <option value="increase">Increase</option>
+                <option value="decrease">Decrease</option>
+              </select>
+              {formik.errors.operation && <p className="text-red-500">{formik.errors.operation}</p>}
+            </div>
             <div className="flex flex-col justify-center items-center mt-3">
               <Button
                 type="submit"
                 buttonSize="medium"
-                buttonText="Save"
+                buttonText="Update"
                 bgColor="bg-blue3"
                 colorText="text-white"
                 fontWeight="font-semibold"
@@ -96,4 +118,4 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
   );
 };
 
-export default EditCategoryNameModal;
+export default UpdateStock;

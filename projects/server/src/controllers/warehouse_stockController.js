@@ -113,16 +113,12 @@ module.exports = {
         {
           model: db.Product,
           as: "Product",
-          attributes: ["name", "description", "is_active"],
-          include: [
-            { model: db.Category, as: "category" },
-            { model: db.Image_product },
-          ],
+          attributes: ["name", "description"],
         },
         {
           model: db.Warehouse,
           as: "Warehouse",
-          attributes: ["warehouse_name"],
+          attributes: ["id", "warehouse_name"],
           ...(searchWarehouseName && {
             where: {
               warehouse_name: {
@@ -148,10 +144,12 @@ module.exports = {
 
       const groupedStocks = stocks.reduce((acc, stock) => {
         const warehouseName = stock.Warehouse.warehouse_name;
+        const warehouseId = stock.Warehouse.id;
         if (!acc[warehouseName]) {
           acc[warehouseName] = [];
         }
         acc[warehouseName].push({
+          warehouse_id: warehouseId,
           product_stock: stock.product_stock,
           createdAt: stock.createdAt,
           updatedAt: stock.updatedAt,
@@ -345,6 +343,42 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
+    }
+  },
+
+  async deleteStockForWarehouse(req, res) {
+    const warehouseId = parseInt(req.params.warehouseId, 10);
+    const productId = parseInt(req.params.productId, 10);
+    const t = await db.sequelize.transaction();
+    try {
+      const existingStock = await db.Warehouse_stock.findOne({
+        where: { warehouse_id: warehouseId, product_id: productId },
+        transaction: t,
+      });
+
+      if (!existingStock) {
+        await t.rollback();
+        return res.status(404).send({
+          message:
+            "Stock does not exist for the selected product in this warehouse.",
+        });
+      }
+      await db.Warehouse_stock.destroy({
+        where: { warehouse_id: warehouseId, product_id: productId },
+        transaction: t,
+      });
+      await t.commit();
+      res.status(200).send({
+        message: "Stock deleted successfully.",
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while deleting stock.",
+
         error: error.message,
       });
     }

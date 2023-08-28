@@ -1,91 +1,103 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import RegisterWarehouseModal from "../../components/Modals/warehouse/ModalRegisterWarehouse";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
-import {
-  loadCitiesAction,
-  loadWarehousesAction,
-} from "../../features/warehouseListActions";
 import WarehouseModal from "../../components/Modals/warehouse/ModalWarehouse";
 import WarehouseProfileModal from "../../components/Modals/warehouse/ModalWarehouseEdit";
+import axios from "axios";
 
 const WarehouseList = () => {
-  const dispatch = useDispatch();
-  const warehouses = useSelector((state) => state.warehouse.warehouses) || [];
-  const error = useSelector((state) => state.warehouse.error);
-
+  const [warehouses, setWarehouses] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [warehouseName, setWarehouseName] = useState("");
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-  const [currentWarehouse, setCurrentWarehouse] = useState(null);
-  const [editingLabel, setEditingLabel] = useState(null);
-  const [editingField, setEditingField] = useState(null);
-  const [initialEditingValue, setInitialEditingValue] = useState(null);
-  const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
 
   useEffect(() => {
     refreshWarehouseList();
   }, [selectedCity, warehouseName, currentPage]);
 
   const loadCities = async (inputValue, callback) => {
-    const citiesData = await dispatch(loadCitiesAction(inputValue));
-    const formattedCities = [
-      { value: "", label: "All Cities" },
-      ...citiesData.map((city) => ({
-        value: city.id,
-        label: city.name,
-      })),
-    ];
-    callback(formattedCities);
-  };
-
-  const refreshWarehouseList = async () => {
-    const cityValue = selectedCity
-      ? selectedCity.value !== ""
-        ? selectedCity.value
-        : null
-      : null;
-    const response = await dispatch(
-      loadWarehousesAction(warehouseName, cityValue, currentPage)
-    );
-    if (response && response.pagination) {
-      setTotalPages(response.pagination.totalPages);
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
+      );
+      const cityOptions = [
+        { value: "", label: "All Cities" },
+        ...response.data.cities.map((city) => ({
+          value: city.id,
+          label: city.name,
+        })),
+      ];
+  
+      callback(cityOptions);
+    } catch (error) {
+      console.error("Error loading cities:", error);
+      callback([]);
     }
   };
 
-  const handleEdit = (warehouse) => {
-    setCurrentWarehouse(warehouse);
-    setWarehouseModalOpen(true);
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=${selectedCity?.value || ""}`
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
   };
 
-  const handleItemEdit = (label, value) => {
-    setEditingField(label);
-    setInitialEditingValue({ label: label, value: value });
-    setWarehouseModalOpen(false);
-    setProfileModalOpen(true);
+  const fetchWarehouses = async () => {
+    try {
+      const cityId = selectedCity ? selectedCity.value : "";
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list`,
+        {
+          params: {
+            searchName: warehouseName,
+            cityId: cityId,
+            page: currentPage,
+            pageSize: 10,
+          },
+        }
+      );
+      setWarehouses(response.data.warehouses);
+      if (response.data.pagination) {
+        const { totalPages } = response.data.pagination;
+        setTotalPages(totalPages);
+        if (currentPage > totalPages) {
+          setCurrentPage(totalPages);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+    }
   };
 
-  const warehouseData = currentWarehouse
-    ? [
-        { label: "City", value: currentWarehouse.City },
-        { label: "Warehouse Name", value: currentWarehouse["Warehouse Name"] },
-        {
-          label: "Warehouse Address",
-          value: currentWarehouse["Warehouse Address"],
-        },
-        {
-          label: "Warehouse Contact",
-          value: currentWarehouse["Warehouse Contact"],
-        },
-      ]
-    : [];
+  const formattedWarehouses = warehouses.map((warehouse) => ({
+    id: warehouse.id,
+    city: warehouse.City?.name || "",
+    "Warehouse Name": warehouse.warehouse_name || "",
+    "Warehouse Address": warehouse.address_warehouse || "",
+    "Warehouse Contact": warehouse.warehouse_contact || "",
+  }));
+
+  const refreshWarehouseList = async () => {
+    await fetchWarehouses();
+  };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -96,18 +108,19 @@ const WarehouseList = () => {
         <div className="flex items-center">
           <AsyncSelect
             cacheOptions
+            defaultOptions
             loadOptions={loadCities}
             onChange={setSelectedCity}
-            placeholder="City"
+            placeholder="All Cities"
             className="flex-1"
           />
-          <input
-            type="text"
-            placeholder="Search Warehouse name"
-            value={warehouseName}
-            onChange={(e) => setWarehouseName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
-            disabled={!selectedCity}
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={loadWarehouseOptions}
+            placeholder="All Warehouses"
+            className="flex-1 mx-4"
+            value={null}
           />
           <Button
             buttonSize="medium"
@@ -121,57 +134,32 @@ const WarehouseList = () => {
         <div className="py-4">
           <TableComponent
             headers={[
-              "City",
+              "id",
+              "city",
               "Warehouse Name",
               "Warehouse Address",
               "Warehouse Contact",
             ]}
-            data={warehouses.map((warehouse) => ({
-              City: warehouse.City?.name || "",
-              "Warehouse Name": warehouse.warehouse_name || "",
-              "Warehouse Address": warehouse.address_warehouse || "",
-              "Warehouse Contact": warehouse.warehouse_contact || "",
-            }))}
-            onEdit={handleEdit}
+            data={formattedWarehouses}
+            onEdit={(warehouse) => {
+              // Handle edit action for warehouse
+            }}
           />
         </div>
         <RegisterWarehouseModal
           show={isRegisterModalOpen}
           onClose={() => setRegisterModalOpen(false)}
-          onSuccessfulRegister={refreshWarehouseList}
+          onSuccessfulRegister={() => {
+            refreshWarehouseList();
+            setRegisterModalOpen(false);
+          }}
         />
-        <WarehouseModal
-          show={isWarehouseModalOpen}
-          onClose={() => setWarehouseModalOpen(false)}
-          title="Warehouse Details"
-          warehouseData={warehouseData}
-          onEdit={handleItemEdit}
-        />
-        {error && <div className="text-red-500">{error}</div>}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />
         </div>
-        {editingField && (
-          <WarehouseProfileModal
-            show={isProfileModalOpen}
-            onClose={() => {
-              setProfileModalOpen(false);
-              setEditingField(null);
-              setInitialEditingValue(null);
-            }}
-            label={editingField}
-            name={editingField}
-            placeholder={`Enter ${editingField}`}
-            initialValue={initialEditingValue}
-            refreshWarehouseList={refreshWarehouseList}
-            onSubmit={async (newValue) => {
-              console.log("Updated:", editingField, newValue);
-            }}
-          />
-        )}
       </div>
     </div>
   );

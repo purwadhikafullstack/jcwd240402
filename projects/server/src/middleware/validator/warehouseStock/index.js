@@ -68,4 +68,19 @@ module.exports = {
       .isIn(["increase", "decrease"])
       .withMessage("Operation must be either 'increase' or 'decrease'"),
   ]),
+
+  validateDeleteStock: validate([
+    param("warehouseId")
+      .notEmpty()
+      .withMessage("Warehouse ID is required")
+      .isNumeric()
+      .withMessage("Warehouse ID must be a number")
+      .custom(checkWarehouseExists),
+    param("productId")
+      .notEmpty()
+      .withMessage("Product ID is required")
+      .isNumeric()
+      .withMessage("Product ID must be a number")
+      .custom(checkProductExists),
+  ]),
 };

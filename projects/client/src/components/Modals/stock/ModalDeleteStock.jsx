@@ -1,24 +1,23 @@
 import React from "react";
 import { Modal } from "flowbite-react";
 import Button from "../../Button";
-import axios from "axios";
+import axios from "axios"; // Don't forget to import axios
 
-const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId }) => {
-  console.log(categoryId)
+const ConfirmDeleteStock = ({ show, onClose, warehouseId, productId, onSuccessfulDelete }) => {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.patch(`http://localhost:8000/api/admin/category/${categoryId}`);
+      const response = await axios.delete(`http://localhost:8000/api/warehouse-stock/${warehouseId}/${productId}`);
 
       if (response.status === 200) {
-        alert('Category deleted successfully!');
+        alert('Stock deleted successfully!');
         onClose();
-        handleSuccessfulEdit();
+        onSuccessfulDelete();
       } else {
-        alert(`Error deleting category: ${response.data.message}`);
+        alert(`Error deleting stock: ${response.data.message}`);
       }
     } catch (error) {
-      console.error("Failed to delete category:", error);
+      console.error("Failed to delete stock:", error);
       alert("An error occurred. Please try again.");
     }
   };
@@ -33,7 +32,7 @@ const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this category?</p>
+        <p>Are you sure you want to delete this stock?</p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"
@@ -58,5 +57,4 @@ const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId
   );
 };
 
-export default ConfirmDeleteCategory;
-
+export default ConfirmDeleteStock;

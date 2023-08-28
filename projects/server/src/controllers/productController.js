@@ -34,14 +34,16 @@ async function moveUploadedFileToDestination(image) {
 
 module.exports = {
   async createProduct(req, res) {
-    const { name, price, weight, category_id, description, is_active } =
-      req.body;
+    const { name, price, weight, category_id, description, is_active } = req.body;
     const images = req.files;
-    console.log(req.files);
-
+  
     const t = await db.sequelize.transaction();
-
+  
     try {
+      if (images && images.length > 5) {
+        return res.status(400).json({ message: 'Maximum image count exceeded for the new product.' });
+      }
+  
       const newProduct = await db.Product.create(
         {
           name,
@@ -53,24 +55,24 @@ module.exports = {
         },
         { transaction: t }
       );
-
+  
       let productWithImages = { ...newProduct.dataValues };
-
+  
       if (images && images.length > 0) {
         const filenames = await moveUploadedFilesToDestination(images);
-
+  
         const imageObjects = filenames.map((filename) => ({
           product_id: newProduct.id,
           img_product: createProductImageDBPath(filename),
           createdAt: new Date(),
           updatedAt: new Date(),
         }));
-
+  
         await db.Image_product.bulkCreate(imageObjects, { transaction: t });
-
+  
         productWithImages.images = imageObjects;
       }
-
+  
       await t.commit();
       return res.status(201).send({
         message: "Product created successfully",
@@ -135,6 +137,15 @@ module.exports = {
         return res.status(404).send({ message: "Product not found!" });
       }
   
+      const existingImageCount = await db.Image_product.count({
+        where: { product_id: product_id },
+      });
+  
+      if (existingImageCount >= 5) {
+        await t.rollback();
+        return res.status(400).json({ message: 'Maximum image count reached for the product.' });
+      }
+  
       const newImage = await db.Image_product.create({
         product_id: product_id,
         img_product: createProductImageDBPath(newImageFile.filename),
@@ -157,7 +168,7 @@ module.exports = {
       });
     }
   },
-
+  
   async updateProductImage(req, res) {
     const imgProductId = req.params.id;
     const newImageFile = req.file;
@@ -243,6 +254,37 @@ module.exports = {
       });
     }
   },
+
+  async toggleProductStatus(req, res) {
+    const { name } = req.params;
+    const t = await db.sequelize.transaction();
+
+    try {
+      const product = await db.Product.findOne({ where: { name } }, { transaction: t });
+
+      if (!product) {
+        await t.rollback();
+        return res.status(404).send({ message: "Product not found!" });
+      }
+
+      product.is_active = !product.is_active; 
+
+      await product.save({ transaction: t });
+      await t.commit();
+
+      return res.status(200).send({
+        message: "Product status updated successfully",
+        data: product,
+      });
+    } catch (error) {
+      await t.rollback();
+      console.error("Error:", error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
   
   async deleteProduct(req, res) {
     const { id } = req.params;
@@ -277,7 +319,7 @@ module.exports = {
 
   async getProductsList(req, res) {
     const page = parseInt(req.query.page, 10) || 1;
-    const pageSize = parseInt(req.query.pageSize, 9) || 9;
+    const pageSize = parseInt(req.query.pageSize, 10) || 10;
     const categoryId = req.query.category_id;
     const productName = req.query.product_name;
   

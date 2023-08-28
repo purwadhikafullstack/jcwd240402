@@ -31,6 +31,7 @@ router.patch("/product/:id",validatorMiddlewareProduct.validateUpdateProduct,pro
 router.post("/product/:id/image",multerProduct.single("image"),productController.addImageToProduct);
 router.patch("/product/image/:id",multerProduct.single("image"),productController.updateProductImage);
 router.delete("/product/image/:id",productController.deleteProductImage);
+router.patch("/product/status/:name",productController.toggleProductStatus)
 
 router.get("/products",productController.getProductsList);
 router.patch("/product/delete/:id",productController.deleteProduct);

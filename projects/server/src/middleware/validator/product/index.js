@@ -96,10 +96,6 @@ module.exports = {
   ]),
 
   validateUpdateProduct: validate([
-    param("id")
-      .notEmpty()
-      .withMessage("Product id is required")
-      .custom(checkProduct),
     body("price").optional().isNumeric().withMessage("Price must be a number"),
     body("weight")
       .optional()

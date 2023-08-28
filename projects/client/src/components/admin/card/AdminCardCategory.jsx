@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import moment from "moment";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
-import EditCategoryNameModal from "./Modals/category/ModalEditCategoryName";
-import EditCategoryImageModal from "./Modals/category/ModalEditCategoryImage";
-import ConfirmDeleteModal from "./Modals/category/ModalDeleteCategory";
+import EditCategoryNameModal from "../../Modals/category/ModalEditCategoryName";
+import EditCategoryImageModal from "../../Modals/category/ModalEditCategoryImage";
+import ConfirmDeleteModal from "../../Modals/category/ModalDeleteCategory";
 
 const AdminCategoryCard = ({
   src,

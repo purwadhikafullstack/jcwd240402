@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import TableComponent from "../../components/Table";
-import DefaultPagination from "../../components/Pagination";
+import TableComponent from "../../Table";
+import DefaultPagination from "../../Pagination";
 import AsyncSelect from "react-select/async";
-import UpdateStock from "../Modals/stock/ModalUpdateStock";
-import ConfirmDeleteStock from "../Modals/stock/ModalDeleteStock";
+import UpdateStock from "../../Modals/stock/ModalUpdateStock";
+import ConfirmDeleteStock from "../../Modals/stock/ModalDeleteStock";
 
 const StockList = () => {
   const [stocks, setStocks] = useState([]);
@@ -32,6 +32,7 @@ const StockList = () => {
           },
         }
       );
+      console.log(response)
 
       if (response.data && response.data.stocks) {
         const flattenedStocks = [];

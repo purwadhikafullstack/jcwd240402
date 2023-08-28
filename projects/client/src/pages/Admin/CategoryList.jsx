@@ -5,7 +5,7 @@ import DefaultPagination from "../../components/Pagination";
 import AsyncSelect from "react-select/async";
 import RegisterCategoryModal from "../../components/Modals/category/ModalRegisterCategory";
 import Button from "../../components/Button";
-import AdminCategoryCard from "../../components/AdminCardCategory";
+import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
 
 const CategoryList = () => {
   const [categories, setCategories] = useState([]);
@@ -71,8 +71,8 @@ const CategoryList = () => {
   };
 
   const handleSuccessfulEdit = () => {
-    fetchCategories()
-};
+    fetchCategories();
+  };
 
   const handleRegisterSuccess = () => {
     fetchCategories();
@@ -129,7 +129,7 @@ const CategoryList = () => {
         <RegisterCategoryModal
           show={showModal}
           onClose={() => setShowModal(false)}
-          onSuccessfulRegister={handleRegisterSuccess} 
+          onSuccessfulRegister={handleRegisterSuccess}
         />
       </div>
     </div>

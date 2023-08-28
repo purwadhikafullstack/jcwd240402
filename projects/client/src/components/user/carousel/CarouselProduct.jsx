@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { FaCartArrowDown } from "react-icons/fa";
@@ -9,9 +9,26 @@ import CardProduct from "../card/CardProduct";
 import axios from "../../../api/axios";
 import { productsUser } from "../../../features/productListUserSlice";
 
-const CarouselProduct = () => {
+const CarouselProduct = ({ category }) => {
   const dispatch = useDispatch();
   const productsData = useSelector((state) => state.producter.value);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios.get("/user/warehouse-stock").then((res) => {
+      setData(res.data?.result);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get("/admin/products").then((res) => {
+      dispatch(productsUser(res.data?.data));
+    });
+  }, [dispatch]);
+
+  const productList = data.map((item) => {
+    return item.Product;
+  });
 
   const responsive = {
     superLargeDesktop: {
@@ -32,17 +49,15 @@ const CarouselProduct = () => {
     },
   };
 
-  useEffect(() => {
-    axios.get("/admin/products").then((res) => {
-      dispatch(productsUser(res.data?.data));
-    });
-  }, [dispatch]);
+  const filtering = productList.filter(
+    (item) => item.category?.name === category
+  );
 
-  const products = productsData.map((item, index) => (
+  const products = filtering.map((item, index) => (
     <CardProduct
       key={index}
       src={`${process.env.REACT_APP_API_BASE_URL}${item?.Image_products[0]?.img_product}`}
-      category={item.category}
+      category={item.category?.name}
       name={item.name}
       desc={item.description}
       price={item.price}

@@ -10,7 +10,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
     <div className="bg-white flex flex-col justify-center items-center  ">
       <div className="w-36 md:w-52 h-full  flex flex-col items-center shadow-card-1 rounded-lg m-3">
         <Link
-          to={`/product/${id}`}
+          to={`/product/${name}`}
           className="w-full h-36 md:h-52 lg:h-40 overflow-hidden rounded-t-lg"
         >
           <img
@@ -22,7 +22,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
         <div className=" w-full h-28 flex flex-col justify-end  p-4 mt-10">
           <div>
             <Badge color="purple" className="w-fit">
-              test
+              {category}
             </Badge>
           </div>
           <h2 className="text-xs md:text-base lg:text-base font-bold">
@@ -39,7 +39,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
             {toRupiah(price)}
           </p>
           <div className="flex justify-end ">
-            <SlideOverProduct id={id} />
+            <SlideOverProduct name={name} />
           </div>
         </div>
       </div>

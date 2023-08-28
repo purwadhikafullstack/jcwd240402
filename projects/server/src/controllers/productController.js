@@ -283,9 +283,11 @@ module.exports = {
   },
 
   getProductById: async (req, res) => {
-    const { id } = req.params;
+    const { name } = req.params;
+
     try {
-      const productById = await db.Product.findByPk(id, {
+      const productById = await db.Product.findOne({
+        where: { name },
         attributes: { exclude: ["createdAt", "updatedAt"] },
         include: [
           {
@@ -327,6 +329,24 @@ module.exports = {
       } else {
         return res.status(500).json({ success: false, message: result.error });
       }
+    } catch (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+
+  getProductPerCategory: async (req, res) => {
+    const { category } = req.params;
+    try {
+      const productByCategory = await db.Product.findAll({
+        include: ["Category"],
+      });
+      res.json({
+        ok: true,
+        result: productByCategory,
+      });
     } catch (error) {
       console.error(error);
       return res

@@ -113,7 +113,7 @@ const ModalSetPrimaryAddress = () => {
                     address_title={address.address_title}
                     address_details={address.address_details}
                     city={address.City?.name}
-                    id={address.id}
+                    idAddress={address.id}
                   />
                 ))
               )}

@@ -206,6 +206,7 @@ module.exports = {
           username: user.username,
           email: user.email,
           role_id: user.role_id,
+          is_verify: user.is_verify,
         },
         process.env.ACCESS_TOKEN_SECRET,
         "1h"

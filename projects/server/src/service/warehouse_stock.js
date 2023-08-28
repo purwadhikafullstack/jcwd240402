@@ -7,14 +7,14 @@ module.exports = {
       include: [
         {
           model: db.Product,
-          as: 'Product',
-          attributes: ['id', 'name', 'description'],
+          as: "Product",
+          attributes: ["id", "name", "description"],
         },
         {
           model: db.Warehouse,
-          as: 'Warehouse',
-          attributes: ['id', 'warehouse_name'],
-        }
+          as: "Warehouse",
+          attributes: ["id", "warehouse_name"],
+        },
       ],
     };
 
@@ -39,17 +39,19 @@ module.exports = {
     const defaultInclude = [
       {
         model: db.Product,
-        as: 'Product',
-        attributes: ['id', 'name', 'description'],
+        as: "Product",
+        attributes: ["id", "name", "description"],
       },
       {
         model: db.Warehouse,
-        as: 'Warehouse',
-        attributes: ['id', 'warehouse_name'],
-      }
+        as: "Warehouse",
+        attributes: ["id", "warehouse_name"],
+      },
     ];
 
-    const includeOptions = options.include ? [...defaultInclude, ...options.include] : defaultInclude;
+    const includeOptions = options.include
+      ? [...defaultInclude, ...options.include]
+      : defaultInclude;
 
     const queryOptions = {
       where: filter,
@@ -79,5 +81,5 @@ module.exports = {
         error: error.message,
       };
     }
-  }
+  },
 };

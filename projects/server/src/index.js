@@ -35,7 +35,7 @@ app.use(
 );
 
 app.use(
-  "/src/public/imgCategory",
+  "/api/src/public/imgCategory",
   express.static(path.join(__dirname, "public", "imgCategory"))
 );
 

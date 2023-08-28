@@ -14,6 +14,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
 
   const primaryAddress = userData.User_detail?.address_user_id;
   console.log(showMenu);
+  console.log(idAddress);
   return (
     <div className="w-full pb-4">
       <div
@@ -29,7 +30,6 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
           <h4>{userData.username}</h4>
           <h4>{userData.User_detail?.phone}</h4>
           <h4>{address_details}</h4>
-          <ModalChangeAddress id={idAddress} />
         </div>
         <div className="flex flex-col items-end">
           {/* <BurgerSettingAddress idAddress={idAddress} /> */}

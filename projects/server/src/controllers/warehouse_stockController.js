@@ -1,5 +1,9 @@
 const db = require("../models");
-const { getAllWarehouseStocks } = require("../service/warehouse_stock");
+const {
+  getAllWarehouseStocks,
+  getAllWarehouseStocksFilter,
+} = require("../service/warehouse_stock");
+const { Op } = require("sequelize");
 
 module.exports = {
   async createStockForWarehouse(req, res) {
@@ -160,6 +164,182 @@ module.exports = {
         message: "Warehouse stocks fetched successfully",
         stocks: groupedStocks,
         pagination: stockResponse.pagination,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
+    }
+  },
+
+  getAllWarehouseStock: async (req, res) => {
+    try {
+      const result = await db.Warehouse_stock.findAll({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            attributes: { exclude: ["updatedAt", "createdAt"] },
+            include: [
+              {
+                model: db.Category,
+                as: "category",
+                attributes: {
+                  exclude: ["updatedAt", "createdAt", "deletedAt"],
+                },
+              },
+              {
+                model: db.Image_product,
+                attributes: {
+                  exclude: ["updatedAt", "createdAt"],
+                },
+              },
+            ],
+          },
+          {
+            model: db.Warehouse,
+            as: "Warehouse",
+            attributes: ["id", "warehouse_name"],
+          },
+        ],
+      });
+      res.json({
+        ok: true,
+        result: result,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
+    }
+  },
+
+  getAllWarehouseStockFilter: async (req, res) => {
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: 9,
+      searchWarehouseName: req.query.warehouseName,
+      searchCategory: req.query.category || undefined,
+      searchProduct: req.query.product || undefined,
+    };
+
+    try {
+      const result = await db.Warehouse_stock.findAll({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            attributes: { exclude: ["updatedAt"] },
+            where: pagination.searchProduct
+              ? {
+                  name: {
+                    [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
+                  },
+                }
+              : {},
+            include: [
+              {
+                model: db.Category,
+                as: "category",
+                attributes: {
+                  exclude: ["updatedAt", "deletedAt", "createdAt"],
+                },
+                where: pagination.searchCategory
+                  ? {
+                      name: {
+                        [db.Sequelize.Op
+                          .like]: `%${pagination.searchCategory}%`,
+                      },
+                    }
+                  : {},
+              },
+              {
+                model: db.Image_product,
+                attributes: { exclude: ["updatedAt", "createdAt"] },
+              },
+            ],
+          },
+          {
+            model: db.Warehouse,
+            as: "Warehouse",
+            attributes: ["warehouse_name"],
+            where: pagination.searchWarehouseName
+              ? {
+                  warehouse_name: {
+                    [db.Sequelize.Op
+                      .like]: `%${pagination.searchWarehouseName}%`,
+                  },
+                }
+              : {},
+          },
+        ],
+        limit: pagination.perPage,
+        offset: (pagination.page - 1) * pagination.perPage,
+      });
+
+      const totalCount = await db.Warehouse_stock.count({
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            where: pagination.searchProduct
+              ? {
+                  name: {
+                    [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
+                  },
+                }
+              : {},
+            include: [
+              {
+                model: db.Category,
+                as: "category",
+                where: pagination.searchCategory
+                  ? {
+                      name: {
+                        [db.Sequelize.Op
+                          .like]: `%${pagination.searchCategory}%`,
+                      },
+                    }
+                  : {},
+              },
+            ],
+          },
+          {
+            model: db.Warehouse,
+            as: "Warehouse",
+            where: pagination.searchWarehouseName
+              ? {
+                  warehouse_name: {
+                    [db.Sequelize.Op
+                      .like]: `%${pagination.searchWarehouseName}%`,
+                  },
+                }
+              : {},
+          },
+        ],
+      });
+      console.log(totalCount);
+      const totalPages = Math.ceil(totalCount / pagination.perPage);
+
+      if (pagination.page > totalPages) {
+        return res.status(400).send({
+          message: "Page number exceeds total pages",
+        });
+      }
+
+      res.status(200).send({
+        message: "success get products",
+        pagination: {
+          ...pagination,
+          totalPages: totalPages,
+        },
+        data: result,
       });
     } catch (error) {
       console.error(error);

@@ -19,37 +19,32 @@ import StaticBanner from "../../components/user/StaticBanner";
 import ServiceCard from "../../components/user/ServiceCard";
 import FrameImage from "../../components/user/FrameImage";
 import SelectionCategory from "../../components/user/SelectionCategory";
-import { getCookie, setCookie } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
 import { productsUser } from "../../features/productListUserSlice";
 import { addressUser } from "../../features/userAddressSlice";
+import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
-  const refresh_token = localStorage.getItem("refresh_token");
+  const [productData, setProductData] = useState([]);
+  const [category, setCategory] = useState([]);
+
+  const [searchProduct, setSearchProduct] = useState([]);
+  const [searchCategory, setSearchCategory] = useState([]);
+
+  const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
-  const productsData = useSelector((state) => state.producter.value);
 
   useEffect(() => {
-    axios.get("/admin/products").then((res) => {
-      dispatch(productsUser(res.data?.data));
-    });
-  }, [dispatch]);
-
-  useEffect(() => {
-    if (!access_token && refresh_token) {
-      axios
-        .get("/user/auth/keep-login", {
-          headers: { Authorization: `Bearer ${refresh_token}` },
-        })
-        .then((res) => {
-          setNewAccessToken(res.data?.accessToken);
-          setCookie("access_token", newAccessToken, 1);
-        });
-    }
-  }, [access_token, newAccessToken, refresh_token]);
+    axios.get(`/user/category`).then((res) => setCategory(res.data.result));
+  }, []);
 
   useEffect(() => {
     if (access_token && refresh_token) {
@@ -57,16 +52,24 @@ const Home = () => {
         .get("/user/profile", {
           headers: { Authorization: `Bearer ${access_token}` },
         })
-        .then((res) => dispatch(profileUser(res.data.result)));
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
     }
-  }, [access_token, dispatch, refresh_token]);
-
-  const listCategory = [
-    { id: 1, name: "Table" },
-    { id: 2, name: "Kitchen" },
-    { id: 3, name: "Sofa" },
-    { id: 4, name: "Chair" },
-  ];
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   const imageUrls = [banner1, banner2, banner3, banner4, banner5];
 
@@ -113,18 +116,22 @@ const Home = () => {
         </div>
         <StaticBanner />
         <div className="">
-          <SelectionCategory />
+          <SelectionCategory category={category} />
         </div>
         <div className="relative z-0">
-          {listCategory.map((item) => (
+          {category.map((item) => (
             <div key={item.id}>
-              <h1 className="font-bold mx-3 lg:text-3xl">{item.name}</h1>
-              <CarouselProduct productsData={productsData} />
+              <h1 className="font-bold mx-3 lg:text-xl">{item.name}</h1>
+              <CarouselProduct category={item.name} />
             </div>
           ))}
         </div>
+
         <div>
           <FrameImage />
+        </div>
+        <div className="h-fit">
+          <ShowCaseProduct />
         </div>
         <div className="">
           <ServiceCard services={services} />

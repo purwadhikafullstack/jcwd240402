@@ -43,8 +43,8 @@ const NavbarDesktop = () => {
           <img src={logo} alt="" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
-          <button>Category</button>
-          <button>Inspiration</button>
+          <Link to="/product-category">Category</Link>
+          <Link to="">Inspiration</Link>
         </div>
         <div className="w-96">
           <SearchBar

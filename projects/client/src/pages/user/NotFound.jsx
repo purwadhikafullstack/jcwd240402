@@ -1,29 +1,22 @@
 import React from "react";
 
 import notFound from "../../assets/images/notFound.png";
-import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
-import NavbarMobile from "../../components/user/navbar/NavbarMobile";
-import FooterDesktop from "../../components/user/footer/FooterDesktop";
-import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+
 import NotifRedirect from "../../components/user/notif/NotifRedirect";
 
-const NotFound = () => {
+const NotFound = ({ to, buttonText, toPage }) => {
   const msg = "No worries! Just head back to the";
   return (
     <div className="w-full lg:w-full h-screen">
-      <NavbarDesktop />
-      <NavbarMobile />
       <div className="min-h-screen flex flex-col justify-center items-center">
         <NotifRedirect
           imgSrc={notFound}
-          to="/"
+          to={to}
           msg={msg}
-          buttonText="Go Home"
-          toPage="Home Page"
+          buttonText={buttonText}
+          toPage={toPage}
         />
       </div>
-      <FooterDesktop />
-      <NavigatorMobile />
     </div>
   );
 };

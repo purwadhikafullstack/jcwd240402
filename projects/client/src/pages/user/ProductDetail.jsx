@@ -11,17 +11,17 @@ import CarouselProduct from "../../components/user/carousel/CarouselProduct";
 import axios from "../../api/axios";
 
 const ProductDetail = () => {
-  const { id } = useParams();
+  const { name } = useParams();
   const [detailProduct, setDetailProduct] = useState([]);
   const [dataImage, setDataImage] = useState([]);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    axios.get(`/user/product/${id}`).then((res) => {
+    axios.get(`/user/product/${name}`).then((res) => {
       setDetailProduct(res.data?.result);
       setDataImage(res.data?.result?.Image_products);
     });
-  }, [id]);
+  }, [name]);
 
   if (detailProduct.length === 0 || dataImage.length === 0) {
     return <p></p>;
@@ -34,93 +34,6 @@ const ProductDetail = () => {
     };
     return image;
   });
-
-  const productsData = [
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-    {
-      src: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/359/0735981_PE740299_S4.jpg",
-      category: "desk",
-      name: "ADILS/LINNMON",
-      desc: "meja, efek kayu oak diwarnai putih/putih, 100x60 cm",
-      price: 579000,
-    },
-  ];
-
-  const listCategory = [
-    { id: 1, name: "Table" },
-    { id: 2, name: "Kitchen" },
-    { id: 3, name: "Sofa" },
-    { id: 4, name: "Chair" },
-  ];
 
   return (
     <div>
@@ -181,12 +94,12 @@ const ProductDetail = () => {
           </div>
         </div>
         <div className="relative z-0">
-          {listCategory.map((item) => (
+          {/* {listCategory.map((item) => (
             <div key={item.id}>
               <h1 className="font-bold mx-3 lg:text-3xl">{item.name}</h1>
               <CarouselProduct productsData={productsData} />
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
       <FooterDesktop />

@@ -9,24 +9,24 @@ import CarouselProductDetail from "../user/carousel/CarouselProductDetail";
 import AccordionProduct from "./AccordionProduct";
 import logo from "../../assets/images/furniforNav.png";
 
-export default function SlideOverProduct({ id }) {
+export default function SlideOverProduct({ name }) {
   const [open, setOpen] = useState(false);
   const [detailProduct, setDetailProduct] = useState([]);
   const [dataImage, setDataImage] = useState([]);
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    axios.get(`/user/product/${id}`).then((res) => {
+    axios.get(`/user/product/${name}`).then((res) => {
       setDetailProduct(res.data?.result);
       setDataImage(res.data?.result?.Image_products);
     });
-  }, [id]);
+  }, [name]);
 
-  if (detailProduct.length === 0 || dataImage.length === 0) {
+  if (detailProduct?.length === 0 && dataImage?.length === 0) {
     return <p></p>;
   }
 
-  const product = dataImage.map((item) => {
+  const product = dataImage?.map((item) => {
     let image;
     image = {
       image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
@@ -34,7 +34,6 @@ export default function SlideOverProduct({ id }) {
     return image;
   });
 
-  console.log(detailProduct);
   return (
     <>
       <button
@@ -108,10 +107,10 @@ export default function SlideOverProduct({ id }) {
                         <CarouselProductDetail data={product} />
                         <div>
                           <h1 className="font-bold text-xl md:text-3xl lg:text-2xl">
-                            {detailProduct.name}
+                            {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {toRupiah(detailProduct.price)}
+                            {detailProduct?.price}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">
@@ -141,10 +140,10 @@ export default function SlideOverProduct({ id }) {
                         </div>
                         <div className="mt-4">
                           <AccordionProduct
-                            desc={detailProduct.description}
-                            name={detailProduct.name}
-                            price={detailProduct.price}
-                            weight={detailProduct.weight}
+                            desc={detailProduct?.description}
+                            name={detailProduct?.name}
+                            price={detailProduct?.price}
+                            weight={detailProduct?.weight}
                           />
                         </div>
                       </div>

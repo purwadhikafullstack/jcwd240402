@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useDispatch } from "react-redux";
 
 import Button from "../../Button";
 import PasswordInput from "../../PasswordInput";
@@ -11,6 +12,7 @@ import axios from "../../../api/axios";
 import ModalForgotPassword from "./ModalForgotPassword";
 import AlertWithIcon from "../../AlertWithIcon";
 import { setCookie, setLocalStorage } from "../../../utils/tokenSetterGetter";
+import { profileUser } from "../../../features/userDataSlice";
 
 export default function ModalLogin() {
   const [openModal, setOpenModal] = useState();
@@ -18,6 +20,7 @@ export default function ModalLogin() {
   const props = { openModal, setOpenModal, email, setEmail };
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const dispatch = useDispatch();
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
@@ -37,6 +40,14 @@ export default function ModalLogin() {
           user_identification: "",
           password: "",
         });
+
+        if (accessToken && refreshToken) {
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
+        }
 
         navigate("/");
         setErrMsg(null);

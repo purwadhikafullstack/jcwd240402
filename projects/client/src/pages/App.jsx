@@ -29,6 +29,8 @@ import CategoryList from "./admin/CategoryList";
 import AdminStockPage from "./admin/AdminStockPage";
 import StockList from "../components/stock/StockList";
 import CreateStock from "../components/stock/CreateStock";
+import ProductPerCategory from "./user/ProductPerCategory";
+import Category from "./user/Category";
 
 function App() {
   return (
@@ -40,7 +42,7 @@ function App() {
           <Route path="/admin-dashboard" element={<AdminHome />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
-          <Route path="/warehouse" element={<WarehouseList />} />
+          <Route path="/warehouse" element={<WarehouseList />} /> {/* admin */}
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
@@ -55,26 +57,47 @@ function App() {
             element={<NotifResetPassword />}
           />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
-          <Route path="/category" element={<CategoryList />} />
-          <Route path="/category" element={<CategoryList />} />
-
+          <Route path="/category" element={<CategoryList />} /> {/* admin */}
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
-            <Route path="create" element={<ProductRegister />} />
-            <Route path="edit/:productName" element={<ProductEdit />} />
+            <Route path="create" element={<ProductRegister />} />{" "}
+            {/* admin dan pathnya di lengkapi*/}
+            <Route path="edit/:productName" element={<ProductEdit />} />{" "}
+            {/* admin dan pathnya di lengkapi*/}
           </Route>
           <Route path="/admin/stock/*" element={<AdminStockPage />}>
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
-          </Route>
-
-          <Route path="/*" element={<NotFound />} />
+          </Route>{" "}
+          {/* admin dan pathnya di perbaiki*/}
+          {/* 404 */}
+          <Route
+            path="/admin/*"
+            element={
+              <NotFound
+                to="/admin/stock"
+                buttonText="back"
+                toPage="dashboard"
+              />
+            }
+          />
+          <Route
+            path="/*"
+            element={
+              <NotFound to="/" buttonText="go home" toPage="home page" />
+            }
+          />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
+          <Route
+            path="/product/product-category/:categoryName"
+            element={<ProductPerCategory />}
+          />
+          <Route path="/product-category" element={<Category />} />
         </Routes>
       </Router>
     </div>

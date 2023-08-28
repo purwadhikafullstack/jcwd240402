@@ -119,6 +119,4 @@ router.get(
   warehouse_stockController.getAllWarehouseStockFilter
 );
 
->>>>>>> 2afc9de9afca00ff7751b7e55d8f5be4b3a69ae3
-
 module.exports = router;

@@ -42,12 +42,11 @@ const ProductList = () => {
       console.error("Error fetching products:", error);
     }
   };
-  console.log(totalPages)
-
+  console.log(totalPages);
 
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
-    setCurrentPage(1); 
+    setCurrentPage(1);
     fetchProducts(1);
   };
   useEffect(() => {
@@ -87,7 +86,7 @@ const ProductList = () => {
           {products.map((product) => (
             <AdminCardProduct
               key={product.id}
-              src={`http://localhost:8000${product.Image_products[0]?.img_product}`}
+              src={`${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`}
               category={product.category.name}
               name={product.name}
               price={product.price}

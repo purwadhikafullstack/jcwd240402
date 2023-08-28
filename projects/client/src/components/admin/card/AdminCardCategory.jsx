@@ -52,7 +52,7 @@ const AdminCategoryCard = ({
   return (
     <div className="p-4 border rounded shadow-sm relative h-72 pt-8">
       <img
-        src={`http://localhost:8000${src}`}
+        src={`${process.env.REACT_APP_API_BASE_URL}${src}`}
         alt={name}
         className="w-full h-48 object-cover"
       />

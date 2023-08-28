@@ -97,7 +97,6 @@ const StockHistory = () => {
           <TableComponent
             headers={[
                 "Product",
-              "Warehouse Id",
               "Admin Username",
               "Stock Before",
               "Stock After",
@@ -108,14 +107,13 @@ const StockHistory = () => {
             ]}
             data={stockHistoryList.map((history) => ({
                 "Product": history.Warehouse_stock.Product.name || "",
-                "Warehouse Id": history.warehouse_id || "",
             "Admin Username": history.Admin.username || "",
             "Stock Before": history.stock_before_transfer || "",
             "Stock After": history.stock_after_transfer || "",
             "Increment/Decrement": history.increment_decrement || "",
             "Quantity": history.quantity || "",
             "Journal": history.journal || "",
-            "Timestamp": history.timestamp || "",
+            "Timestamp": history.timestamp.slice(0, 10) || "",
             }))}
           />
         </div>

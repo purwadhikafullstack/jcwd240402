@@ -2,24 +2,61 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
+const router = require("./routes");
+const path = require("path");
+const cookieParser = require("cookie-parser");
 
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-        process.env.WHITELISTED_DOMAIN.split(","),
-    ],
-  })
-);
-
-app.use(express.json());
 
 //#region API ROUTES
 
 // ===========================
 // NOTE : Add your routes here
+
+/* MIDDLEWARE */
+
+app.use(
+  "/api/opencage",
+  createProxyMiddleware({
+    target: "https://api.opencagedata.com/geocode/v1/json",
+    changeOrigin: true,
+    pathRewrite: {
+      "^/api/opencage": `${process.env.KEY_OPENCAGE}`,
+    },
+  })
+);
+
+app.use(cors());
+app.use(
+  "/api/photo-profile",
+  express.static(path.join(__dirname, "public", "imgProfile"))
+);
+
+app.use(
+  "/api/src/public/imgCategory",
+  express.static(path.join(__dirname, "public", "imgCategory"))
+);
+
+app.use(
+  "/api/src/public/imgProduct",
+  express.static(path.join(__dirname, "public", "imgProduct"))
+);
+
+app.use(cookieParser());
+app.use(express.json());
+// ==========================
+
+/* USER ROUTES */
+app.use("/api/user", router.user);
+// ==========================
+
+/* ADMIN ROUTES */
+app.use("/api/admin", router.admin);
+app.use("/api/warehouse", router.warehouse);
+app.use("/api/warehouse-stock", router.warehouseStock);
+// ==========================
 
 app.get("/api", (req, res) => {
   res.send(`Hello, this is my API`);

@@ -32,11 +32,12 @@ import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 
 const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
-  const [productData, setProductData] = useState([]);
+
   const [category, setCategory] = useState([]);
 
   const [searchProduct, setSearchProduct] = useState([]);
   const [searchCategory, setSearchCategory] = useState([]);
+  const [productData, setProductData] = useState([]);
 
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
@@ -45,6 +46,13 @@ const Home = () => {
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategory(res.data.result));
   }, []);
+
+  useEffect(() => {
+    axios.get(`/user/products-per-category`).then((res) => {
+      setProductData(res.data?.result);
+    });
+  }, []);
+  console.log(productData);
 
   useEffect(() => {
     if (access_token && refresh_token) {
@@ -118,11 +126,19 @@ const Home = () => {
         <div className="">
           <SelectionCategory category={category} />
         </div>
-        <div className="relative z-0">
+        {/* <div className="relative z-0">
           {category.map((item) => (
             <div key={item.id}>
               <h1 className="font-bold mx-3 lg:text-xl">{item.name}</h1>
               <CarouselProduct category={item.name} />
+            </div>
+          ))}
+        </div> */}
+        <div className="relative z-0">
+          {productData.map((item) => (
+            <div key={item.id}>
+              <h1 className="font-bold mx-3 lg:text-xl">{item.category}</h1>
+              <CarouselProduct products={item.products} />
             </div>
           ))}
         </div>

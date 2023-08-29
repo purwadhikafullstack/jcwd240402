@@ -163,4 +163,9 @@ module.exports = {
       return true;
     }),
   ]),
+
+  addToCart: validate([
+    body("qty").notEmpty().withMessage("quantity is required"),
+    body("product_name").notEmpty().withMessage("product name is required"),
+  ]),
 };

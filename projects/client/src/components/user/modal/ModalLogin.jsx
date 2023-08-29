@@ -1,6 +1,6 @@
 import { Modal } from "flowbite-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
@@ -14,13 +14,19 @@ import AlertWithIcon from "../../AlertWithIcon";
 import { setCookie, setLocalStorage } from "../../../utils/tokenSetterGetter";
 import { profileUser } from "../../../features/userDataSlice";
 
-export default function ModalLogin() {
+export default function ModalLogin({
+  buttonText = "Log in",
+  bgColor = "bg-blue3",
+  buttonSize = "small",
+  colorText = "text-white",
+}) {
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
   const props = { openModal, setOpenModal, email, setEmail };
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
@@ -48,7 +54,9 @@ export default function ModalLogin() {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
         }
-
+        if (location.pathname !== "/") {
+          navigate(location.pathname);
+        }
         navigate("/");
         setErrMsg(null);
         props.setOpenModal(undefined);
@@ -96,10 +104,10 @@ export default function ModalLogin() {
     <>
       <Button
         onClick={() => props.setOpenModal("form-elements")}
-        buttonSize="small"
-        buttonText="Log in"
-        bgColor="bg-blue3"
-        colorText="text-white"
+        buttonSize={buttonSize}
+        buttonText={buttonText}
+        bgColor={bgColor}
+        colorText={colorText}
         fontWeight="font-semibold"
       >
         Login

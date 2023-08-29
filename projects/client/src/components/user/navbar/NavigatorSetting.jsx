@@ -31,10 +31,11 @@ const NavigatorSetting = () => {
         </Link>
         <Link
           className={`${
-            location.pathname === "/user/cart"
+            location.pathname === "/user/setting/cart"
               ? " text-blue2 underline underline-offset-8 decoration-4"
               : " text-gray-600"
           } font-semibold`}
+          to="/user/setting/cart"
         >
           <h2>Cart</h2>
         </Link>

@@ -385,10 +385,10 @@ module.exports = {
     }
   },
 
-  getProductById: async (req, res) => {
+  getProductByProductName: async (req, res) => {
     const { name } = req.params;
-
     try {
+      console.log(name);
       const productById = await db.Product.findOne({
         where: { name },
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -441,46 +441,49 @@ module.exports = {
   },
 
   getProductPerCategory: async (req, res) => {
-    const { category } = req.params;
     try {
-      const productByCategory = await db.Product.findAll({
-        include: ["Category"],
+      const productsByCategory = await db.Category.findAll({
+        include: [
+          {
+            model: db.Product,
+            as: "products",
+            include: [
+              { model: db.Image_product },
+              { model: db.Category, as: "category" },
+            ],
+            where: { is_active: true },
+          },
+        ],
       });
+      console.log(productsByCategory);
+      const formattedData = productsByCategory.map((category) => {
+        return {
+          id: category.id,
+          category: category.name,
+          category_img: category.category_img,
+          products: category.products.map((product) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            category: product.category.name,
+            price: product.price,
+            product_img: product.Image_products.map((item) => ({
+              img: item.img_product,
+            }))[0],
+          })),
+        };
+      });
+
       res.json({
-        ok: true,
-        result: productByCategory,
+        success: true,
+        result: formattedData,
+        // productsByCategory: productsByCategory,
       });
     } catch (error) {
       console.error(error);
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
-    }
-  },
-
-  getProductById: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const productById = await db.Product.findByPk(id, {
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [
-          {
-            model: db.Image_product,
-            as: "Image_products",
-            attributes: ["img_product"],
-          },
-        ],
-      });
-      res.status(200).json({
-        ok: true,
-        result: productById,
-      });
-    } catch (error) {
-      res.status(500).send({
-        success: false,
-        message: "Fatal error on server.",
-        errors: error.message,
-      });
     }
   },
 };

@@ -3,9 +3,8 @@ import { useSelector } from "react-redux";
 import { CiMenuKebab } from "react-icons/ci";
 
 import ModalChangeAddress from "../modal/ModalChangeAddress";
-import ModalConfirmationDelete from "../modal/ModalConfirmationDelete";
+import ModalConfirmationDeleteAddress from "../modal/ModalConfirmationDeleteAddress";
 import ModalConfirmationPrimaryAddress from "../modal/ModalConfirmationPrimaryAddress";
-import BurgerSettingAddress from "../BurgerSettingAddress";
 
 const CardAddress = ({ address_title, address_details, city, idAddress }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -13,8 +12,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
   const userData = useSelector((state) => state.profiler.value);
 
   const primaryAddress = userData.User_detail?.address_user_id;
-  console.log(showMenu);
-  console.log(idAddress);
+
   return (
     <div className="w-full pb-4">
       <div
@@ -46,7 +44,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
                   <ModalConfirmationPrimaryAddress idAddress={idAddress} />
                 </li>
                 <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                  <ModalConfirmationDelete idAddress={idAddress} />
+                  <ModalConfirmationDeleteAddress idAddress={idAddress} />
                 </li>
               </ul>
             </div>

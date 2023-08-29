@@ -3,7 +3,7 @@ import { CiMenuKebab } from "react-icons/ci";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import ModalConfirmationPrimaryAddress from "./modal/ModalConfirmationPrimaryAddress";
-import ModalConfirmationDelete from "./modal/ModalConfirmationDelete";
+import ModalConfirmationDelete from "./modal/ModalConfirmationDeleteAddress";
 
 const BurgerSettingAddress = ({ idAddress }) => {
   return (

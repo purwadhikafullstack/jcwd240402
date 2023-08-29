@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  AiFillCheckCircle,
+  AiFillCloseCircle,
+  AiFillPlusSquare,
+  AiFillMinusSquare,
+} from "react-icons/ai";
+import toRupiah from "@develoka/angka-rupiah-js";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -7,19 +14,55 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
 import AccordionProduct from "../../components/user/AccordionProduct";
-import CarouselProduct from "../../components/user/carousel/CarouselProduct";
 import axios from "../../api/axios";
+import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
+import ModalLogin from "../../components/user/modal/ModalLogin";
+import DismissableAlert from "../../components/DismissableAlert";
 
 const ProductDetail = () => {
   const { name } = useParams();
-  const [detailProduct, setDetailProduct] = useState([]);
+  const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const navigate = useNavigate();
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [detailProduct, setDetailProduct] = useState({});
   const [dataImage, setDataImage] = useState([]);
-  const [count, setCount] = useState(0);
+  const [stock, setStock] = useState(0);
+  const [qty, setQty] = useState(0);
+  const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+
+  const handleAddProductToCart = async (name, qty) => {
+    try {
+      const response = await axios.post(
+        "/user/cart",
+        { product_name: name, qty: qty },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      if (response.status === 201) {
+        setQty(0);
+        setSuccessMsg(response.data?.message);
+        setOpenAlert(true);
+      }
+    } catch (error) {
+      if (!error.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(error.response?.data?.message);
+        setOpenAlert(true);
+        setQty(0);
+      }
+    }
+  };
 
   useEffect(() => {
-    axios.get(`/user/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result);
-      setDataImage(res.data?.result?.Image_products);
+    axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
+      setDetailProduct(res.data?.result?.Product);
+      setDataImage(res.data?.result?.Product?.Image_products);
+      setStock(res.data?.result?.product_stock);
     });
   }, [name]);
 
@@ -42,6 +85,25 @@ const ProductDetail = () => {
       <div className="min-h-screen mx-6 mb-8 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
+            {successMsg ? (
+              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
+                <DismissableAlert
+                  successMsg={successMsg}
+                  openAlert={openAlert}
+                  setOpenAlert={setOpenAlert}
+                />
+              </div>
+            ) : errMsg ? (
+              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
+                <DismissableAlert
+                  successMsg={errMsg}
+                  openAlert={openAlert}
+                  setOpenAlert={setOpenAlert}
+                  color="failure"
+                />
+              </div>
+            ) : null}
+
             <CarouselProductDetail data={product} />
             <div className="hidden lg:block md:hidden w-full">
               <AccordionProduct
@@ -57,31 +119,69 @@ const ProductDetail = () => {
             <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
 
             <h1 className="font-bold text-xl">
-              <sup>Rp</sup>
-              {detailProduct.price}
+              {toRupiah(detailProduct.price)}
             </h1>
 
             <hr />
 
             <div className="flex justify-between mt-4">
               <p>amount:</p>
-              <div className="flex justify-between items-center w-20  rounded-full px-1">
+              <div className="flex justify-between items-center w-24  rounded-full px-1">
                 <button
-                  onClick={() => (count <= 0 ? 0 : setCount(count - 1))}
+                  onClick={() => (qty <= 0 ? 0 : setQty(qty - 1))}
                   className="px-1"
+                  disabled={qty <= 0}
                 >
-                  -
+                  <AiFillMinusSquare
+                    className={`${
+                      qty <= 0 ? "text-gray-400" : "text-blue3"
+                    } text-2xl`}
+                  />
                 </button>
-                <p>{count}</p>
-                <button onClick={() => setCount(count + 1)} className="px-1">
-                  +
+                <p>{qty}</p>
+                <button onClick={() => setQty(qty + 1)} className="px-1">
+                  <AiFillPlusSquare className="text-blue3 text-2xl" />
                 </button>
               </div>
             </div>
             <div className="my-4">
-              <button className="bg-blue3 text-white w-full h-10 rounded-full">
-                add to cart
-              </button>
+              {!refresh_token && !access_token ? (
+                <h1 className="">
+                  please log in to get add to cart access{" "}
+                  <span>
+                    <ModalLogin buttonText="click here" />
+                  </span>
+                </h1>
+              ) : (
+                <button
+                  onClick={() => handleAddProductToCart(name, qty)}
+                  className={` ${
+                    stock === 0 || qty === 0
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-blue3 cursor-pointer"
+                  } text-white w-full h-10 rounded-full`}
+                  disabled={stock === 0 || qty === 0}
+                >
+                  add to cart
+                </button>
+              )}
+
+              <div className="flex justify-start items-center mt-2">
+                {stock === 0 ? (
+                  <>
+                    <AiFillCloseCircle className="text-red-500" />
+                    <h1 className="text-xs ">This product is unavailable</h1>
+                  </>
+                ) : (
+                  <>
+                    <AiFillCheckCircle className="text-green-400" />
+                    <h1 className="text-xs ">
+                      This product is still available in{" "}
+                      <span className="font-bold">{stock}</span>
+                    </h1>
+                  </>
+                )}
+              </div>
             </div>
             <div className="lg:hidden">
               <AccordionProduct

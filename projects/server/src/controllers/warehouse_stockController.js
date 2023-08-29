@@ -239,8 +239,9 @@ module.exports = {
                   name: {
                     [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
                   },
+                  is_active: true,
                 }
-              : {},
+              : { is_active: true },
             include: [
               {
                 model: db.Category,
@@ -291,8 +292,9 @@ module.exports = {
                   name: {
                     [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
                   },
+                  is_active: true,
                 }
-              : {},
+              : { is_active: true },
             include: [
               {
                 model: db.Category,
@@ -343,6 +345,45 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
+    }
+  },
+
+  getProductStockByProductName: async (req, res) => {
+    const { name } = req.params;
+    try {
+      const result = await db.Warehouse_stock.findOne({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            attributes: { exclude: ["updatedAt"] },
+            where: { name, is_active: true },
+            include: [
+              {
+                model: db.Category,
+                as: "category",
+                attributes: {
+                  exclude: ["updatedAt", "deletedAt", "createdAt"],
+                },
+              },
+              {
+                model: db.Image_product,
+                attributes: { exclude: ["updatedAt", "createdAt"] },
+              },
+            ],
+          },
+        ],
+      });
+      res.json({
+        ok: true,
+        result,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching product stocks",
         error: error.message,
       });
     }

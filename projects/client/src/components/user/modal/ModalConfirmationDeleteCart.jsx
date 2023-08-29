@@ -6,37 +6,57 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useDispatch } from "react-redux";
 
 import axios from "../../../api/axios";
-import { getCookie } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
-import { addressUser } from "../../../features/userAddressSlice";
+import { cartsUser } from "../../../features/cartSlice";
 
-export default function ModalConfirmationDelete({ idAddress }) {
-  console.log(idAddress);
+export default function ModalConfirmationDeleteCart({ productName, setTotal }) {
   const dispatch = useDispatch();
   const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
 
   const [openModal, setOpenModal] = useState();
   const [errMsg, setErrMsg] = useState("");
 
   const props = { openModal, setOpenModal };
 
-  const deleteAddress = () => {
+  const deleteCart = () => {
     try {
       axios
-        .delete(`/user/profile/address/${idAddress}`, {
+        .delete(`/user/cart/${productName}`, {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
           props.setOpenModal(undefined);
           axios
-            .get("/user/profile/address", {
+            .get("/user/cart", {
               headers: { Authorization: `Bearer ${access_token}` },
             })
             .then((res) => {
-              dispatch(addressUser(res.data?.result));
+              dispatch(cartsUser(res.data?.result));
+              setTotal(res.data?.total);
             });
         })
-        .catch((error) => setErrMsg(error));
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -48,8 +68,8 @@ export default function ModalConfirmationDelete({ idAddress }) {
 
   return (
     <>
-      <button onClick={() => props.setOpenModal("pop-up")}>
-        <p className="text-xs">delete address</p>
+      <button onClick={() => props.setOpenModal("pop-up")} className="text-xs">
+        cancel cart
       </button>
       <Modal
         show={props.openModal === "pop-up"}
@@ -63,14 +83,14 @@ export default function ModalConfirmationDelete({ idAddress }) {
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">
-              remember, you can't delete your primary address. Are you sure you
-              want to delete this address?
+              remember, you can't undo the cart. Are you sure you want to delete
+              this cart?
             </h3>
             <div className="flex justify-center gap-4">
               <Button
                 color="failure"
                 onClick={() => {
-                  deleteAddress();
+                  deleteCart();
                 }}
               >
                 Yes, I'm sure

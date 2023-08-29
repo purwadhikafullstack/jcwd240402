@@ -4,6 +4,7 @@ import userAddressReducer from "../features/userAddressSlice";
 import productListUserReducer from "../features/productListUserSlice";
 import counterReducer from "../features/counterSlice";
 import productReducer from "../features/productReducer";
+import cartReducer from "../features/cartSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     addresser: userAddressReducer,
     producter: productListUserReducer,
     counter: counterReducer,
-    product:productReducer
+    product: productReducer,
+    carter: cartReducer,
   },
 });

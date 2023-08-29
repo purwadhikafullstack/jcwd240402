@@ -2,7 +2,7 @@ import React from "react";
 import { Table } from "flowbite-react";
 import { PiTrashLight } from "react-icons/pi";
 
-const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
+const TableComponent = ({ headers, data = [], onEdit, onDelete, showIcon }) => {
   return (
     <Table className="custom-table">
       <Table.Head>
@@ -22,19 +22,21 @@ const TableComponent = ({ headers, data = [], onEdit, onDelete }) => {
               </Table.Cell>
             ))}
             <Table.Cell>
-              <button
+              {showIcon? (<button
                 className="custom-edit-link"
                 onClick={() => onEdit(row)}
                 href="#"
               >
                 Edit
-              </button>
+              </button>) : <div></div>
+              }    
             </Table.Cell>
-            <PiTrashLight
+            {showIcon? (<PiTrashLight
               size={20}
               className="mt-4 cursor-pointer"
               onClick={() => onDelete(row)}
-            />
+            />) : <div></div>
+          }    
           </Table.Row>
         ))}
       </Table.Body>

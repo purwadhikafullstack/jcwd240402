@@ -115,6 +115,8 @@ const StockHistory = () => {
             "Journal": history.journal || "",
             "Timestamp": history.timestamp.slice(0, 10) || "",
             }))}
+
+            showIcon={false}
           />
         </div>
         {error && <div className="text-red-500">{error}</div>}

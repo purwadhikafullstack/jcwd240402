@@ -18,6 +18,7 @@ import axios from "../../api/axios";
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
 import DismissableAlert from "../../components/DismissableAlert";
+import Alert from "../../components/user/Alert";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -35,18 +36,19 @@ const ProductDetail = () => {
 
   const handleAddProductToCart = async (name, qty) => {
     try {
-      const response = await axios.post(
-        "/user/cart",
-        { product_name: name, qty: qty },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.status === 201) {
-        setQty(0);
-        setSuccessMsg(response.data?.message);
-        setOpenAlert(true);
-      }
+      await axios
+        .post(
+          "/user/cart",
+          { product_name: name, qty: qty },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        )
+        .then((res) => {
+          setQty(0);
+          setSuccessMsg(res.data?.message);
+          setOpenAlert(true);
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -85,24 +87,12 @@ const ProductDetail = () => {
       <div className="min-h-screen mx-6 mb-8 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
-            {successMsg ? (
-              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
-                <DismissableAlert
-                  successMsg={successMsg}
-                  openAlert={openAlert}
-                  setOpenAlert={setOpenAlert}
-                />
-              </div>
-            ) : errMsg ? (
-              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
-                <DismissableAlert
-                  successMsg={errMsg}
-                  openAlert={openAlert}
-                  setOpenAlert={setOpenAlert}
-                  color="failure"
-                />
-              </div>
-            ) : null}
+            <Alert
+              successMsg={successMsg}
+              setOpenAlert={setOpenAlert}
+              openAlert={openAlert}
+              errMsg={errMsg}
+            />
 
             <CarouselProductDetail data={product} />
             <div className="hidden lg:block md:hidden w-full">

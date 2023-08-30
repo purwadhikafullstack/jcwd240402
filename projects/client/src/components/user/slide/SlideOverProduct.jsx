@@ -33,18 +33,19 @@ export default function SlideOverProduct({ name }) {
   const handleAddProductToCart = async (name, qty) => {
     console.log(qty);
     try {
-      const response = await axios.post(
-        "/user/cart",
-        { product_name: name, qty: qty },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.status === 201) {
-        setQty(0);
-        setSuccessMsg(response.data?.message);
-        setOpenAlert(true);
-      }
+      await axios
+        .post(
+          "/user/cart",
+          { product_name: name, qty: qty },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        )
+        .then((res) => {
+          setQty(0);
+          setSuccessMsg(res.data?.message);
+          setOpenAlert(true);
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -170,7 +171,7 @@ export default function SlideOverProduct({ name }) {
                             {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {detailProduct?.price}
+                            {toRupiah(detailProduct?.price)}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">

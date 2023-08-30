@@ -23,32 +23,30 @@ const ModalEditFirstName = () => {
     const formData = new FormData();
     formData.append("data", JSON.stringify(values));
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          first_name: "",
-        });
-        setStatus({
-          success: true,
-          message: "Successful. Please check your email for verification.",
-        });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            first_name: "",
+          });
+          setStatus({
+            success: true,
+            message: "Successful. Please check your email for verification.",
+          });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
 
-        setIsSuccess("update first name successful");
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+          setIsSuccess("update first name successful");
+          setErrMsg(null);
+          props.setOpenModal(undefined);
+        });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

@@ -3,7 +3,6 @@ import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";

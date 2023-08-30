@@ -3,8 +3,8 @@ import Button from "../../Button";
 import ImageGallery from "../image/ImageGallery";
 import axios from "../../../api/axios";
 import ProductInputs from "../product/ProductInputs";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -30,6 +30,16 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
       console.log("Product created:", response.data);
     } catch (error) {
       console.error("Error creating product:", error.response.data);
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        const formikErrors = {};
+        serverErrors.forEach((err) => {
+          if (err.path) {
+            formikErrors[err.path] = err.msg;
+          }
+        });
+        formik.setErrors(formikErrors); 
+      }
     }
   };
 

@@ -8,22 +8,18 @@ import AdminProfileModal from "../../components/Modals/admin/ModalAdminEdit";
 import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword";
 import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
 import DefaultPagination from "../../components/Pagination";
-import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
-import axios from "axios";
+import axios from "../../api/axios"
 
 const AdminList = () => {
-  const [warehouses, setWarehouses] = useState([]);
   const [admins, setAdmins] = useState([]);
   const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [searchName, setSearchName] = useState("");
-
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -37,7 +33,7 @@ const AdminList = () => {
 
   const loadWarehouseOptions = async (inputValue) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`);
+      const response = await axios.get(`/warehouse/warehouse-list?searchName=${inputValue}`);
       const warehouseOptions = [
         { value: "", label: "All Warehouses" },
         ...response.data.warehouses.map((warehouse) => ({
@@ -56,7 +52,7 @@ const AdminList = () => {
     try {
       const warehouseId = selectedWarehouse || "";
       const response = await axios.get(
-        `http://localhost:8000/api/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`
+        `/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`
       );
       setAdmins(response.data.admins);
       if (response.data.pagination) {
@@ -72,7 +68,6 @@ const AdminList = () => {
   };
 
   const formattedAdmins = admins.map((admin) => ({
-    id: admin.id,
     username: admin.username,
     "first name": admin.first_name,
     "last name": admin.last_name,
@@ -89,7 +84,7 @@ const AdminList = () => {
         },
         {
           label: "Warehouse",
-          value: selectedAdmin.warehouse?.warehouse_name || "N/A",
+          value: selectedAdmin['warehouse name'] || "N/A",
           onEdit: () => setWarehouseModalOpen(true),
         },
       ]
@@ -133,7 +128,6 @@ const AdminList = () => {
         <div className="py-4">
           <TableComponent
             headers={[
-              "id",
               "username",
               "first name",
               "last name",
@@ -158,7 +152,7 @@ const AdminList = () => {
         <AdminProfileModal
           show={isProfileModalOpen}
           onClose={() => setProfileModalOpen(false)}
-          title="Edit Admin"
+          title={`Edit ${selectedAdmin?.username}`}
           adminData={selectedAdmin}
           profileData={profileData}
         />

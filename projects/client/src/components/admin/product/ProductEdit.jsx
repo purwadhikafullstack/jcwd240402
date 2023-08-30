@@ -4,17 +4,14 @@ import ImageGalleryEdit from "../image/ImageGalleryEdit";
 import axios from "../../../api/axios";
 import ProductInputsEdit from "./ProductInputEdit";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProductDetails } from "../../../features/actions/productActions";
+import { useDispatch } from "react-redux";
 
 const ProductEdit = () => {
   const dispatch = useDispatch();
   const { productName: encodedProductName } = useParams();
-  const productName = decodeURIComponent(encodedProductName);
 
+  const [serverErrors, setServerErrors] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
-  const productDetails = useSelector((state) => state.product.productDetails);
-
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -23,7 +20,7 @@ const ProductEdit = () => {
     price: "",
     images: [],
   });
-
+  const [isFormValid, setIsFormValid] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -47,6 +44,10 @@ const ProductEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!isFormValid) {
+      console.error("Form is not valid");
+      return;
+    }
     try {
       const updatedProduct = {
         name: product.name,
@@ -55,12 +56,11 @@ const ProductEdit = () => {
         category_id: product.category_id,
         price: product.price,
       };
-
       await axios.patch(`/admin/product/${product.id}`, updatedProduct);
-
-      fetchProductDetails(encodedProductName);
       setSuccessMessage("Product updated successfully");
+      setServerErrors([]);
     } catch (error) {
+      setServerErrors(error.response.data.errors);
       console.error("Error updating product:", error.response.data);
     }
   };
@@ -97,6 +97,7 @@ const ProductEdit = () => {
                   <ProductInputsEdit
                     initialProduct={product}
                     handleInputChange={handleInputChange}
+                    errors={serverErrors}
                   />
                   <div className="flex mt-6 justify-center w-full">
                     <Button

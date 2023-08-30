@@ -14,8 +14,8 @@ const validate = (validations) => {
     }
 
     // if (!errors.isEmpty()) {
-    //     return res.status(422).json({ 
-    //       message: "Validation failed", 
+    //     return res.status(422).json({
+    //       message: "Validation failed",
     //       errors: errors.array()[0].msg  double check later
     //   }
 
@@ -77,7 +77,9 @@ module.exports = {
       .notEmpty()
       .withMessage("Price name is required")
       .isNumeric()
-      .withMessage("Price must be a number"),
+      .withMessage("The price must be a valid number.")
+      .isFloat({ max: 999999999 })
+      .withMessage("The price cannot exceed 999,999,999"),
     body("weight")
       .notEmpty()
       .withMessage("weight is required")
@@ -96,7 +98,18 @@ module.exports = {
   ]),
 
   validateUpdateProduct: validate([
-    body("price").optional().isNumeric().withMessage("Price must be a number"),
+    body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isLength({ max: 50 })
+    .withMessage("Maximum character is 50")
+    .custom(checkProductName),
+    body("price")
+      .optional()
+      .isNumeric()
+      .withMessage("The price must be a valid number.")
+      .isFloat({ max: 999999999 })
+      .withMessage("The price cannot exceed 999,999,999"),
     body("weight")
       .optional()
       .isNumeric()

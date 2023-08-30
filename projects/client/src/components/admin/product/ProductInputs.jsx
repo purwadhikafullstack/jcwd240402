@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import InputForm from "../../InputForm";
-import TextArea from "../../TextArea";
+import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 
@@ -9,14 +9,11 @@ const ProductInputs = ({ formik }) => {
 
   const loadCategoryOptions = async (inputValue) => {
     try {
-      const response = await axios.get(
-        `/admin/categories`,
-        {
-          params: {
-            name: inputValue,
-          },
-        }
-      );
+      const response = await axios.get(`/admin/categories`, {
+        params: {
+          name: inputValue,
+        },
+      });
       const categoryOptions = response.data.data.map((category) => ({
         value: category.id,
         label: category.name,
@@ -45,19 +42,17 @@ const ProductInputs = ({ formik }) => {
         errorMessage={formik.touched.name && formik.errors.name}
         width="w-full"
       />
-      
       <div className="flex mt-4">
         <div className="block font-poppins">Description</div>
       </div>
-      <TextArea
+      <TextAreaForm
         placeholder="Enter product description"
         value={formik.values.description}
         name="description"
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.description && formik.errors.description}
+        errorMessage={formik.touched.description && formik.errors.description}
       />
-
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
           label="Weight"
@@ -80,9 +75,10 @@ const ProductInputs = ({ formik }) => {
           width="w-full"
         />
       </div>
-
       <div className="mb-4">
-        <label className="block font-poppins mb-1 text-gray-700">Category</label>
+        <label className="block font-poppins mb-1 text-gray-700">
+          Category
+        </label>
         <AsyncSelect
           cacheOptions
           defaultOptions

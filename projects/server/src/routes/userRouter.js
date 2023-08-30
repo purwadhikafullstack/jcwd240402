@@ -152,4 +152,10 @@ router.get(
   UserController.getOrderList
 );
 
+router.get(
+  "/city",
+  Verify.verifyAccessTokenUser,
+  UserController.getCity
+);
+
 module.exports = router;

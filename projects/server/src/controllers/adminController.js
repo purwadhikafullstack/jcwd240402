@@ -6,6 +6,7 @@ const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
+// const { generateAccessToken, generateRefreshToken } = require("../utils/index")
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -72,14 +73,10 @@ module.exports = {
       const admin = await db.Admin.findOne({
         where: { id: adminData.id },
         attributes: {
-          exclude: [
-            "password",
-            "createdAt",
-            "updatedAt",
-          ],
+          exclude: ["password", "createdAt", "updatedAt"],
         },
       });
-  
+
       if (!admin) {
         return res.status(401).json({
           ok: false,
@@ -87,7 +84,6 @@ module.exports = {
         });
       }
       return res.json({ ok: true, result: admin });
-      
     } catch (error) {
       return res.status(500).json({
         ok: false,
@@ -374,7 +370,7 @@ module.exports = {
         {
           id: isRefreshTokenExist.id,
           role_id: isRefreshTokenExist.role_id,
-          warehouse_id:isRefreshTokenExist.warehouse_id
+          warehouse_id: isRefreshTokenExist.warehouse_id,
         },
         process.env.ACCESS_TOKEN_SECRET,
         "1h"
@@ -383,6 +379,34 @@ module.exports = {
         ok: true,
         message: "Access Token refreshed",
         accessToken,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  async getRole(req, res) {
+    const adminData = req.user;
+    try {
+      const adminRole = await db.Admin.findOne({
+        where: { id: adminData.id },
+      });
+
+      if (!adminRole) {
+        return res.status(401).json({
+          ok: false,
+          message: "token unauthorized",
+        });
+      }
+
+      res.json({
+        ok: true,
+        message: "admin role get",
+        role: adminRole.role_id,
       });
     } catch (error) {
       res.status(500).json({

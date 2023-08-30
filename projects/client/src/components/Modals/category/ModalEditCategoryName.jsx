@@ -2,41 +2,54 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
-import InputForm from "../../InputForm"; 
-import Button from "../../Button"; 
+import axios from "../../../api/axios";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
 
 const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
+  const handleModalClose = () => {
+    formik.resetForm();
+    setErrMsg("");
+    onClose();
+  };
+
   const editCategoryName = async (values) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/category/name/${categoryId}`,
+        `/admin/category/name/${categoryId}`,
         { name: values.categoryName }
       );
-      console.log("Response from server:", response);
+  
       if (response.status === 200) {
+        formik.resetForm();
         onClose();
         handleSuccessfulEdit();
-        formik.resetForm();
       } else {
         throw new Error("Edit Category Name Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(err.response?.data?.message);
+      let displayedError = false;
+  
+      if (err.response?.data?.errors) {
+        err.response.data.errors.forEach(error => {
+          if (error.path === "name") {
+            formik.setFieldError("categoryName", error.msg);
+            displayedError = true;
+          }
+        });
+      }
+      if (!displayedError) {
+        setErrMsg(err.response?.data?.msg || "An unexpected error occurred. Please try again.");
       }
     }
   };
 
   const formik = useFormik({
     initialValues: {
-      categoryName: "", 
+      categoryName: "",
     },
     onSubmit: editCategoryName,
     validationSchema: yup.object().shape({
@@ -56,7 +69,7 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
   }, [show, formik]);
 
   return (
-    <Modal show={show} size="md" popup onClose={onClose}>
+    <Modal show={show} size="md" popup onClose={handleModalClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -75,6 +88,7 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
             <InputForm
               label="Category Name"
               name="categoryName"
+              placeholder = "Enter category name"
               onChange={formik.handleChange}
               value={formik.values.categoryName}
               errorMessage={formik.errors.categoryName}

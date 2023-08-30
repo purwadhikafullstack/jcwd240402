@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
-import axios from "axios";
+import axios from "../../../api/axios";
 import Button from "../../Button";
 import InputForm from "../../InputForm";
 import PasswordInput from "../../PasswordInput";
@@ -21,37 +21,22 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
 
   const loadWarehouses = async (inputValue) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=`
-      );
-      const results = response.data.warehouses.map((warehouse) => ({
-        value: warehouse.id,
-        label: warehouse.warehouse_name,
-      }));
-      return results.length ? results : [];
+      const { data } = await axios.get(`/warehouse/warehouse-list?searchName=${inputValue}&cityId=`);
+      return data.warehouses.map(wh => ({ value: wh.id, label: wh.warehouse_name })) || [];
     } catch (error) {
       console.error("Error loading warehouses:", error);
       return [];
     }
   };
 
-  const validationSchema = yup.object().shape({
-    username: yup.string().required("Username is required"),
-    first_name: yup.string().required("First name is required"),
-    last_name: yup.string().required("Last name is required"),
-    password: yup
-      .string()
-      .min(8)
-      .required()
-      .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-        "Password min 8 chars,1 number,1 capital,1 symbol"
-      ),
-    confirmPassword: yup
-      .string()
-      .required("Confirm password is required")
-      .oneOf([yup.ref("password"), null], "Passwords must match"),
-  });
+  const handleErrors = (error) => {
+    const serverErrors = error.response?.data?.errors;
+    if (serverErrors) {
+      serverErrors.forEach(err => formik.setFieldError(err.path, err.msg));
+    } else {
+      setErrMsg(error.message || "Registration failed");
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -65,16 +50,12 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
     validateOnBlur: false,
     onSubmit: async (values) => {
       try {
-        if (!selectedWarehouse) {
-          throw new Error("Please select a warehouse.");
-        }
-        const response = await axios.post(
-          "http://localhost:8000/api/admin/register",
-          {
-            ...values,
-            warehouse_id: selectedWarehouse?.value,
-          }
-        );
+        if (!selectedWarehouse) throw new Error("Please select a warehouse.");
+
+        const response = await axios.post("/admin/register", {
+          ...values,
+          warehouse_id: selectedWarehouse?.value,
+        });
 
         if (response.status === 201) {
           formik.resetForm();
@@ -85,16 +66,30 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
           throw new Error("Admin Registration Failed");
         }
       } catch (error) {
-        const serverError = error.response?.data?.errors?.[0];
-        if (serverError && serverError.path === "username") {
-          formik.setFieldError("username", serverError.msg);
-        } else {
-          setErrMsg(error.message || "Registration failed");
-        }
+        handleErrors(error);
       }
     },
-    validationSchema,
+    validationSchema: yup.object({
+      username: yup.string().required("Username is required"),
+      first_name: yup.string().required("First name is required"),
+      last_name: yup.string().required("Last name is required"),
+      password: yup.string().required("Password is required"),
+      confirmPassword: yup.string().required("Confirm password is required").oneOf([yup.ref("password"), null], "Passwords must match"),
+    }),
   });
+
+  const renderInputForm = (label, name, type, placeholder) => (
+    <InputForm
+      label={label}
+      name={name}
+      type={type}
+      placeholder={placeholder}
+      value={formik.values[name]}
+      onChange={formik.handleChange}
+      isError={!!formik.errors[name]}
+      errorMessage={formik.errors[name]}
+    />
+  );
 
   return (
     <Modal show={show} size="md" popup onClose={handleModalClose}>
@@ -113,36 +108,9 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
             </div>
           )}
           <div className="px-6 grid gap-y-3">
-            <InputForm
-              label="Username"
-              name="username"
-              type="text"
-              placeholder="Enter username"
-              value={formik.values.username}
-              onChange={formik.handleChange}
-              isError={!!formik.errors.username}
-              errorMessage={formik.errors.username}
-            />
-            <InputForm
-              label="First Name"
-              name="first_name"
-              type="text"
-              placeholder="Enter first name"
-              value={formik.values.first_name}
-              onChange={formik.handleChange}
-              isError={!!formik.errors.first_name}
-              errorMessage={formik.errors.first_name}
-            />
-            <InputForm
-              label="Last Name"
-              name="last_name"
-              type="text"
-              placeholder="Enter last name"
-              value={formik.values.last_name}
-              onChange={formik.handleChange}
-              isError={!!formik.errors.last_name}
-              errorMessage={formik.errors.last_name}
-            />
+            {renderInputForm("Username", "username", "text", "Enter username")}
+            {renderInputForm("First Name", "first_name", "text", "Enter first name")}
+            {renderInputForm("Last Name", "last_name", "text", "Enter last name")}
             <PasswordInput
               label="Password"
               name="password"
@@ -151,16 +119,7 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
               isError={!!formik.errors.password}
               errorMessage={formik.errors.password}
             />
-            <InputForm
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm password"
-              value={formik.values.confirmPassword}
-              onChange={formik.handleChange}
-              isError={!!formik.errors.confirmPassword}
-              errorMessage={formik.errors.confirmPassword}
-            />
+            {renderInputForm("Confirm Password", "confirmPassword", "password", "Confirm password")}
             <div className="flex-1 pt-3">
               <AsyncSelect
                 classNamePrefix="react-select"
@@ -188,3 +147,4 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
 };
 
 export default RegisterAdminModal;
+

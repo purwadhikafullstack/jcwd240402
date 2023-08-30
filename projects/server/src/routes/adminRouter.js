@@ -18,17 +18,17 @@ router.post(
   "/register",
   validatorMiddlewareAdmin.validateRegistration,
   adminController.registerAdmin
-); //check
+); 
 router.post(
   "/login",
   validatorMiddlewareAdmin.validateLogin,
   adminController.loginAdmin
-); //check
+); 
 router.post(
   "/change-pass/:id",
   validatorMiddlewareAdmin.validatePassword,
   adminController.changeAdminPassword
-); //check
+);
 router.post("/assign-warehouse/:id", adminController.assignWarehouse); //check
 router.get(
   "/checkrole",
@@ -105,6 +105,7 @@ router.post(
 
 router.patch(
   "/product/:id",
+  validatorMiddlewareProduct.removeEmptyFields,
   validatorMiddlewareProduct.validateUpdateProduct,
   productController.updateProductDetails
 );

@@ -9,7 +9,8 @@ import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword
 import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
 import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
-import axios from "../../api/axios"
+import withAuthAdmin from "../../components/admin/withAuthAdmin";
+import axios from "../../api/axios";
 
 const AdminList = () => {
   const [admins, setAdmins] = useState([]);
@@ -33,7 +34,9 @@ const AdminList = () => {
 
   const loadWarehouseOptions = async (inputValue) => {
     try {
-      const response = await axios.get(`/warehouse/warehouse-list?searchName=${inputValue}`);
+      const response = await axios.get(
+        `/warehouse/warehouse-list?searchName=${inputValue}`
+      );
       const warehouseOptions = [
         { value: "", label: "All Warehouses" },
         ...response.data.warehouses.map((warehouse) => ({
@@ -68,27 +71,13 @@ const AdminList = () => {
   };
 
   const formattedAdmins = admins.map((admin) => ({
+    id: admin.id,
     username: admin.username,
     "first name": admin.first_name,
     "last name": admin.last_name,
     "warehouse name": admin.warehouse?.warehouse_name,
     "Created at": moment(admin.createdAt).format("MMMM D, YYYY"),
   }));
-
-  const profileData = selectedAdmin
-    ? [
-        {
-          label: "Password",
-          value: "••••••••",
-          onEdit: () => setPasswordModalOpen(true),
-        },
-        {
-          label: "Warehouse",
-          value: selectedAdmin['warehouse name'] || "N/A",
-          onEdit: () => setWarehouseModalOpen(true),
-        },
-      ]
-    : [];
 
   const refreshAdminList = async () => {
     await fetchAdmins();
@@ -153,23 +142,13 @@ const AdminList = () => {
           show={isProfileModalOpen}
           onClose={() => setProfileModalOpen(false)}
           title={`Edit ${selectedAdmin?.username}`}
-          adminData={selectedAdmin}
-          profileData={profileData}
-        />
-        <ChangePasswordModal
-          show={isPasswordModalOpen}
-          onClose={() => setPasswordModalOpen(false)}
-          adminId={selectedAdmin?.id}
-        />
-        <ReassignWarehouseModal
-          show={isWarehouseModalOpen}
-          onClose={() => setWarehouseModalOpen(false)}
-          adminId={selectedAdmin?.id}
-          refreshAdminListWrapper={() => {
-            refreshAdminList();
-            setWarehouseModalOpen(false);
-            setProfileModalOpen(false);
-          }}
+          setProfileModalOpen={setProfileModalOpen}
+          selectedAdmin={selectedAdmin}
+          setPasswordModalOpen={setPasswordModalOpen}
+          setWarehouseModalOpen={setWarehouseModalOpen}
+          isPasswordModalOpen={isPasswordModalOpen}
+          isWarehouseModalOpen={isWarehouseModalOpen}
+          refreshAdminList={refreshAdminList}
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
@@ -182,4 +161,4 @@ const AdminList = () => {
   );
 };
 
-export default AdminList;
+export default withAuthAdmin(AdminList);

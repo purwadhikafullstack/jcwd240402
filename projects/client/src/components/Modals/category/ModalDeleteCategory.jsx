@@ -4,8 +4,7 @@ import Button from "../../Button";
 import axios from "axios";
 
 const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId }) => {
-  console.log(categoryId)
-
+  
   const handleDelete = async () => {
     try {
       const response = await axios.patch(`http://localhost:8000/api/admin/category/${categoryId}`);

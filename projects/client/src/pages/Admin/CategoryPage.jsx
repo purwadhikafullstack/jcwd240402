@@ -1,7 +1,9 @@
 import React from "react";
 import Tabs from "../../components/Tab/TabContainer";
 import { Outlet } from "react-router-dom";
-import SidebarAdminDesktop from "../../components/SidebarAdminDesktop"; 
+import Sidebar from "../../components/SidebarAdminDesktop"; 
+import withAuthAdmin from '../../components/admin/withAuthAdmin';
+
 
 const CategoryPage = () => {
   const tabData = [
@@ -20,18 +22,18 @@ const CategoryPage = () => {
   return (
     <div className="h-screen lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen">
-        <SidebarAdminDesktop />
+        <Sidebar/>
       </div>
       <div className="flex flex-col h-full">
         <div className="border-b p-4">
-          <Tabs tabData={tabData} />
+          <Tabs tabData={tabData}/>
         </div>
         <div className="flex-1 overflow-auto px-8 pt-8">
-          <Outlet />
+          <Outlet/>
         </div>
       </div>
     </div>
   );
 };
 
-export default CategoryPage;
+export default withAuthAdmin(CategoryPage);

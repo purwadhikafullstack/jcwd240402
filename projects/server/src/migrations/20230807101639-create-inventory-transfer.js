@@ -41,6 +41,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING,
       },
+      approval: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+      },
       transaction_code: {
         allowNull: false,
         type: Sequelize.STRING,

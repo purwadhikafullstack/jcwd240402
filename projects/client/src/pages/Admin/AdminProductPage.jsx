@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch,useSelector } from 'react-redux';
 import Tabs from '../../components/Tab/TabContainer';
 import { Outlet } from 'react-router-dom';
 import SidebarAdminDesktop from '../../components/SidebarAdminDesktop';
@@ -10,6 +10,7 @@ import { profileAdmin } from '../../features/adminDataSlice';
 
 const AdminProductPage = () => {
   const access_token = getCookie('access_token');
+  const adminData = useSelector((state) => state.profilerAdmin.value);
   const dispatch = useDispatch();
 
   const tabData = [
@@ -41,7 +42,7 @@ const AdminProductPage = () => {
   return (
     <div className="h-screen lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen">
-        <SidebarAdminDesktop />
+      <SidebarAdminDesktop adminData={adminData} />
       </div>
       <div className="flex flex-col h-full">
         <div className="border-b p-4">

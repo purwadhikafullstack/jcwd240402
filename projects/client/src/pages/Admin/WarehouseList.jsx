@@ -7,24 +7,36 @@ import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import WarehouseModal from "../../components/Modals/warehouse/ModalWarehouse";
 import WarehouseProfileModal from "../../components/Modals/warehouse/ModalWarehouseEdit";
-import axios from "axios";
+import axios from "../../api/axios";
+import withAuthAdmin from '../../components/admin/withAuthAdmin';
 
 const WarehouseList = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [warehouseName, setWarehouseName] = useState("");
+  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     refreshWarehouseList();
-  }, [selectedCity, warehouseName, currentPage]);
+  }, [selectedCity, warehouseName, selectedWarehouse, currentPage]);
+
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setCurrentPage(1);
+  };
+
+  const handleWarehouseChange = (warehouse) => {
+    setSelectedWarehouse(warehouse);
+    setCurrentPage(1);
+  };
 
   const loadCities = async (inputValue, callback) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
+        `/admin/city/?provinceId=&page=1&searchName=${inputValue}`
       );
       const cityOptions = [
         { value: "", label: "All Cities" },
@@ -44,7 +56,7 @@ const WarehouseList = () => {
   const loadWarehouseOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=${selectedCity?.value || ""}`
+        `/warehouse/warehouse-list?searchName=${inputValue}&cityId=${selectedCity?.value || ""}`
       );
       const warehouseOptions = [
         { value: "", label: "All Warehouses" },
@@ -64,7 +76,7 @@ const WarehouseList = () => {
     try {
       const cityId = selectedCity ? selectedCity.value : "";
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list`,
+        `/warehouse/warehouse-list`,
         {
           params: {
             searchName: warehouseName,
@@ -109,7 +121,7 @@ const WarehouseList = () => {
             cacheOptions
             defaultOptions
             loadOptions={loadCities}
-            onChange={setSelectedCity}
+            onChange={handleCityChange}
             placeholder="All Cities"
             className="flex-1"
           />
@@ -117,9 +129,10 @@ const WarehouseList = () => {
             cacheOptions
             defaultOptions
             loadOptions={loadWarehouseOptions}
+            onChange={handleWarehouseChange}
             placeholder="All Warehouses"
             className="flex-1 mx-4"
-            value={null}
+            value={selectedWarehouse}
           />
           <Button
             buttonSize="medium"
@@ -163,4 +176,5 @@ const WarehouseList = () => {
   );
 };
 
-export default WarehouseList;
+export default withAuthAdmin(WarehouseList);
+

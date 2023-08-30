@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 const ProductEdit = () => {
   const dispatch = useDispatch();
   const { productName: encodedProductName } = useParams();
-
+  const [changedFields, setChangedFields] = useState({});
   const [serverErrors, setServerErrors] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [product, setProduct] = useState({
@@ -49,16 +49,10 @@ const ProductEdit = () => {
       return;
     }
     try {
-      const updatedProduct = {
-        name: product.name,
-        description: product.description,
-        weight: product.weight,
-        category_id: product.category_id,
-        price: product.price,
-      };
-      await axios.patch(`/admin/product/${product.id}`, updatedProduct);
+      await axios.patch(`/admin/product/${product.id}`, changedFields);
       setSuccessMessage("Product updated successfully");
       setServerErrors([]);
+      setChangedFields({});
     } catch (error) {
       setServerErrors(error.response.data.errors);
       console.error("Error updating product:", error.response.data);
@@ -78,7 +72,12 @@ const ProductEdit = () => {
       ...prevProduct,
       [name]: value,
     }));
+    setChangedFields((prevFields) => ({
+      ...prevFields,
+      [name]: value,
+    }));
   };
+  
 
   return (
     <div className="flex h-screen">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InputForm from "../../InputForm";
 import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
@@ -6,7 +6,18 @@ import axios from "../../../api/axios";
 
 const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [defaultCategories, setDefaultCategories] = useState([]);
 
+  useEffect(() => {
+    if (initialProduct && initialProduct.category && initialProduct.category.id && initialProduct.category.name) {
+      const initialCategory = {
+        value: initialProduct.category.id,
+        label: initialProduct.category.name
+      };
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialProduct]);
+  
   const loadCategoryOptions = async (inputValue) => {
     try {
       const response = await axios.get(`/admin/categories`, {
@@ -29,9 +40,8 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
     setSelectedCategory(selectedOption);
   };
 
-  // Extract error message based on field name
   const getErrorMessage = (field) => {
-    const errorObj = errors.find(err => err.path === field);
+    const errorObj = errors.find((err) => err.path === field);
     return errorObj ? errorObj.msg : null;
   };
 
@@ -43,7 +53,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
         value={initialProduct.name}
         name="name"
         onChange={handleInputChange}
-        errorMessage={getErrorMessage('name')}
+        errorMessage={getErrorMessage("name")}
         width="w-full"
       />
       <div className="flex mt-4">
@@ -54,7 +64,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
         value={initialProduct.description}
         name="description"
         onChange={handleInputChange}
-        errorMessage={getErrorMessage('description')}
+        errorMessage={getErrorMessage("description")}
       />
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
@@ -63,7 +73,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           value={initialProduct.weight}
           name="weight"
           onChange={handleInputChange}
-          errorMessage={getErrorMessage('weight')}
+          errorMessage={getErrorMessage("weight")}
           width="w-full"
         />
         <InputForm
@@ -72,7 +82,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           value={initialProduct.price}
           name="price"
           onChange={handleInputChange}
-          errorMessage={getErrorMessage('price')}
+          errorMessage={getErrorMessage("price")}
           width="w-full"
         />
       </div>
@@ -82,14 +92,14 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
         </label>
         <AsyncSelect
           cacheOptions
-          defaultOptions
+          defaultOptions={defaultCategories}
           loadOptions={loadCategoryOptions}
           value={selectedCategory || null}
           onChange={handleCategoryChange}
           placeholder="Select a category"
         />
-        {getErrorMessage('category_id') && (
-          <p className="text-red-500 mt-2">{getErrorMessage('category_id')}</p>
+        {getErrorMessage("category_id") && (
+          <p className="text-red-500 mt-2">{getErrorMessage("category_id")}</p>
         )}
       </div>
     </div>

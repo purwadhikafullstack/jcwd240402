@@ -8,8 +8,15 @@ import Button from "../../Button";
 
 const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
   const hasResetForm = useRef(false);
+  const [selectedFileName, setSelectedFileName] = useState("Choose a file...");
   const [errMsg, setErrMsg] = useState("");
 
+  const handleModalClose = () => {
+    formik.resetForm();
+    setSelectedFileName("Choose a file...");
+    setErrMsg("");
+    onClose();
+  };
   const editCategoryImage = async (values) => {
     try {
       const formData = new FormData();
@@ -19,20 +26,26 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
         `http://localhost:8000/api/admin/category/img/${categoryId}`,
         formData
       );
-      console.log("Response from server:", response);
+
       if (response.status === 200) {
-        onClose();
         formik.resetForm();
+        onClose();
         handleSuccessfulEdit();
       } else {
         throw new Error("Edit Category Image Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(err.response?.data?.message);
+      let displayedError = false;
+      if (err.response?.data?.errors) {
+        err.response.data.errors.forEach(error => {
+          if (error.path === "categoryImage") {
+            formik.setFieldError("categoryImage", error.msg);
+            displayedError = true;
+          }
+        });
+      }
+      if (!displayedError) {
+        setErrMsg(err.response?.data?.message || "An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -59,7 +72,7 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
   }, [show, formik]);
 
   return (
-    <Modal show={show} size="md" popup onClose={onClose}>
+    <Modal show={show} size="md" popup onClose={handleModalClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
@@ -68,20 +81,25 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
         </div>
       </Modal.Header>
       <Modal.Body>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
           {errMsg && (
             <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p className="bg-inherit">{errMsg}</p>
+              <p>{errMsg}</p>
             </div>
           )}
-          <div className="mt-5 px-6 grid gap-y-3">
-            <InputForm
-              label="Category Image"
-              name="categoryImage"
-              type="file"
-              onChange={(event) => formik.setFieldValue("categoryImage", event.target.files[0])}
-              errorMessage={formik.errors.categoryImage}
-            />
+          <div className="px-6 grid gap-y-3">
+            <div className="relative">
+              <input
+                id="categoryImageInput"
+                name="categoryImage"
+                type="file"
+                onChange={(event) => {
+                  formik.setFieldValue("categoryImage", event.currentTarget.files[0]);
+                  setSelectedFileName(event.currentTarget.files[0]?.name || "Choose a file");
+                }}
+                className="form-input"
+              />
+            </div>
             <div className="flex flex-col justify-center items-center mt-3">
               <Button
                 type="submit"
@@ -100,3 +118,8 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
 };
 
 export default EditCategoryImageModal;
+
+
+
+
+

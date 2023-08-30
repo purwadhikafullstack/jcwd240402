@@ -11,11 +11,21 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
-  const validationSchema = yup.object().shape({
-    warehouse_name: yup.string().required("Warehouse Name is required").min(8, "Warehouse Name must be at least 8 characters"),
-    address_warehouse: yup.string().required("Address is required"),
-    warehouse_contact: yup.string().required("Contact is required"),
-  });
+  const handleModalClose = () => {
+    formik.resetForm();
+    setSelectedCity(null);
+    setErrMsg("");
+    onClose();
+  };
+
+  const handleErrors = (error) => {
+    const serverErrors = error.response?.data?.errors;
+    if (serverErrors) {
+      serverErrors.forEach(err => formik.setFieldError(err.path, err.msg));
+    } else {
+      setErrMsg(error.message || "Registration failed");
+    }
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -25,39 +35,35 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
     },
     validateOnChange: false,
     validateOnBlur: false,
-    onSubmit: handleFormSubmit,
-    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        if (!selectedCity) throw new Error("Please select a city.");
+
+        const response = await axios.post("/warehouse/register", {
+          ...values,
+          city_id: selectedCity.value,
+        });
+
+        if (response.status === 201) {
+          formik.resetForm();
+          setSelectedCity(null);
+          onClose();
+          onSuccessfulRegister();
+        } else {
+          throw new Error("Warehouse Registration Failed");
+        }
+      } catch (error) {
+        handleErrors(error);
+      }
+    },
+    validationSchema: yup.object().shape({
+      warehouse_name: yup.string().required("Warehouse Name is required").min(8, "Warehouse Name must be at least 8 characters"),
+      address_warehouse: yup.string().required("Address is required"),
+      warehouse_contact: yup.string().required("Contact is required"),
+    }),
   });
 
-  async function handleFormSubmit(values) {
-    try {
-      if (!selectedCity) {
-        throw new Error("Please select a city.");
-      }
-      const coordinates = await getCoordinates(values.address_warehouse);
-      if (!coordinates) {
-        throw new Error("Address not found");
-      }
-      const response = await axios.post("/warehouse/register", {
-        ...values,
-        city_id: selectedCity.value,
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-      });
-      if (response.status === 201) {
-        formik.resetForm();
-        setSelectedCity(null);
-        onClose();
-        onSuccessfulRegister();
-      } else {
-        throw new Error("Warehouse Registration Failed");
-      }
-    } catch (error) {
-      setErrMsg(error.message || "Registration failed");
-    }
-  }
-
-  async function loadCities(inputValue) {
+  const loadCities = async (inputValue) => {
     try {
       const response = await axios.get(`/admin/city/?searchName=${inputValue}&page=1`);
       return response.data.cities.map(city => ({
@@ -68,29 +74,10 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
       console.error("Error loading cities:", error);
       return [];
     }
-  }
-
-  async function getCoordinates(address) {
-    const apiKey = "f2f57cc907854a3cb36d25b445d148e6";
-    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}`;
-    try {
-      const response = await axios.get(url);
-      if (response.data.results && response.data.results.length > 0) {
-        return {
-          latitude: response.data.results[0].geometry.lat,
-          longitude: response.data.results[0].geometry.lng,
-        };
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  }
+  };
 
   return (
-    <Modal show={show} size="md" popup onClose={onClose}>
+    <Modal show={show} size="md" popup onClose={handleModalClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">

@@ -9,7 +9,7 @@ import { profileAdmin } from "../../features/adminDataSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
 
-function withAuthAdmin(Component) {
+function withAuthAdminWarehouse(Component) {
   return (props) => {
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
@@ -73,15 +73,15 @@ function withAuthAdmin(Component) {
 
     if (!adminData) {
       if (access_token) {
-        navigate("/admin/dashboard");
+        navigate("/admin/login");
       } else {
         navigate("/admin/login");
       }
       return null;
     }
 
-    if (adminData.role_id !== 1) {
-      navigate("/admin/dashboard");
+    if (adminData.role_id !== 1 && adminData.role_id !== 2) {
+      navigate("/admin/login");
       return null;
     }
 
@@ -89,4 +89,4 @@ function withAuthAdmin(Component) {
   };
 }
 
-export default withAuthAdmin;
+export default withAuthAdminWarehouse;

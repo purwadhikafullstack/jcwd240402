@@ -1,8 +1,36 @@
 import React from "react";
 import { Modal } from "flowbite-react";
 import Button from "../../Button";
+import ReassignWarehouseModal from "./ModalReassignWarehouse";
+import ChangePasswordModal from "./ModalEditPassword";
 
-const AdminProfileModal = ({ show, onClose, title, profileData }) => {
+const AdminProfileModal = ({
+  show,
+  onClose,
+  title,
+  selectedAdmin,
+  setPasswordModalOpen,
+  setWarehouseModalOpen,
+  isPasswordModalOpen,
+  isWarehouseModalOpen,
+  refreshAdminList,
+  setProfileModalOpen,
+}) => {
+  const profileData = selectedAdmin
+    ? [
+        {
+          label: "Password",
+          value: "••••••••",
+          onEdit: () => setPasswordModalOpen(true),
+        },
+        {
+          label: "Warehouse",
+          value: selectedAdmin["warehouse name"] || "N/A",
+          onEdit: () => setWarehouseModalOpen(true),
+        },
+      ]
+    : [];
+
   return (
     <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header>
@@ -30,6 +58,23 @@ const AdminProfileModal = ({ show, onClose, title, profileData }) => {
               />
             </div>
           ))}
+          <ChangePasswordModal
+            show={isPasswordModalOpen}
+            onClose={() => setPasswordModalOpen(false)}
+            adminId={selectedAdmin?.id}
+          />
+          {selectedAdmin && (
+            <ReassignWarehouseModal
+              show={isWarehouseModalOpen}
+              onClose={() => setWarehouseModalOpen(false)}
+              adminId={selectedAdmin?.id}
+              refreshAdminListWrapper={() => {
+                refreshAdminList();
+                setWarehouseModalOpen(false);
+                setProfileModalOpen(false);
+              }}
+            />
+          )}
         </div>
       </Modal.Body>
     </Modal>

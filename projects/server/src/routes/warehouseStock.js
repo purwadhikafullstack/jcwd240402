@@ -15,4 +15,9 @@ router.patch(
   warehouseStockController.updateStockForWarehouse
 );
 
+router.delete(
+  "/:warehouseId/:productId",
+  warehouseStockController.deleteStockForWarehouse
+);
+
 module.exports = router;

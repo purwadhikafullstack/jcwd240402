@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import PasswordInput from "../../PasswordInput";
 import InputForm from "../../InputForm";
 import Button from "../../Button";
@@ -19,7 +19,7 @@ const ChangePasswordModal = ({
   const changePassword = async (values) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/admin/change-pass/${adminId}`,
+        `/api/admin/change-pass/${adminId}`,
         values
       );
       console.log("Response from server:", response);
@@ -50,14 +50,14 @@ const ChangePasswordModal = ({
       newPassword: yup
         .string()
         .min(8)
-        .required()
+        .required("Password is required")
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "Password min 8 chars,1 number,1 capital,1 symbol"
+          "Password must have at least 8 characters, 1 number, 1 capital, and 1 symbol."
         ),
       confirmPassword: yup
         .string()
-        .oneOf([yup.ref("newPassword"), null], "Passwords must match")
+        .oneOf([yup.ref("Password"), null], "Passwords must match")
         .required("Confirm Password is required"),
     }),
     validateOnChange: false,
@@ -93,6 +93,7 @@ const ChangePasswordModal = ({
             <PasswordInput
               label="New Password"
               name="newPassword"
+              placeholder="Enter new password"
               onChange={formik.handleChange}
               value={formik.values.newPassword}
               errorMessage={formik.errors.newPassword}
@@ -101,7 +102,7 @@ const ChangePasswordModal = ({
               label="Confirm New Password"
               name="confirmPassword"
               type="password"
-              placeholder=""
+              placeholder="Enter confirm password"
               onChange={formik.handleChange}
               value={formik.values.confirmPassword}
               errorMessage={formik.errors.confirmPassword}

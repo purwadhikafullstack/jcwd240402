@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
-import axios from "axios";
+import axios from "../../../api/axios";
 import Button from "../../Button";
 
 const ReassignWarehouseModal = ({
@@ -11,11 +11,12 @@ const ReassignWarehouseModal = ({
   refreshAdminListWrapper,
 }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  console.log(adminId)
 
   const loadWarehouses = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}&cityId=`
+        `/warehouse/warehouse-list?searchName=${inputValue}&cityId=`
       );
       const results = response.data.warehouses.map((warehouse) => ({
         value: warehouse.id,
@@ -30,7 +31,7 @@ const ReassignWarehouseModal = ({
 
   const handleReassign = () => {
     if (selectedWarehouse && adminId) {
-      const url = `http://localhost:8000/api/admin/assign-warehouse/${adminId}`;
+      const url = `/admin/assign-warehouse/${adminId}`;
       const payload = { warehouse_id: selectedWarehouse.value };
       axios
         .post(url, payload)

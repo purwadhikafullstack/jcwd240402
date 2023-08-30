@@ -1,21 +1,42 @@
-import React from "react";
-import Tabs from "../../components/Tab/TabContainer";
-import { Outlet } from "react-router-dom";
-import SidebarAdminDesktop from "../../components/SidebarAdminDesktop"; 
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import Tabs from '../../components/Tab/TabContainer';
+import { Outlet } from 'react-router-dom';
+import SidebarAdminDesktop from '../../components/SidebarAdminDesktop';
+import withAuthAdmin from '../../components/admin/withAuthAdmin';
+import axios from '../../api/axios';
+import { getCookie } from '../../utils/tokenSetterGetter';
+import { profileAdmin } from '../../features/adminDataSlice';
 
 const AdminProductPage = () => {
+  const access_token = getCookie('access_token');
+  const dispatch = useDispatch();
+
   const tabData = [
     {
-      label: "Product List",
-      isActive: window.location.pathname === "/admin/products",
-      to: "/admin/products",
+      label: 'Product List',
+      isActive: window.location.pathname === '/admin/products',
+      to: '/admin/products',
     },
     {
-      label: "Create Product",
-      isActive: window.location.pathname === "/admin/products/create",
-      to: "/admin/products/create",
-    }
+      label: 'Create Product',
+      isActive: window.location.pathname === '/admin/products/create',
+      to: '/admin/products/create',
+    },
   ];
+
+  useEffect(() => {
+    axios
+      .get('/admin/profile', {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(profileAdmin(res.data?.result));
+      })
+      .catch((error) => {
+        console.error('Error fetching profile:', error);
+      });
+  }, [access_token, dispatch]);
 
   return (
     <div className="h-screen lg:grid lg:grid-cols-[auto,1fr]">
@@ -34,5 +55,6 @@ const AdminProductPage = () => {
   );
 };
 
-export default AdminProductPage;
+export default withAuthAdmin(AdminProductPage);
+
 

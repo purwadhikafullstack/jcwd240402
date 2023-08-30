@@ -11,6 +11,7 @@ const StockHistory = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
+  const [roleId, setRoleId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [stockHistoryList, setStockHistoryList] = useState([]);
@@ -27,7 +28,6 @@ const StockHistory = () => {
 
   const monthOptions = [
     { value: "", label: 'any month' },
-
     { value: 1, label: 'January' },
     { value: 2, label: 'February' },
     { value: 3, label: 'March' },
@@ -49,6 +49,30 @@ const StockHistory = () => {
     { value: 2022, label: "2022" },
     { value: 2023, label: "2023" },
   ]
+
+  const warehouseOptions = [
+    { value: "", label: 'any warehouse' },
+    { value: 1, label: "Furnifor BSD" },
+    { value: 2, label: "Furnifor Surabaya" },
+  ]
+
+  useEffect(() => {
+
+    axios.get(`http://localhost:8000/api/admin/checkrole`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+    )
+    .then((response) => {
+      setRoleId(response.data.role);
+    })
+    .catch((err) => {
+      setError(err.response.message) 
+    });
+
+  }, [])
 
 
   useEffect(() => {
@@ -79,6 +103,9 @@ const StockHistory = () => {
   const handleChangeYear = (year) =>{
     setYear(year.value)
   }
+  const handleChangeWarehouseId = (warehouseId) =>{
+    setWarehouseId(warehouseId.value)
+  }
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -89,6 +116,10 @@ const StockHistory = () => {
             <div className="flex items-center gap-4">
             <Select options={monthOptions} placeholder={<div>month</div>} onChange={handleChangeMonth} />
             <Select options={yearOptions} placeholder={<div>year</div>} onChange={handleChangeYear} />
+            {roleId == 1? (<Select options={warehouseOptions} 
+            placeholder={<div>Warehouse</div>} onChange={handleChangeWarehouseId} />
+            ) : <div></div>
+              }
             <div>Last Stock: {totalLastStock}</div>
             <div>Total Increment: {totalIncrement}</div>
             <div>Total Decrement: {totalDecrement}</div>
@@ -108,12 +139,12 @@ const StockHistory = () => {
             data={stockHistoryList.map((history) => ({
                 "Product": history.Warehouse_stock.Product.name || "",
             "Admin Username": history.Admin.username || "",
-            "Stock Before": history.stock_before_transfer || "",
+            "Stock Before": history.stock_before_transfer || "0",
             "Stock After": history.stock_after_transfer || "",
             "Increment/Decrement": history.increment_decrement || "",
             "Quantity": history.quantity || "",
             "Journal": history.journal || "",
-            "Timestamp": history.timestamp.slice(0, 10) || "",
+            "Timestamp": history.timestamp.slice(0, 10) + ", " + history.timestamp.slice(11, 19)  || "",
             }))}
 
             showIcon={false}

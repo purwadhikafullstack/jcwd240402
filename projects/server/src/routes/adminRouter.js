@@ -6,6 +6,7 @@ const categoryController = require("../controllers/categoryController")
 const productController = require("../controllers/productController")
 const multerCategory = require("../middleware/multer/category/category")
 const multerProduct = require("../middleware/multer/product/product")
+const authMiddleware = require("../middleware/auth")
 const router = require("express").Router();
 
 //admin
@@ -14,6 +15,7 @@ router.post("/register",validatorMiddlewareAdmin.validateRegistration,adminContr
 router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.loginAdmin);//check
 router.post("/change-pass/:id",validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);//check
 router.post("/assign-warehouse/:id", adminController.assignWarehouse);//check
+router.get("/checkrole", authMiddleware.verifyAccessTokenAdmin ,adminController.getRole);
 router.get("/", adminController.getAdminList);
 
 

@@ -17,7 +17,6 @@ const ModalEditFirstName = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("update username successful");
 
   const editFirstName = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
@@ -43,7 +42,6 @@ const ModalEditFirstName = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
-          setIsSuccess("update first name successful");
           setErrMsg(null);
           props.setOpenModal(undefined);
         });

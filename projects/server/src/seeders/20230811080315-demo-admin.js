@@ -1,5 +1,5 @@
-'use strict';
-const bcrypt = require('bcrypt');
+"use strict";
+const bcrypt = require("bcrypt");
 
 const makePassword = async (pass) => {
   let salt = await bcrypt.genSalt(10);
@@ -9,7 +9,7 @@ const makePassword = async (pass) => {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     const password = await makePassword("Password123!");
     /**
      * Add seed commands here.
@@ -19,7 +19,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("Admins", [
       {
         id: 1,
@@ -57,7 +57,7 @@ module.exports = {
     ]);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
@@ -65,5 +65,5 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     return queryInterface.bulkDelete("Admins", null, {});
-  }
+  },
 };

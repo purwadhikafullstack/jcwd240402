@@ -7,21 +7,13 @@ const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const multerCategory = require("../middleware/multer/category/category");
 const multerProduct = require("../middleware/multer/product/product");
+const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
 // Admin Routes
 
-const validatorMiddlewareAdmin = require("../middleware/validator/admin");
-const validatorMiddlewareCategory = require("../middleware/validator/category");
-const validatorMiddlewareProduct = require("../middleware/validator/product");
-const categoryController = require("../controllers/categoryController");
-const productController = require("../controllers/productController");
-const multerCategory = require("../middleware/multer/category/category");
-const multerProduct = require("../middleware/multer/product/product");
-const authMiddleware = require("../middleware/auth");
-
 //admin
-router.get("/profile", adminController.getAdminProfile);
+
 router.post(
   "/register",
   validatorMiddlewareAdmin.validateRegistration,

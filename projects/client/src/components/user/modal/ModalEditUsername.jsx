@@ -1,5 +1,5 @@
 import { Modal } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
@@ -17,7 +17,6 @@ const ModalEditUsername = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("update username successful");
 
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
@@ -43,7 +42,6 @@ const ModalEditUsername = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
-          setIsSuccess("update username successful");
           setErrMsg(null);
           props.setOpenModal(undefined);
         });

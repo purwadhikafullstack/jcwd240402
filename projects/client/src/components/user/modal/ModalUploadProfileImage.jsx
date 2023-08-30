@@ -19,7 +19,6 @@ const ModalUploadProfileImage = () => {
   const [image, setImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("");
 
   const props = { openModal, setOpenModal };
 
@@ -46,7 +45,6 @@ const ModalUploadProfileImage = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
-          setIsSuccess("update image successful");
           setShowImage(URL.createObjectURL(image));
           navigate("/user/setting");
           setOpenModal(false);

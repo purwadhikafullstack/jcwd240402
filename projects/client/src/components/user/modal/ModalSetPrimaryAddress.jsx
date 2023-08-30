@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "flowbite-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import axios from "../../../api/axios";
 import {
@@ -21,9 +20,7 @@ const ModalSetPrimaryAddress = () => {
 
   const [newAccessToken, setNewAccessToken] = useState("");
   const [openModal, setOpenModal] = useState();
-  const [errMsg, setErrMsg] = useState("");
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const props = { openModal, setOpenModal };
@@ -77,7 +74,6 @@ const ModalSetPrimaryAddress = () => {
         popup
         onClose={() => {
           props.setOpenModal(undefined);
-          setErrMsg(false);
         }}
       >
         <Modal.Header />

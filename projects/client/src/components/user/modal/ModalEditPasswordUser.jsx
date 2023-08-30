@@ -24,7 +24,6 @@ const ModalEditPasswordUser = () => {
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
   const navigate = useNavigate();
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const editPassword = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
@@ -50,7 +49,6 @@ const ModalEditPasswordUser = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
-          setIsSuccess("update email successful");
           removeCookie("access_token");
           removeLocalStorage("refresh_token");
           setErrMsg(null);

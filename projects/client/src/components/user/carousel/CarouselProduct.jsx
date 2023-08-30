@@ -1,20 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { FaCartArrowDown } from "react-icons/fa";
-import { Badge } from "flowbite-react";
-import { useDispatch, useSelector } from "react-redux";
 
 import CardProduct from "../card/CardProduct";
-import axios from "../../../api/axios";
-import { productsUser } from "../../../features/productListUserSlice";
 
 const CarouselProduct = ({ products }) => {
-  const dispatch = useDispatch();
-  const productsData = useSelector((state) => state.producter.value);
-  const [data, setData] = useState([]);
-  const [test, setTest] = useState([]);
-
   const responsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 1024 },

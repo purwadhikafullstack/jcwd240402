@@ -27,11 +27,14 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
         }
       );
 
-      const profileResponse = await axios.get("/user/profile", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(profileUser(res.data?.result));
+        });
 
-      dispatch(profileUser(profileResponse.data?.result));
       setOpenModal(false);
     } catch (error) {
       if (!error.response) {

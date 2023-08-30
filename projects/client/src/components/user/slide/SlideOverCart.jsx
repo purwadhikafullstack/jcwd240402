@@ -18,6 +18,7 @@ import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
 import { cartsUser } from "../../../features/cartSlice";
+import Alert from "../Alert";
 
 export default function SlideOverCart({ name, quantity }) {
   const access_token = getCookie("access_token");
@@ -36,23 +37,24 @@ export default function SlideOverCart({ name, quantity }) {
   const handleAddProductToCart = async (name, qty) => {
     console.log(qty);
     try {
-      const response = await axios.patch(
-        "/user/cart",
-        { product_name: name, qty: qty },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.status === 201) {
-        axios
-          .get("/user/cart", {
+      await axios
+        .patch(
+          "/user/cart",
+          { product_name: name, qty: qty },
+          {
             headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(cartsUser(res.data?.result)));
-        setQty(qty);
-        setSuccessMsg(response.data?.message);
-        setOpenAlert(true);
-      }
+          }
+        )
+        .then((res) => {
+          setQty(qty);
+          setSuccessMsg(res.data?.message);
+          setOpenAlert(true);
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(cartsUser(res.data?.result)));
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -154,24 +156,12 @@ export default function SlideOverCart({ name, quantity }) {
                         </Dialog.Title>
                       </div>
                       <div className="relative mt-4 flex-1 px-4 sm:px-6">
-                        {successMsg ? (
-                          <div className="mx-4 md:mx-0 lg:mx-0 absolute left-0 right-0 flex justify-center items-start z-10">
-                            <DismissableAlert
-                              successMsg={successMsg}
-                              openAlert={openAlert}
-                              setOpenAlert={setOpenAlert}
-                            />
-                          </div>
-                        ) : errMsg ? (
-                          <div className="mx-4 md:mx-0 lg:mx-0  absolute left-0 right-0 flex justify-center items-start z-10">
-                            <DismissableAlert
-                              successMsg={errMsg}
-                              openAlert={openAlert}
-                              setOpenAlert={setOpenAlert}
-                              color="failure"
-                            />
-                          </div>
-                        ) : null}
+                        <Alert
+                          successMsg={successMsg}
+                          setOpenAlert={setOpenAlert}
+                          openAlert={openAlert}
+                          errMsg={errMsg}
+                        />
                         <CarouselProductDetail data={product} />
                         <div>
                           <h1 className="font-bold text-xl md:text-3xl lg:text-2xl">

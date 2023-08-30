@@ -64,7 +64,7 @@ const NavbarDesktop = () => {
           </button>
         </div>
         <div className="flex gap-4">
-          {access_token ? (
+          {access_token && userData.role_id === 3 ? (
             <>
               <Menu as="div" className="relative">
                 <div>

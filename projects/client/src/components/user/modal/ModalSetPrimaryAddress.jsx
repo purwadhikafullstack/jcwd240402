@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Modal } from "flowbite-react";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { BsFillPlusSquareFill } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
-import InputForm from "../../InputForm";
 import {
   getCookie,
   getLocalStorage,
   setCookie,
 } from "../../../utils/tokenSetterGetter";
-import DismissableAlert from "../../DismissableAlert";
-import { useDispatch, useSelector } from "react-redux";
 import { profileUser } from "../../../features/userDataSlice";
-import { Link, useNavigate } from "react-router-dom";
-import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 import addressEmpty from "../../../assets/images/addressEmpty.png";
 import CardAddress from "../card/CardAddress";

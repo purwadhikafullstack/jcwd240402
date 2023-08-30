@@ -35,25 +35,22 @@ const ModalUploadProfileImage = () => {
     formData.append("file", image);
 
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
 
-      if (response.status === 201) {
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
-
-        setIsSuccess("update image successful");
-        setShowImage(URL.createObjectURL(image));
-        navigate("/user/setting");
-        setOpenModal(false);
-      } else {
-        console.log("Error updating image");
-        setErrMsg("file type not supported");
-      }
+          setIsSuccess("update image successful");
+          setShowImage(URL.createObjectURL(image));
+          navigate("/user/setting");
+          setOpenModal(false);
+        });
     } catch (err) {
       console.error("Error updating image:", err);
     }

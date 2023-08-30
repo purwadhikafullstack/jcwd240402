@@ -7,6 +7,7 @@ const Mailer = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const { default: axios } = require("axios");
 
 module.exports = {
   /* AUTH */
@@ -1421,6 +1422,34 @@ module.exports = {
         message: "An error occurred while fetching order list",
         error: error.message,
       });
+    }
+  },
+
+  getCity : async (req, res) => {
+    try {
+      const response = await axios.get(
+        "https://api.rajaongkir.com/starter/city",
+        {
+          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
+        }
+      );
+      res.json({ ok: true, result: response.data });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error.message });
+    }
+  },
+
+  getCost : async (req, res) => {
+    try {
+      const response = await axios.post(
+        "https://api.rajaongkir.com/starter/cost",
+        {
+          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
+        }
+      );
+      res.json({ ok: true, result: response.data });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error.message });
     }
   },
 

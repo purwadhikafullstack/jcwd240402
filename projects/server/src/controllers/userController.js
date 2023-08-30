@@ -1404,4 +1404,24 @@ module.exports = {
       });
     }
   },
+
+  getOrderList: async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const orderList = await db.Order.findAll({
+        where : {user_id : userId}
+      });
+
+      res.json({
+        ok: true,
+        order: orderList,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
+        error: error.message,
+      });
+    }
+  },
+
 };

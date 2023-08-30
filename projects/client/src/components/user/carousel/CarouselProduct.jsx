@@ -9,26 +9,11 @@ import CardProduct from "../card/CardProduct";
 import axios from "../../../api/axios";
 import { productsUser } from "../../../features/productListUserSlice";
 
-const CarouselProduct = ({ category }) => {
+const CarouselProduct = ({ products }) => {
   const dispatch = useDispatch();
   const productsData = useSelector((state) => state.producter.value);
   const [data, setData] = useState([]);
-
-  useEffect(() => {
-    axios.get("/user/warehouse-stock").then((res) => {
-      setData(res.data?.result);
-    });
-  }, []);
-
-  useEffect(() => {
-    axios.get("/admin/products").then((res) => {
-      dispatch(productsUser(res.data?.data));
-    });
-  }, [dispatch]);
-
-  const productList = data.map((item) => {
-    return item.Product;
-  });
+  const [test, setTest] = useState([]);
 
   const responsive = {
     superLargeDesktop: {
@@ -49,19 +34,14 @@ const CarouselProduct = ({ category }) => {
     },
   };
 
-  const filtering = productList.filter(
-    (item) => item.category?.name === category
-  );
-
-  const products = filtering.map((item, index) => (
+  const productsReady = products.map((item) => (
     <CardProduct
-      key={index}
-      src={`${process.env.REACT_APP_API_BASE_URL}${item?.Image_products[0]?.img_product}`}
-      category={item.category?.name}
+      src={`${process.env.REACT_APP_API_BASE_URL}${item?.product_img?.img}`}
+      category={item.category}
       name={item.name}
       desc={item.description}
       price={item.price}
-      id={item.id}
+      key={item.id}
     />
   ));
 
@@ -71,7 +51,7 @@ const CarouselProduct = ({ category }) => {
         responsive={responsive}
         removeArrowOnDeviceType={["tablet", "mobile"]}
       >
-        {products}
+        {productsReady}
       </Carousel>
     </div>
   );

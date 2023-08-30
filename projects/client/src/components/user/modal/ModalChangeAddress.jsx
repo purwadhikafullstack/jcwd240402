@@ -8,15 +8,20 @@ import { useNavigate } from "react-router-dom";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import { getCookie } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalChangeAddress = ({ idAddress }) => {
-  const access_token = getCookie("access_token");
   const dispatch = useDispatch();
 
-  console.log(idAddress);
+  const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
 
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
@@ -46,40 +51,47 @@ const ModalChangeAddress = ({ idAddress }) => {
     formData.append("data", JSON.stringify(values));
 
     try {
-      const response = await axios.patch(
-        `/user/profile/address/${idAddress}`,
-        formData,
-        {
+      await axios
+        .patch(`/user/profile/address/${idAddress}`, formData, {
           headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-
-      if (response.status === 201) {
-        setStatus({
-          success: true,
-          message: "update address successful.",
-        });
-
-        setValues({
-          address_details: "",
-          postal_code: "",
-          address_title: "",
-          city_id: "",
-        });
-
-        axios
-          .get("/user/profile/address", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => {
-            dispatch(addressUser(res.data?.result));
+        })
+        .then((res) => {
+          setStatus({
+            success: true,
+            message: "update address successful.",
           });
 
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        throw new Error("Login Failed");
-      }
+          setValues({
+            address_details: "",
+            postal_code: "",
+            address_title: "",
+            city_id: "",
+          });
+          axios
+            .get("/user/profile/address", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(addressUser(res.data?.result));
+            });
+          setErrMsg(null);
+          props.setOpenModal(undefined);
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

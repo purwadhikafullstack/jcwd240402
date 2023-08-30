@@ -1,5 +1,5 @@
 const adminController = require("../controllers/adminController");
-
+const Verify = require("../middleware/auth");
 const validatorMiddlewareAdmin = require("../middleware/validator/admin");
 const validatorMiddlewareCategory = require("../middleware/validator/category");
 const validatorMiddlewareProduct = require("../middleware/validator/product");
@@ -7,10 +7,13 @@ const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const multerCategory = require("../middleware/multer/category/category");
 const multerProduct = require("../middleware/multer/product/product");
+const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
+// Admin Routes
+
 //admin
-router.get("/profile", adminController.getAdminProfile);
+
 router.post(
   "/register",
   validatorMiddlewareAdmin.validateRegistration,
@@ -27,58 +30,96 @@ router.post(
   adminController.changeAdminPassword
 ); //check
 router.post("/assign-warehouse/:id", adminController.assignWarehouse); //check
+router.get(
+  "/checkrole",
+  authMiddleware.verifyAccessTokenAdmin,
+  adminController.getRole
+);
 router.get("/", adminController.getAdminList);
+router.get(
+  "/profile",
+  Verify.verifyAccessTokenAdmin,
+  adminController.adminInformation
+);
+router.get(
+  "/auth/keep-login",
+  Verify.verifyRefreshToken,
+  adminController.keepLogin
+);
 
-//category
+router.post(
+  "/register",
+  validatorMiddlewareAdmin.validateRegistration,
+  adminController.registerAdmin
+);
+router.post(
+  "/login",
+  validatorMiddlewareAdmin.validateLogin,
+  adminController.loginAdmin
+);
+router.post("/assign-warehouse/:id", adminController.assignWarehouse);
+router.post(
+  "/change-pass/:id",
+  validatorMiddlewareAdmin.validatePassword,
+  adminController.changeAdminPassword
+);
+
+// Category Routes
+
+router.get("/categories", adminController.getCategories);
+
 router.post(
   "/category",
   multerCategory.single("category_img"),
   validatorMiddlewareCategory.validateCategory,
   categoryController.createCategory
-); //check OK
+);
 router.patch(
   "/category/img/:id",
   multerCategory.single("category_img"),
   categoryController.updateCategoryImage
-); // Check OK
+);
 router.patch(
   "/category/name/:id",
   validatorMiddlewareCategory.validateCategory,
   categoryController.updateCategoryName
-); // CHeck OK
-router.patch("/category/:id", categoryController.deleteCategory); //Check Ok
-router.get("/categories", adminController.getCategories); //Check OK
+);
+router.patch("/category/:id", categoryController.deleteCategory);
 
-//product
+// Product Routes
+
+router.get("/products", productController.getProductsList);
+router.get("/single-product/", productController.getSingleProduct);
+
 router.post(
   "/product",
   multerProduct.array("images", 5),
   validatorMiddlewareProduct.validateProduct,
   productController.createProduct
-); //check ok
-router.patch(
-  "/product/:id",
-  validatorMiddlewareProduct.validateUpdateProduct,
-  productController.updateProductDetails
 );
-
 router.post(
   "/product/:id/image",
   multerProduct.single("image"),
   productController.addImageToProduct
+);
+
+router.patch(
+  "/product/:id",
+  validatorMiddlewareProduct.validateUpdateProduct,
+  productController.updateProductDetails
 );
 router.patch(
   "/product/image/:id",
   multerProduct.single("image"),
   productController.updateProductImage
 );
+router.patch("/product/delete/:id", productController.deleteProduct);
+router.patch("/product/status/:name", productController.toggleProductStatus);
+
 router.delete("/product/image/:id", productController.deleteProductImage);
 
-router.get("/products", productController.getProductsList);
-router.patch("/product/delete/:id", productController.deleteProduct);
-router.get("/single-product/", productController.getSingleProduct);
+// List Routes
 
-//list
 router.get("/city", adminController.getCitiesList);
 router.get("/province", adminController.getProvincesList);
 

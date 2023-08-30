@@ -7,7 +7,11 @@ import { BsFillPlusSquareFill } from "react-icons/bs";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import { getCookie } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
 import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
 import { profileUser } from "../../../features/userDataSlice";
@@ -17,7 +21,9 @@ import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalAddAddress = () => {
   const access_token = getCookie("access_token");
-  const navigate = useNavigate();
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
+
   const dispatch = useDispatch();
 
   const [openModal, setOpenModal] = useState();
@@ -46,36 +52,48 @@ const ModalAddAddress = () => {
     values.city_id = Number(selectedCity);
 
     try {
-      const response = await axios.post("/user/profile/address", values, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-
-      if (response.status === 201) {
-        axios
-          .get("/user/profile/address", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => {
-            dispatch(addressUser(res.data?.result));
+      await axios
+        .post("/user/profile/address", values, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          props.setOpenModal(undefined);
+          axios
+            .get("/user/profile/address", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(addressUser(res.data?.result));
+            });
+          setStatus({
+            success: true,
+            message: "register address successful.",
           });
 
-        setStatus({
-          success: true,
-          message: "register address successful.",
-        });
+          setValues({
+            address_details: "",
+            postal_code: "",
+            address_title: "",
+            city_id: "",
+          });
 
-        setValues({
-          address_details: "",
-          postal_code: "",
-          address_title: "",
-          city_id: "",
+          setErrMsg(null);
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
         });
-
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        throw new Error("Login Failed");
-      }
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

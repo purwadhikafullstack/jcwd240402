@@ -1,9 +1,11 @@
 const db = require("../models");
+
 const {
   getAllWarehouseStocks,
-  getAllWarehouseStocksFilter,
+  newStockHistory,
+  getAllStockHistory,
 } = require("../service/warehouse_stock");
-const { Op } = require("sequelize");
+const { Sequelize } = require("sequelize");
 
 module.exports = {
   async createStockForWarehouse(req, res) {
@@ -239,8 +241,9 @@ module.exports = {
                   name: {
                     [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
                   },
+                  is_active: true,
                 }
-              : {},
+              : { is_active: true },
             include: [
               {
                 model: db.Category,
@@ -291,8 +294,9 @@ module.exports = {
                   name: {
                     [db.Sequelize.Op.like]: `%${pagination.searchProduct}%`,
                   },
+                  is_active: true,
                 }
-              : {},
+              : { is_active: true },
             include: [
               {
                 model: db.Category,
@@ -348,6 +352,45 @@ module.exports = {
     }
   },
 
+  getProductStockByProductName: async (req, res) => {
+    const { name } = req.params;
+    try {
+      const result = await db.Warehouse_stock.findOne({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            attributes: { exclude: ["updatedAt"] },
+            where: { name, is_active: true },
+            include: [
+              {
+                model: db.Category,
+                as: "category",
+                attributes: {
+                  exclude: ["updatedAt", "deletedAt", "createdAt"],
+                },
+              },
+              {
+                model: db.Image_product,
+                attributes: { exclude: ["updatedAt", "createdAt"] },
+              },
+            ],
+          },
+        ],
+      });
+      res.json({
+        ok: true,
+        result,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching product stocks",
+        error: error.message,
+      });
+    }
+  },
+
   async deleteStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
@@ -384,54 +427,16 @@ module.exports = {
     }
   },
 
-  async testAddStockHistoryStock(req, res) {
-    const { warehouse_id, product_id, amount } = req.body;
-
-    try {
-      const warehouseStockData = await db.Warehouse_stock.findOne({
-        where: {
-          warehouse_id: warehouse_id,
-          product_id: product_id,
-        },
-      });
-
-      const beforeStock = warehouseStockData.product_stock;
-
-      warehouseStockData.product_stock = beforeStock + amount;
-
-      await warehouseStockData.save();
-
-      await newStockHistory(
-        warehouseStockData.id,
-        warehouse_id,
-        1,
-        beforeStock,
-        warehouseStockData.product_stock,
-        amount,
-        "add stock"
-      );
-
-      return res.status(200).send({
-        message: "Stock Added successfully",
-        data: warehouseStockData,
-      });
-    } catch (error) {
-      res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
-      });
-    }
-  },
-
   async getStockHistoryList(req, res) {
     const adminWarehouseId = req.user.warehouse;
+    const adminRoleId = req.user.role;
 
     const d = new Date();
 
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
     const loggedAdmin = req.query.loggedAdmin;
-    // const warehouseId = req.query.warehouseId;
+    const warehouseId = req.query.warehouseId;
     const year = req.query.year;
     const month = req.query.month;
 
@@ -444,7 +449,13 @@ module.exports = {
     }
 
     if (adminWarehouseId) {
-      options.where.warehouse_id = adminWarehouseId;
+      if (adminRoleId != 1) {
+        options.where.warehouse_id = adminWarehouseId;
+      }
+    }
+
+    if (warehouseId) {
+      options.where.warehouse_id = warehouseId;
     }
 
     if (month && year) {

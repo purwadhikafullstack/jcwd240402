@@ -3,7 +3,7 @@ import { Badge } from "flowbite-react";
 import { Link } from "react-router-dom";
 import toRupiah from "@develoka/angka-rupiah-js";
 
-import SlideOverProduct from "../SlideOverProduct";
+import SlideOverProduct from "../slide/SlideOverProduct";
 
 const CardProduct = ({ src, category, name, desc, price, id }) => {
   return (
@@ -28,9 +28,9 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
           <h2 className="text-xs md:text-base lg:text-base font-bold">
             {name}
           </h2>
-          {desc?.length > 25 ? (
+          {desc?.length > 20 ? (
             <h4 className="text-xs text-ellipsis text-gray-400">
-              {desc?.slice(0, 25)}...
+              {desc?.slice(0, 20)}...
             </h4>
           ) : (
             <h4 className="text-xs text-ellipsis text-gray-400">{desc}</h4>

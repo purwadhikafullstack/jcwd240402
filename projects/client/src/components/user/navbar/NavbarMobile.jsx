@@ -40,7 +40,7 @@ const NavbarMobile = () => {
   ];
   let [open, setOpen] = useState(false);
   return (
-    <div className="sticky top-0 w-full z-10">
+    <div className="sticky top-0 w-full z-20">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
         <div className="w-full">
           <SearchBar

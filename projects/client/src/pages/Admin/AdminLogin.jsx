@@ -13,6 +13,7 @@ import {
   setLocalStorage,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
+import login from "../../assets/images/furnifor.png";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ const AdminLogin = () => {
       <div className="hidden lg:flex lg:flex-col lg:items-center lg:justify-center">
         <img
           src={
-            "https://fiverr-res.cloudinary.com/t_main1,q_auto,f_auto/gigs/294518105/original/9ccc25635f75ef3a4d8f2fc33b9e81d12c98b72d.jpg"
+            login
           }
           alt=""
           className="lg:w-1/2"

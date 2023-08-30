@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import AdminCardProduct from "../card/AdminCardProduct";
 import DefaultPagination from "../../Pagination";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "../../../api/axios";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -10,52 +11,67 @@ const ProductList = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/admin/categories"
-      );
+      const response = await axios.get("/admin/categories");
       setCategories(response.data.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
   };
 
-  const fetchProducts = async (page = 1) => {
+  const fetchProducts = async (
+    page = 1,
+    productName = search,
+    category = selectedCategory
+  ) => {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/api/admin/products",
-        {
-          params: {
-            category_id: selectedCategory,
-            product_name: search,
-            page: page,
-          },
-        }
-      );
-      const data = response.data.data;
-      setProducts(data);
+      const response = await axios.get("http://localhost:8000/api/admin/products", {
+        params: {
+          category_id: category,
+          product_name: productName,
+          page: page,
+        },
+      });
+      setProducts(response.data.data);
       const { totalPages } = response.data.pagination;
       setTotalPages(totalPages);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
-  console.log(totalPages);
+
+  useEffect(() => {
+    fetchProducts(currentPage, search, selectedCategory);
+  }, [currentPage, search, selectedCategory]);
+
+  useEffect(() => {
+    const pageFromUrl = searchParams.get("page") || 1;
+    const productNameFromUrl = searchParams.get("product_name") || "";
+    const categoryIdFromUrl = searchParams.get("category_id") || "";
+    setSearch(productNameFromUrl);
+    setSelectedCategory(categoryIdFromUrl);
+    setCurrentPage(Number(pageFromUrl));
+    fetchProducts(Number(pageFromUrl), productNameFromUrl, categoryIdFromUrl);
+  }, [searchParams.toString()]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleCategoryChange = (newCategory) => {
     setSelectedCategory(newCategory);
-    setCurrentPage(1);
-    fetchProducts(1);
+    searchParams.set("category_id", newCategory);
+    navigate({ search: searchParams.toString() });
   };
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts(currentPage);
-  }, [search, selectedCategory, currentPage]);
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    searchParams.set("product_name", e.target.value);
+    navigate({ search: searchParams.toString() });
   };
 
   return (
@@ -67,12 +83,12 @@ const ProductList = () => {
             placeholder="Search Product"
             className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
           />
           <select
             className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => handleCategoryChange(e.target.value)}
           >
             <option value="">All Categories</option>
             {categories.map((cat) => (
@@ -107,7 +123,11 @@ const ProductList = () => {
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
             totalPages={totalPages}
-            onPageChange={handlePageChange}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              searchParams.set("page", page);
+              navigate({ search: searchParams.toString() });
+            }}
           />
         </div>
       </div>
@@ -116,3 +136,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+

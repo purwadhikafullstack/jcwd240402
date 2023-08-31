@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BsFillCartFill } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
@@ -30,37 +30,42 @@ function classNames(...classes) {
 }
 
 const NavbarDesktop = () => {
-  const cartsData = useSelector((state) => state.carter.value);
-  const [newAccessToken, setNewAccessToken] = useState("");
-  const dispatch = useDispatch();
-  const userData = useSelector((state) => state.profiler.value);
-  const location = useLocation();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
 
+  const cartsData = useSelector((state) => state.carter.value);
+  const userData = useSelector((state) => state.profiler.value);
+
+  const [newAccessToken, setNewAccessToken] = useState("");
+
+  const dispatch = useDispatch();
+  const location = useLocation();
+
   useEffect(() => {
-    axios
-      .get("/user/cart", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(cartsUser(res.data?.result));
-      })
-      .catch((error) => {
-        if (
-          error.response?.data?.message === "Invalid token" &&
-          error.response?.data?.error?.name === "TokenExpiredError"
-        ) {
-          axios
-            .get("/user/auth/keep-login", {
-              headers: { Authorization: `Bearer ${refresh_token}` },
-            })
-            .then((res) => {
-              setNewAccessToken(res.data?.accessToken);
-              setCookie("access_token", newAccessToken, 1);
-            });
-        }
-      });
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/cart", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(cartsUser(res.data?.result));
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   return (

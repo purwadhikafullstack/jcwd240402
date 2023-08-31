@@ -486,4 +486,36 @@ module.exports = {
         .json({ success: false, message: "Internal Server Error" });
     }
   },
+
+  getAllProductForSearchSuggestion: async (req, res) => {
+    const { searchProduct } = req.query;
+    try {
+      const productsData = await db.Product.findAll({
+        include: [
+          { model: db.Image_product },
+          { model: db.Category, as: "category" },
+        ],
+        where: {
+          name: { [db.Sequelize.Op.like]: `${searchProduct}%` },
+        },
+      });
+
+      const productName = productsData.map((item) => {
+        return {
+          name: item.name,
+          img: item.Image_products[0]?.img_product,
+          category: item.category?.name,
+        };
+      });
+
+      res.json({
+        ok: true,
+        result: productName,
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
 };

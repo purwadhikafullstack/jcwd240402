@@ -27,29 +27,31 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("/user/cart", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(cartsUser(res.data?.result));
-        setTotal(res.data?.total);
-      })
-      .catch((error) => {
-        if (
-          error.response?.data?.message === "Invalid token" &&
-          error.response?.data?.error?.name === "TokenExpiredError"
-        ) {
-          axios
-            .get("/user/auth/keep-login", {
-              headers: { Authorization: `Bearer ${refresh_token}` },
-            })
-            .then((res) => {
-              setNewAccessToken(res.data?.accessToken);
-              setCookie("access_token", newAccessToken, 1);
-            });
-        }
-      });
+    if (refresh_token && access_token) {
+      axios
+        .get("/user/cart", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(cartsUser(res.data?.result));
+          setTotal(res.data?.total);
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   const productsData = cartsData.map((cart) => {
@@ -65,10 +67,6 @@ const Cart = () => {
       subtotalPrice: cart.quantity * cart.Warehouse_stock?.Product?.price,
     };
   });
-
-  const totalPrice = productsData.reduce((total, product) => {
-    return total + product.price;
-  }, 0);
 
   return (
     <div>

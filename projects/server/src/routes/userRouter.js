@@ -107,7 +107,7 @@ router.get("/region-province", UserController.regionUserForProvince);
 
 /* PRODUCT */
 router.get("/product/:name", ProductController.getProductByProductName);
-router.get("/products", ProductController.getProductsList);
+router.get("/products", ProductController.getAllProductForSearchSuggestion);
 router.get("/products-per-category", ProductController.getProductPerCategory);
 
 /* CATEGORY */

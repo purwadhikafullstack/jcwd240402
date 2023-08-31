@@ -30,15 +30,14 @@ import { profileUser } from "../../features/userDataSlice";
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 
 const Home = () => {
-  const [newAccessToken, setNewAccessToken] = useState("");
-
-  const [category, setCategory] = useState([]);
-
-  const [productData, setProductData] = useState([]);
-
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
+
   const dispatch = useDispatch();
+
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [category, setCategory] = useState([]);
+  const [productData, setProductData] = useState([]);
 
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategory(res.data.result));

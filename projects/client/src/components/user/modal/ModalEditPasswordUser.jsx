@@ -27,7 +27,9 @@ const ModalEditPasswordUser = () => {
 
   const editPassword = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("password", values.password);
+    formData.append("new_password", values.new_password);
+    formData.append("new_confirm_password", values.new_confirm_password);
     try {
       await axios
         .patch("/user/profile", formData, {
@@ -68,7 +70,9 @@ const ModalEditPasswordUser = () => {
 
   const formik = useFormik({
     initialValues: {
-      email: "",
+      password: "",
+      new_password: "",
+      new_confirm_password: "",
     },
     onSubmit: editPassword,
     validationSchema: yup.object().shape({

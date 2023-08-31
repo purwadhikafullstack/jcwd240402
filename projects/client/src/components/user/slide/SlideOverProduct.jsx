@@ -16,6 +16,8 @@ import logo from "../../../assets/images/furniforNav.png";
 import { getCookie, getLocalStorage } from "../../../utils/tokenSetterGetter";
 import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
+import { cartsUser } from "../../../features/cartSlice";
+import { useDispatch } from "react-redux";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
@@ -29,6 +31,7 @@ export default function SlideOverProduct({ name }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
+  const dispatch = useDispatch();
 
   const handleAddProductToCart = async (name, qty) => {
     console.log(qty);
@@ -42,6 +45,13 @@ export default function SlideOverProduct({ name }) {
           }
         )
         .then((res) => {
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(cartsUser(res.data?.result));
+            });
           setQty(0);
           setSuccessMsg(res.data?.message);
           setOpenAlert(true);

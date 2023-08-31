@@ -26,7 +26,7 @@ const ModalEditEmail = () => {
 
   const editEmail = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("email", values.email);
     try {
       await axios
         .patch("/user/profile", formData, {

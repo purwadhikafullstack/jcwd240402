@@ -11,10 +11,9 @@ import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
 
 function withAuthUser(Component) {
-  const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-
   return (props) => {
+    const access_token = getCookie("access_token");
+    const refresh_token = getLocalStorage("refresh_token");
     const userData = useSelector((state) => state.profiler.value);
     const [newAccessToken, setNewAccessToken] = useState("");
     const dispatch = useDispatch();

@@ -17,15 +17,14 @@ import AccordionProduct from "../../components/user/AccordionProduct";
 import axios from "../../api/axios";
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
-import DismissableAlert from "../../components/DismissableAlert";
 import Alert from "../../components/user/Alert";
+import { cartsUser } from "../../features/cartSlice";
+import { useDispatch } from "react-redux";
 
 const ProductDetail = () => {
   const { name } = useParams();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
-  const navigate = useNavigate();
-
   const [openAlert, setOpenAlert] = useState(false);
   const [detailProduct, setDetailProduct] = useState({});
   const [dataImage, setDataImage] = useState([]);
@@ -33,6 +32,7 @@ const ProductDetail = () => {
   const [qty, setQty] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const dispatch = useDispatch();
 
   const handleAddProductToCart = async (name, qty) => {
     try {
@@ -45,6 +45,13 @@ const ProductDetail = () => {
           }
         )
         .then((res) => {
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(cartsUser(res.data?.result));
+            });
           setQty(0);
           setSuccessMsg(res.data?.message);
           setOpenAlert(true);

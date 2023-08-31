@@ -17,29 +17,22 @@ const ResetPassword = () => {
 
   const resetPassword = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.patch(
-        `/user/auth/reset-password/${resetToken}`,
-        values
-      );
-      console.log(response);
-
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          reset_password_token: "",
-          new_password: "",
-          confirm_password: "",
+      await axios
+        .patch(`/user/auth/reset-password/${resetToken}`, values)
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            reset_password_token: "",
+            new_password: "",
+            confirm_password: "",
+          });
+          setStatus({
+            success: true,
+            message:
+              "Sign up successful. Please check your email for verification.",
+          });
+          navigate("/reset-password-success");
         });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
-        });
-        console.log("success");
-        navigate("/reset-password-success");
-      } else {
-        throw new Error("Login Failed");
-      }
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

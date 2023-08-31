@@ -47,7 +47,9 @@ const ModalChangeAddress = ({ idAddress }) => {
   const addAddress = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     values.city_id = Number(selectedCity);
-    formData.append("data", JSON.stringify(values));
+    formData.append("address_details", values.address_details);
+    formData.append("postal_code", values.postal_code);
+    formData.append("address_title", values.address_title);
 
     try {
       await axios

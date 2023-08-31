@@ -20,7 +20,7 @@ const ModalEditUsername = () => {
 
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("username", values.username);
     try {
       await axios
         .patch("/user/profile", formData, {

@@ -147,4 +147,18 @@ router.patch(
   UserController.updateCart
 );
 
+/* ORDER */
+
+router.get(
+  "/order",
+  Verify.verifyAccessTokenUser,
+  UserController.getOrderList
+);
+
+router.get(
+  "/city",
+  Verify.verifyAccessTokenUser,
+  UserController.getCity
+);
+
 module.exports = router;

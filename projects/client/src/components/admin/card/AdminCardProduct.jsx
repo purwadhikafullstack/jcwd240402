@@ -91,16 +91,18 @@ const AdminCardProduct = ({
         </div>
         <h2 className="text-xs font-bold py-1 truncate">{name}</h2>
         <div className="text-sm font-semibold py-1">
-          <sup>Rp</sup>{" "}
           {price.toLocaleString("id-ID", {
-             style: "currency",
-             currency: "IDR",
-             minimumFractionDigits: 0,
-             maximumFractionDigits: 0
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
           })}
         </div>
         <div className="text-xs font-semibold py-1">
-          Status: {isActive ? "Active" : "Inactive"}
+          Status:{" "}
+          <span className={`${isActive ? "text-green-500" : "text-red-500"}`}>
+            {isActive ? "Active" : "Inactive"}
+          </span>
         </div>
       </div>
     </div>

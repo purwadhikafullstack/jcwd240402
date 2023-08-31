@@ -15,20 +15,28 @@ const TableComponent = ({
         {headers.map((header) => (
           <Table.HeadCell key={header}>{header}</Table.HeadCell>
         ))}
-        <Table.HeadCell>
-          <span className="sr-only">Actions</span>
-        </Table.HeadCell>
+        {showIcon && <Table.HeadCell><span className="sr-only">Edit</span></Table.HeadCell>}
+        {showIcon && <Table.HeadCell><span className="sr-only">Delete</span></Table.HeadCell>}
       </Table.Head>
       <Table.Body className="divide-y">
         {data.map((row, rowIndex) => (
           <Table.Row className="custom-row" key={rowIndex}>
             {headers.map((header) => (
               <Table.Cell className="custom-cell" key={header}>
-                {row[header]}
+                {header === "Image" ? (
+                  <img
+                    src={`${process.env.REACT_APP_API_BASE_URL}${row[header]}`}
+                    alt="Product Image"
+                    width="50"
+                    height="50"
+                  />
+                ) : (
+                  row[header]
+                )}
               </Table.Cell>
             ))}
-            <Table.Cell>
-              {showIcon ? (
+            {showIcon && (
+              <Table.Cell>
                 <button
                   className="custom-edit-link"
                   onClick={() => onEdit(row)}
@@ -36,18 +44,16 @@ const TableComponent = ({
                 >
                   Edit
                 </button>
-              ) : (
-                <div></div>
-              )}
-            </Table.Cell>
-            {showIcon ? (
-              <PiTrashLight
-                size={20}
-                className="mt-4 cursor-pointer"
-                onClick={() => onDelete(row)}
-              />
-            ) : (
-              <div></div>
+              </Table.Cell>
+            )}
+            {showIcon && (
+              <Table.Cell>
+                <PiTrashLight
+                  size={20}
+                  className="cursor-pointer"
+                  onClick={() => onDelete(row)}
+                />
+              </Table.Cell>
             )}
           </Table.Row>
         ))}

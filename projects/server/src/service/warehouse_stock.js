@@ -41,6 +41,12 @@ module.exports = {
         model: db.Product,
         as: "Product",
         attributes: ["id", "name", "description"],
+        include: [
+          {
+            model: db.Image_product,
+            attributes: ['img_product'],
+          },
+        ],
       },
       {
         model: db.Warehouse,

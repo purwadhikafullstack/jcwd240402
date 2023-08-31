@@ -32,7 +32,7 @@ const StockList = () => {
           },
         }
       );
-      console.log(response)
+      console.log(response);
 
       if (response.data && response.data.stocks) {
         const flattenedStocks = [];
@@ -41,6 +41,7 @@ const StockList = () => {
             flattenedStocks.push({
               "Warehouse Name": warehouse,
               "Warehouse ID": stock.warehouse_id,
+              Image: stock.Product.Image_products[0]?.img_product || "",
               "Product Name": stock.Product.name,
               "Product ID": stock.Product.id,
               Stock: stock.product_stock,
@@ -124,7 +125,7 @@ const StockList = () => {
       </div>
       <div className="py-4">
         <TableComponent
-          headers={["Warehouse Name", "Product Name", "Stock"]}
+          headers={["Warehouse Name", "Image", "Product Name", "Stock"]}
           data={stocks}
           onEdit={handleEdit}
           onDelete={handleDelete}

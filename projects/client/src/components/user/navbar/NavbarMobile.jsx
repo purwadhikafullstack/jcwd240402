@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
@@ -6,31 +6,12 @@ import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import SearchBar from "../../SearchBar";
-import {
-  getCookie,
-  getLocalStorage,
-  logout,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
-import axios from "../../../api/axios";
+import { getCookie, logout } from "../../../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 
 const NavbarMobile = () => {
-  const [newAccessToken, setNewAccessToken] = useState("");
-  const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
-
-  useEffect(() => {
-    if (!access_token && refresh_token) {
-      axios
-        .get("/user/auth/keep-login", {
-          headers: { Authorization: `Bearer ${refresh_token}` },
-        })
-        .then((res) => {
-          setNewAccessToken(res.data?.accessToken);
-          setCookie("access_token", newAccessToken, 1);
-        });
-    }
-  }, [access_token, newAccessToken, refresh_token]);
+  const userData = useSelector((state) => state.profiler.value);
 
   let Links = [
     { name: "HOME", to: "/" },
@@ -78,7 +59,7 @@ const NavbarMobile = () => {
                 </Link>
               </li>
             ))}
-            {access_token ? (
+            {access_token && userData.role_id === 3 ? (
               <button className="bg-blue-600 text-white text-sm font-semibold px-2 py-1 rounded duration-500">
                 <Link
                   to="/"

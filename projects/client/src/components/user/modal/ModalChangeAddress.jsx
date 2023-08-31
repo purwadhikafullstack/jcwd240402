@@ -3,7 +3,6 @@ import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
@@ -48,7 +47,9 @@ const ModalChangeAddress = ({ idAddress }) => {
   const addAddress = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     values.city_id = Number(selectedCity);
-    formData.append("data", JSON.stringify(values));
+    formData.append("address_details", values.address_details);
+    formData.append("postal_code", values.postal_code);
+    formData.append("address_title", values.address_title);
 
     try {
       await axios

@@ -1,10 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 const NavigatorSetting = () => {
   const location = useLocation();
-  const userData = useSelector((state) => state.profiler.value);
 
   return (
     <>

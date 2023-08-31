@@ -1,16 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BsFillCartFill } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import SearchBar from "../../SearchBar";
 import ModalLogin from "../modal/ModalLogin";
 import ButtonLink from "../../ButtonLink";
 import logo from "../../../assets/images/furniforNav.png";
-import { getCookie, logout } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  logout,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
+import axios from "../../../api/axios";
+import { cartsUser } from "../../../features/cartSlice";
 
 const userNavigation = [
   { name: "Your Profile", to: "/user/setting", onClick: {} },
@@ -23,9 +30,38 @@ function classNames(...classes) {
 }
 
 const NavbarDesktop = () => {
+  const cartsData = useSelector((state) => state.carter.value);
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const dispatch = useDispatch();
   const userData = useSelector((state) => state.profiler.value);
   const location = useLocation();
   const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+
+  useEffect(() => {
+    axios
+      .get("/user/cart", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(cartsUser(res.data?.result));
+      })
+      .catch((error) => {
+        if (
+          error.response?.data?.message === "Invalid token" &&
+          error.response?.data?.error?.name === "TokenExpiredError"
+        ) {
+          axios
+            .get("/user/auth/keep-login", {
+              headers: { Authorization: `Bearer ${refresh_token}` },
+            })
+            .then((res) => {
+              setNewAccessToken(res.data?.accessToken);
+              setCookie("access_token", newAccessToken, 1);
+            });
+        }
+      });
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   return (
     <div
@@ -56,15 +92,25 @@ const NavbarDesktop = () => {
           />
         </div>
         <div className="flex justify-between w-20 items-center cursor-pointer">
-          <Link to="/cart">
-            <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
-          </Link>
-          <button>
+          {cartsData ? (
+            <Link to="/cart" className="relative">
+              <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {cartsData.length === 0 ? null : cartsData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/cart">
+              <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+            </Link>
+          )}
+
+          <Link to="">
             <BiSolidPurchaseTag className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
-          </button>
+          </Link>
         </div>
         <div className="flex gap-4">
-          {access_token ? (
+          {access_token && userData.role_id === 3 ? (
             <>
               <Menu as="div" className="relative">
                 <div>

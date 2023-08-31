@@ -50,7 +50,7 @@ const Cart = () => {
         }
       });
   }, [access_token, dispatch, newAccessToken, refresh_token]);
-  console.log(total);
+
   const productsData = cartsData.map((cart) => {
     return {
       id: cart.id,

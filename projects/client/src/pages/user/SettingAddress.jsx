@@ -27,6 +27,8 @@ const SettingAddress = () => {
   const dispatch = useDispatch();
   const addressData = useSelector((state) => state.addresser.value);
 
+  console.log(addressData);
+
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
@@ -55,6 +57,7 @@ const SettingAddress = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
+        console.log(res.data);
       });
   }, [access_token, dispatch]);
 

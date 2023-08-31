@@ -2,34 +2,38 @@ import React, { useState } from "react";
 import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import { getCookie } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  removeCookie,
+  removeLocalStorage,
+} from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import { profileUser } from "../../../features/userDataSlice";
 
-const ModalEditPhone = () => {
+const ModalResendVerify = () => {
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate();
 
-  const editPhone = async (values, { setStatus, setValues }) => {
-    const formData = new FormData();
-    formData.append("phone", values.phone);
+  const resendVerify = async (values, { setStatus, setValues }) => {
     try {
       await axios
-        .patch("/user/profile", formData, {
+        .post("/user/auth/resend-verify", values, {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
           setStatus({ success: true });
           setValues({
-            phone: "",
+            email: "",
           });
           setStatus({
             success: true,
@@ -44,6 +48,11 @@ const ModalEditPhone = () => {
 
           setErrMsg(null);
           props.setOpenModal(undefined);
+          setTimeout(() => {
+            removeCookie("access_token");
+            removeLocalStorage("refresh_token");
+            navigate("/verify");
+          }, 3000);
         });
     } catch (err) {
       if (!err.response) {
@@ -56,19 +65,11 @@ const ModalEditPhone = () => {
 
   const formik = useFormik({
     initialValues: {
-      phone: "",
+      email: "",
     },
-    onSubmit: editPhone,
+    onSubmit: resendVerify,
     validationSchema: yup.object().shape({
-      phone: yup
-        .string()
-        .required("phone number is required")
-        .min(10)
-        .max(13)
-        .matches(
-          /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
-          "Phone number is not valid"
-        ),
+      email: yup.string().required("email is required").email(),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -85,11 +86,9 @@ const ModalEditPhone = () => {
           props.setOpenModal("form-elements");
         }}
         type="button"
-        className="ml-4"
+        className="bg-blue3 px-2 text-xs text-white rounded-full font-semibold  py-1"
       >
-        <p className="underline decoration-solid text-right text-xs text-blue3">
-          Edit
-        </p>
+        Verify my account
       </button>
       <Modal
         show={props.openModal === "form-elements"}
@@ -101,21 +100,29 @@ const ModalEditPhone = () => {
         <Modal.Body>
           <div className="space-y-6">
             <h1 className="text-3xl font-bold  text-blue3 lg:rounded-xl">
-              Edit
+              email
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
               {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+
               <div className="flex flex-col gap-y-2 mb-3">
+                <p className="text-justify text-xs text-gray-500">
+                  If you wish to change your email, please note that this will
+                  log you out, requiring account re-verification. Kindly check
+                  your email for further instructions to complete the
+                  verification process.
+                </p>
+
                 <InputForm
                   width="w-full"
-                  label="phone number"
+                  label="email"
                   onChange={handleForm}
-                  placeholder="phone number"
-                  name="phone"
+                  placeholder="email"
+                  name="email"
                   type="text"
-                  value={formik.values.phone}
-                  isError={!!formik.errors.phone}
-                  errorMessage={formik.errors.phone}
+                  value={formik.values.email}
+                  isError={!!formik.errors.email}
+                  errorMessage={formik.errors.email}
                 />
               </div>
               <div className="w-full">
@@ -136,4 +143,4 @@ const ModalEditPhone = () => {
   );
 };
 
-export default ModalEditPhone;
+export default ModalResendVerify;

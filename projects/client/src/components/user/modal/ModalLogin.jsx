@@ -30,10 +30,9 @@ export default function ModalLogin({
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/user/auth/login", values);
-      if (response.status === 200 && response.data.ok) {
-        const accessToken = response.data.accessToken;
-        const refreshToken = response.data.refreshToken;
+      await axios.post("/user/auth/login", values).then((res) => {
+        const accessToken = res.data.accessToken;
+        const refreshToken = res.data.refreshToken;
         setLocalStorage("refresh_token", refreshToken);
         setCookie("access_token", accessToken, 1);
 
@@ -60,9 +59,7 @@ export default function ModalLogin({
         navigate("/");
         setErrMsg(null);
         props.setOpenModal(undefined);
-      } else {
-        throw new Error("Login Failed");
-      }
+      });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

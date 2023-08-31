@@ -9,6 +9,7 @@ const upload = require("../middleware/multer/user/imgProfile");
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 const Warehouse_stockController = require("../controllers/warehouse_stockController");
+const { verify } = require("jsonwebtoken");
 
 /* AUTH */
 router.post(
@@ -25,6 +26,7 @@ router.get(
 );
 router.post(
   "/auth/resend-verify",
+  Verify.verifyAccessTokenUser,
   validatorMiddleware.emailInput,
   UserController.resendVerifyAccount
 );
@@ -52,6 +54,7 @@ router.patch(
   "/profile",
   Verify.verifyAccessTokenUser,
   upload.single("file"),
+  validatorMiddleware.updateProfile,
   UserController.updateUserInformation
 );
 

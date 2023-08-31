@@ -4,6 +4,7 @@ import { BiUser } from "react-icons/bi";
 
 import coupon from "../../../assets/icons/coupon.png";
 import BadgeTag from "../../BadgeTag";
+import ModalResendVerify from "../modal/ModalResendVerify";
 
 const CardProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -26,7 +27,10 @@ const CardProfile = () => {
           {userData.is_verify ? (
             <BadgeTag msg="verified" color="success" />
           ) : (
-            <BadgeTag msg="unverified" color="failure" />
+            <div className="">
+              <BadgeTag msg="unverified" color="failure" />
+              <ModalResendVerify />
+            </div>
           )}
         </div>
       </div>

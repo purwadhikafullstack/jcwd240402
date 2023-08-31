@@ -24,9 +24,7 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/user/auth/register", values);
-
-      if (response.status === 201) {
+      await axios.post("/user/auth/register", values).then((res) => {
         setStatus({ success: true });
         setValues({
           first_name: "",
@@ -44,9 +42,7 @@ const Register = () => {
         });
 
         navigate("/verify");
-      } else {
-        throw new Error("Register Failed");
-      }
+      });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

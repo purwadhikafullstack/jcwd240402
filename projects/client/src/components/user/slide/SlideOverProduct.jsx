@@ -16,6 +16,8 @@ import logo from "../../../assets/images/furniforNav.png";
 import { getCookie, getLocalStorage } from "../../../utils/tokenSetterGetter";
 import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
+import { cartsUser } from "../../../features/cartSlice";
+import { useDispatch } from "react-redux";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
@@ -29,22 +31,31 @@ export default function SlideOverProduct({ name }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
+  const dispatch = useDispatch();
 
   const handleAddProductToCart = async (name, qty) => {
     console.log(qty);
     try {
-      const response = await axios.post(
-        "/user/cart",
-        { product_name: name, qty: qty },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.status === 201) {
-        setQty(0);
-        setSuccessMsg(response.data?.message);
-        setOpenAlert(true);
-      }
+      await axios
+        .post(
+          "/user/cart",
+          { product_name: name, qty: qty },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        )
+        .then((res) => {
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(cartsUser(res.data?.result));
+            });
+          setQty(0);
+          setSuccessMsg(res.data?.message);
+          setOpenAlert(true);
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -170,7 +181,7 @@ export default function SlideOverProduct({ name }) {
                             {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {detailProduct?.price}
+                            {toRupiah(detailProduct?.price)}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">

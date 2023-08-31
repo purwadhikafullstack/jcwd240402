@@ -272,15 +272,16 @@ module.exports = {
   },
 
   resendVerifyAccount: async (req, res) => {
+    const userData = req.user;
     const { email } = req.body;
     try {
       const isVerified = await db.User.findOne({
-        where: { email },
+        where: { email, id: userData.id },
       });
       if (!isVerified) {
         return res.status(404).json({
           ok: false,
-          message: "user not found",
+          message: "wrong email",
         });
       }
       if (isVerified.is_verify) {
@@ -507,11 +508,16 @@ module.exports = {
 
   updateUserInformation: async (req, res) => {
     const userData = req.user;
-    let data;
-
-    if (req.body.data) {
-      data = JSON.parse(req.body.data);
-    }
+    const {
+      username,
+      email,
+      first_name,
+      last_name,
+      phone,
+      new_password,
+      password,
+      new_confirm_password,
+    } = req.body;
 
     const image = req.file?.filename;
 
@@ -525,9 +531,9 @@ module.exports = {
         });
       }
 
-      if (data?.username) {
+      if (username) {
         const isUsernameExist = await db.User.findOne({
-          where: { username: data.username },
+          where: { username: username },
         });
         if (isUsernameExist) {
           return res.status(400).json({
@@ -537,7 +543,7 @@ module.exports = {
         }
 
         await db.User.update(
-          { username: data.username },
+          { username: username },
           { where: { id: user.id }, transaction }
         );
 
@@ -548,9 +554,9 @@ module.exports = {
         });
       }
 
-      if (data?.first_name) {
+      if (first_name) {
         await db.User_detail.update(
-          { first_name: data.first_name },
+          { first_name: first_name },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
@@ -560,9 +566,9 @@ module.exports = {
         });
       }
 
-      if (data?.email) {
+      if (email) {
         const isEmailExist = await db.User.findOne({
-          where: { email: data.email },
+          where: { email: email },
         });
 
         if (isEmailExist) {
@@ -578,14 +584,14 @@ module.exports = {
           new Date().getTime();
 
         await db.User.update(
-          { email: data.email, verify_token: verifyToken, is_verify: false },
+          { email: email, verify_token: verifyToken, is_verify: false },
           { where: { id: user.id }, transaction }
         );
         const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
         const message =
           "you've updated your email. Please verify the new email to ensure account security";
         const mailing = {
-          recipient_email: data.email,
+          recipient_email: email,
           link,
           subject: "EMAIL CHANGED",
           receiver: user.username,
@@ -608,8 +614,8 @@ module.exports = {
         return;
       }
 
-      if (data?.new_password && data?.new_confirm_password) {
-        if (data.new_password !== data.new_confirm_password) {
+      if (new_password && new_confirm_password) {
+        if (new_password !== new_confirm_password) {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
@@ -617,7 +623,7 @@ module.exports = {
           });
         }
 
-        const match = await bcrypt.compare(data.password, user.password);
+        const match = await bcrypt.compare(password, user.password);
         if (!match) {
           await transaction.rollback();
           return res.status(400).json({
@@ -627,7 +633,7 @@ module.exports = {
         }
 
         const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(data.new_password, salt);
+        const hashPassword = await bcrypt.hash(new_password, salt);
 
         await db.User.update(
           { password: hashPassword },
@@ -640,9 +646,9 @@ module.exports = {
         });
       }
 
-      if (data?.last_name) {
+      if (last_name) {
         await db.User_detail.update(
-          { last_name: data.last_name },
+          { last_name: last_name },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
@@ -652,9 +658,9 @@ module.exports = {
         });
       }
 
-      if (data?.phone) {
+      if (phone) {
         const isPhoneExist = await db.User_detail.findOne({
-          where: { phone: data?.phone },
+          where: { phone: phone },
         });
 
         if (isPhoneExist) {
@@ -665,25 +671,13 @@ module.exports = {
         }
 
         await db.User_detail.update(
-          { phone: data.phone },
+          { phone: phone },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
         return res.status(201).json({
           ok: true,
           message: "change phone successful",
-        });
-      }
-
-      if (data?.address_user_id) {
-        await db.User_detail.update(
-          { address_user_id: data.address_user_id },
-          { where: { user_id: user.id }, transaction }
-        );
-        await transaction.commit();
-        return res.status(201).json({
-          ok: true,
-          message: "change address successful",
         });
       }
 

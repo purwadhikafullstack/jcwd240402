@@ -50,10 +50,14 @@ const ModalUploadProfileImage = () => {
           setOpenModal(false);
         });
     } catch (err) {
-      console.error("Error updating image:", err);
+      if (!err.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(err.response?.data?.error);
+      }
     }
   };
-
+  console.log(errMsg);
   const handleFile = (e) => {
     const selectedImage = e.target.files[0];
     setShowImage(URL.createObjectURL(selectedImage));

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
@@ -6,12 +6,50 @@ import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
 
 import SearchBar from "../../SearchBar";
-import { getCookie, logout } from "../../../utils/tokenSetterGetter";
-import { useSelector } from "react-redux";
+import {
+  getCookie,
+  getLocalStorage,
+  logout,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../../../api/axios";
+import { cartsUser } from "../../../features/cartSlice";
 
 const NavbarMobile = () => {
+  const cartsData = useSelector((state) => state.carter.value);
   const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
   const userData = useSelector((state) => state.profiler.value);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/cart", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(cartsUser(res.data?.result));
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   let Links = [
     { name: "HOME", to: "/" },
@@ -33,11 +71,20 @@ const NavbarMobile = () => {
           />
         </div>
         <div className="flex w-24 justify-evenly gap-2 items-center">
+          {cartsData ? (
+            <Link to="/cart" className="relative">
+              <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {cartsData.length === 0 ? null : cartsData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/cart">
+              <BsFillCartFill className="hover:text-blue3 text-base_grey transition-all" />
+            </Link>
+          )}
           <button>
-            <BsFillCartFill className="hover:text-blue3 text-base_grey transition-all" />
-          </button>
-          <button>
-            <BiSolidPurchaseTag className="hover:text-blue3 text-base_grey transition-all" />
+            <BiSolidPurchaseTag className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
           </button>
         </div>
         <div className="mr-2 mt-1">

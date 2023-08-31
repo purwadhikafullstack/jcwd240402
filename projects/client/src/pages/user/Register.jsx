@@ -14,7 +14,7 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -283,4 +283,4 @@ const Register = () => {
   );
 };
 
-export default withOutAuth(Register);
+export default withOutAuthUser(Register);

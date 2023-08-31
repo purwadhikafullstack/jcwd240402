@@ -10,7 +10,7 @@ import {
   removeCookie,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
 
 const SignUp = () => {
   removeCookie("access_token");
@@ -82,4 +82,4 @@ const SignUp = () => {
   );
 };
 
-export default withOutAuth(SignUp);
+export default withOutAuthUser(SignUp);

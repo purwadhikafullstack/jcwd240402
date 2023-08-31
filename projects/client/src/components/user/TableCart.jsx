@@ -3,11 +3,18 @@ import toRupiah from "@develoka/angka-rupiah-js";
 
 import { CiMenuKebab } from "react-icons/ci";
 
-import ModalConfirmationPrimaryAddress from "./modal/ModalConfirmationPrimaryAddress";
-
 import { Badge } from "flowbite-react";
 import SlideOverCart from "./slide/SlideOverCart";
-import ModalConfirmationDeleteCart from "./modal/ModalConfirmationDeleteCart";
+
+import { useDispatch } from "react-redux";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
+import axios from "../../api/axios";
+import { cartsUser } from "../../features/cartSlice";
+import ModalConfirmationDelete from "./modal/ModalConfirmationDelete";
 
 const TableCart = ({
   img,
@@ -18,7 +25,57 @@ const TableCart = ({
   quantity,
   setTotal,
 }) => {
+  const dispatch = useDispatch();
+  const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const [newAccessToken, setNewAccessToken] = useState("");
+
+  const [openModal, setOpenModal] = useState();
+  const [errMsg, setErrMsg] = useState("");
+
+  const props = { openModal, setOpenModal };
   const [showMenu, setShowMenu] = useState(false);
+
+  const deleteCart = () => {
+    try {
+      axios
+        .delete(`/user/cart/${name}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          props.setOpenModal(undefined);
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(cartsUser(res.data?.result));
+              setTotal(res.data?.total);
+            });
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    } catch (error) {
+      if (!error.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(error);
+      }
+    }
+  };
 
   return (
     <>
@@ -63,9 +120,10 @@ const TableCart = ({
                   </li>
 
                   <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                    <ModalConfirmationDeleteCart
-                      productName={name}
-                      setTotal={setTotal}
+                    <ModalConfirmationDelete
+                      handleDelete={deleteCart}
+                      errMsg={errMsg}
+                      topic="cart"
                     />
                   </li>
                 </ul>

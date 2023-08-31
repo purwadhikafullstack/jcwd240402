@@ -11,7 +11,7 @@ import toRupiah from "@develoka/angka-rupiah-js";
 
 import axios from "../../../api/axios";
 import CarouselProductDetail from "../carousel/CarouselProductDetail";
-import AccordionProduct from "../AccordionProduct";
+import AccordionProduct from "../accordion/AccordionProduct";
 import logo from "../../../assets/images/furniforNav.png";
 import { getCookie, getLocalStorage } from "../../../utils/tokenSetterGetter";
 import ModalLogin from "../modal/ModalLogin";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -9,23 +9,24 @@ import CardProduct from "../../components/user/card/CardProduct";
 import { Pagination } from "flowbite-react";
 
 const ProductPerCategory = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [productData, setProductData] = useState([]);
   const { categoryName } = useParams();
 
-  console.log(categoryName);
+  const currentPagination = searchParams.get("page");
 
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?page=${currentPage}&product=&category=${categoryName}`
+        `/user/warehouse-stock/filter?page=${currentPagination}&product=&category=${categoryName}`
       )
       .then((res) => {
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
       });
-  }, [categoryName, currentPage]);
+  }, [categoryName, currentPagination]);
 
   if (productData.length === 0) {
     return <p></p>;
@@ -33,6 +34,7 @@ const ProductPerCategory = () => {
 
   function handlePage(page) {
     setCurrentPage(page);
+    setSearchParams({ page: page });
   }
 
   return (

@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+
+import tiki from "../../assets/icons/tiki.png";
+import jne from "../../assets/icons/jne.png";
+import pos from "../../assets/icons/pos.png";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -21,15 +25,17 @@ const CheckOut = () => {
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
 
-  const imageData = {
-    img: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/220/1022009_PE832399_S4.jpg",
-    category: "Desk",
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus itaque sapiente aliquid excepturi at quis?",
-    weight: "7000 gr",
-    price: 100000,
-    name: "Desk Premium",
-  };
+  const imageData = [
+    {
+      img: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/220/1022009_PE832399_S4.jpg",
+      category: "Desk",
+      description:
+        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus itaque sapiente aliquid excepturi at quis?",
+      weight: "7000 gr",
+      price: 100000,
+      name: "Desk Premium",
+    },
+  ];
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
@@ -81,7 +87,7 @@ const CheckOut = () => {
           <h1 className="mb-4 font-bold">Shipping Address</h1>
           <div className="md:grid lg:grid md:grid-cols-3 lg:grid-cols-3 gap-4">
             {/* KIRI */}
-            <div className="md:col-span-2 lg:col-span-2">
+            <div className="md:col-span-2 lg:col-span-2 ">
               <div className="text-xs border-2 p-4 rounded-lg ">
                 <h3 className="text-base font-bold ">
                   {userData.User_detail?.Address_user?.address_title}
@@ -99,27 +105,44 @@ const CheckOut = () => {
                 </h3>
                 <ModalSetPrimaryAddress />
               </div>
-              <div className="text-xs border-2 p-4 rounded-lg flex">
-                <div>
-                  <img src={imageData.img} alt="" className="w-20" />
+              <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-4  text-xs border-2 p-4 rounded-lg">
+                <div className=" flex col-span-3 ">
+                  {imageData.map((item) => (
+                    <>
+                      <div className="w-20">
+                        <img src={item.img} alt="" className="w-20" />
+                      </div>
+                      <div>
+                        <h1>{item.name}</h1>
+                        <h1>{item.category}</h1>
+                        {item.description.length > 25 ? (
+                          <h1>{item.description.slice(0, 25)}...</h1>
+                        ) : (
+                          <h1>{item.description}</h1>
+                        )}
+
+                        <h1>{item.price}</h1>
+                      </div>
+                    </>
+                  ))}
                 </div>
-                <div>
-                  <h1>{imageData.name}</h1>
-                  <h1>{imageData.category}</h1>
-                  {imageData.description.length > 25 ? (
-                    <h1>{imageData.description.slice(0, 25)}...</h1>
-                  ) : (
-                    <h1>{imageData.description}</h1>
-                  )}
-                  <h1>{imageData.price}</h1>
+                <div className="col-span-1">
+                  <button className="bg-blue3 w-full font-semibold text-white p-2 rounded-md">
+                    Delivery Option
+                  </button>
                 </div>
               </div>
             </div>
             {/* KANAN */}
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
+              <h1>subtotal price: {imageData.length} </h1>
               <h1>Shipping price: </h1>
+              <hr className="border-2 " />
               <h1>Total Payment: </h1>
+              <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
+                Proceed to Payment
+              </button>
             </div>
           </div>
         </div>

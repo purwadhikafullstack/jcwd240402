@@ -13,7 +13,7 @@ import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
-import AccordionProduct from "../../components/user/AccordionProduct";
+import AccordionProduct from "../../components/user/accordion/AccordionProduct";
 import axios from "../../api/axios";
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
@@ -142,7 +142,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="my-4">
-              {!refresh_token && !access_token ? (
+              {!refresh_token || !access_token ? (
                 <h1 className="">
                   please log in to get add to cart access{" "}
                   <span>

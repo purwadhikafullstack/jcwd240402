@@ -6,13 +6,17 @@ const AccordionProduct = ({ name, price, desc, weight }) => {
   return (
     <Accordion className="w-full">
       <Accordion.Panel>
-        <Accordion.Title>Description Product</Accordion.Title>
+        <Accordion.Title className="hover:bg-blue2 bg-blue3 text-white">
+          Description Product
+        </Accordion.Title>
         <Accordion.Content>
           <p className="mb-2 text-gray-500 dark:text-gray-400">{desc}</p>
         </Accordion.Content>
       </Accordion.Panel>
       <Accordion.Panel>
-        <Accordion.Title>Weight</Accordion.Title>
+        <Accordion.Title className="hover:bg-blue2 bg-blue3 text-white">
+          Weight
+        </Accordion.Title>
         <Accordion.Content>
           <p className="mb-2 text-gray-500 dark:text-gray-400">
             Introducing our product, {name}, priced at {toRupiah(price)} and

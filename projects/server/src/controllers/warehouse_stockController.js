@@ -174,145 +174,147 @@ module.exports = {
     }
   },
 
-  async initiateStockTransfer (req, res){
+  async initiateStockTransfer(req, res) {
     const t = await db.sequelize.transaction();
-  
+
     try {
       const { fromWarehouseId, toWarehouseId, productId, quantity } = req.body;
-  
+
       if (!fromWarehouseId || !toWarehouseId || !productId || !quantity) {
         return res.status(400).json({
           success: false,
-          message: 'Required fields missing'
+          message: "Required fields missing",
         });
       }
-  
+
       const fromStock = await db.Warehouse_stocks.findOne({
         where: {
           warehouse_id: fromWarehouseId,
-          product_id: productId
+          product_id: productId,
         },
-        transaction: t
+        transaction: t,
       });
-  
+
       if (!fromStock || fromStock.product_stock < quantity) {
         await t.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Not enough stock in source warehouse'
+          message: "Not enough stock in source warehouse",
         });
       }
-  
-      const transfer = await db.Inventory_transfers.create({
-        warehouse_stock_id: fromStock.id,
-        from_warehouse_id: fromWarehouseId,
-        to_warehouse_id: toWarehouseId,
-        product_id: productId,
-        quantity: quantity,
-        journal: 'Transfer initiated',
-        approval: false,
-        transaction_code: 'TRX' + Date.now(),
-        timestamp: new Date().toISOString()
-      }, { transaction: t });
-  
+
+      const transfer = await db.Inventory_transfers.create(
+        {
+          warehouse_stock_id: fromStock.id,
+          from_warehouse_id: fromWarehouseId,
+          to_warehouse_id: toWarehouseId,
+          product_id: productId,
+          quantity: quantity,
+          journal: "Transfer initiated",
+          approval: false,
+          transaction_code: "TRX" + Date.now(),
+          timestamp: new Date().toISOString(),
+        },
+        { transaction: t }
+      );
+
       await t.commit();
-  
+
       return res.status(200).json({
         success: true,
-        message: 'Transfer initiated successfully',
-        transfer: transfer
+        message: "Transfer initiated successfully",
+        transfer: transfer,
       });
-  
     } catch (error) {
       await t.rollback();
       return res.status(500).json({
         success: false,
-        message: 'Server Error',
-        error: error.message
+        message: "Server Error",
+        error: error.message,
       });
     }
   },
-  
-  async approveStockTransfer (req, res){
+
+  async approveStockTransfer(req, res) {
     const t = await db.sequelize.transaction();
-  
+
     try {
       const { transferId } = req.params;
-  
-      const transfer = await db.Inventory_transfers.findByPk(transferId, { transaction: t });
-  
+
+      const transfer = await db.Inventory_transfers.findByPk(transferId, {
+        transaction: t,
+      });
+
       if (!transfer || transfer.approval) {
         await t.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Transfer either not found or already approved'
+          message: "Transfer either not found or already approved",
         });
       }
-  
+
       const fromStock = await db.Warehouse_stocks.findOne({
         where: {
           warehouse_id: transfer.from_warehouse_id,
-          product_id: transfer.product_id
+          product_id: transfer.product_id,
         },
-        transaction: t
+        transaction: t,
       });
-  
+
       if (fromStock.product_stock < transfer.quantity) {
         await t.rollback();
         return res.status(400).json({
           success: false,
-          message: 'Not enough stock in source warehouse'
+          message: "Not enough stock in source warehouse",
         });
       }
-  
-      await db.Warehouse_stocks.decrement('product_stock', {
+
+      await db.Warehouse_stocks.decrement("product_stock", {
         by: transfer.quantity,
         where: {
-          id: fromStock.id
+          id: fromStock.id,
         },
-        transaction: t
+        transaction: t,
       });
-  
+
       const toStock = await db.Warehouse_stocks.findOrCreate({
         where: {
           warehouse_id: transfer.to_warehouse_id,
-          product_id: transfer.product_id
+          product_id: transfer.product_id,
         },
         defaults: {
-          product_stock: 0
+          product_stock: 0,
         },
-        transaction: t
+        transaction: t,
       });
-  
-      await db.Warehouse_stocks.increment('product_stock', {
+
+      await db.Warehouse_stocks.increment("product_stock", {
         by: transfer.quantity,
         where: {
-          id: toStock[0].id
+          id: toStock[0].id,
         },
-        transaction: t
+        transaction: t,
       });
-  
+
       transfer.approval = true;
       await transfer.save({ transaction: t });
-  
+
       await t.commit();
-  
+
       return res.status(200).json({
         success: true,
-        message: 'Stock transfer approved and stock updated',
-        transfer: transfer
+        message: "Stock transfer approved and stock updated",
+        transfer: transfer,
       });
-  
     } catch (error) {
       await t.rollback();
       return res.status(500).json({
         success: false,
-        message: 'Server Error',
-        error: error.message
+        message: "Server Error",
+        error: error.message,
       });
     }
   },
-  
 
   getAllWarehouseStock: async (req, res) => {
     try {
@@ -360,12 +362,46 @@ module.exports = {
   },
 
   getAllWarehouseStockFilter: async (req, res) => {
+    const findMaxWeight = await db.Product.findOne({
+      attributes: [Sequelize.fn("MAX", Sequelize.col("weight"))],
+      raw: true,
+    });
+    let maxWeight = 0;
+    for (const item in findMaxWeight) {
+      maxWeight = findMaxWeight[item];
+    }
+
+    const findMaxPrice = await db.Product.findOne({
+      attributes: [Sequelize.fn("MAX", Sequelize.col("price"))],
+      raw: true,
+    });
+    let maxPrice = 0;
+    for (const item in findMaxPrice) {
+      maxPrice = findMaxPrice[item];
+    }
+
+    const findMaxStock = await db.Warehouse_stock.findOne({
+      attributes: [Sequelize.fn("MAX", Sequelize.col("product_stock"))],
+      raw: true,
+    });
+    let maxStock = 0;
+    for (const item in findMaxStock) {
+      maxStock = findMaxStock[item];
+    }
+    console.log(maxStock);
+
     const pagination = {
       page: Number(req.query.page) || 1,
       perPage: 9,
-      searchWarehouseName: req.query.warehouseName,
+      searchWarehouseName: req.query.warehouseName || undefined,
       searchCategory: req.query.category || undefined,
       searchProduct: req.query.product || undefined,
+      rangeWeightMin: req.query.weightMin || 0,
+      rangeWeightMax: req.query.weightMax || maxWeight,
+      rangePriceMin: req.query.priceMin || 0,
+      rangePriceMax: req.query.priceMax || maxPrice,
+      // rangeStockMin: req.query.stockMin || 0,
+      // rangeStockMax: req.query.stockMax || maxStock,
     };
 
     try {
@@ -383,7 +419,21 @@ module.exports = {
                   },
                   is_active: true,
                 }
-              : { is_active: true },
+              : {
+                  is_active: true,
+                  weight: {
+                    [db.Sequelize.Op.between]: [
+                      pagination.rangeWeightMin,
+                      pagination.rangeWeightMax,
+                    ],
+                  },
+                  price: {
+                    [db.Sequelize.Op.between]: [
+                      pagination.rangePriceMin,
+                      pagination.rangePriceMax,
+                    ],
+                  },
+                },
             include: [
               {
                 model: db.Category,
@@ -425,6 +475,7 @@ module.exports = {
       });
 
       const totalCount = await db.Warehouse_stock.count({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
         include: [
           {
             model: db.Product,
@@ -436,7 +487,21 @@ module.exports = {
                   },
                   is_active: true,
                 }
-              : { is_active: true },
+              : {
+                  is_active: true,
+                  weight: {
+                    [db.Sequelize.Op.between]: [
+                      pagination.rangeWeightMin,
+                      pagination.rangeWeightMax,
+                    ],
+                  },
+                  price: {
+                    [db.Sequelize.Op.between]: [
+                      pagination.rangePriceMin,
+                      pagination.rangePriceMax,
+                    ],
+                  },
+                },
             include: [
               {
                 model: db.Category,
@@ -466,7 +531,7 @@ module.exports = {
           },
         ],
       });
-      console.log(totalCount);
+
       const totalPages = Math.ceil(totalCount / pagination.perPage);
 
       if (pagination.page > totalPages) {

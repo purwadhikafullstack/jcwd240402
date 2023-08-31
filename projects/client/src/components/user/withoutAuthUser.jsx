@@ -1,10 +1,10 @@
 import { getCookie } from "../../utils/tokenSetterGetter";
-import NotifRedirect from "../user/notif/NotifRedirect";
+import NotifRedirect from "./notif/NotifRedirect";
 import noAuth from "../../assets/images/withOutAuth.png";
-import NavbarDesktop from "../user/navbar/NavbarDesktop";
-import NavbarMobile from "../user/navbar/NavbarMobile";
-import FooterDesktop from "../user/footer/FooterDesktop";
-import NavigatorMobile from "../user/footer/NavigatorMobile";
+import NavbarDesktop from "./navbar/NavbarDesktop";
+import NavbarMobile from "./navbar/NavbarMobile";
+import FooterDesktop from "./footer/FooterDesktop";
+import NavigatorMobile from "./footer/NavigatorMobile";
 
 function withOutAuth(Component) {
   const msg = "You are logged in";

@@ -18,7 +18,7 @@ import {
   setLocalStorage,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
 
 const Login = () => {
   removeCookie("access_token");
@@ -147,4 +147,4 @@ const Login = () => {
   );
 };
 
-export default withOutAuth(Login);
+export default withOutAuthUser(Login);

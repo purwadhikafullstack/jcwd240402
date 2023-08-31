@@ -15,6 +15,7 @@ import {
 } from "../../utils/tokenSetterGetter";
 import { useDispatch, useSelector } from "react-redux";
 import { cartsUser } from "../../features/cartSlice";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const Cart = () => {
   const access_token = getCookie("access_token");
@@ -141,4 +142,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default withAuthUser(Cart);

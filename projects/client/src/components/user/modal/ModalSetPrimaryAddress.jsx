@@ -61,7 +61,7 @@ const ModalSetPrimaryAddress = () => {
     <>
       <button
         onClick={() => props.setOpenModal("form-elements")}
-        className="h-10 rounded-lg w-full md:w-36 px-3 bg-blue3 text-white mt-2 font-semibold"
+        className=" rounded-md w-full md:w-36  p-2 bg-blue3 text-white mt-2 font-semibold"
       >
         <span className="flex justify-center items-center gap-4">
           <p className="text-xs">Change Address</p>
@@ -70,7 +70,7 @@ const ModalSetPrimaryAddress = () => {
 
       <Modal
         show={props.openModal === "form-elements"}
-        size="md"
+        size="3xl"
         popup
         onClose={() => {
           props.setOpenModal(undefined);

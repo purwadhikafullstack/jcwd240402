@@ -1420,9 +1420,13 @@ module.exports = {
   },
 
   getCity : async (req, res) => {
+
+    const cityId = req.query.id
+    const provinceId = req.query.province
+
     try {
       const response = await axios.get(
-        "https://api.rajaongkir.com/starter/city",
+        `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
         {
           headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
         }
@@ -1434,17 +1438,73 @@ module.exports = {
   },
 
   getCost : async (req, res) => {
+
+    //kaga jalan
+
+    const {
+      origin,
+      destination,
+      weight,
+      courier,
+    } = req.body;
+
     try {
-      const response = await axios.post(
-        "https://api.rajaongkir.com/starter/cost",
-        {
-          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
-        }
-      );
+      const response = await axios({
+        method: "post",
+        url: "https://api.rajaongkir.com/starter/cost",
+        headers: { key: "438918ba05b00d968fd8e405ba7cc540",
+          'Content-type': 'application/x-www-form-urlencoded' },
+        form: {origin: '501', destination: '114', weight: 1700, courier: 'jne'}
+      });
       res.json({ ok: true, result: response.data });
     } catch (error) {
-      res.status(500).json({ ok: false, message: error.message });
+      res.status(500).json({ ok: false, message: error });
     }
   },
+
+  createNewOrder : async (req, res) => {
+
+    const {
+    user_id,
+    order_status_id,
+    total_price,
+    delivery_price,
+    delivery_courier,
+    delivery_time,
+    tracking_code,
+    no_invoice,
+    address_user_id,
+    warehouse_id
+    } = req.body;
+
+    try {
+
+      const newOrder = await db.Order.create(
+        {
+        user_id,
+        order_status_id,
+        total_price,
+        delivery_price,
+        delivery_courier,
+        delivery_time,
+        tracking_code,
+        no_invoice,
+        address_user_id,
+        warehouse_id
+        },
+      );
+      
+      res.status(200).json({
+        ok: true,
+        order: newOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  }
 
 };

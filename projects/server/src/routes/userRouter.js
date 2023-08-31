@@ -161,4 +161,10 @@ router.get(
   UserController.getCity
 );
 
+router.get(
+  "/cost",
+  Verify.verifyAccessTokenUser,
+  UserController.getCost
+);
+
 module.exports = router;

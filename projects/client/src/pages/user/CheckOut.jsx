@@ -17,9 +17,17 @@ import {
 } from "../../utils/tokenSetterGetter";
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
+import { cartsUser } from "../../features/cartSlice";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
+  const cartData = useSelector((state) => state.carter.value);
+  const addressData = useSelector((state) => state.addresser.value);
+  const [closestWarehouseCityId, setClosestWarehouseCityId] = useState("");
+  const [originId, setOriginId] = useState("");
+  const [destinationId, setDestinationId] = useState("");
+  const [itemWeight, setItemWeight] = useState("");
+  const [chosenCourier, setChosenCourier] = useState("");
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
@@ -36,6 +44,20 @@ const CheckOut = () => {
       name: "Desk Premium",
     },
   ];
+
+  function distanceKm(lat1, lon1, lat2, lon2) {
+    const r = 6371; // km
+    const p = Math.PI / 180;
+  
+    const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
+                  + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
+                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
+  
+    return 2 * r * Math.asin(Math.sqrt(a));
+  }
+
+  
+
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
@@ -64,8 +86,30 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
+        setDestinationId(addressData.City.id)
       });
   }, [access_token, dispatch]);
+
+  useEffect(() => {
+    axios
+      .get("/user/cart", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(cartsUser(res.data?.result));
+      });
+  }, [access_token, dispatch]);
+
+  // useEffect(() => {
+  //   axios
+  //     .get("https://api.rajaongkir.com/starter/cost", {
+  //       headers: { key: "438918ba05b00d968fd8e405ba7cc540",
+  //       'content-type': 'application/x-www-form-urlencoded' },
+  //     })
+  //     .then((res) => {
+  //       dispatch(cartsUser(res.data?.result));
+  //     });
+  // }, []);
 
   return (
     <div>
@@ -107,21 +151,22 @@ const CheckOut = () => {
               </div>
               <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-4  text-xs border-2 p-4 rounded-lg">
                 <div className=" flex col-span-3 ">
-                  {imageData.map((item) => (
+                  {cartData.map((item) => (
                     <>
                       <div className="w-20">
-                        <img src={item.img} alt="" className="w-20" />
+                        <img src={item.Warehouse_stock.Product.Image_Products} alt="" className="w-20" />
                       </div>
                       <div>
-                        <h1>{item.name}</h1>
-                        <h1>{item.category}</h1>
-                        {item.description.length > 25 ? (
-                          <h1>{item.description.slice(0, 25)}...</h1>
+                        <h1>{item.Warehouse_stock.Product.name}</h1>
+                        <h1>{item.Warehouse_stock.Product.category.name}</h1>
+                        {item.Warehouse_stock.Product.description > 25 ? (
+                          <h1>{item.Warehouse_stock.Product.description.slice(0, 25)}...</h1>
                         ) : (
-                          <h1>{item.description}</h1>
+                          <h1>{item.Warehouse_stock.Product.description}</h1>
                         )}
 
-                        <h1>{item.price}</h1>
+                        <h1>{item.Warehouse_stock.Product.price} x {item.quantity}</h1>
+                        <h1>{item.Warehouse_stock.Product.price * item.quantity}</h1>
                       </div>
                     </>
                   ))}
@@ -136,7 +181,7 @@ const CheckOut = () => {
             {/* KANAN */}
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
-              <h1>subtotal price: {imageData.length} </h1>
+              <h1>subtotal price: {cartData.length} </h1>
               <h1>Shipping price: </h1>
               <hr className="border-2 " />
               <h1>Total Payment: </h1>

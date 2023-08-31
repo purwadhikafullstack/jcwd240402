@@ -1221,6 +1221,13 @@ module.exports = {
                   },
                 ],
               },
+              {
+                model: db.Warehouse,
+                as: "Warehouse",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
             ],
           },
         ],

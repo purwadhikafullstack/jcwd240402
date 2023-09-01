@@ -88,7 +88,7 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
-        setDestinationId(addressData.city_id)
+        setDestinationId(addressData[0].city_id)
       });
   }, [access_token, dispatch]);
 
@@ -109,7 +109,7 @@ const CheckOut = () => {
       url: "https://api.rajaongkir.com/starter/cost",
       headers: { key: "438918ba05b00d968fd8e405ba7cc540",
         'content-type': 'application/x-www-form-urlencoded' },
-      form: {origin: closestWarehouse.city_id, destination: addressData[0].city_id
+      form: {origin: originId, destination: destinationId
         , weight: 1700, courier: 'jne'}
   });
 
@@ -126,6 +126,8 @@ const CheckOut = () => {
             setClosestWarehouse(cartData[i].Warehouse_stock.Warehouse)
         }
     }
+
+    setOriginId(closestWarehouse.city_id)
     
   },[]);
 

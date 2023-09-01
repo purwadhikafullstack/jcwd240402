@@ -25,6 +25,7 @@ module.exports = {
         base_grey: "#BEC7D0",
         base_bg_grey: "#F1F1F4",
         base_bg_white: "#FFFFF",
+        grayText: "#484848",
         danger1: "#DC3545",
         danger2: "#FF4530",
         danger3: "#A0AEC0",

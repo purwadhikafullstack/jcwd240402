@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "@develoka/angka-rupiah-js": "^1.0.3",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@headlessui/react": "^1.7.16",
+    "@mui/material": "^5.14.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
@@ -26,6 +29,7 @@
     "react": "^18.2.0",
     "react-carousel-minimal": "^1.4.1",
     "react-dom": "^18.2.0",
+    "react-easy-crop": "^5.0.0",
     "react-multi-carousel": "^2.8.4",
     "react-redux": "^8.1.2",
     "react-responsive-carousel": "^3.2.23",

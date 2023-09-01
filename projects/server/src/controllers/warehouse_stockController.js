@@ -392,7 +392,7 @@ module.exports = {
 
     const pagination = {
       page: Number(req.query.page) || 1,
-      perPage: 9,
+      perPage: Number(req.query.perPage) || 9,
       searchWarehouseName: req.query.warehouseName || undefined,
       searchCategory: req.query.category || undefined,
       searchProduct: req.query.product || undefined,
@@ -584,12 +584,17 @@ module.exports = {
           },
         ],
       });
+      if (!result) {
+        return res
+          .status(404)
+          .json({ ok: false, message: "Product not found" });
+      }
       res.json({
         ok: true,
         result,
       });
     } catch (error) {
-      res.status(500).send({
+      res.status(500).json({
         message: "An error occurred while fetching product stocks",
         error: error.message,
       });

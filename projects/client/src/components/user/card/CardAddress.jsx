@@ -96,9 +96,11 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
           {showMenu ? (
             <div className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20">
               <ul className="list-none">
-                <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                  <ModalChangeAddress idAddress={idAddress} />
-                </li>
+                {location.pathname === "/user/setting/address" ? (
+                  <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
+                    <ModalChangeAddress idAddress={idAddress} />
+                  </li>
+                ) : null}
                 <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
                   <ModalConfirmationPrimaryAddress idAddress={idAddress} />
                 </li>

@@ -20,6 +20,7 @@ import ModalLogin from "../../components/user/modal/ModalLogin";
 import Alert from "../../components/user/Alert";
 import { cartsUser } from "../../features/cartSlice";
 import { useDispatch } from "react-redux";
+import productNotFound from "../../assets/images/productNotFound.png";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -33,6 +34,20 @@ const ProductDetail = () => {
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    axios
+      .get(`/user/warehouse-stock/product/${name}`)
+      .then((res) => {
+        console.log(res);
+        setDetailProduct(res.data?.result?.Product);
+        setDataImage(res.data?.result?.Product?.Image_products);
+        setStock(res.data?.result?.product_stock);
+      })
+      .catch((error) => {
+        setErrMsg(error.response?.data?.message);
+      });
+  }, [name]);
 
   const handleAddProductToCart = async (name, qty) => {
     try {
@@ -67,25 +82,18 @@ const ProductDetail = () => {
     }
   };
 
-  useEffect(() => {
-    axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result?.Product);
-      setDataImage(res.data?.result?.Product?.Image_products);
-      setStock(res.data?.result?.product_stock);
-    });
-  }, [name]);
-
-  if (detailProduct.length === 0 || dataImage.length === 0) {
-    return <p></p>;
-  }
-
-  const product = dataImage.map((item) => {
+  const product = dataImage?.map((item) => {
     let image;
     image = {
       image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
     };
     return image;
   });
+  console.log(product);
+  console.log(detailProduct);
+  console.log(dataImage);
+  console.log(stock);
+  console.log(name);
 
   return (
     <div>
@@ -100,24 +108,31 @@ const ProductDetail = () => {
               openAlert={openAlert}
               errMsg={errMsg}
             />
+            {product.length === 0 ? (
+              <div className="w-full h-full flex flex-col justify-center items-center ">
+                <img src={productNotFound} alt="" className="w-1/2 lg:w-1/3" />
+                <p>{errMsg}</p>
+              </div>
+            ) : (
+              <CarouselProductDetail data={product} />
+            )}
 
-            <CarouselProductDetail data={product} />
             <div className="hidden lg:block md:hidden w-full">
-              <AccordionProduct
-                desc={detailProduct.description}
-                name={detailProduct.name}
-                price={detailProduct.price}
-                weight={detailProduct.weight}
-              />
+              {product.length === 0 ? null : (
+                <AccordionProduct
+                  desc={detailProduct.description}
+                  name={detailProduct.name}
+                  price={detailProduct.price}
+                  weight={detailProduct.weight}
+                />
+              )}
             </div>
           </div>
 
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
             <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
 
-            <h1 className="font-bold text-xl">
-              {toRupiah(detailProduct.price)}
-            </h1>
+            <h1 className="font-bold text-xl">{detailProduct.price}</h1>
 
             <hr />
 
@@ -181,12 +196,14 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="lg:hidden">
-              <AccordionProduct
-                desc={detailProduct.description}
-                name={detailProduct.name}
-                price={detailProduct.price}
-                weight={detailProduct.weight}
-              />
+              {product.length === 0 ? null : (
+                <AccordionProduct
+                  desc={detailProduct.description}
+                  name={detailProduct.name}
+                  price={detailProduct.price}
+                  weight={detailProduct.weight}
+                />
+              )}
             </div>
           </div>
         </div>

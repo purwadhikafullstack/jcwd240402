@@ -24,7 +24,7 @@ const CheckOut = () => {
   const cartData = useSelector((state) => state.carter.value);
   const addressData = useSelector((state) => state.addresser.value);
   const [closestWarehouse, setClosestWarehouse] 
-  = useState({latitude: 90, longitude: 180, warehouse_name: "Furnifor"});
+  = useState({latitude: 35.076944, longitude: -106.648628, warehouse_name: "Furnifor", city_id: 444});
   const [test1, settest1] = useState(0);
   const [test2, settest2] = useState(0);
   const [totalCart, setTotalCart] = useState(0);
@@ -103,16 +103,17 @@ const CheckOut = () => {
       });
   }, [access_token, dispatch]);
 
-  // useEffect(() => {
-  //   axios
-  //     .get("https://api.rajaongkir.com/starter/cost", {
-  //       headers: { key: "438918ba05b00d968fd8e405ba7cc540",
-  //       'content-type': 'application/x-www-form-urlencoded' },
-  //     })
-  //     .then((res) => {
-  //       dispatch(cartsUser(res.data?.result));
-  //     });
-  // }, []);
+  useEffect(() => {
+    axios({
+      method: "post",
+      url: "https://api.rajaongkir.com/starter/cost",
+      headers: { key: "438918ba05b00d968fd8e405ba7cc540",
+        'content-type': 'application/x-www-form-urlencoded' },
+      form: {origin: closestWarehouse.city_id, destination: addressData[0].city_id
+        , weight: 1700, courier: 'jne'}
+  });
+
+},[]);
 
   useEffect(() => {
 

@@ -23,7 +23,11 @@ const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
   const cartData = useSelector((state) => state.carter.value);
   const addressData = useSelector((state) => state.addresser.value);
-  const [closestWarehouseCityId, setClosestWarehouseCityId] = useState("");
+  const [closestWarehouse, setClosestWarehouse] 
+  = useState({latitude: 90, longitude: 180, warehouse_name: "Furnifor"});
+  const [test1, settest1] = useState(0);
+  const [test2, settest2] = useState(0);
+  const [totalCart, setTotalCart] = useState(0);
   const [originId, setOriginId] = useState("");
   const [destinationId, setDestinationId] = useState("");
   const [itemWeight, setItemWeight] = useState("");
@@ -45,7 +49,7 @@ const CheckOut = () => {
     },
   ];
 
-  function distanceKm(lat1, lon1, lat2, lon2) {
+  const distanceKm = (lat1, lon1, lat2, lon2) => {
     const r = 6371; // km
     const p = Math.PI / 180;
   
@@ -55,8 +59,6 @@ const CheckOut = () => {
   
     return 2 * r * Math.asin(Math.sqrt(a));
   }
-
-  
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -86,7 +88,7 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
-        setDestinationId(addressData.City.id)
+        setDestinationId(addressData.city_id)
       });
   }, [access_token, dispatch]);
 
@@ -97,6 +99,7 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(cartsUser(res.data?.result));
+        setTotalCart(res.data.total)
       });
   }, [access_token, dispatch]);
 
@@ -110,6 +113,23 @@ const CheckOut = () => {
   //       dispatch(cartsUser(res.data?.result));
   //     });
   // }, []);
+
+  useEffect(() => {
+
+    for(let i = 0; i < cartData.length; i++){
+      if(distanceKm(cartData[i].Warehouse_stock.Warehouse.latitude,
+        cartData[i].Warehouse_stock.Warehouse.longitude,
+        addressData[0].latitude, addressData[0].longitude) >= 
+        distanceKm(closestWarehouse.latitude, closestWarehouse.longitude,
+          addressData[0].latitude, addressData[0].longitude)){
+            setClosestWarehouse(cartData[i].Warehouse_stock.Warehouse)
+        }
+    }
+    
+  },[]);
+
+
+  
 
   return (
     <div>
@@ -167,6 +187,7 @@ const CheckOut = () => {
 
                         <h1>{item.Warehouse_stock.Product.price} x {item.quantity}</h1>
                         <h1>{item.Warehouse_stock.Product.price * item.quantity}</h1>
+
                       </div>
                     </>
                   ))}
@@ -181,10 +202,11 @@ const CheckOut = () => {
             {/* KANAN */}
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
-              <h1>subtotal price: {cartData.length} </h1>
+              <h1>subtotal price: {totalCart} </h1>
               <h1>Shipping price: </h1>
               <hr className="border-2 " />
               <h1>Total Payment: </h1>
+              <h1>delivering from: {closestWarehouse.warehouse_name} </h1>
               <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>

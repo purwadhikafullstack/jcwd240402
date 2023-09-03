@@ -32,6 +32,7 @@ import CreateStock from "../components/admin/stock/CreateStock";
 import ProductPerCategory from "./user/ProductPerCategory";
 import Category from "./user/Category";
 import SettingCart from "./user/SettingCart";
+import ThisIsFurniFor from "./user/ThisIsFurniFor";
 
 function App() {
   return (
@@ -101,6 +102,7 @@ function App() {
             element={<ProductPerCategory />}
           />
           <Route path="/product-category" element={<Category />} />
+          <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
         </Routes>
       </Router>
     </div>

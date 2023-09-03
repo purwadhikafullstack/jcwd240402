@@ -19,9 +19,9 @@ const AccordionProduct = ({ name, price, desc, weight }) => {
         </Accordion.Title>
         <Accordion.Content>
           <p className="mb-2 text-gray-500 dark:text-gray-400">
-            Introducing our product, {name}, priced at {toRupiah(price)} and
-            weighing <span className="font-bold">{weight}</span>. Kindly note
-            that the stated price excludes shipping charges.
+            Introducing our product, {name}, priced at {price} and weighing{" "}
+            <span className="font-bold">{weight}</span>. Kindly note that the
+            stated price excludes shipping charges.
           </p>
         </Accordion.Content>
       </Accordion.Panel>

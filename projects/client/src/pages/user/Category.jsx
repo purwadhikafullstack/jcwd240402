@@ -19,7 +19,12 @@ const Category = () => {
       <NavbarMobile />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex flex-col gap-4">
-          <h1 className="font-bold mt-4 text-xl">All Categories</h1>
+          {categoryList == false ? (
+            <h1 className="font-bold mt-4 text-xl">Empty Categories</h1>
+          ) : (
+            <h1 className="font-bold mt-4 text-xl">All Categories</h1>
+          )}
+
           <div className="grid grid-cols-2 gap-4 relative z-0 mb-4">
             {categoryList.map((list) => (
               <div

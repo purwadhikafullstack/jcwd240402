@@ -5,6 +5,7 @@ import { Pagination } from "flowbite-react";
 import { useSearchParams } from "react-router-dom";
 
 import SlideOverFilter from "./slide/SlideOverFilter";
+import Alert from "./Alert";
 
 const ShowCaseProduct = () => {
   const [productData, setProductData] = useState([]);
@@ -17,13 +18,14 @@ const ShowCaseProduct = () => {
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?page=${currentPagination}&product=&category=`
+        `/user/warehouse-stock/filter?perPage=10&page=${currentPagination}&product=&category=`
       )
       .then((res) => {
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
-      });
-  }, [currentPagination]);
+      })
+      .catch((error) => setSearchParams({ page: 1 }));
+  }, [currentPagination, setSearchParams]);
 
   if (productData.length === 0) {
     return <p></p>;

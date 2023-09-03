@@ -1,14 +1,24 @@
 import React, { useState } from "react";
 import { Accordion } from "flowbite-react";
 
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
+
 const AccordionFilter = () => {
-  const [rangeValue, setRangeValue] = useState([30, 60]);
-  const handleRangeChange = (event) => {
-    const { name, value } = event.target;
-    const newRangeValue = [...rangeValue];
-    newRangeValue[name === "min" ? 0 : 1] = parseInt(value);
-    setRangeValue(newRangeValue);
+  const [price, setPrice] = useState([20, 37]);
+  const [weight, setWeight] = useState([20, 37]);
+
+  const handleChangeRangePrice = (event, newPrice) => {
+    setPrice(newPrice);
+    console.log(event);
   };
+  const handleChangeRangeWeight = (event, newWeight) => {
+    setWeight(newWeight);
+  };
+
+  const [minPrice, maxPrice] = price;
+  const [minWeight, maxWeight] = weight;
+
   return (
     <Accordion className="w-full">
       <Accordion.Panel>
@@ -16,7 +26,16 @@ const AccordionFilter = () => {
           PRICE
         </Accordion.Title>
         <Accordion.Content>
-          <div className="mb-2 text-gray-500 dark:text-gray-400">HARGA</div>
+          <Box sx={{ width: 300 }}>
+            <Slider
+              getAriaLabel={() => "Temperature range"}
+              value={price}
+              onChange={handleChangeRangePrice}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+          <p>Nilai Minimum (Min): {minPrice}</p>
+          <p>Nilai Maksimum (Max): {maxPrice}</p>
         </Accordion.Content>
       </Accordion.Panel>
       <Accordion.Panel>
@@ -24,7 +43,16 @@ const AccordionFilter = () => {
           WEIGHT
         </Accordion.Title>
         <Accordion.Content>
-          <p className="mb-2 text-gray-500 dark:text-gray-400">BERAT</p>
+          <Box sx={{ width: 300 }}>
+            <Slider
+              getAriaLabel={() => "Temperature range"}
+              value={weight}
+              onChange={handleChangeRangeWeight}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+          <p>Nilai Minimum (Min): {minWeight}</p>
+          <p>Nilai Maksimum (Max): {maxWeight}</p>
         </Accordion.Content>
       </Accordion.Panel>
       <Accordion.Panel>

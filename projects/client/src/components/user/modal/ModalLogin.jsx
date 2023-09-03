@@ -27,7 +27,7 @@ export default function ModalLogin({
   const [errMsg, setErrMsg] = useState("");
   const dispatch = useDispatch();
   const location = useLocation();
-
+  const currentURL = location.pathname;
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
       await axios.post("/user/auth/login", values).then((res) => {
@@ -45,7 +45,7 @@ export default function ModalLogin({
           user_identification: "",
           password: "",
         });
-
+        navigate(`${currentURL}`);
         if (accessToken && refreshToken) {
           axios
             .get("/user/profile", {
@@ -53,10 +53,7 @@ export default function ModalLogin({
             })
             .then((res) => dispatch(profileUser(res.data.result)));
         }
-        if (location.pathname !== "/") {
-          navigate(location.pathname);
-        }
-        navigate("/");
+
         setErrMsg(null);
         props.setOpenModal(undefined);
       });

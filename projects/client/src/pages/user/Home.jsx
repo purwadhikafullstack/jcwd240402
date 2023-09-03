@@ -119,7 +119,13 @@ const Home = () => {
         </div>
         <StaticBanner />
         <div className="">
-          <SelectionCategory category={category} />
+          {category ? (
+            <SelectionCategory category={category} />
+          ) : (
+            <div>
+              <h1>tidak ada category</h1>
+            </div>
+          )}
         </div>
         <div className="relative z-0">
           {productData.map((item) => (

@@ -7,9 +7,13 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "../../../api/axios";
 import { loadCities } from "../../../utils/WarehouseListHelp";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  closeWarehouseEditModal,
+  selectWarehouseEditModalVisible,
+} from "../../../features/warehouseListSlice";
 
-const WarehouseProfileModal = ({
-  show,
+const WarehouseEdit = ({
   onClose,
   onSubmit,
   label,
@@ -22,6 +26,12 @@ const WarehouseProfileModal = ({
 }) => {
   const [errMsg, setErrMsg] = useState("");
   const [selectedCity, setSelectedCity] = useState(initialValue);
+  const dispatch = useDispatch();
+  const show = useSelector(selectWarehouseEditModalVisible);
+  
+  const handleClose = () => {
+    dispatch(closeWarehouseEditModal());
+  }
 
   const getCoordinates = async (address) => {
     const apiKey = "f2f57cc907854a3cb36d25b445d148e6";
@@ -66,16 +76,21 @@ const WarehouseProfileModal = ({
     },
     onSubmit: async (values) => {
       try {
-        if (label === "Warehouse Address" && values[name] !== initialValue?.value) {
+        if (
+          label === "Warehouse Address" &&
+          values[name] !== initialValue?.value
+        ) {
           const coordinates = await getCoordinates(values[name]);
           if (coordinates) {
-
             const updatedValues = {
               ...values,
               longitude: coordinates.longitude,
               latitude: coordinates.latitude,
             };
-            const response = await axios.patch(`/api/warehouse/${warehouseId}`, updatedValues);
+            const response = await axios.patch(
+              `/api/warehouse/${warehouseId}`,
+              updatedValues
+            );
             if (response.status === 200) {
               setErrMsg("");
               formik.resetForm();
@@ -88,8 +103,10 @@ const WarehouseProfileModal = ({
             throw new Error("Address not found");
           }
         } else {
-
-          const response = await axios.patch(`/api/warehouse/${warehouseId}`, values);
+          const response = await axios.patch(
+            `/api/warehouse/${warehouseId}`,
+            values
+          );
           if (response.status === 200) {
             setErrMsg("");
             formik.resetForm();
@@ -124,7 +141,7 @@ const WarehouseProfileModal = ({
           )}
           <div className="mt-5 px-6 grid gap-y-3">
             {label === "City" ? (
-                <>
+              <>
                 <label>{label}</label>
                 <AsyncSelect
                   classNamePrefix="react-select"
@@ -166,4 +183,4 @@ const WarehouseProfileModal = ({
   );
 };
 
-export default WarehouseProfileModal;
+export default WarehouseEdit;

@@ -1,7 +1,7 @@
 const admin = require("../routes/adminRouter");
 const warehouse = require("./warehouseRouter");
 const user = require("./userRouter");
-const warehouseStock = require("./warehouseStock")
+const warehouseStock = require("./warehouseStockRouter")
 
 module.exports = {
   admin,

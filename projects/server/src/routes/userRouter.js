@@ -8,7 +8,7 @@ const validatorMiddleware = require("../middleware/validator/user");
 const upload = require("../middleware/multer/user/imgProfile");
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
-const Warehouse_stockController = require("../controllers/warehouse_stockController");
+const Warehouse_stockController = require("../controllers/warehouseStockController");
 const { verify } = require("jsonwebtoken");
 
 /* AUTH */

@@ -20,7 +20,7 @@ const AdminProfileModal = ({
     ? [
         {
           label: "Password",
-          value: "••••••••",
+          value: "Change Password",
           onEdit: () => setPasswordModalOpen(true),
         },
         {

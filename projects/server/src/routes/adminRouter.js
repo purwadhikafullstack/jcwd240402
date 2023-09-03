@@ -12,78 +12,29 @@ const router = require("express").Router();
 
 // Admin Routes
 
-//admin
-
-router.post(
-  "/register",
-  validatorMiddlewareAdmin.validateRegistration,
-  adminController.registerAdmin
-); 
-router.post(
-  "/login",
-  validatorMiddlewareAdmin.validateLogin,
-  adminController.loginAdmin
-); 
-router.post(
-  "/change-pass/:id",
-  validatorMiddlewareAdmin.validatePassword,
-  adminController.changeAdminPassword
-);
-router.post("/assign-warehouse/:id", adminController.assignWarehouse); //check
-router.get(
-  "/checkrole",
-  authMiddleware.verifyAccessTokenAdmin,
-  adminController.getRole
-);
-router.get("/", adminController.getAdminList);
-router.get(
-  "/profile",
-  Verify.verifyAccessTokenAdmin,
-  adminController.adminInformation
-);
-router.get(
-  "/auth/keep-login",
-  Verify.verifyRefreshToken,
-  adminController.keepLogin
-);
-
-router.post(
-  "/register",
-  validatorMiddlewareAdmin.validateRegistration,
-  adminController.registerAdmin
-);
-router.post(
-  "/login",
-  validatorMiddlewareAdmin.validateLogin,
-  adminController.loginAdmin
-);
+router.post("/register",validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin); 
+router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.loginAdmin); 
+router.post("/change-pass/:id",validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
 router.post("/assign-warehouse/:id", adminController.assignWarehouse);
-router.post(
-  "/change-pass/:id",
-  validatorMiddlewareAdmin.validatePassword,
-  adminController.changeAdminPassword
-);
+
+router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin,adminController.getRole);
+router.get("/", adminController.getAdminList);
+router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
+router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
+
+router.post("/register",validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin);
+router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.loginAdmin);
+router.post("/assign-warehouse/:id", adminController.assignWarehouse);
+router.post("/change-pass/:id",validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
 
 // Category Routes
 
 router.get("/categories", adminController.getCategories);
 
-router.post(
-  "/category",
-  multerCategory.single("category_img"),
-  validatorMiddlewareCategory.validateCategory,
-  categoryController.createCategory
-);
-router.patch(
-  "/category/img/:id",
-  multerCategory.single("category_img"),
-  categoryController.updateCategoryImage
-);
-router.patch(
-  "/category/name/:id",
-  validatorMiddlewareCategory.validateCategory,
-  categoryController.updateCategoryName
-);
+router.post("/category",multerCategory.single("category_img"),validatorMiddlewareCategory.validateCategory,categoryController.createCategory);
+
+router.patch("/category/img/:id",multerCategory.single("category_img"),categoryController.updateCategoryImage);
+router.patch("/category/name/:id",validatorMiddlewareCategory.validateCategory,categoryController.updateCategoryName);
 router.patch("/category/:id", categoryController.deleteCategory);
 
 // Product Routes
@@ -91,29 +42,11 @@ router.patch("/category/:id", categoryController.deleteCategory);
 router.get("/products", productController.getProductsList);
 router.get("/single-product/", productController.getSingleProduct);
 
-router.post(
-  "/product",
-  multerProduct.array("images", 5),
-  validatorMiddlewareProduct.validateProduct,
-  productController.createProduct
-);
-router.post(
-  "/product/:id/image",
-  multerProduct.single("image"),
-  productController.addImageToProduct
-);
+router.post("/product",multerProduct.array("images", 5),validatorMiddlewareProduct.validateProduct,productController.createProduct);
+router.post("/product/:id/image",multerProduct.single("image"),productController.addImageToProduct);
 
-router.patch(
-  "/product/:id",
-  validatorMiddlewareProduct.removeEmptyFields,
-  validatorMiddlewareProduct.validateUpdateProduct,
-  productController.updateProductDetails
-);
-router.patch(
-  "/product/image/:id",
-  multerProduct.single("image"),
-  productController.updateProductImage
-);
+router.patch("/product/:id",validatorMiddlewareProduct.removeEmptyFields,validatorMiddlewareProduct.validateUpdateProduct,productController.updateProductDetails);
+router.patch("/product/image/:id",multerProduct.single("image"),productController.updateProductImage);
 router.patch("/product/delete/:id", productController.deleteProduct);
 router.patch("/product/status/:name", productController.toggleProductStatus);
 

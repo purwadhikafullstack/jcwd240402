@@ -6,6 +6,7 @@ import InputForm from "../../InputForm";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "../../../api/axios";
+import TextAreaForm from "../../TextAreaForm";
 
 const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -21,7 +22,7 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
   const handleErrors = (error) => {
     const serverErrors = error.response?.data?.errors;
     if (serverErrors) {
-      serverErrors.forEach(err => formik.setFieldError(err.path, err.msg));
+      serverErrors.forEach((err) => formik.setFieldError(err.path, err.msg));
     } else {
       setErrMsg(error.message || "Registration failed");
     }
@@ -57,7 +58,10 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
       }
     },
     validationSchema: yup.object().shape({
-      warehouse_name: yup.string().required("Warehouse Name is required").min(8, "Warehouse Name must be at least 8 characters"),
+      warehouse_name: yup
+        .string()
+        .required("Warehouse Name is required")
+        .min(8, "Warehouse Name must be at least 8 characters"),
       address_warehouse: yup.string().required("Address is required"),
       warehouse_contact: yup.string().required("Contact is required"),
     }),
@@ -65,8 +69,10 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
 
   const loadCities = async (inputValue) => {
     try {
-      const response = await axios.get(`/admin/city/?searchName=${inputValue}&page=1`);
-      return response.data.cities.map(city => ({
+      const response = await axios.get(
+        `/admin/city/?searchName=${inputValue}&page=1`
+      );
+      return response.data.cities.map((city) => ({
         value: city.id,
         label: city.name,
       }));
@@ -103,15 +109,14 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
               isError={formik.errors.warehouse_name}
               errorMessage={formik.errors.warehouse_name}
             />
-            <InputForm
+            <TextAreaForm
               label="Address Warehouse"
               name="address_warehouse"
-              type="text"
               placeholder="Enter address"
               value={formik.values.address_warehouse}
               onChange={formik.handleChange}
-              isError={formik.errors.address_warehouse}
               errorMessage={formik.errors.address_warehouse}
+              rows={3}
             />
             <InputForm
               label="Contact Warehouse"

@@ -27,7 +27,7 @@ const generateRefreshToken = (user) => {
     {
       id: user.id,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "24h" }
   );
   return token;

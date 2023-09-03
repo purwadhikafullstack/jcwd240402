@@ -1,5 +1,5 @@
 const db = require("../models");
-const { getAllWarehouses } = require("../service/warehouse");
+const { getAllWarehouses,getOneWarehouse } = require("../service/warehouse");
 
 module.exports = {
   async registerWarehouse(req, res) {
@@ -35,38 +35,72 @@ module.exports = {
   },
 
   async updateWarehouse(req, res) {
-    const warehouseId = req.params.id;
-
-    const { warehouse_name, city_id, warehouse_contact, address_warehouse } =
-      req.body;
-
+    const { id } = req.params;
+    const editableFields = [
+      "warehouse_name",
+      "city_id",
+      "warehouse_contact",
+      "address_warehouse",
+      "latitude",
+      "longitude"
+    ];
+    
+    const t = await db.sequelize.transaction();
+  
     try {
-      const warehouse = await db.Warehouse.findByPk(warehouseId);
+      const warehouse = await db.Warehouse.findByPk(id, { transaction: t });
+  
       if (!warehouse) {
-        return res.status(404).send({
-          message: "Warehouse not found",
-        });
+        await t.rollback();
+        return res.status(404).send({ message: "Warehouse not found" });
       }
 
-      if (warehouse_name) warehouse.warehouse_name = warehouse_name;
-      if (city_id) warehouse.city_id = city_id;
-      if (warehouse_contact) warehouse.warehouse_contact = warehouse_contact;
-      if (address_warehouse) {
-        warehouse.address_warehouse = address_warehouse;
-        warehouse.latitude = req.body.latitude;
-        warehouse.longitude = req.body.longitude;
-      }
-
-      await warehouse.save();
-
+      editableFields.forEach((field) => {
+        if (req.body[field] !== undefined) {
+          warehouse[field] = req.body[field];
+        }
+      });
+  
+      await warehouse.save({ transaction: t });
+      await t.commit();
+  
       return res.status(200).send({
         message: "Warehouse updated successfully",
         data: warehouse,
       });
     } catch (error) {
+      await t.rollback();
+      console.error("Error:", error);
       res.status(500).send({
         message: "Fatal error on server",
         errors: error.message,
+      });
+    }
+  },
+  
+  async getWarehouseByName(req, res) {
+    const warehouseName = req.params.name;
+  
+    try {
+      const response = await getOneWarehouse({ warehouse_name: warehouseName });
+  
+      if (response.success && response.data) {
+        res.status(200).send({
+          message: "Warehouse details retrieved successfully",
+          warehouse: response.data
+        });
+      } else if (response.success && !response.data) {
+        res.status(404).send({
+          message: "Warehouse not found",
+        });
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message
       });
     }
   },

@@ -5,8 +5,6 @@ import Sidebar from "../../components/SidebarAdminDesktop";
 import RegisterAdminModal from "../../components/Modals/admin/ModalRegisterAdmin";
 import Button from "../../components/Button";
 import AdminProfileModal from "../../components/Modals/admin/ModalAdminEdit";
-import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword";
-import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
 import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
@@ -23,6 +21,7 @@ const AdminList = () => {
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
 
   useEffect(() => {
     refreshAdminList();

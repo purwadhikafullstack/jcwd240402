@@ -2,9 +2,12 @@ const db = require("../models")
 module.exports = {
     getOneWarehouse: async (filter) => {
       const options = {
-        where: filter
-      };
-  
+        where: filter,
+        include: [{
+            model: db.City,
+            attributes: ['name']
+        }]
+    };
       try {
         const result = await db.Warehouse.findOne(options);
         return {

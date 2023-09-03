@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { default: axios } = require("axios");
+const { getAllWarehouses } = require("../service/warehouse");
+const qs = require('qs');
 
 module.exports = {
   /* AUTH */
@@ -1455,13 +1457,15 @@ module.exports = {
       courier,
     } = req.body;
 
+    const data = {origin: '501', destination: '114', weight: 1700, courier: 'jne'}
+
     try {
       const response = await axios({
         method: "post",
         url: "https://api.rajaongkir.com/starter/cost",
         headers: { key: "438918ba05b00d968fd8e405ba7cc540",
-          'Content-type': 'application/x-www-form-urlencoded' },
-        form: {origin: '501', destination: '114', weight: 1700, courier: 'jne'}
+          'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify(data),
       });
       res.json({ ok: true, result: response.data });
     } catch (error) {
@@ -1504,6 +1508,37 @@ module.exports = {
       res.status(200).json({
         ok: true,
         order: newOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  findClosestWarehouse : async (req, res) => {
+
+    const userData = req.user;
+
+    try {
+      const userAddressData = await db.Address_user.findAll({
+        where: { user_id: userData.id },
+        include: { model: db.City },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+
+      const allWarehouseData = await getAllWarehouses();
+
+      
+      
+      res.status(200).json({
+        ok: true,
+        address: userAddressData,
+        warehouse: allWarehouseData,
       });
     } catch (error) {
       res.status(500).json({

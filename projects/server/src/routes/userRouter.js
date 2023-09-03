@@ -154,9 +154,15 @@ router.get("/order", Verify.verifyAccessTokenUser, UserController.getOrderList);
 router.get("/city", Verify.verifyAccessTokenUser, UserController.getCity);
 
 router.get(
-  "/cost",
+  "/rajaongkir/cost",
   Verify.verifyAccessTokenUser,
   UserController.getCost
+);
+
+router.get(
+  "/closest",
+  Verify.verifyAccessTokenUser,
+  UserController.findClosestWarehouse
 );
 
 module.exports = router;

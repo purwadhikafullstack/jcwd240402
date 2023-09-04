@@ -55,7 +55,6 @@ const ProductPerCategory = () => {
     setCurrentPage(page);
     setSearchParams({ page: page });
   }
-  console.log(display);
 
   const imageDisplay = display.map((item) => {
     return {

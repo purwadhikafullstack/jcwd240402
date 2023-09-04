@@ -58,8 +58,8 @@ const ThisIsFurniFor = () => {
           <h1 className="text-justify font-bold text-md">
             FurniFor: Bringing Fortune Through Quality Furniture
           </h1>
-          <div className="lg:grid lg:grid-cols-12 lg">
-            <h3 className="text-justify text-xs lg:text-sm lg:mr-4 lg:col-span-6 text-grayText">
+          <div className="">
+            <h3 className="text-justify text-xs  mb-4 text-grayText">
               Welcome to FurniFor, your ultimate destination to discover
               high-quality furniture at affordable prices. FurniFor is a
               combination of the words "furniture" and "fortune," reflecting our
@@ -85,12 +85,8 @@ const ThisIsFurniFor = () => {
               selected soothing, inviting hues that transform your living spaces
               into havens of relaxation and style.
             </h3>
-            <img src={imgHeadlineDesktop} alt="" className="lg:col-span-5" />
-            <img
-              src={imgHeadline}
-              alt=""
-              className=" lg:h-full lg:object-cover lg:col-span-1"
-            />
+            <img src={imgHeadlineDesktop} alt="" className="float-left" />
+            <img src={imgHeadline} alt="" className=" float-left" />
           </div>
           <div className="grid grid-cols-2 w-full h-full">
             {imgData.map((item, idx) => (

@@ -18,7 +18,9 @@ const TextAreaForm = ({
         <Label htmlFor={label} value={label} />
       </div>
       <Textarea
-        style={{ resize: "none" }} 
+        className={`resize-none text-sm font-poppins ${
+          isError ? "text-failure" : ""
+        }`}
         color={isError ? "failure" : null}
         placeholder={placeholder}
         name={name}

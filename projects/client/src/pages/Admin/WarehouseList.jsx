@@ -4,7 +4,7 @@ import axios from "../../api/axios";
 import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import RegisterWarehouseModal from "../../components/Modals/warehouse/ModalRegisterWarehouse";
+import RegisterWarehouseModal from "../../components/modal/warehouse/ModalRegisterWarehouse";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
@@ -118,7 +118,7 @@ const WarehouseList = () => {
             fetchWarehouses();
           }}
         />
-        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+        <div className="flex justify-center items-center w-full bottom-0 position-absolute mb-4">
           <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}

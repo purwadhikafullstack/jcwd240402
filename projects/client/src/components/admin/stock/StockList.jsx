@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import TableComponent from "../../Table";
 import DefaultPagination from "../../Pagination";
 import AsyncSelect from "react-select/async";
-import UpdateStock from "../../Modals/stock/ModalUpdateStock";
-import ConfirmDeleteStock from "../../Modals/stock/ModalDeleteStock";
+import UpdateStock from "../../modal/stock/ModalUpdateStock";
+import ConfirmDeleteStock from "../../modal/stock/ModalDeleteStock";
+import axios from "../../../api/axios";
 
 const StockList = () => {
   const [stocks, setStocks] = useState([]);
@@ -23,15 +23,12 @@ const StockList = () => {
   const fetchStocks = async () => {
     try {
       const warehouseName = selectedWarehouse ? selectedWarehouse.label : null;
-      const response = await axios.get(
-        `http://localhost:8000/api/warehouse-stock`,
-        {
-          params: {
-            warehouseName: warehouseName,
-            page: currentPage,
-          },
-        }
-      );
+      const response = await axios.get(`/warehouse-stock`, {
+        params: {
+          warehouseName: warehouseName,
+          page: currentPage,
+        },
+      });
       console.log(response);
 
       if (response.data && response.data.stocks) {
@@ -61,15 +58,12 @@ const StockList = () => {
 
   const loadWarehouses = async (inputValue, callback) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list`,
-        {
-          params: {
-            searchName: inputValue,
-            cityId: "",
-          },
-        }
-      );
+      const response = await axios.get(`/warehouse/warehouse-list`, {
+        params: {
+          searchName: inputValue,
+          cityId: "",
+        },
+      });
 
       if (response.data && response.data.warehouses) {
         const formattedWarehouses = response.data.warehouses.map(
@@ -98,7 +92,6 @@ const StockList = () => {
     fetchStocks();
     setShowUpdateModal(false);
   };
-  console.log(selectedProduct);
 
   const handleDelete = (row) => {
     setProductToDelete({
@@ -114,13 +107,21 @@ const StockList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="pb-4">
+    <div className="container mx-auto pt-1">
+      <div className="flex items-center">
         <AsyncSelect
           cacheOptions
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"
+          className="flex-1"
+        />
+        <input
+          type="text"
+          placeholder="Search Product "
+          // value={}
+          onChange={(e) => setSearchName(e.target.value)}
+          className="flex-1 border rounded text-base bg-white border-gray-300 shadow-sm ml-4"
         />
       </div>
       <div className="py-4">
@@ -129,6 +130,7 @@ const StockList = () => {
           data={stocks}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          showTransfer={true}
         />
       </div>
       <div className="flex justify-center items-center mt-4">

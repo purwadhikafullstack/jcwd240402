@@ -7,8 +7,10 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "../../../api/axios";
 import TextAreaForm from "../../TextAreaForm";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
+  const access_token = getCookie("access_token");
   const [selectedCity, setSelectedCity] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
@@ -40,10 +42,16 @@ const RegisterWarehouseModal = ({ show, onClose, onSuccessfulRegister }) => {
       try {
         if (!selectedCity) throw new Error("Please select a city.");
 
-        const response = await axios.post("/warehouse/register", {
-          ...values,
-          city_id: selectedCity.value,
-        });
+        const response = await axios.post(
+          "/warehouse/register",
+          {
+            ...values,
+            city_id: selectedCity.value,
+          },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        );
 
         if (response.status === 201) {
           formik.resetForm();

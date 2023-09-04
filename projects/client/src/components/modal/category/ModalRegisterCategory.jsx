@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import Button from "../../Button";
 import InputForm from "../../InputForm";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
+  const access_token = getCookie("access_token");
   const [categoryImg, setCategoryImg] = useState(null);
   const [selectedFileName, setSelectedFileName] = useState("");
   const [errMsg, setErrMsg] = useState("");
@@ -35,12 +37,11 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
         if (categoryImg) {
           formData.append("category_img", categoryImg);
         }
-    
-        const response = await axios.post(
-          "http://localhost:8000/api/admin/category",
-          formData
-        );
-    
+
+        const response = await axios.post("/admin/category", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
+
         if (response.status === 201) {
           formik.resetForm();
           setCategoryImg(null);
@@ -50,19 +51,22 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
           throw new Error("Category Registration Failed");
         }
       } catch (error) {
-        let displayedError = false; 
-    
+        let displayedError = false;
+
         if (error.response?.data?.errors) {
-          error.response.data.errors.forEach(err => {
+          error.response.data.errors.forEach((err) => {
             if (err.path === "name") {
               formik.setFieldError("name", err.msg);
-              displayedError = true; 
+              displayedError = true;
             }
           });
         }
-        
+
         if (!displayedError && error.response?.data?.message) {
-          if (error.response.data.message === "Image is required for category creation") {
+          if (
+            error.response.data.message ===
+            "Image is required for category creation"
+          ) {
             setErrMsg("Image is required for category creation");
           } else {
             setErrMsg("An unexpected error occurred. Please try again.");
@@ -101,7 +105,6 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
               errorMessage={formik.errors.name}
             />
             <div className="relative">
-
               <input
                 name="category_img"
                 type="file"

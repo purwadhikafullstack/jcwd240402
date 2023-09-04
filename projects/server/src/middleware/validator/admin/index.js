@@ -54,10 +54,9 @@ const removeEmptyFields = (req, res, next) => {
   next();
 };
 
-
 module.exports = {
   removeEmptyFields,
-  
+
   validateRegistration: validate([
     body("username")
       .notEmpty()
@@ -93,7 +92,7 @@ module.exports = {
       }),
     body("confirmPassword")
       .notEmpty()
-      .withMessage("Confirm password is required")
+      .withMessage("Confirm password is required"),
   ]),
 
   validateLogin: validate([
@@ -136,7 +135,9 @@ module.exports = {
     body("longitude").notEmpty().withMessage("Longtitude is required"),
     body("warehouse_contact")
       .notEmpty()
-      .withMessage("Warehouse contact is required"),
+      .withMessage("Warehouse contact is required")
+      .isNumeric()
+      .withMessage("Contact should be a valid number"),
   ]),
 
   validateUpdateWarehouse: validate([

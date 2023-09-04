@@ -3,6 +3,7 @@ import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 import Button from "../../Button";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const ReassignWarehouseModal = ({
   show,
@@ -11,7 +12,7 @@ const ReassignWarehouseModal = ({
   refreshAdminListWrapper,
 }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  console.log(adminId)
+  const access_token = getCookie("access_token");
 
   const loadWarehouses = async (inputValue) => {
     try {
@@ -31,12 +32,12 @@ const ReassignWarehouseModal = ({
 
   const handleReassign = () => {
     if (selectedWarehouse && adminId) {
-      const url = `/admin/assign-warehouse/${adminId}`;
       const payload = { warehouse_id: selectedWarehouse.value };
       axios
-        .post(url, payload)
+        .patch(`/admin/assign-warehouse/${adminId}`, payload, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
         .then((res) => {
-          console.log(res.data.message);
           setSelectedWarehouse(null);
           onClose();
           refreshAdminListWrapper();

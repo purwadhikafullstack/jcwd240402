@@ -3,57 +3,62 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
+import PasswordInput from "../../PasswordInput";
 import InputForm from "../../InputForm";
 import Button from "../../Button";
 
-const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+const ChangePasswordModal = ({
+  show,
+  onClose,
+  adminId,
+  handleSuccessfulEdit,
+}) => {
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
-  const handleModalClose = () => {
-    formik.resetForm();
-    setErrMsg("");
-    onClose();
-  };
-
-  const editCategoryName = async (values) => {
+  const changePassword = async (values) => {
     try {
       const response = await axios.patch(
-        `/admin/category/name/${categoryId}`,
-        { name: values.categoryName }
+        `/api/admin/change-pass/${adminId}`,
+        values
       );
-  
+      console.log("Response from server:", response);
       if (response.status === 200) {
-        formik.resetForm();
         onClose();
+        formik.resetForm();
         handleSuccessfulEdit();
       } else {
-        throw new Error("Edit Category Name Failed");
+        throw new Error("Change Password Failed");
       }
     } catch (err) {
-      let displayedError = false;
-  
-      if (err.response?.data?.errors) {
-        err.response.data.errors.forEach(error => {
-          if (error.path === "name") {
-            formik.setFieldError("categoryName", error.msg);
-            displayedError = true;
-          }
-        });
-      }
-      if (!displayedError) {
-        setErrMsg(err.response?.data?.msg || "An unexpected error occurred. Please try again.");
+      console.log("Error in request:", err);
+      if (!err.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(err.response?.data?.message);
       }
     }
   };
 
   const formik = useFormik({
     initialValues: {
-      categoryName: "",
+      newPassword: "",
+      confirmPassword: "",
     },
-    onSubmit: editCategoryName,
+    onSubmit: changePassword,
     validationSchema: yup.object().shape({
-      categoryName: yup.string().required("Category Name is required"),
+      newPassword: yup
+        .string()
+        .min(8)
+        .required("Password is required")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
+          "Password must have at least 8 characters, 1 number, 1 capital, and 1 symbol."
+        ),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("Password"), null], "Passwords must match")
+        .required("Confirm Password is required"),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -69,11 +74,11 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
   }, [show, formik]);
 
   return (
-    <Modal show={show} size="md" popup onClose={handleModalClose}>
+    <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category Name
+            Change Password
           </h3>
         </div>
       </Modal.Header>
@@ -85,13 +90,22 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
             </div>
           )}
           <div className="mt-5 px-6 grid gap-y-3">
-            <InputForm
-              label="Category Name"
-              name="categoryName"
-              placeholder = "Enter category name"
+            <PasswordInput
+              label="New Password"
+              name="newPassword"
+              placeholder="Enter new password"
               onChange={formik.handleChange}
-              value={formik.values.categoryName}
-              errorMessage={formik.errors.categoryName}
+              value={formik.values.newPassword}
+              errorMessage={formik.errors.newPassword}
+            />
+            <InputForm
+              label="Confirm New Password"
+              name="confirmPassword"
+              type="password"
+              placeholder="Enter confirm password"
+              onChange={formik.handleChange}
+              value={formik.values.confirmPassword}
+              errorMessage={formik.errors.confirmPassword}
             />
             <div className="flex flex-col justify-center items-center mt-3">
               <Button
@@ -110,4 +124,4 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
   );
 };
 
-export default EditCategoryNameModal;
+export default ChangePasswordModal;

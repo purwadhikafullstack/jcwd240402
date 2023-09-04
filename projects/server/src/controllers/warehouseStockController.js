@@ -174,7 +174,7 @@ module.exports = {
     }
   },
 
-  async initiateStockTransfer(req, res) {
+  async stockTransfer(req, res) {
     const t = await db.sequelize.transaction();
 
     try {
@@ -184,6 +184,13 @@ module.exports = {
         return res.status(400).json({
           success: false,
           message: "Required fields missing",
+        });
+      }
+
+      if (fromWarehouseId === toWarehouseId) {
+        return res.status(400).json({
+            success: false,
+            message: "Source and destination warehouses cannot be the same.",
         });
       }
 
@@ -203,20 +210,16 @@ module.exports = {
         });
       }
 
-      const transfer = await db.Inventory_transfers.create(
-        {
-          warehouse_stock_id: fromStock.id,
-          from_warehouse_id: fromWarehouseId,
-          to_warehouse_id: toWarehouseId,
-          product_id: productId,
-          quantity: quantity,
-          journal: "Transfer initiated",
-          approval: false,
-          transaction_code: "TRX" + Date.now(),
-          timestamp: new Date().toISOString(),
-        },
-        { transaction: t }
-      );
+      const transfer = await db.Inventory_transfers.create({
+        warehouse_stock_id: fromStock.id,
+        from_warehouse_id: fromWarehouseId,
+        to_warehouse_id: toWarehouseId,
+        product_id: productId,
+        quantity: quantity,
+        status: "Pending",
+        transaction_code: "TRX" + Date.now(),
+        timestamp: Date.now()
+      }, { transaction: t });
 
       await t.commit();
 
@@ -245,7 +248,7 @@ module.exports = {
         transaction: t,
       });
 
-      if (!transfer || transfer.approval) {
+      if (!transfer || transfer.status !== "Pending") {
         await t.rollback();
         return res.status(400).json({
           success: false,
@@ -277,6 +280,11 @@ module.exports = {
         transaction: t,
       });
 
+      if (fromStock.product_stock - transfer.quantity === 0) {
+        fromStock.status = 'Empty';
+        await fromStock.save({ transaction: t });
+      }
+
       const toStock = await db.Warehouse_stocks.findOrCreate({
         where: {
           warehouse_id: transfer.to_warehouse_id,
@@ -296,7 +304,10 @@ module.exports = {
         transaction: t,
       });
 
-      transfer.approval = true;
+      toStock[0].status = 'In Stock';
+      await toStock[0].save({ transaction: t });
+
+      transfer.status = "Approve";
       await transfer.save({ transaction: t });
 
       await t.commit();
@@ -326,7 +337,7 @@ module.exports = {
         transaction: t,
       });
 
-      if (!transfer || transfer.approval) {
+      if (!transfer || transfer.status !== "Pending") {
         await t.rollback();
         return res.status(400).json({
           success: false,
@@ -334,8 +345,8 @@ module.exports = {
         });
       }
 
+      transfer.status = "Reject";
       transfer.journal = "Transfer rejected";
-      transfer.approval = false;
       await transfer.save({ transaction: t });
 
       await t.commit();
@@ -354,6 +365,7 @@ module.exports = {
       });
     }
   },
+
 
   getAllWarehouseStock: async (req, res) => {
     try {

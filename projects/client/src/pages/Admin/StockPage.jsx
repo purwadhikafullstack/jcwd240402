@@ -18,7 +18,7 @@ const StockPage = () => {
   ];
 
   return (
-    <div className="h-screen lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="h-screen lg:grid lg:grid-cols-[auto,1f]">
       <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen">
         <SidebarAdminDesktop />
       </div>
@@ -26,7 +26,7 @@ const StockPage = () => {
         <div className="border-b p-4">
           <Tabs tabData={tabData} />
         </div>
-        <div className="flex-1 overflow-auto px-8 pt-8">
+        <div className="flex-1 px-8 pt-8">
           <Outlet />
         </div>
       </div>

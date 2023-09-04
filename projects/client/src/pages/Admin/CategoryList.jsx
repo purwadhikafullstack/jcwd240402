@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import axios from "axios";
+import axios from "../../api/axios";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import DefaultPagination from "../../components/Pagination";
 import AsyncSelect from "react-select/async";
-import RegisterCategoryModal from "../../components/Modals/category/ModalRegisterCategory";
+import RegisterCategoryModal from "../../components/modal/category/ModalRegisterCategory";
 import Button from "../../components/Button";
 import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
 
@@ -18,7 +18,7 @@ const CategoryList = () => {
   const fetchCategories = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/categories`,
+        `/admin/categories`,
         {
           params: {
             page: currentPage,
@@ -48,7 +48,7 @@ const CategoryList = () => {
   const loadCategories = async (inputValue, callback) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/categories`,
+        `/admin/categories`,
         {
           params: {
             name: inputValue,
@@ -120,7 +120,7 @@ const CategoryList = () => {
             />
           ))}
         </div>
-        <div className="flex justify-center items-center w-full mt-8">
+        <div className="flex justify-center items-center w-full my-4">
           <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}

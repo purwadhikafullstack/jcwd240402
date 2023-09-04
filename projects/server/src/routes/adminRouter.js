@@ -12,45 +12,40 @@ const router = require("express").Router();
 
 // Admin Routes
 
-router.post("/register",validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin); 
+router.post("/register",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin); 
 router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.loginAdmin); 
-router.post("/change-pass/:id",validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
-router.post("/assign-warehouse/:id", adminController.assignWarehouse);
+router.patch("/change-pass/:id",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
+router.patch("/assign-warehouse/:id",authMiddleware.verifyAccessTokenSuperAdmin, adminController.assignWarehouse);
 
 router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin,adminController.getRole);
 router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
 
-router.post("/register",validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin);
-router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.loginAdmin);
-router.post("/assign-warehouse/:id", adminController.assignWarehouse);
-router.post("/change-pass/:id",validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
-
 // Category Routes
 
 router.get("/categories", adminController.getCategories);
 
-router.post("/category",multerCategory.single("category_img"),validatorMiddlewareCategory.validateCategory,categoryController.createCategory);
+router.post("/category",authMiddleware.verifyAccessTokenSuperAdmin,multerCategory.single("category_img"),validatorMiddlewareCategory.validateCategory,categoryController.createCategory);
 
-router.patch("/category/img/:id",multerCategory.single("category_img"),categoryController.updateCategoryImage);
-router.patch("/category/name/:id",validatorMiddlewareCategory.validateCategory,categoryController.updateCategoryName);
-router.patch("/category/:id", categoryController.deleteCategory);
+router.patch("/category/img/:id",authMiddleware.verifyAccessTokenSuperAdmin,multerCategory.single("category_img"),categoryController.updateCategoryImage);
+router.patch("/category/name/:id",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareCategory.validateCategory,categoryController.updateCategoryName);
+router.patch("/category/:id",authMiddleware.verifyAccessTokenSuperAdmin,categoryController.deleteCategory);
 
 // Product Routes
 
 router.get("/products", productController.getProductsList);
 router.get("/single-product/", productController.getSingleProduct);
 
-router.post("/product",multerProduct.array("images", 5),validatorMiddlewareProduct.validateProduct,productController.createProduct);
-router.post("/product/:id/image",multerProduct.single("image"),productController.addImageToProduct);
+router.post("/product",authMiddleware.verifyAccessTokenSuperAdmin,multerProduct.array("images", 5),validatorMiddlewareProduct.validateProduct,productController.createProduct);
+router.post("/product/:id/image",authMiddleware.verifyAccessTokenSuperAdmin,multerProduct.single("image"),productController.addImageToProduct);
 
-router.patch("/product/:id",validatorMiddlewareProduct.removeEmptyFields,validatorMiddlewareProduct.validateUpdateProduct,productController.updateProductDetails);
-router.patch("/product/image/:id",multerProduct.single("image"),productController.updateProductImage);
-router.patch("/product/delete/:id", productController.deleteProduct);
-router.patch("/product/status/:name", productController.toggleProductStatus);
+router.patch("/product/:id",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareProduct.removeEmptyFields,validatorMiddlewareProduct.validateUpdateProduct,productController.updateProductDetails);
+router.patch("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin,multerProduct.single("image"),productController.updateProductImage);
+router.patch("/product/delete/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProduct);
+router.patch("/product/status/:name",authMiddleware.verifyAccessTokenSuperAdmin, productController.toggleProductStatus);
 
-router.delete("/product/image/:id", productController.deleteProductImage);
+router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProductImage);
 
 // List Routes
 

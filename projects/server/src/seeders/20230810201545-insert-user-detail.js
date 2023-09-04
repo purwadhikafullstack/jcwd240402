@@ -3,9 +3,9 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.bulkInsert("User_details", [
+    return queryInterface.bulkInsert("Address_users", [
       {
-        city_id: 1,
+        city_id: 154,
         user_id: 1,
         address_details:
           "Jl. TB Simatupang No.30, RT.9/RW.2, Gedong, Kec. Ps. Rebo, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13760",
@@ -26,6 +26,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete("User_details", null, {});
+    await queryInterface.bulkDelete("Address_users", null, {});
   },
 };

@@ -47,17 +47,6 @@ const CheckOut = () => {
     },
   ];
 
-  const distanceKm = (lat1, lon1, lat2, lon2) => {
-    const r = 6371; // km
-    const p = Math.PI / 180;
-  
-    const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
-                  + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
-                    (1 - Math.cos((lon2 - lon1) * p)) / 2;
-  
-    return 2 * r * Math.asin(Math.sqrt(a));
-  }
-
   useEffect(() => {
     if (!access_token && refresh_token) {
       axios
@@ -100,24 +89,6 @@ const CheckOut = () => {
         setTotalCart(res.data.total)
       });
   }, [access_token, dispatch]);
-
-  useEffect(() => {
-
-    for(let i = 0; i < cartData.length; i++){
-      if(distanceKm(cartData[i].Warehouse_stock.Warehouse.latitude,
-        cartData[i].Warehouse_stock.Warehouse.longitude,
-        addressData[0].latitude, addressData[0].longitude) >= 
-        distanceKm(closestWarehouse.latitude, closestWarehouse.longitude,
-          addressData[0].latitude, addressData[0].longitude)){
-            setClosestWarehouse(cartData[i].Warehouse_stock.Warehouse)
-        }
-    }
-
-    setOriginId(closestWarehouse.city_id)
-    
-  },[]);
-
-
   
 
   return (
@@ -195,7 +166,7 @@ const CheckOut = () => {
               <h1>Shipping price: </h1>
               <hr className="border-2 " />
               <h1>Total Payment: </h1>
-              <h1>delivering from: {closestWarehouse.warehouse_name} </h1>
+              <h1>delivering from:  </h1>
               <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>

@@ -1521,10 +1521,11 @@ module.exports = {
   findClosestWarehouse : async (req, res) => {
 
     const userData = req.user;
+    const address_title  = req.body.address_title || "Home";
 
     try {
-      const userAddressData = await db.Address_user.findAll({
-        where: { user_id: userData.id },
+      const userAddressData = await db.Address_user.findOne({
+        where: { user_id: userData.id , address_title: address_title},
         include: { model: db.City },
         attributes: {
           exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
@@ -1533,12 +1534,35 @@ module.exports = {
 
       const allWarehouseData = await getAllWarehouses();
 
+      const distanceKm = (lat1, lon1, lat2, lon2) => {
+        const r = 6371; // km
+        const p = Math.PI / 180;
       
+        const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
+                      + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
+                        (1 - Math.cos((lon2 - lon1) * p)) / 2;
+      
+        return 2 * r * Math.asin(Math.sqrt(a));
+      }
+
+      let closestWarehouse = {latitude: allWarehouseData.data[0].latitude, 
+        longitude: allWarehouseData.data[0].longitude};
+
+      for(let i = 0; i < allWarehouseData.data.length; i++){
+        if(distanceKm(allWarehouseData.data[i].latitude,
+          allWarehouseData.data[i].longitude,
+          userAddressData.latitude, userAddressData.longitude) <= 
+          distanceKm(closestWarehouse.latitude, closestWarehouse.longitude,
+            userAddressData.latitude, userAddressData.longitude)){
+              closestWarehouse = allWarehouseData.data[i]
+          }
+      }
       
       res.status(200).json({
         ok: true,
         address: userAddressData,
         warehouse: allWarehouseData,
+        closest_warehouse: closestWarehouse
       });
     } catch (error) {
       res.status(500).json({

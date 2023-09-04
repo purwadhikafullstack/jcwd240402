@@ -1236,15 +1236,22 @@ module.exports = {
       });
 
       let total = 0;
+      let totalweight = 0;
       for (const item of result) {
         total +=
           Number(item.Warehouse_stock.Product.price) * Number(item.quantity);
+      }
+
+      for (const item of result) {
+        totalweight +=
+          Number(item.Warehouse_stock.Product.weight) * Number(item.quantity);
       }
 
       res.json({
         ok: true,
         result,
         total: total,
+        total_weight: totalweight,
       });
     } catch (error) {
       res.status(500).json({
@@ -1448,8 +1455,6 @@ module.exports = {
 
   getCost : async (req, res) => {
 
-    //kaga jalan
-
     const {
       origin,
       destination,
@@ -1457,7 +1462,8 @@ module.exports = {
       courier,
     } = req.body;
 
-    const data = {origin: '501', destination: '114', weight: 1700, courier: 'jne'}
+    const data = {origin: origin, destination: destination, weight: weight, courier: courier}
+
 
     try {
       const response = await axios({

@@ -18,18 +18,20 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
+import Select from 'react-select'
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
   const cartData = useSelector((state) => state.carter.value);
   const addressData = useSelector((state) => state.addresser.value);
-  const [test1, settest1] = useState(0);
-  const [test2, settest2] = useState(0);
+  const [closestWarehouse, setClosestWarehouse] = useState({});
+  const [rajaOngkir, setRajaOngkir] = useState({});
   const [totalCart, setTotalCart] = useState(0);
   const [originId, setOriginId] = useState("");
-  const [destinationId, setDestinationId] = useState("");
-  const [itemWeight, setItemWeight] = useState("");
+  const [totalWeight, setTotalWeight] = useState("");
   const [chosenCourier, setChosenCourier] = useState("");
+  const [chosenCourierService, setChosenCourierService] = useState("");
+  const [chosenCourierPrice, setChosenCourierPrice] = useState("");
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
@@ -75,7 +77,6 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
-        setDestinationId(addressData[0].city_id)
       });
   }, [access_token, dispatch]);
 
@@ -87,8 +88,46 @@ const CheckOut = () => {
       .then((res) => {
         dispatch(cartsUser(res.data?.result));
         setTotalCart(res.data.total)
+        setTotalWeight(res.data.total_weight)
       });
   }, [access_token, dispatch]);
+
+  useEffect(() => {
+    axios
+      .get("/user/closest", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        setClosestWarehouse(res.data.closest_warehouse)
+        setOriginId(res.data.closest_warehouse.city_id)
+      });
+  }, [access_token, dispatch]);
+
+  const handleCourier = (courier) => {
+    axios
+      .post("/user/rajaongkir/cost", 
+      {
+        "origin": originId,
+        "destination": userData.User_detail?.Address_user?.city_id,
+        "weight": totalWeight,
+        "courier": courier.value
+      },
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        setRajaOngkir(res.data.result)
+        setChosenCourierPrice(res.data.result.rajaongkir.results[0].costs[0].cost.value)
+        setChosenCourier(res.data.result.rajaongkir.results[0].name)
+        setChosenCourierService(res.data.result.rajaongkir.results[0].costs[0].description)
+      });
+  };
+
+  const courierOptions = [
+    { value: 'jne', label: 'JNE' },
+    { value: 'pos', label: 'POS Indonesia' },
+    { value: 'tiki', label: 'TIKI' }
+  ]
   
 
   return (
@@ -163,13 +202,23 @@ const CheckOut = () => {
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
               <h1>subtotal price: {totalCart} </h1>
-              <h1>Shipping price: </h1>
+              <h1>Shipping price: {chosenCourierPrice}</h1>
+              <h1>Courier : {chosenCourier}</h1>
+              <h1>Service : {chosenCourierService}</h1>
               <hr className="border-2 " />
               <h1>Total Payment: </h1>
-              <h1>delivering from:  </h1>
+              <h1>delivering from: {closestWarehouse.warehouse_name}</h1>
               <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>
+            </div>
+            <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+              <h1>Choose Courier</h1>
+              <Select
+                options={courierOptions}
+                placeholder={<div>courier</div>}
+                onChange={handleCourier}
+              />
             </div>
           </div>
         </div>

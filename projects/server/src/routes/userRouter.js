@@ -153,7 +153,7 @@ router.get("/order", Verify.verifyAccessTokenUser, UserController.getOrderList);
 
 router.get("/city", Verify.verifyAccessTokenUser, UserController.getCity);
 
-router.get(
+router.post(
   "/rajaongkir/cost",
   Verify.verifyAccessTokenUser,
   UserController.getCost

@@ -92,10 +92,10 @@ const Cart = () => {
             <div className="col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold">
               <h1>Product item</h1>
             </div>
-            <div className="hidden md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
+            <div className="col-span-1 md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
               <h1>Subtotal</h1>
             </div>
-            <div className="col-span-2 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
+            <div className="col-span-1 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
               <h1>Edit</h1>
             </div>
             {productsData.length === 0 ? (

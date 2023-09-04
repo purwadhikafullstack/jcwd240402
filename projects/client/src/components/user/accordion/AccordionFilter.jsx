@@ -25,11 +25,22 @@ const AccordionFilter = ({
   const [priceMin, priceMax] = price;
   const [weightMin, weightMax] = weight;
 
-  const handleFilter = () => {
+  const handleFilterPrice = () => {
+    const { ...otherParams } = Object.fromEntries(searchParams);
     setSearchParams({
-      ...searchParams,
+      ...otherParams,
+      page: 1,
       priceMin,
       priceMax,
+    });
+  };
+  console.log(...searchParams);
+  const handleFilterWeight = () => {
+    const { ...otherParams } = Object.fromEntries(searchParams);
+
+    setSearchParams({
+      ...otherParams,
+      page: 1,
       weightMax,
       weightMin,
     });
@@ -56,6 +67,7 @@ const AccordionFilter = ({
                 />
               </Box>
             </div>
+            <button onClick={handleFilterPrice}>submit</button>
           </Accordion.Content>
         </Accordion.Panel>
         <Accordion.Panel>
@@ -77,6 +89,7 @@ const AccordionFilter = ({
                 />
               </Box>
             </div>
+            <button onClick={handleFilterWeight}>submit</button>
           </Accordion.Content>
         </Accordion.Panel>
         <Accordion.Panel>
@@ -88,7 +101,6 @@ const AccordionFilter = ({
           </Accordion.Content>
         </Accordion.Panel>
       </Accordion>
-      <button onClick={handleFilter}>submit</button>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import DismissableAlert from "../DismissableAlert";
 
-const Alert = ({ successMsg, openAlert, setOpenAlert, errMsg }) => {
+const Alert = ({ successMsg = "success", openAlert, setOpenAlert, errMsg }) => {
   return (
     <>
       {successMsg ? (

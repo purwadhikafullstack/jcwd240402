@@ -28,6 +28,7 @@ import axios from "../../api/axios";
 import { profileUser } from "../../features/userDataSlice";
 
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -123,17 +124,25 @@ const Home = () => {
             <SelectionCategory category={category} />
           ) : (
             <div>
-              <h1>tidak ada category</h1>
+              <h1>Empty Categories</h1>
             </div>
           )}
         </div>
         <div className="relative z-0">
-          {productData.map((item) => (
+          {productData.slice(0, 3).map((item) => (
             <div key={item.id}>
               <h1 className="font-bold mx-3 lg:text-xl">{item.category}</h1>
               <CarouselProduct products={item.products} />
             </div>
           ))}
+          <div className="flex justify-end">
+            <Link
+              to=""
+              className="text-sm hover:decoration-inherit hover:underline"
+            >
+              see more our products
+            </Link>
+          </div>
         </div>
 
         <div>

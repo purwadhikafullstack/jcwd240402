@@ -15,6 +15,7 @@ import {
 import axios from "../../api/axios";
 import { cartsUser } from "../../features/cartSlice";
 import ModalConfirmationDelete from "./modal/ModalConfirmationDelete";
+import { Link } from "react-router-dom";
 
 const TableCart = ({
   img,
@@ -80,7 +81,10 @@ const TableCart = ({
   return (
     <>
       <div className="col-span-2 md:col-span-3 lg:col-span-3 ">
-        <div className="flex gap-2 h-full justify-center items-center md:justify-start lg:justify-start mt-2 md:mt-0 lg:mt-0">
+        <Link
+          to={`/product/${name}`}
+          className="flex gap-2 h-full justify-center items-center md:justify-start lg:justify-start mt-2 md:mt-0 lg:mt-0"
+        >
           <img
             src={`${process.env.REACT_APP_API_BASE_URL}${img}`}
             alt=""
@@ -99,14 +103,14 @@ const TableCart = ({
               Total weight: {weight * quantity} gr
             </h1>
           </div>
-        </div>
+        </Link>
       </div>
-      <div className="hidden md:grid lg:grid md:col-span-1 lg:col-span-1 ">
-        <div className=" md:flex lg:flex md:text-xs lg:text-xs md:gap-2 lg:gap-2 md:h-full lg:h-full justify-center items-center">
+      <div className="flex justify-center items-center md:grid lg:grid md:col-span-1 lg:col-span-1 ">
+        <div className="text-xs md:flex lg:flex md:text-xs lg:text-xs md:gap-2 lg:gap-2 md:h-full lg:h-full justify-center items-center">
           <h1>{toRupiah(subtotalPrice)}</h1>
         </div>
       </div>
-      <div className="col-span-2 md:col-span-1 lg:col-span-1 grid justify-center">
+      <div className="col-span-1 md:col-span-1 lg:col-span-1 grid justify-center">
         <div className="flex justify-evenly items-center  w-20 text-xs h-full rounded-full ">
           <div className="flex flex-col items-end">
             <button onClick={() => setShowMenu(!showMenu)}>

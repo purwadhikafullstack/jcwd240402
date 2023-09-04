@@ -15,17 +15,23 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
 import AccordionProduct from "../../components/user/accordion/AccordionProduct";
 import axios from "../../api/axios";
-import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
 import Alert from "../../components/user/Alert";
 import { cartsUser } from "../../features/cartSlice";
 import { useDispatch } from "react-redux";
 import productNotFound from "../../assets/images/productNotFound.png";
+import { profileUser } from "../../features/userDataSlice";
 
 const ProductDetail = () => {
   const { name } = useParams();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
+
   const [openAlert, setOpenAlert] = useState(false);
   const [detailProduct, setDetailProduct] = useState({});
   const [dataImage, setDataImage] = useState([]);
@@ -33,7 +39,34 @@ const ProductDetail = () => {
   const [qty, setQty] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [newAccessToken, setNewAccessToken] = useState("");
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   useEffect(() => {
     axios

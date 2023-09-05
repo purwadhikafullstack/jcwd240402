@@ -28,6 +28,7 @@ const SearchBar = ({
           setSearchProduct("");
           if (searchProduct) {
             navigate(`/product/${searchProduct}`);
+            setSearchProduct("");
           }
         });
     } catch (error) {

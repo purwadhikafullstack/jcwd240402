@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Accordion } from "flowbite-react";
+import toRupiah from "@develoka/angka-rupiah-js";
 
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -34,7 +35,7 @@ const AccordionFilter = ({
       priceMax,
     });
   };
-  console.log(...searchParams);
+
   const handleFilterWeight = () => {
     const { ...otherParams } = Object.fromEntries(searchParams);
 
@@ -54,8 +55,8 @@ const AccordionFilter = ({
             PRICE
           </Accordion.Title>
           <Accordion.Content>
-            <span>
-              From {priceMin} to {priceMax}
+            <span className="text-xs font-bold">
+              From {toRupiah(priceMin)} to {toRupiah(priceMax)}
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>
@@ -67,7 +68,12 @@ const AccordionFilter = ({
                 />
               </Box>
             </div>
-            <button onClick={handleFilterPrice}>submit</button>
+            <button
+              onClick={handleFilterPrice}
+              className="bg-blue3 w-fit px-7 text-white text-xs text-center py-1 font-semibold rounded-lg"
+            >
+              apply
+            </button>
           </Accordion.Content>
         </Accordion.Panel>
         <Accordion.Panel>
@@ -75,8 +81,8 @@ const AccordionFilter = ({
             WEIGHT
           </Accordion.Title>
           <Accordion.Content>
-            <span>
-              From {weightMin} to {weightMax}
+            <span className="text-xs font-bold">
+              From {weightMin} gr to {weightMax} gr
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>
@@ -89,7 +95,12 @@ const AccordionFilter = ({
                 />
               </Box>
             </div>
-            <button onClick={handleFilterWeight}>submit</button>
+            <button
+              onClick={handleFilterWeight}
+              className="bg-blue3 w-fit px-7 text-white text-xs text-center py-1 font-semibold rounded-lg"
+            >
+              apply
+            </button>
           </Accordion.Content>
         </Accordion.Panel>
         <Accordion.Panel>

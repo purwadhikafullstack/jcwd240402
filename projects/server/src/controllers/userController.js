@@ -511,7 +511,7 @@ module.exports = {
     const userData = req.user;
     const {
       username,
-      email,
+
       first_name,
       last_name,
       phone,
@@ -565,54 +565,6 @@ module.exports = {
           ok: true,
           message: "change first name successful",
         });
-      }
-
-      if (email) {
-        const isEmailExist = await db.User.findOne({
-          where: { email: email },
-        });
-
-        if (isEmailExist) {
-          return res.status(400).json({
-            ok: false,
-            message: "email already taken",
-          });
-        }
-
-        const verifyToken =
-          crypto.randomBytes(16).toString("hex") +
-          Math.random() +
-          new Date().getTime();
-
-        await db.User.update(
-          { email: email, verify_token: verifyToken, is_verify: false },
-          { where: { id: user.id }, transaction }
-        );
-        const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
-        const message =
-          "you've updated your email. Please verify the new email to ensure account security";
-        const mailing = {
-          recipient_email: email,
-          link,
-          subject: "EMAIL CHANGED",
-          receiver: user.username,
-          message,
-        };
-        await transaction.commit();
-        Mailer.sendEmail(mailing)
-          .then((response) =>
-            res.status(201).json({
-              ok: true,
-              message: `${response.message}, change email successful ${user.username} successful `,
-              verify_token: verifyToken,
-            })
-          )
-          .catch((error) =>
-            res
-              .status(400)
-              .json({ ok: false, message: error.message, error: error.message })
-          );
-        return;
       }
 
       if (new_password && new_confirm_password) {
@@ -1404,7 +1356,7 @@ module.exports = {
     const userId = req.user.id;
     try {
       const orderList = await db.Order.findAll({
-        where : {user_id : userId}
+        where: { user_id: userId },
       });
 
       res.json({
@@ -1419,7 +1371,7 @@ module.exports = {
     }
   },
 
-  getCity : async (req, res) => {
+  getCity: async (req, res) => {
     try {
       const response = await axios.get(
         "https://api.rajaongkir.com/starter/city",
@@ -1433,7 +1385,7 @@ module.exports = {
     }
   },
 
-  getCost : async (req, res) => {
+  getCost: async (req, res) => {
     try {
       const response = await axios.post(
         "https://api.rajaongkir.com/starter/cost",
@@ -1446,5 +1398,4 @@ module.exports = {
       res.status(500).json({ ok: false, message: error.message });
     }
   },
-
 };

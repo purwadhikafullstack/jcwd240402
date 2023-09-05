@@ -3,6 +3,7 @@ import SlideOverFilter from "../slide/SlideOverFilter";
 import { Pagination } from "flowbite-react";
 import { TbZoomMoney } from "react-icons/tb";
 import { RiScales2Fill } from "react-icons/ri";
+import toRupiah from "@develoka/angka-rupiah-js";
 
 const NavbarFilterPagination = ({
   rangePriceMin,
@@ -43,7 +44,7 @@ const NavbarFilterPagination = ({
                 <span>
                   <TbZoomMoney className="text-xl" />
                 </span>
-                from {currentPriceMin} to {currentPriceMax}
+                from {toRupiah(currentPriceMin)} to {toRupiah(currentPriceMax)}
               </p>
             ) : null}
             {currentWeightMin && currentWeightMax ? (
@@ -51,7 +52,7 @@ const NavbarFilterPagination = ({
                 <span>
                   <RiScales2Fill className="text-xl" />
                 </span>
-                from {currentWeightMin} to {currentWeightMax}
+                from {currentWeightMin} gr to {currentWeightMax} gr
               </p>
             ) : null}
             {(currentPriceMin && currentPriceMax) ||
@@ -93,7 +94,7 @@ const NavbarFilterPagination = ({
               <span>
                 <TbZoomMoney className="text-xl" />
               </span>
-              from {currentPriceMin} to {currentPriceMax}
+              from {toRupiah(currentPriceMin)} to {toRupiah(currentPriceMax)}
             </p>
           ) : null}
           {currentWeightMin && currentWeightMax ? (

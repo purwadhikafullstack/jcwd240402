@@ -27,25 +27,6 @@ const NavigatorSetting = () => {
         >
           <h2>Address List</h2>
         </Link>
-        <Link
-          className={`${
-            location.pathname === "/user/setting/cart"
-              ? " text-blue2 underline underline-offset-8 decoration-4"
-              : " text-gray-600"
-          } font-semibold`}
-          to="/user/setting/cart"
-        >
-          <h2>Cart</h2>
-        </Link>
-        <Link
-          className={`${
-            location.pathname === "/user/order"
-              ? " text-blue2 underline underline-offset-8 decoration-4"
-              : " text-gray-600"
-          } font-semibold`}
-        >
-          <h2>Order</h2>
-        </Link>
       </div>
     </>
   );

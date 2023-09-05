@@ -11,7 +11,6 @@ const Category = () => {
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategoryList(res.data.result));
   }, []);
-  console.log(categoryList);
 
   return (
     <div>

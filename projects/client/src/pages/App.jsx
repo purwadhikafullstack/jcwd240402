@@ -31,8 +31,9 @@ import StockList from "../components/admin/stock/StockList";
 import CreateStock from "../components/admin/stock/CreateStock";
 import ProductPerCategory from "./user/ProductPerCategory";
 import Category from "./user/Category";
-import SettingCart from "./user/SettingCart";
+
 import ThisIsFurniFor from "./user/ThisIsFurniFor";
+import TermAndCondition from "./user/TermAndCondition";
 
 function App() {
   return (
@@ -93,7 +94,6 @@ function App() {
           />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/user/setting/cart" element={<SettingCart />} />
           <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
@@ -103,6 +103,7 @@ function App() {
           />
           <Route path="/product-category" element={<Category />} />
           <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
+          <Route path="/term-and-condition" element={<TermAndCondition />} />
         </Routes>
       </Router>
     </div>

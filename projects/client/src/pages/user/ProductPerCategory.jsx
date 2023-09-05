@@ -131,10 +131,6 @@ const ProductPerCategory = () => {
     };
   });
 
-  console.log(imageDisplay);
-
-  console.log(imageDisplay.filter((item) => item.banner == undefined));
-
   const categoryImage = productData[0]?.Product?.category?.category_img;
 
   function handlePage(page) {
@@ -221,7 +217,7 @@ const ProductPerCategory = () => {
                   className=""
                 />
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[9]?.banner}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[2]?.banner}`}
                   alt=""
                   className=""
                 />

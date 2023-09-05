@@ -40,6 +40,7 @@ const ProductDetail = () => {
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [newAccessToken, setNewAccessToken] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -72,10 +73,10 @@ const ProductDetail = () => {
     axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
-        console.log(res);
         setDetailProduct(res.data?.result?.Product);
         setDataImage(res.data?.result?.Product?.Image_products);
         setStock(res.data?.result?.product_stock);
+        setLoading(false);
       })
       .catch((error) => {
         setErrMsg(error.response?.data?.message);
@@ -122,11 +123,14 @@ const ProductDetail = () => {
     };
     return image;
   });
-  console.log(product);
-  console.log(detailProduct);
-  console.log(dataImage);
-  console.log(stock);
-  console.log(name);
+
+  if (loading) {
+    return (
+      <div className="border-2 w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -165,12 +169,14 @@ const ProductDetail = () => {
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
             <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
 
-            <h1 className="font-bold text-xl">{detailProduct.price}</h1>
+            <h1 className="font-bold text-xl">
+              {toRupiah(detailProduct.price)}
+            </h1>
 
             <hr />
 
             <div className="flex justify-between mt-4">
-              <p>amount:</p>
+              <p>Amount:</p>
               <div className="flex justify-between items-center w-24  rounded-full px-1">
                 <button
                   onClick={() => (qty <= 0 ? 0 : setQty(qty - 1))}

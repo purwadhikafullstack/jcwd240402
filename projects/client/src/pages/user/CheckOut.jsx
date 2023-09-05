@@ -19,6 +19,7 @@ import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
 import Select from 'react-select'
+import toRupiah from "@develoka/angka-rupiah-js";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -26,7 +27,9 @@ const CheckOut = () => {
   const addressData = useSelector((state) => state.addresser.value);
   const [closestWarehouse, setClosestWarehouse] = useState({});
   const [rajaOngkir, setRajaOngkir] = useState({});
+  const [serviceOptions, setServiceOptions] = useState({})
   const [totalCart, setTotalCart] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [originId, setOriginId] = useState("");
   const [totalWeight, setTotalWeight] = useState("");
   const [chosenCourier, setChosenCourier] = useState("");
@@ -117,10 +120,21 @@ const CheckOut = () => {
       })
       .then((res) => {
         setRajaOngkir(res.data.result)
-        setChosenCourierPrice(res.data.result.rajaongkir.results[0].costs[0].cost.value)
         setChosenCourier(res.data.result.rajaongkir.results[0].name)
-        setChosenCourierService(res.data.result.rajaongkir.results[0].costs[0].description)
+        setServiceOptions(res.data.result.rajaongkir.results[0].costs.map((service) => (
+          {
+            value: service.cost[0].value,
+            label: service.description + " (" + service.service + ")",
+          })
+        ))
       });
+  };
+
+  const handleCourierService = (courier) => {
+    
+        setChosenCourierService(courier.label)
+        setChosenCourierPrice(courier.value)
+        setTotalPrice(courier.value + totalCart)
   };
 
   const courierOptions = [
@@ -184,29 +198,24 @@ const CheckOut = () => {
                           <h1>{item.Warehouse_stock.Product.description}</h1>
                         )}
 
-                        <h1>{item.Warehouse_stock.Product.price} x {item.quantity}</h1>
-                        <h1>{item.Warehouse_stock.Product.price * item.quantity}</h1>
+                        <h1>{toRupiah(item.Warehouse_stock.Product.price)} x {item.quantity} {item.quantity > 1 ? "units" : "unit"}</h1>
+                        <h1>total: {toRupiah(item.Warehouse_stock.Product.price * item.quantity)}</h1>
 
                       </div>
                     </>
                   ))}
-                </div>
-                <div className="col-span-1">
-                  <button className="bg-blue3 w-full font-semibold text-white p-2 rounded-md">
-                    Delivery Option
-                  </button>
                 </div>
               </div>
             </div>
             {/* KANAN */}
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
-              <h1>subtotal price: {totalCart} </h1>
-              <h1>Shipping price: {chosenCourierPrice}</h1>
+              <h1>Subtotal price: {toRupiah(totalCart)} </h1>
+              <h1>Shipping price: {toRupiah(chosenCourierPrice)}</h1>
               <h1>Courier : {chosenCourier}</h1>
               <h1>Service : {chosenCourierService}</h1>
               <hr className="border-2 " />
-              <h1>Total Payment: </h1>
+              <h1>Total Payment: {toRupiah(totalPrice)}</h1>
               <h1>delivering from: {closestWarehouse.warehouse_name}</h1>
               <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
@@ -219,6 +228,11 @@ const CheckOut = () => {
                 placeholder={<div>courier</div>}
                 onChange={handleCourier}
               />
+              {chosenCourier && (<Select
+                options={serviceOptions}
+                placeholder={<div>courier service</div>}
+                onChange={handleCourierService}
+              />)}
             </div>
           </div>
         </div>

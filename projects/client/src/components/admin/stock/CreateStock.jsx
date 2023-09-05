@@ -58,7 +58,7 @@ const CreateStock = () => {
 
     try {
       const response = await axios.post(
-        "/api/warehouse-stock",
+        "/warehouse-stock",
         {
           warehouseId: selectedWarehouse.value,
           productId: selectedProduct.value,

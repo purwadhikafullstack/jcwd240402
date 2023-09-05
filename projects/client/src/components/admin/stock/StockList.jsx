@@ -4,6 +4,7 @@ import DefaultPagination from "../../Pagination";
 import AsyncSelect from "react-select/async";
 import UpdateStock from "../../modal/stock/ModalUpdateStock";
 import ConfirmDeleteStock from "../../modal/stock/ModalDeleteStock";
+import TransferStockModal from "../../modal/inventoryTransfer/TransferStockModal";
 import axios from "../../../api/axios";
 
 const StockList = () => {
@@ -15,6 +16,8 @@ const StockList = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [productToTransfer, setProductToTransfer] = useState(null);
 
   useEffect(() => {
     fetchStocks();
@@ -106,6 +109,14 @@ const StockList = () => {
     setShowDeleteModal(false);
   };
 
+  const handleTransfer = (row) => {
+    setProductToTransfer({
+      fromWarehouseId: row["Warehouse ID"],
+      productId: row["Product ID"],
+    });
+    setShowTransferModal(true);
+  };
+
   return (
     <div className="container mx-auto pt-1">
       <div className="flex items-center">
@@ -130,6 +141,7 @@ const StockList = () => {
           data={stocks}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onTransfer={handleTransfer}
           showTransfer={true}
         />
       </div>
@@ -152,6 +164,13 @@ const StockList = () => {
         warehouseId={productToDelete?.warehouseId}
         productId={productToDelete?.productId}
         onSuccessfulDelete={handleSuccessfulDelete}
+      />
+      <TransferStockModal
+        show={showTransferModal}
+        onClose={() => setShowTransferModal(false)}
+        productId={productToTransfer?.productId}
+        fromWarehouseId={productToTransfer?.fromWarehouseId}
+        fetchStocks={fetchStocks}
       />
     </div>
   );

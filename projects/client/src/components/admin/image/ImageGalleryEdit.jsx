@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { FaTrash, FaUpload } from "react-icons/fa";
 import axios from "../../../api/axios";
 import { fetchProductDetails } from "../../../features/actions/productActions";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 function ImageGalleryEdit() {
+  const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.product.productDetails);
 
@@ -14,15 +16,6 @@ function ImageGalleryEdit() {
   useEffect(() => {
     setProductImages(productDetails.Image_products || []);
   }, [productDetails]);
-
-  const handleImageDelete = async (imgProductId) => {
-    try {
-      await axios.delete(`/admin/product/image/${imgProductId}`);
-      dispatch(fetchProductDetails(productDetails.name));
-    } catch (error) {
-      console.error("Error deleting image:", error);
-    }
-  };
 
   const handleImageUpdate = async (event, imgProductId) => {
     const file = event.target.files[0];
@@ -36,12 +29,18 @@ function ImageGalleryEdit() {
         if (imgProductId) {
           response = await axios.patch(
             `/admin/product/image/${imgProductId}`,
-            formData
+            formData,
+            {
+              headers: { Authorization: `Bearer ${access_token}` },
+            }
           );
         } else {
           response = await axios.post(
             `/admin/product/${productDetails.id}/image`,
-            formData
+            formData,
+            {
+              headers: { Authorization: `Bearer ${access_token}` },
+            }
           );
         }
 
@@ -56,14 +55,12 @@ function ImageGalleryEdit() {
     setMainImage(hoveredImage);
   };
 
-  const SubImageBox = ({
-    image,
-    imgProductId,
-    onHover,
-  }) => {
+  const SubImageBox = ({ image, imgProductId, onHover }) => {
     const handleDelete = async () => {
       try {
-        await axios.delete(`/admin/product/image/${imgProductId}`);
+        await axios.delete(`/admin/product/image/${imgProductId}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
         dispatch(fetchProductDetails(productDetails.name));
       } catch (error) {
         console.error("Error deleting image:", error);
@@ -101,7 +98,10 @@ function ImageGalleryEdit() {
           </div>
         ) : (
           <div className="w-20 h-20 object-cover border-2 border-dashed border-gray-300 flex items-center justify-center">
-            <label htmlFor={`image-upload-${imgProductId}`} className="cursor-pointer">
+            <label
+              htmlFor={`image-upload-${imgProductId}`}
+              className="cursor-pointer"
+            >
               <FaUpload />
             </label>
             <input
@@ -141,9 +141,7 @@ function ImageGalleryEdit() {
           alt="Main Preview"
         />
       </div>
-      <div className="sub-images-container">
-        {subImageBoxes}
-      </div>
+      <div className="sub-images-container">{subImageBoxes}</div>
     </div>
   );
 }

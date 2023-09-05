@@ -14,21 +14,18 @@ module.exports = {
     */
     return queryInterface.bulkInsert("Categories", [
       {
-        id: 1,
         name: "table",
         category_img: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id: 2,
         name: "chair",
         category_img: "",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id: 3,
         name: "sofa",
         category_img: "",
         createdAt: new Date(),

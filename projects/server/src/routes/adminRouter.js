@@ -5,6 +5,7 @@ const validatorMiddlewareCategory = require("../middleware/validator/category");
 const validatorMiddlewareProduct = require("../middleware/validator/product");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
+const inventoryController = require("../controllers/inventoryTransferController")
 const multerCategory = require("../middleware/multer/category/category");
 const multerProduct = require("../middleware/multer/product/product");
 const authMiddleware = require("../middleware/auth");
@@ -46,6 +47,15 @@ router.patch("/product/delete/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 router.patch("/product/status/:name",authMiddleware.verifyAccessTokenSuperAdmin, productController.toggleProductStatus);
 
 router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProductImage);
+
+// Inventory Transfer Routes
+
+router.get('/transfers', inventoryController.getInventoryTransferList);
+
+router.post("/stock-transfer", inventoryController.stockTransfer);
+
+router.patch("/stock-transfers/:transferid/approve", inventoryController.approveStockTransfer);
+router.patch("/stock-transfers/:transferid/reject", inventoryController.rejectStockTransfer);
 
 // List Routes
 

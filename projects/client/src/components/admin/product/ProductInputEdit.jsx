@@ -3,26 +3,39 @@ import InputForm from "../../InputForm";
 import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
+  const access_token = getCookie("access_token");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [defaultCategories, setDefaultCategories] = useState([]);
 
   useEffect(() => {
-    if (initialProduct && initialProduct.category && initialProduct.category.id && initialProduct.category.name) {
+    if (
+      initialProduct &&
+      initialProduct.category &&
+      initialProduct.category.id &&
+      initialProduct.category.name
+    ) {
       const initialCategory = {
         value: initialProduct.category.id,
-        label: initialProduct.category.name
+        label: initialProduct.category.name,
       };
       setSelectedCategory(initialCategory);
     }
   }, [initialProduct]);
-  
+
   const loadCategoryOptions = async (inputValue) => {
     try {
-      const response = await axios.get(`/admin/categories`, {
-        params: { name: inputValue },
-      });
+      const response = await axios.get(
+        `/admin/categories`,
+        {
+          params: { name: inputValue },
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
       return response.data.data.map((category) => ({
         value: category.id,
         label: category.name,

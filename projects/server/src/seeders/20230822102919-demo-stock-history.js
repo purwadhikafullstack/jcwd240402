@@ -14,7 +14,6 @@ module.exports = {
      */
     return queryInterface.bulkInsert("History_stocks", [
       {
-        id: 1,
         warehouse_stock_id: 1,
         warehouse_id: 1,
         admin_id: 2,
@@ -28,7 +27,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
         warehouse_stock_id: 2,
         warehouse_id: 1,
         admin_id: 2,
@@ -42,7 +40,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
         warehouse_stock_id: 3,
         warehouse_id: 1,
         admin_id: 2,
@@ -56,7 +53,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 4,
         warehouse_stock_id: 4,
         warehouse_id: 1,
         admin_id: 2,
@@ -70,7 +66,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 5,
         warehouse_stock_id: 5,
         warehouse_id: 2,
         admin_id: 3,
@@ -84,7 +79,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 6,
         warehouse_stock_id: 6,
         warehouse_id: 2,
         admin_id: 3,
@@ -98,7 +92,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 7,
         warehouse_stock_id: 7,
         warehouse_id: 2,
         admin_id: 3,
@@ -112,7 +105,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 8,
         warehouse_stock_id: 1,
         warehouse_id: 1,
         admin_id: 2,
@@ -126,7 +118,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 9,
         warehouse_stock_id: 2,
         warehouse_id: 1,
         admin_id: 2,
@@ -140,7 +131,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 10,
         warehouse_stock_id: 6,
         warehouse_id: 2,
         admin_id: 3,

@@ -3,10 +3,12 @@ import Button from "../../Button";
 import ImageGalleryEdit from "../image/ImageGalleryEdit";
 import axios from "../../../api/axios";
 import ProductInputsEdit from "./ProductInputEdit";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 const ProductEdit = () => {
+  const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { productName: encodedProductName } = useParams();

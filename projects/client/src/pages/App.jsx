@@ -33,6 +33,7 @@ import ProductPerCategory from "./user/ProductPerCategory";
 import Category from "./user/Category";
 import SettingCart from "./user/SettingCart";
 import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
+import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
 
 function App() {
   return (
@@ -72,7 +73,7 @@ function App() {
           <Route path="/admin/stock/*" element={<AdminStockPage />}>
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
-            <Route path="edit/:productName" element={<ProductEdit />} />
+            <Route path="inventory-transfers" element={<InventoryTransferList/>} />
           </Route>{" "}
           {/* admin dan pathnya di perbaiki*/}
           {/* 404 */}

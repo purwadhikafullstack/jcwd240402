@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,7 +11,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("User_details", [
       {
         user_id: 1,
@@ -19,7 +19,7 @@ module.exports = {
         last_name: "Smith",
         phone: "081116347887",
         address_user_id: 1,
-        img_profile: null,
+        img_profile: "photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -29,7 +29,7 @@ module.exports = {
         last_name: "Adams",
         phone: "0813114590",
         address_user_id: 2,
-        img_profile: null,
+        img_profile: "photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -39,7 +39,7 @@ module.exports = {
         last_name: "Wibowo",
         phone: "0812293309",
         address_user_id: 3,
-        img_profile: null,
+        img_profile: "photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -49,14 +49,14 @@ module.exports = {
         last_name: "Shirona",
         phone: "0822365788",
         address_user_id: 4,
-        img_profile: null,
+        img_profile: "photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ]);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
@@ -64,5 +64,5 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     return queryInterface.bulkDelete("User_details", null, {});
-  }
+  },
 };

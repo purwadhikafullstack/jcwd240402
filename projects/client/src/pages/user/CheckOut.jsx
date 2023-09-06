@@ -18,7 +18,7 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
-import Select from 'react-select'
+import Select from "react-select";
 import toRupiah from "@develoka/angka-rupiah-js";
 
 const CheckOut = () => {
@@ -27,7 +27,7 @@ const CheckOut = () => {
   const addressData = useSelector((state) => state.addresser.value);
   const [closestWarehouse, setClosestWarehouse] = useState({});
   const [rajaOngkir, setRajaOngkir] = useState({});
-  const [serviceOptions, setServiceOptions] = useState({})
+  const [serviceOptions, setServiceOptions] = useState({});
   const [totalCart, setTotalCart] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [originId, setOriginId] = useState("");
@@ -39,18 +39,6 @@ const CheckOut = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
-
-  const imageData = [
-    {
-      img: "https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/images/220/1022009_PE832399_S4.jpg",
-      category: "Desk",
-      description:
-        "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Possimus itaque sapiente aliquid excepturi at quis?",
-      weight: "7000 gr",
-      price: 100000,
-      name: "Desk Premium",
-    },
-  ];
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -90,8 +78,8 @@ const CheckOut = () => {
       })
       .then((res) => {
         dispatch(cartsUser(res.data?.result));
-        setTotalCart(res.data.total)
-        setTotalWeight(res.data.total_weight)
+        setTotalCart(res.data?.total);
+        setTotalWeight(res.data?.total_weight);
       });
   }, [access_token, dispatch]);
 
@@ -101,48 +89,49 @@ const CheckOut = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        setClosestWarehouse(res.data.closest_warehouse)
-        setOriginId(res.data.closest_warehouse.city_id)
-      });
+        setClosestWarehouse(res.data?.closest_warehouse);
+        setOriginId(res.data?.closest_warehouse?.city_id);
+      })
+      .catch((error) => console.log(error));
   }, [access_token, dispatch]);
 
   const handleCourier = (courier) => {
     axios
-      .post("/user/rajaongkir/cost", 
-      {
-        "origin": originId,
-        "destination": userData.User_detail?.Address_user?.city_id,
-        "weight": totalWeight,
-        "courier": courier.value
-      },
-      {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
+      .post(
+        "/user/rajaongkir/cost",
+        {
+          origin: originId,
+          destination: userData.User_detail?.Address_user?.city_id,
+          weight: totalWeight,
+          courier: courier.value,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      )
       .then((res) => {
-        setRajaOngkir(res.data.result)
-        setChosenCourier(res.data.result.rajaongkir.results[0].name)
-        setServiceOptions(res.data.result.rajaongkir.results[0].costs.map((service) => (
-          {
+        setRajaOngkir(res.data.result);
+        setChosenCourier(res.data?.result?.rajaongkir?.results[0]?.name);
+        setServiceOptions(
+          res.data?.result?.rajaongkir?.results[0]?.costs.map((service) => ({
             value: service.cost[0].value,
             label: service.description + " (" + service.service + ")",
-          })
-        ))
+          }))
+        );
       });
   };
 
   const handleCourierService = (courier) => {
-    
-        setChosenCourierService(courier.label)
-        setChosenCourierPrice(courier.value)
-        setTotalPrice(courier.value + totalCart)
+    setChosenCourierService(courier.label);
+    setChosenCourierPrice(courier.value);
+    setTotalPrice(courier.value + totalCart);
   };
 
   const courierOptions = [
-    { value: 'jne', label: 'JNE' },
-    { value: 'pos', label: 'POS Indonesia' },
-    { value: 'tiki', label: 'TIKI' }
-  ]
-  
+    { value: "jne", label: "JNE" },
+    { value: "pos", label: "POS Indonesia" },
+    { value: "tiki", label: "TIKI" },
+  ];
 
   return (
     <div>
@@ -187,23 +176,55 @@ const CheckOut = () => {
                   {cartData.map((item) => (
                     <>
                       <div className="w-20">
-                        <img src={item.Warehouse_stock.Product.Image_Products} alt="" className="w-20" />
+                        <img
+                          src={item.Warehouse_stock.Product.Image_Products}
+                          alt=""
+                          className="w-20"
+                        />
                       </div>
                       <div>
                         <h1>{item.Warehouse_stock.Product.name}</h1>
                         <h1>{item.Warehouse_stock.Product.category.name}</h1>
                         {item.Warehouse_stock.Product.description > 25 ? (
-                          <h1>{item.Warehouse_stock.Product.description.slice(0, 25)}...</h1>
+                          <h1>
+                            {item.Warehouse_stock.Product.description.slice(
+                              0,
+                              25
+                            )}
+                            ...
+                          </h1>
                         ) : (
                           <h1>{item.Warehouse_stock.Product.description}</h1>
                         )}
 
-                        <h1>{toRupiah(item.Warehouse_stock.Product.price)} x {item.quantity} {item.quantity > 1 ? "units" : "unit"}</h1>
-                        <h1>total: {toRupiah(item.Warehouse_stock.Product.price * item.quantity)}</h1>
-
+                        <h1>
+                          {toRupiah(item.Warehouse_stock.Product.price)} x{" "}
+                          {item.quantity} {item.quantity > 1 ? "units" : "unit"}
+                        </h1>
+                        <h1>
+                          total:{" "}
+                          {toRupiah(
+                            item.Warehouse_stock.Product.price * item.quantity
+                          )}
+                        </h1>
                       </div>
                     </>
                   ))}
+                </div>
+                <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                  <h1>Choose Courier</h1>
+                  <Select
+                    options={courierOptions}
+                    placeholder={<div>courier</div>}
+                    onChange={handleCourier}
+                  />
+                  {chosenCourier && (
+                    <Select
+                      options={serviceOptions}
+                      placeholder={<div>courier service</div>}
+                      onChange={handleCourierService}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -220,19 +241,6 @@ const CheckOut = () => {
               <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>
-            </div>
-            <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
-              <h1>Choose Courier</h1>
-              <Select
-                options={courierOptions}
-                placeholder={<div>courier</div>}
-                onChange={handleCourier}
-              />
-              {chosenCourier && (<Select
-                options={serviceOptions}
-                placeholder={<div>courier service</div>}
-                onChange={handleCourierService}
-              />)}
             </div>
           </div>
         </div>

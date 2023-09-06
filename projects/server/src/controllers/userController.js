@@ -1395,7 +1395,7 @@ module.exports = {
       const response = await axios.get(
         `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
         {
-          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
+          headers: { key: `${process.env.KEY_RAJAONGKIR}` },
         }
       );
       res.json({ ok: true, result: response.data });
@@ -1419,7 +1419,7 @@ module.exports = {
         method: "post",
         url: "https://api.rajaongkir.com/starter/cost",
         headers: {
-          key: "438918ba05b00d968fd8e405ba7cc540",
+          key: `${process.env.KEY_RAJAONGKIR}`,
           "content-type": "application/x-www-form-urlencoded",
         },
         data: qs.stringify(data),
@@ -1473,11 +1473,11 @@ module.exports = {
 
   findClosestWarehouse: async (req, res) => {
     const userData = req.user;
-    const address_title = req.body.address_title || "Home";
+    const address_title = req.body.address_title || "ehehe";
 
     try {
       const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, address_title: address_title },
+        where: { user_id: userData.id, address_title },
         include: { model: db.City },
         attributes: {
           exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
@@ -1489,7 +1489,7 @@ module.exports = {
       const distanceKm = (lat1, lon1, lat2, lon2) => {
         const r = 6371; // km
         const p = Math.PI / 180;
-
+        console.log(lat1);
         const a =
           0.5 -
           Math.cos((lat2 - lat1) * p) / 2 +

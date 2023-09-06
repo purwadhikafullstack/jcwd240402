@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import AsyncSelect from "react-select/async";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const CreateStock = () => {
+  const access_token = getCookie("access_token");
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [stockQuantity, setStockQuantity] = useState("");
@@ -11,7 +13,7 @@ const CreateStock = () => {
   const loadWarehouses = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`
+        `/warehouse/warehouse-list?searchName=${inputValue}`
       );
       return response.data.warehouses.map((warehouse) => ({
         value: warehouse.id,
@@ -26,7 +28,7 @@ const CreateStock = () => {
   const loadProducts = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/products?category_id=&page=&pageSize=10`
+        `/admin/products?category_id=&page=&pageSize=10`
       );
       return response.data.data.map((product) => ({
         value: product.id,
@@ -56,11 +58,14 @@ const CreateStock = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/warehouse-stock",
+        "/warehouse-stock",
         {
           warehouseId: selectedWarehouse.value,
           productId: selectedProduct.value,
           productStock: stockQuantity,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
         }
       );
       console.log("Stock creation response:", response.data);

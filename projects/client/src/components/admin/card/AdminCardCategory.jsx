@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import moment from "moment";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
-import EditCategoryNameModal from "../../Modals/category/ModalEditCategoryName";
-import EditCategoryImageModal from "../../Modals/category/ModalEditCategoryImage";
-import ConfirmDeleteModal from "../../Modals/category/ModalDeleteCategory";
+import EditCategoryNameModal from "../../modal/category/ModalEditCategoryName";
+import EditCategoryImageModal from "../../modal/category/ModalEditCategoryImage";
+import ConfirmDeleteModal from "../../modal/category/ModalDeleteCategory";
 
 const AdminCategoryCard = ({
   src,
@@ -50,7 +50,7 @@ const AdminCategoryCard = ({
   };
 
   return (
-    <div className="p-4 border rounded shadow-sm relative h-72 pt-8">
+    <div className="p-4 border rounded shadow-lg relative h-72 pt-8">
       <img
         src={`${process.env.REACT_APP_API_BASE_URL}${src}`}
         alt={name}

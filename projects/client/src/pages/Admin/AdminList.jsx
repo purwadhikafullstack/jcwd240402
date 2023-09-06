@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import RegisterAdminModal from "../../components/Modals/admin/ModalRegisterAdmin";
+import RegisterAdminModal from "../../components/modal/admin/ModalRegisterAdmin";
 import Button from "../../components/Button";
-import AdminProfileModal from "../../components/Modals/admin/ModalAdminEdit";
-import ChangePasswordModal from "../../components/Modals/admin/ModalEditPassword";
-import ReassignWarehouseModal from "../../components/Modals/admin/ModalReassignWarehouse";
+import AdminProfileModal from "../../components/modal/admin/ModalAdminEdit";
 import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
@@ -23,6 +21,7 @@ const AdminList = () => {
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
 
   useEffect(() => {
     refreshAdminList();

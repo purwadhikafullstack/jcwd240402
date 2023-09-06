@@ -15,7 +15,12 @@ const AdminStockPage = () => {
           label: "Manage Stock", 
           isActive: window.location.pathname === "/admin/stock/management",
           to: "/admin/stock/management",
-        }
+        },
+        {
+          label: "Inventory Transfer",
+          isActive: window.location.pathname === "/admin/stock/inventory-transfers",
+          to: "/admin/stock/inventory-transfers",
+        },
     ];
     
 

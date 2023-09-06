@@ -45,7 +45,18 @@ const checkWarehouseName = async (value, { req }) => {
   }
 };
 
+const removeEmptyFields = (req, res, next) => {
+  Object.keys(req.body).forEach((key) => {
+    if (req.body[key] === null || req.body[key] === undefined) {
+      delete req.body[key];
+    }
+  });
+  next();
+};
+
 module.exports = {
+  removeEmptyFields,
+
   validateRegistration: validate([
     body("username")
       .notEmpty()
@@ -81,7 +92,7 @@ module.exports = {
       }),
     body("confirmPassword")
       .notEmpty()
-      .withMessage("Confirm password is required")
+      .withMessage("Confirm password is required"),
   ]),
 
   validateLogin: validate([
@@ -124,6 +135,48 @@ module.exports = {
     body("longitude").notEmpty().withMessage("Longtitude is required"),
     body("warehouse_contact")
       .notEmpty()
-      .withMessage("Warehouse contact is required"),
+      .withMessage("Warehouse contact is required")
+      .isNumeric()
+      .withMessage("Contact should be a valid number"),
+  ]),
+
+  validateUpdateWarehouse: validate([
+    body("address_warehouse")
+      .optional()
+      .notEmpty()
+      .withMessage("Address is required"),
+    body("warehouse_name")
+      .optional()
+      .notEmpty()
+      .withMessage("Warehouse name is required")
+      .custom(checkWarehouseName),
+    body("city_id")
+      .optional()
+      .notEmpty()
+      .withMessage("City ID is required")
+      .isNumeric()
+      .withMessage("City ID must be a number"),
+    body("latitude")
+      .optional()
+      .notEmpty()
+      .withMessage("Latitude is required")
+      .isNumeric()
+      .withMessage("Latitude must be a number")
+      .isFloat({ min: -90, max: 90 })
+      .withMessage("Latitude should be between -90 and 90"),
+    body("longitude")
+      .optional()
+      .notEmpty()
+      .withMessage("Longitude is required")
+      .isNumeric()
+      .withMessage("Longitude must be a number")
+      .isFloat({ min: -180, max: 180 })
+      .withMessage("Longitude should be between -180 and 180"),
+    body("warehouse_contact")
+      .optional()
+      .notEmpty()
+      .withMessage("Warehouse contact is required")
+      .isNumeric()
+      .withMessage("Contact should be a valid number"),
   ]),
 };

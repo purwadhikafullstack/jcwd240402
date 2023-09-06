@@ -11,17 +11,21 @@ router.post(
   validatorMiddleware.validateRegisterWarehouse,
   warehouseController.registerWarehouse
 );
-router.get("/warehouse-list", warehouseController.getWarehouseList);
 
 router.patch(
   "/:id",
   coordinatesMiddleware,
+  validatorMiddleware.removeEmptyFields,
+  validatorMiddleware.validateUpdateWarehouse,
   warehouseController.updateWarehouse
 );
+
+router.get("/warehouse-list", warehouseController.getWarehouseList);
 router.get(
   "/stock-history",
   authMiddleware.verifyAccessTokenAdmin,
   warehouse_stockController.getStockHistoryList
 );
+router.get("/:name", warehouseController.getWarehouseByName);
 
 module.exports = router;

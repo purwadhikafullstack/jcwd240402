@@ -3,11 +3,14 @@ import Button from "../../Button";
 import ImageGalleryEdit from "../image/ImageGalleryEdit";
 import axios from "../../../api/axios";
 import ProductInputsEdit from "./ProductInputEdit";
-import { useParams } from "react-router-dom";
+import { getCookie } from "../../../utils/tokenSetterGetter";
+import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 const ProductEdit = () => {
+  const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { productName: encodedProductName } = useParams();
   const [changedFields, setChangedFields] = useState({});
   const [serverErrors, setServerErrors] = useState([]);
@@ -77,7 +80,10 @@ const ProductEdit = () => {
       [name]: value,
     }));
   };
-  
+
+  const handleCancel = () => {
+    navigate("/admin/products");
+  };
 
   return (
     <div className="flex h-screen">
@@ -98,14 +104,23 @@ const ProductEdit = () => {
                     handleInputChange={handleInputChange}
                     errors={serverErrors}
                   />
-                  <div className="flex mt-6 justify-center w-full">
+                  <div className="flex mt-6 justify-center w-full gap-4">
+                    <Button 
+                      onClick={handleCancel}
+                      buttonText="Cancel"
+                      bgColor="bg-gray-300"
+                      colorText="text-black"
+                      fontWeight="font-bold"
+                      buttonSize="medium"
+                      className="ml-4"
+                    />
                     <Button
                       type="submit"
-                      buttonText="Update"
+                      buttonText="Save"
                       bgColor="bg-blue3"
                       colorText="text-white"
                       fontWeight="font-bold"
-                      buttonSize="large"
+                      buttonSize="medium"
                     />
                   </div>
                   {successMessage && (

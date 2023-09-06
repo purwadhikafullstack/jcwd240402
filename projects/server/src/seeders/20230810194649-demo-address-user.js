@@ -14,7 +14,6 @@ module.exports = {
     */
     return queryInterface.bulkInsert("Address_users", [
       {
-        id: 1,
         city_id: 23,
         user_id: 1,
         address_details: "Gg. Aki Nari, Pasteur, Kec. Sukajadi, Kota Bandung, Jawa Barat 40161",
@@ -26,7 +25,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
         city_id: 78,
         user_id: 2,
         address_details: "Jl. Pesona Amerika I, Nagrak, Kec. Gn. Putri, Kabupaten Bogor, Jawa Barat 16967",
@@ -38,7 +36,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
         city_id: 153,
         user_id: 3,
         address_details: "Jl. Setia Budi III 3-27, RT.2/RW.3, Kuningan, Setia Budi, Kecamatan Setiabudi, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12910",
@@ -50,7 +47,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 4,
         city_id: 267,
         user_id: 4,
         address_details: "Buha, Mapanget, Manado City, North Sulawesi",

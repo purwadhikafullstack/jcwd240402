@@ -4,6 +4,7 @@ import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { Badge } from "flowbite-react";
 import axios from "../../../api/axios";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const AdminCardProduct = ({
   src,
@@ -15,15 +16,17 @@ const AdminCardProduct = ({
   onDelete,
   setActive,
 }) => {
+  const access_token = getCookie("access_token");
   const [showMenu, setShowMenu] = useState(false);
-
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
   };
 
   const toggleProductStatus = async () => {
     try {
-      await axios.patch(`/admin/product/status/${name}`);
+      await axios.patch(`/admin/product/status/${name}`,{}, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       setActive(!isActive);
       setShowMenu(false);
     } catch (error) {

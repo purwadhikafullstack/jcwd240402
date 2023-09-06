@@ -10,7 +10,6 @@ const addressUserCoordinate = require("../middleware/openCage/addressUserCoordin
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
-const warehouseStockController = require("../controllers/warehouseStockController");
 
 /* AUTH */
 router.post(

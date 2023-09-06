@@ -23,7 +23,6 @@ module.exports = {
     return queryInterface.bulkInsert("Users", [
 
       {
-        id: 1,
         username: "kevin09",
         email: "kevin@gmail.com",
         role_id: 3,
@@ -35,7 +34,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
         username: "adrian1998",
         email: "adrianj@gmail.com",
         role_id: 3,
@@ -47,7 +45,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
         username: "johnw",
         email: "johnw@gmail.com",
         role_id: 3,
@@ -59,7 +56,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 4,
         username: "madamc14",
         email: "cynthia@gmail.com",
         role_id: 3,

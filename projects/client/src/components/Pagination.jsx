@@ -9,7 +9,7 @@ const DefaultPagination = ({ totalPages, onPageChange }) => {
   };
 
   return (
-    <div>
+    <div className='shadow-lg'>
       <Pagination
         currentPage={currentPage}
         onPageChange={handlePageChange}

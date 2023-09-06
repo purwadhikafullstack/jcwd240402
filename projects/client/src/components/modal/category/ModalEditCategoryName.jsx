@@ -2,51 +2,62 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
-import InputForm from "../../InputForm"; 
-import Button from "../../Button"; 
+import axios from "../../../api/axios";
+import InputForm from "../../InputForm";
+import Button from "../../Button";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const EditCategoryModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+  const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
-  const editCategory = async (values) => {
-    try {
-      const formData = new FormData();
-      formData.append("category_img", values.categoryImage);
-      formData.append("name", values.categoryName);
+  const handleModalClose = () => {
+    formik.resetForm();
+    setErrMsg("");
+    onClose();
+  };
 
+  const editCategoryName = async (values) => {
+    try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/category/img/${categoryId}`,
-        formData
+        `/admin/category/name/${categoryId}`,
+        { name: values.categoryName }, {
+          headers: { Authorization: `Bearer ${access_token}` }
+        }
       );
-      console.log("Response from server:", response);
+  
       if (response.status === 200) {
-        onClose();
         formik.resetForm();
+        onClose();
         handleSuccessfulEdit();
       } else {
-        throw new Error("Edit Category Failed");
+        throw new Error("Edit Category Name Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(err.response?.data?.message);
+      let displayedError = false;
+  
+      if (err.response?.data?.errors) {
+        err.response.data.errors.forEach(error => {
+          if (error.path === "name") {
+            formik.setFieldError("categoryName", error.msg);
+            displayedError = true;
+          }
+        });
+      }
+      if (!displayedError) {
+        setErrMsg(err.response?.data?.msg || "An unexpected error occurred. Please try again.");
       }
     }
   };
 
   const formik = useFormik({
     initialValues: {
-      categoryName: "", 
-      categoryImage: null,
+      categoryName: "",
     },
-    onSubmit: editCategory,
+    onSubmit: editCategoryName,
     validationSchema: yup.object().shape({
       categoryName: yup.string().required("Category Name is required"),
-      categoryImage: yup.mixed().required("Category Image is required"),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -62,11 +73,11 @@ const EditCategoryModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) 
   }, [show, formik]);
 
   return (
-    <Modal show={show} size="md" popup onClose={onClose}>
+    <Modal show={show} size="md" popup onClose={handleModalClose}>
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category
+            Edit Category Name
           </h3>
         </div>
       </Modal.Header>
@@ -81,16 +92,10 @@ const EditCategoryModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) 
             <InputForm
               label="Category Name"
               name="categoryName"
+              placeholder = "Enter category name"
               onChange={formik.handleChange}
               value={formik.values.categoryName}
               errorMessage={formik.errors.categoryName}
-            />
-            <InputForm
-              label="Category Image"
-              name="categoryImage"
-              type="file"
-              onChange={(event) => formik.setFieldValue("categoryImage", event.target.files[0])}
-              errorMessage={formik.errors.categoryImage}
             />
             <div className="flex flex-col justify-center items-center mt-3">
               <Button
@@ -109,4 +114,4 @@ const EditCategoryModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) 
   );
 };
 
-export default EditCategoryModal;
+export default EditCategoryNameModal;

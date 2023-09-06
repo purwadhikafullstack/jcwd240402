@@ -7,8 +7,11 @@ import axios from "../../../api/axios";
 import Button from "../../Button";
 import InputForm from "../../InputForm";
 import PasswordInput from "../../PasswordInput";
+import { getCookie } from "../../../utils/tokenSetterGetter";
+
 
 const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
+  const access_token = getCookie("access_token");
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [errMsg, setErrMsg] = useState("");
 
@@ -21,8 +24,15 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
 
   const loadWarehouses = async (inputValue) => {
     try {
-      const { data } = await axios.get(`/warehouse/warehouse-list?searchName=${inputValue}&cityId=`);
-      return data.warehouses.map(wh => ({ value: wh.id, label: wh.warehouse_name })) || [];
+      const { data } = await axios.get(
+        `/warehouse/warehouse-list?searchName=${inputValue}&cityId=`
+      );
+      return (
+        data.warehouses.map((wh) => ({
+          value: wh.id,
+          label: wh.warehouse_name,
+        })) || []
+      );
     } catch (error) {
       console.error("Error loading warehouses:", error);
       return [];
@@ -32,7 +42,7 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
   const handleErrors = (error) => {
     const serverErrors = error.response?.data?.errors;
     if (serverErrors) {
-      serverErrors.forEach(err => formik.setFieldError(err.path, err.msg));
+      serverErrors.forEach((err) => formik.setFieldError(err.path, err.msg));
     } else {
       setErrMsg(error.message || "Registration failed");
     }
@@ -54,7 +64,9 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
 
         const response = await axios.post("/admin/register", {
           ...values,
-          warehouse_id: selectedWarehouse?.value,
+          warehouse_id: selectedWarehouse?.value
+        }, {
+          headers: { Authorization: `Bearer ${access_token}` }
         });
 
         if (response.status === 201) {
@@ -74,7 +86,10 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
       first_name: yup.string().required("First name is required"),
       last_name: yup.string().required("Last name is required"),
       password: yup.string().required("Password is required"),
-      confirmPassword: yup.string().required("Confirm password is required").oneOf([yup.ref("password"), null], "Passwords must match"),
+      confirmPassword: yup
+        .string()
+        .required("Confirm password is required")
+        .oneOf([yup.ref("password"), null], "Passwords must match"),
     }),
   });
 
@@ -109,17 +124,33 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
           )}
           <div className="px-6 grid gap-y-3">
             {renderInputForm("Username", "username", "text", "Enter username")}
-            {renderInputForm("First Name", "first_name", "text", "Enter first name")}
-            {renderInputForm("Last Name", "last_name", "text", "Enter last name")}
+            {renderInputForm(
+              "First Name",
+              "first_name",
+              "text",
+              "Enter first name"
+            )}
+            {renderInputForm(
+              "Last Name",
+              "last_name",
+              "text",
+              "Enter last name"
+            )}
             <PasswordInput
               label="Password"
               name="password"
+              placeholder = "Password"
               value={formik.values.password}
               onChange={formik.handleChange}
               isError={!!formik.errors.password}
               errorMessage={formik.errors.password}
             />
-            {renderInputForm("Confirm Password", "confirmPassword", "password", "Confirm password")}
+            {renderInputForm(
+              "Confirm Password",
+              "confirmPassword",
+              "password",
+              "Confirm password"
+            )}
             <div className="flex-1 pt-3">
               <AsyncSelect
                 classNamePrefix="react-select"
@@ -147,4 +178,3 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
 };
 
 export default RegisterAdminModal;
-

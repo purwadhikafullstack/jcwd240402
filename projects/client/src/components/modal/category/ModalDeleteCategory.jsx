@@ -1,13 +1,17 @@
 import React from "react";
 import { Modal } from "flowbite-react";
 import Button from "../../Button";
-import axios from "axios";
+import axios from "../../../api/axios";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId }) => {
+  const access_token = getCookie("access_token");
   
   const handleDelete = async () => {
     try {
-      const response = await axios.patch(`http://localhost:8000/api/admin/category/${categoryId}`);
+      const response = await axios.patch(`/admin/category/${categoryId}`, {}, {
+        headers: { Authorization: `Bearer ${access_token}` }
+      });
 
       if (response.status === 200) {
         alert('Category deleted successfully!');

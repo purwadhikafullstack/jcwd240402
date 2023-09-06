@@ -1,4 +1,4 @@
-const warehouseStockController = require("../controllers/warehouse_stockController");
+const warehouseStockController = require("../controllers/warehouseStockController");
 const validatorMiddlewareWarehouseStock = require("../middleware/validator/warehouseStock");
 
 const router = require("express").Router();

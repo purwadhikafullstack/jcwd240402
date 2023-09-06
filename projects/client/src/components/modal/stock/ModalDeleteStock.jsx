@@ -1,20 +1,30 @@
 import React from "react";
 import { Modal } from "flowbite-react";
 import Button from "../../Button";
-import axios from "axios"; // Don't forget to import axios
+import axios from "../../../api/axios";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const ConfirmDeleteStock = ({ show, onClose, warehouseId, productId, onSuccessfulDelete }) => {
-
+const ConfirmDeleteStock = ({
+  show,
+  onClose,
+  warehouseId,
+  productId,
+  onSuccessfulDelete,
+}) => {
   const handleDelete = async () => {
+    const access_token = getCookie("access_token");
     try {
-      const response = await axios.delete(`http://localhost:8000/api/warehouse-stock/${warehouseId}/${productId}`);
+      const response = await axios.delete(
+        `/warehouse-stock/${warehouseId}/${productId}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
       if (response.status === 200) {
-        alert('Stock deleted successfully!');
         onClose();
         onSuccessfulDelete();
-      } else {
-        alert(`Error deleting stock: ${response.data.message}`);
       }
     } catch (error) {
       console.error("Failed to delete stock:", error);

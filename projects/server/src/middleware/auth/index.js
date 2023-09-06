@@ -59,8 +59,8 @@ module.exports = {
           return;
         }
 
-        const { role } = payload;
-        if (role !== 2 && role !== 1) {
+        const { role_id } = payload;
+        if (role_id !== 2 && role_id !== 1) {
           return res.status(403).send({
             ok: false,
             message: "Unauthorized role",

@@ -14,7 +14,6 @@ module.exports = {
     */
     return queryInterface.bulkInsert("Warehouse_stocks", [
       {
-        id: 1,
         warehouse_id: 1,
         product_id: 1,
         product_stock: 70,
@@ -23,7 +22,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
         warehouse_id: 1,
         product_id: 2,
         product_stock: 30,
@@ -32,7 +30,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
         warehouse_id: 1,
         product_id: 4,
         product_stock: 30,
@@ -41,7 +38,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 4,
         warehouse_id: 1,
         product_id: 3,
         product_stock: 10,
@@ -50,7 +46,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 5,
         warehouse_id: 2,
         product_id: 4,
         product_stock: 15,
@@ -59,7 +54,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 6,
         warehouse_id: 2,
         product_id: 5,
         product_stock: 15,
@@ -68,7 +62,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 7,
         warehouse_id: 2,
         product_id: 3,
         product_stock: 30,

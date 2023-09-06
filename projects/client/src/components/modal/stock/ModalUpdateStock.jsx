@@ -2,23 +2,32 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
+import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
 import Button from "../../Button";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEdit }) => {
+const UpdateStock = ({
+  show,
+  onClose,
+  warehouseId,
+  productId,
+  handleSuccessfulEdit,
+}) => {
+  const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
-  console.log(productId)
-  console.log(warehouseId)
 
   const updateStock = async (values) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/warehouse-stock/${warehouseId}/${productId}`,
+        `/warehouse-stock/${warehouseId}/${productId}`,
         {
           productStock: values.productStock,
           operation: values.operation,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
         }
       );
       console.log("Response from server:", response);
@@ -41,13 +50,19 @@ const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEd
 
   const formik = useFormik({
     initialValues: {
-      productStock: '',
-      operation: 'increase',
+      productStock: "",
+      operation: "increase",
     },
     onSubmit: updateStock,
     validationSchema: yup.object().shape({
-      productStock: yup.number().min(1, "Product stock must be at least 1").required("Product stock is required"),
-      operation: yup.string().oneOf(['increase', 'decrease'], 'Invalid operation').required('Operation is required'),
+      productStock: yup
+        .number()
+        .min(1, "Product stock must be at least 1")
+        .required("Product stock is required"),
+      operation: yup
+        .string()
+        .oneOf(["increase", "decrease"], "Invalid operation")
+        .required("Operation is required"),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -89,7 +104,9 @@ const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEd
               errorMessage={formik.errors.productStock}
             />
             <div>
-              <label className="block text-sm font-medium text-gray-700">Operation</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Operation
+              </label>
               <select
                 name="operation"
                 onChange={formik.handleChange}
@@ -99,7 +116,9 @@ const UpdateStock = ({ show, onClose, warehouseId, productId, handleSuccessfulEd
                 <option value="increase">Increase</option>
                 <option value="decrease">Decrease</option>
               </select>
-              {formik.errors.operation && <p className="text-red-500">{formik.errors.operation}</p>}
+              {formik.errors.operation && (
+                <p className="text-red-500">{formik.errors.operation}</p>
+              )}
             </div>
             <div className="flex flex-col justify-center items-center mt-3">
               <Button

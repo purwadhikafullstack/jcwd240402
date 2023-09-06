@@ -4,14 +4,15 @@ import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 import Button from "../../Button";
 
-const ReassignWarehouseModal = ({
+const TransferStockModal = ({
   show,
   onClose,
-  adminId,
-  refreshAdminListWrapper,
+  productId,
+  fromWarehouseId,
+  fetchStocks,
 }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  console.log(adminId)
+  const [quantity, setQuantity] = useState("");
 
   const loadWarehouses = async (inputValue) => {
     try {
@@ -29,33 +30,30 @@ const ReassignWarehouseModal = ({
     }
   };
 
-  const handleReassign = () => {
-    if (selectedWarehouse && adminId) {
-      const url = `/admin/assign-warehouse/${adminId}`;
-      const payload = { warehouse_id: selectedWarehouse.value };
-      axios
-        .post(url, payload)
-        .then((res) => {
-          console.log(res.data.message);
-          setSelectedWarehouse(null);
-          onClose();
-          refreshAdminListWrapper();
-        })
-        .catch((error) => {
-          console.error("Reassignment failed:", error.response?.data || error);
-        });
-    } else {
-      console.warn("Cannot reassign without selecting a warehouse or admin ID");
-    }
+  const handleTransfer = () => {
+    const payload = {
+      fromWarehouseId: fromWarehouseId,
+      toWarehouseId: selectedWarehouse.value,
+      productId: productId,
+      quantity: quantity,
+    };
+
+    axios
+      .post("http://localhost:8000/api/admin/stock-transfer", payload)
+      .then(() => {
+        onClose();
+        fetchStocks();
+      })
+      .catch((error) => {
+        console.error("Transfer failed:", error.response?.data || error);
+      });
   };
 
   return (
     <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header>
         <div className="text-center">
-          <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Reassign Warehouse
-          </h3>
+          <h3 className="text-xl font-medium text-gray-900">Transfer Stock</h3>
         </div>
       </Modal.Header>
       <Modal.Body>
@@ -66,18 +64,27 @@ const ReassignWarehouseModal = ({
               loadOptions={loadWarehouses}
               value={selectedWarehouse}
               onChange={setSelectedWarehouse}
-              placeholder="Search for Warehouse by Name"
+              placeholder="Select destination warehouse"
+            />
+          </div>
+          <div className="flex-1">
+            <input
+              type="number"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              placeholder="Quantity"
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div className="flex flex-col justify-center items-center mt-3">
             <Button
               type="button"
               buttonSize="medium"
-              buttonText="Reassign"
+              buttonText="Transfer"
               bgColor="bg-blue3"
               colorText="text-white"
               fontWeight="font-semibold"
-              onClick={handleReassign}
+              onClick={handleTransfer}
             />
           </div>
         </div>
@@ -86,4 +93,4 @@ const ReassignWarehouseModal = ({
   );
 };
 
-export default ReassignWarehouseModal;
+export default TransferStockModal;

@@ -2,12 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
-import axios from "axios";
-import InputForm from "../../InputForm"; 
-import Button from "../../Button"; 
+import Button from "../../Button";
+import axios from "../../../api/axios";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+const EditCategoryImageModal = ({
+  show,
+  onClose,
+  categoryId,
+  handleSuccessfulEdit,
+}) => {
   const hasResetForm = useRef(false);
+  const access_token = getCookie("access_token");
   const [selectedFileName, setSelectedFileName] = useState("Choose a file...");
   const [errMsg, setErrMsg] = useState("");
 
@@ -23,8 +29,11 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
       formData.append("category_img", values.categoryImage);
 
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/category/img/${categoryId}`,
-        formData
+        `/admin/category/img/${categoryId}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
       );
 
       if (response.status === 200) {
@@ -37,7 +46,7 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
     } catch (err) {
       let displayedError = false;
       if (err.response?.data?.errors) {
-        err.response.data.errors.forEach(error => {
+        err.response.data.errors.forEach((error) => {
           if (error.path === "categoryImage") {
             formik.setFieldError("categoryImage", error.msg);
             displayedError = true;
@@ -45,7 +54,10 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
         });
       }
       if (!displayedError) {
-        setErrMsg(err.response?.data?.message || "An unexpected error occurred. Please try again.");
+        setErrMsg(
+          err.response?.data?.message ||
+            "An unexpected error occurred. Please try again."
+        );
       }
     }
   };
@@ -94,8 +106,13 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
                 name="categoryImage"
                 type="file"
                 onChange={(event) => {
-                  formik.setFieldValue("categoryImage", event.currentTarget.files[0]);
-                  setSelectedFileName(event.currentTarget.files[0]?.name || "Choose a file");
+                  formik.setFieldValue(
+                    "categoryImage",
+                    event.currentTarget.files[0]
+                  );
+                  setSelectedFileName(
+                    event.currentTarget.files[0]?.name || "Choose a file"
+                  );
                 }}
                 className="form-input"
               />
@@ -118,8 +135,3 @@ const EditCategoryImageModal = ({ show, onClose, categoryId, handleSuccessfulEdi
 };
 
 export default EditCategoryImageModal;
-
-
-
-
-

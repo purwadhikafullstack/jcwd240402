@@ -94,7 +94,6 @@ function App() {
           />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/user/setting/cart" element={<SettingCart />} />
           <Route path="/user/setting/order" element={<SettingOrder />} />
           <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />

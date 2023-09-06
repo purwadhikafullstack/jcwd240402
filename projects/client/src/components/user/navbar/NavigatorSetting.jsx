@@ -43,6 +43,7 @@ const NavigatorSetting = () => {
               ? " text-blue2 underline underline-offset-8 decoration-4"
               : " text-gray-600"
           } font-semibold`}
+          to="/user/setting/order"
         >
           <h2>Order</h2>
         </Link>

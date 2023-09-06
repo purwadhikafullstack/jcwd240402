@@ -220,6 +220,7 @@ module.exports = {
   },
 
   getAllWarehouseStockFilter: async (req, res) => {
+
     const findMaxWeight = await db.Product.findOne({
       attributes: [Sequelize.fn("MAX", Sequelize.col("weight"))],
       raw: true,
@@ -252,6 +253,12 @@ module.exports = {
       page: Number(req.query.page) || 1,
       perPage: Number(req.query.perPage) || 9,
       searchWarehouseName: req.query.warehouseName || undefined,
+
+    const pagination = {
+      page: Number(req.query.page) || 1,
+      perPage: 9,
+      searchWarehouseName: req.query.warehouseName,
+
       searchCategory: req.query.category || undefined,
       searchProduct: req.query.product || undefined,
       rangeWeightMin: Number(req.query.weightMin) || 0,
@@ -277,6 +284,7 @@ module.exports = {
                   },
                   is_active: true,
                 }
+
               : {
                   is_active: true,
                   weight: {
@@ -292,6 +300,7 @@ module.exports = {
                     ],
                   },
                 },
+
             include: [
               {
                 model: db.Category,
@@ -333,7 +342,9 @@ module.exports = {
       });
 
       const totalCount = await db.Warehouse_stock.count({
+
         attributes: { exclude: ["updatedAt", "createdAt"] },
+
         include: [
           {
             model: db.Product,
@@ -345,6 +356,7 @@ module.exports = {
                   },
                   is_active: true,
                 }
+
               : {
                   is_active: true,
                   weight: {
@@ -360,6 +372,7 @@ module.exports = {
                     ],
                   },
                 },
+
             include: [
               {
                 model: db.Category,
@@ -450,11 +463,13 @@ module.exports = {
           .status(404)
           .json({ ok: false, message: "Product not found" });
       }
+
       res.json({
         ok: true,
         result,
       });
     } catch (error) {
+
       res.status(500).json({
         message: "An error occurred while fetching product stocks",
         error: error.message,

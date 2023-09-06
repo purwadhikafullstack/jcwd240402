@@ -34,9 +34,13 @@ import Category from "./user/Category";
 import ThisIsFurniFor from "./user/ThisIsFurniFor";
 import TermAndCondition from "./user/TermAndCondition";
 import PrivacyPolicy from "./user/PrivacyPolicy";
+
 import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
 import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
+
 import SettingOrder from "./user/SettingOrder";
+import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
+import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
 
 function App() {
   return (
@@ -49,6 +53,14 @@ function App() {
           <Route path="/admin" element={<AdminList />} />
           <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
+
+          <Route path="/edit/:warehouseName" element={<WarehouseInputsEdit/>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/log-in" element={<Login />} />
+          <Route path="/verify" element={<NotifVerify />} />
+          <Route path="/verify/:verify_token" element={<NotifVerified />} />
+
           <Route
             path="/edit/:warehouseName"
             element={<WarehouseInputsEdit />}
@@ -63,6 +75,7 @@ function App() {
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
+
             <Route
               path="inventory-transfers"
               element={<InventoryTransferList />}
@@ -70,6 +83,7 @@ function App() {
           </Route>
 
           {/* HOC */}
+
           <Route
             path="/admin/*"
             element={

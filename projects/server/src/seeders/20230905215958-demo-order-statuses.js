@@ -21,7 +21,7 @@ module.exports = {
       },
       {
         id: 2,
-        name: "Failed",
+        name: "Awaiting Payment Confirmation",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -33,19 +33,19 @@ module.exports = {
       },
       {
         id: 4,
-        name: "On Hold",
+        name: "In Process",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: 5,
-        name: "Canceled",
+        name: "Cancelled",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: 6,
-        name: "Processing",
+        name: "Shipped",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

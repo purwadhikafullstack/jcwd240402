@@ -130,7 +130,7 @@ const StockList = () => {
           type="text"
           placeholder="Search Product "
           // value={}
-          onChange={(e) => setSearchName(e.target.value)}
+          // onChange={(e) => setSearchName(e.target.value)}
           className="flex-1 border rounded text-base bg-white border-gray-300 shadow-sm ml-4"
         />
       </div>

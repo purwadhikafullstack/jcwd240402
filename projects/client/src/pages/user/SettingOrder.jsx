@@ -15,14 +15,9 @@ import {
   getLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
-import ModalEditUsername from "../../components/user/modal/ModalEditUsername";
-import ModalEditFirstName from "../../components/user/modal/ModalEditFirstName";
-import ModalEditLastName from "../../components/user/modal/ModalEditLastName";
-import ModalEditPhone from "../../components/user/modal/ModalEditPhone";
-import ModalEditEmail from "../../components/user/modal/ModalEditEmail";
-import ModalEditPasswordUser from "../../components/user/modal/ModalEditPasswordUser";
-import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProfileImage";
 import withAuthUser from "../../components/user/withAuthUser";
+import toRupiah from "@develoka/angka-rupiah-js";
+import { Badge } from "flowbite-react";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -75,10 +70,23 @@ const SettingOrder = () => {
                   </div>
                 ) : (
                   userOrder.map((order) => (
-                    <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
-                        <h1 className="font-bold">order name</h1>
-                        <h1>{order.total_price}</h1>
-                        <h1>{order.delivery_courier}</h1>
+                    <div className="p-4">
+                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                      <h1>{order.delivery_time}</h1>
+                      {order.Order_details.map((details) => (
+                    <div className="p-1">
+                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">        
+                          <h1 className="font-bold">{details.Warehouse_stock?.Product?.name}</h1>
+                          <h1> {details.quantity} unit</h1>
+                      </div>               
+                    </div>
+                  ))}
+                  <h1>Order Total: {toRupiah(order.total_price)}</h1>
+                  <h1>Courier Used: {order.delivery_courier}</h1>
+                  <Badge color="green" className="w-fit">
+                      {order.Order_status?.name}
+                    </Badge>
+                      </div>
                     </div>
                   ))
                 )}

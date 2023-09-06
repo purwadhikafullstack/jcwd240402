@@ -1373,6 +1373,24 @@ module.exports = {
     try {
       const orderList = await db.Order.findAll({
         where: { user_id: userId },
+        include: [
+        { model: db.Order_status,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+        { model: db.Order_detail,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: 
+            { model: db.Warehouse_stock,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: 
+                { model: db.Product,
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+                },
+              
+            },
+          
+        },
+      ]
       });
 
       res.json({
@@ -1473,7 +1491,7 @@ module.exports = {
 
   findClosestWarehouse: async (req, res) => {
     const userData = req.user;
-    const address_title = req.body.address_title || "ehehe";
+    const address_title = req.body.address_title || "Home";
 
     try {
       const userAddressData = await db.Address_user.findOne({

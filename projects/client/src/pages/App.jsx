@@ -34,6 +34,10 @@ import Category from "./user/Category";
 import ThisIsFurniFor from "./user/ThisIsFurniFor";
 import TermAndCondition from "./user/TermAndCondition";
 import PrivacyPolicy from "./user/PrivacyPolicy";
+
+import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
+import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
+
 import SettingOrder from "./user/SettingOrder";
 import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
 import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
@@ -43,29 +47,25 @@ function App() {
     <div className="App font-poppins">
       <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/redirect-login" element={<NotAuth />} />
+          {/* ADMIN */}
           <Route path="/admin-dashboard" element={<AdminHome />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
           <Route path="/admin" element={<AdminList />} />
           <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
+
           <Route path="/edit/:warehouseName" element={<WarehouseInputsEdit/>} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
+
           <Route
-            path="/reset-password/:resetToken"
-            element={<ResetPassword />}
+            path="/edit/:warehouseName"
+            element={<WarehouseInputsEdit />}
           />
-          <Route
-            path="/reset-password-success"
-            element={<NotifResetPassword />}
-          />
-          <Route path="/forgot-password" element={<NotifForgotPassword />} />
-          <Route path="/category" element={<CategoryList />} /> {/* admin */}
+          <Route path="/category" element={<CategoryList />} />
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
             <Route path="create" element={<ProductRegister />} />
@@ -75,7 +75,15 @@ function App() {
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
+
+            <Route
+              path="inventory-transfers"
+              element={<InventoryTransferList />}
+            />
           </Route>
+
+          {/* HOC */}
+
           <Route
             path="/admin/*"
             element={
@@ -92,6 +100,10 @@ function App() {
               <NotFound to="/" buttonText="go home" toPage="home page" />
             }
           />
+
+          {/* USER */}
+          <Route path="/" element={<Home />} />
+          <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
           <Route path="/user/setting/order" element={<SettingOrder />} />
@@ -106,6 +118,20 @@ function App() {
           <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
           <Route path="/term-and-condition" element={<TermAndCondition />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route
+            path="/reset-password/:resetToken"
+            element={<ResetPassword />}
+          />
+          <Route
+            path="/reset-password-success"
+            element={<NotifResetPassword />}
+          />
+          <Route path="/register" element={<Register />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/log-in" element={<Login />} />
+          <Route path="/verify" element={<NotifVerify />} />
+          <Route path="/verify/:verify_token" element={<NotifVerified />} />
+          <Route path="/forgot-password" element={<NotifForgotPassword />} />
         </Routes>
       </Router>
     </div>

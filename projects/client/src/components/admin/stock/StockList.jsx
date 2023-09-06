@@ -59,27 +59,25 @@ const StockList = () => {
     }
   };
 
-  const loadWarehouses = async (inputValue, callback) => {
+  const loadWarehouses = async (inputValue) => {
     try {
       const response = await axios.get(`/warehouse/warehouse-list`, {
         params: {
           searchName: inputValue,
-          cityId: "",
         },
       });
-
       if (response.data && response.data.warehouses) {
         const formattedWarehouses = response.data.warehouses.map(
           (warehouse) => ({
             value: warehouse.id,
             label: warehouse.warehouse_name,
-            warehouse_name: warehouse.warehouse_name,
           })
         );
-        callback(formattedWarehouses);
+        return formattedWarehouses;
       }
     } catch (error) {
       console.error("Error fetching warehouses:", error);
+      return [];
     }
   };
 
@@ -120,8 +118,9 @@ const StockList = () => {
   return (
     <div className="container mx-auto pt-1">
       <div className="flex items-center">
-        <AsyncSelect
+      <AsyncSelect
           cacheOptions
+          defaultOptions
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import TableComponent from "../../Table";
 import DefaultPagination from "../../Pagination";
 import TransferStockModal from "../../modal/inventoryTransfer/TransferStockModal";
+import ApproveRejectModal from "../../modal/inventoryTransfer/ApproveRejectModal";
 import axios from "../../../api/axios";
+import moment from "moment";
 
 const InventoryTransferList = () => {
   const [transfers, setTransfers] = useState([]);
@@ -10,6 +12,7 @@ const InventoryTransferList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [selectedTransfer, setSelectedTransfer] = useState(null);
+  const [showApproveRejectModal, setShowApproveRejectModal] = useState(false);
 
   useEffect(() => {
     fetchTransfers();
@@ -22,7 +25,6 @@ const InventoryTransferList = () => {
           page: currentPage,
         },
       });
-      console.log(response);
 
       if (response.data && response.data.transfers) {
         setTransfers(response.data.transfers);
@@ -36,11 +38,6 @@ const InventoryTransferList = () => {
     }
   };
 
-  const handleTransferDetails = (transfer) => {
-    setSelectedTransfer(transfer);
-    setShowTransferModal(true);
-  };
-
   return (
     <div className="container mx-auto pt-1">
       <div className="py-4">
@@ -48,20 +45,31 @@ const InventoryTransferList = () => {
           headers={[
             "From Warehouse",
             "To Warehouse",
-            "Product Name", 
+            "Product Name",
             "Quantity",
             "Status",
+            "Date",
           ]}
           data={transfers.map((transfer) => ({
             "Transfer ID": transfer.id,
             "From Warehouse": transfer.FromWarehouse.fromWarehouseName,
             "To Warehouse": transfer.ToWarehouse.toWarehouseName,
-            "Product Name":transfer.Warehouse_stock.Product.name,
-            "Quantity": transfer.quantity,
-            "Status": transfer.status,
+            "Product Name": transfer.Warehouse_stock.Product.name,
+            Quantity: transfer.quantity,
+            Date: moment(transfer.timestamp).format("DD/MM/YY HH:mm"),
+            Status: transfer.status,
+            _original: transfer,
           }))}
-          onTransferDetails={handleTransferDetails}
-          showIcon = {false}
+          onTransferDetails={(row) => {
+            setSelectedTransfer(row._original);
+            setShowTransferModal(true);
+          }}
+          showIcon={false}
+          showApproveReject={true}
+          onApproveReject={(row) => {
+            setSelectedTransfer(row._original);
+            setShowApproveRejectModal(true);
+          }}
         />
       </div>
       <div className="flex justify-center items-center mt-4">
@@ -75,6 +83,12 @@ const InventoryTransferList = () => {
         onClose={() => setShowTransferModal(false)}
         transferDetails={selectedTransfer}
         fetchTransfers={fetchTransfers}
+      />
+      <ApproveRejectModal
+        show={showApproveRejectModal}
+        onClose={() => setShowApproveRejectModal(false)}
+        transfer={selectedTransfer}
+        onSuccessfulAction={fetchTransfers}
       />
     </div>
   );

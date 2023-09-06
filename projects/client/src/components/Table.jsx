@@ -1,6 +1,7 @@
 import React from "react";
 import { Table } from "flowbite-react";
 import { PiTrashLight } from "react-icons/pi";
+import Button from "./Button"; 
 
 const TableComponent = ({
   headers,
@@ -8,8 +9,10 @@ const TableComponent = ({
   onEdit,
   onDelete,
   onTransfer,
+  onApproveReject, 
   showIcon = true,
   showTransfer = false,
+  showApproveReject = false, 
 }) => {
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
@@ -22,6 +25,11 @@ const TableComponent = ({
         {showTransfer && showIcon && (
           <Table.HeadCell className="bg-blue5">
             <span className="sr-only">Transfer</span>
+          </Table.HeadCell>
+        )}
+        {showApproveReject && (
+          <Table.HeadCell className="bg-blue5">
+            <span className="sr-only">Approve/Reject</span>
           </Table.HeadCell>
         )}
         {showIcon && (
@@ -62,6 +70,18 @@ const TableComponent = ({
                 </button>
               </Table.Cell>
             )}
+            {showApproveReject && (
+              <Table.Cell>
+                <Button
+                  buttonSize="small"
+                  buttonText="Manage"
+                  onClick={() => onApproveReject(row)} 
+                  bgColor="bg-blue3"
+                  colorText="text-white"
+                  fontWeight="font-semibold"
+                />
+              </Table.Cell>
+            )}
             {showIcon && (
               <Table.Cell>
                 <button
@@ -89,4 +109,3 @@ const TableComponent = ({
 };
 
 export default TableComponent;
-

@@ -47,7 +47,7 @@ module.exports = {
           quantity: quantity,
           status: "Pending",
           transaction_code: "TRX" + Date.now(),
-          timestamp: Date.now(),
+          timestamp: db.Sequelize.fn('NOW'),
         },
         { transaction: t }
       );

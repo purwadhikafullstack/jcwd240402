@@ -28,6 +28,14 @@ app.use(
   })
 );
 
+app.use(
+  "/api/rajaongkir/cost",
+  createProxyMiddleware({
+    target: "https://api.rajaongkir.com/starter/cost",
+    changeOrigin: true,
+  })
+);
+
 app.use(cors());
 app.use(
   "/api/photo-profile",

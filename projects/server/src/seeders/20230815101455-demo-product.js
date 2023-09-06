@@ -46,7 +46,7 @@ module.exports = {
       {
         name: "Blue Wide Sofa",
         price: 1500000,
-        weight: 100000,
+        weight: 10000,
         category_id: 3,
         description: "Blue coloured three-seater sofa",
         is_active: true,
@@ -56,7 +56,7 @@ module.exports = {
       {
         name: "Brown Coffee table",
         price: 500000,
-        weight: 35000,
+        weight: 25000,
         category_id: 1,
         description: "brown coloured coffee table",
         is_active: true,

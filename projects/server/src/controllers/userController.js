@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { default: axios } = require("axios");
+const { getAllWarehouses } = require("../service/warehouse");
+const qs = require("qs");
 
 module.exports = {
   /* AUTH */
@@ -1173,21 +1175,35 @@ module.exports = {
                   },
                 ],
               },
+              {
+                model: db.Warehouse,
+                as: "Warehouse",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
             ],
           },
         ],
       });
 
       let total = 0;
+      let totalweight = 0;
       for (const item of result) {
         total +=
           Number(item.Warehouse_stock.Product.price) * Number(item.quantity);
+      }
+
+      for (const item of result) {
+        totalweight +=
+          Number(item.Warehouse_stock.Product.weight) * Number(item.quantity);
       }
 
       res.json({
         ok: true,
         result,
         total: total,
+        total_weight: totalweight,
       });
     } catch (error) {
       res.status(500).json({
@@ -1372,9 +1388,12 @@ module.exports = {
   },
 
   getCity: async (req, res) => {
+    const cityId = req.query.id;
+    const provinceId = req.query.province;
+
     try {
       const response = await axios.get(
-        "https://api.rajaongkir.com/starter/city",
+        `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
         {
           headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
         }
@@ -1386,16 +1405,138 @@ module.exports = {
   },
 
   getCost: async (req, res) => {
+    const { origin, destination, weight, courier } = req.body;
+
+    const data = {
+      origin: origin,
+      destination: destination,
+      weight: weight,
+      courier: courier,
+    };
+
     try {
-      const response = await axios.post(
-        "https://api.rajaongkir.com/starter/cost",
-        {
-          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
-        }
-      );
+      const response = await axios({
+        method: "post",
+        url: "https://api.rajaongkir.com/starter/cost",
+        headers: {
+          key: "438918ba05b00d968fd8e405ba7cc540",
+          "content-type": "application/x-www-form-urlencoded",
+        },
+        data: qs.stringify(data),
+      });
       res.json({ ok: true, result: response.data });
     } catch (error) {
-      res.status(500).json({ ok: false, message: error.message });
+      res.status(500).json({ ok: false, message: error });
+    }
+  },
+
+  createNewOrder: async (req, res) => {
+    const {
+      user_id,
+      order_status_id,
+      total_price,
+      delivery_price,
+      delivery_courier,
+      delivery_time,
+      tracking_code,
+      no_invoice,
+      address_user_id,
+      warehouse_id,
+    } = req.body;
+
+    try {
+      const newOrder = await db.Order.create({
+        user_id,
+        order_status_id,
+        total_price,
+        delivery_price,
+        delivery_courier,
+        delivery_time,
+        tracking_code,
+        no_invoice,
+        address_user_id,
+        warehouse_id,
+      });
+
+      res.status(200).json({
+        ok: true,
+        order: newOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  findClosestWarehouse: async (req, res) => {
+    const userData = req.user;
+    const address_title = req.body.address_title || "Home";
+
+    try {
+      const userAddressData = await db.Address_user.findOne({
+        where: { user_id: userData.id, address_title: address_title },
+        include: { model: db.City },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+
+      const allWarehouseData = await getAllWarehouses();
+
+      const distanceKm = (lat1, lon1, lat2, lon2) => {
+        const r = 6371; // km
+        const p = Math.PI / 180;
+
+        const a =
+          0.5 -
+          Math.cos((lat2 - lat1) * p) / 2 +
+          (Math.cos(lat1 * p) *
+            Math.cos(lat2 * p) *
+            (1 - Math.cos((lon2 - lon1) * p))) /
+            2;
+
+        return 2 * r * Math.asin(Math.sqrt(a));
+      };
+
+      let closestWarehouse = {
+        latitude: allWarehouseData.data[0].latitude,
+        longitude: allWarehouseData.data[0].longitude,
+      };
+
+      for (let i = 0; i < allWarehouseData.data.length; i++) {
+        if (
+          distanceKm(
+            allWarehouseData.data[i].latitude,
+            allWarehouseData.data[i].longitude,
+            userAddressData.latitude,
+            userAddressData.longitude
+          ) <=
+          distanceKm(
+            closestWarehouse.latitude,
+            closestWarehouse.longitude,
+            userAddressData.latitude,
+            userAddressData.longitude
+          )
+        ) {
+          closestWarehouse = allWarehouseData.data[i];
+        }
+      }
+
+      res.status(200).json({
+        ok: true,
+        address: userAddressData,
+        warehouse: allWarehouseData,
+        closest_warehouse: closestWarehouse,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
     }
   },
 };

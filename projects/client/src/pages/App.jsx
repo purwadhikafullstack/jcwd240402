@@ -36,6 +36,7 @@ import TermAndCondition from "./user/TermAndCondition";
 import PrivacyPolicy from "./user/PrivacyPolicy";
 import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
 import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
+import SettingOrder from "./user/SettingOrder";
 
 function App() {
   return (
@@ -91,6 +92,7 @@ function App() {
           <Route path="/redirect-login" element={<NotAuth />} />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
+          <Route path="/user/setting/order" element={<SettingOrder />} />
           <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
@@ -115,7 +117,6 @@ function App() {
           <Route path="/log-in" element={<Login />} />
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
-
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
         </Routes>
       </Router>

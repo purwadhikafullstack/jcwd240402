@@ -23,43 +23,39 @@ const ModalEditEmail = () => {
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
   const navigate = useNavigate();
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const editEmail = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("email", values.email);
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          email: "",
-        });
-        setStatus({
-          success: true,
-          message: "Successful. Please check your email for verification.",
-        });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            email: "",
+          });
+          setStatus({
+            success: true,
+            message: "Successful. Please check your email for verification.",
+          });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
 
-        setIsSuccess("update email successful");
-        removeCookie("access_token");
-        removeLocalStorage("refresh_token");
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-        setTimeout(() => {
-          navigate("/verify");
-        }, 3000);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+          setErrMsg(null);
+          props.setOpenModal(undefined);
+          setTimeout(() => {
+            removeCookie("access_token");
+            removeLocalStorage("refresh_token");
+            navigate("/verify");
+          }, 3000);
+        });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

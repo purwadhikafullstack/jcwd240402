@@ -14,7 +14,6 @@ module.exports = {
     */
     return queryInterface.bulkInsert("Products", [
       {
-        id: 1,
         name: "Green Dining Chair",
         price: 100000,
         weight: 9000,
@@ -25,7 +24,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 2,
         name: "Green Dining Table",
         price: 700000,
         weight: 80000,
@@ -36,7 +34,6 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 3,
         name: "Black Office Chair",
         price: 950000,
         weight: 12000,
@@ -47,10 +44,9 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 4,
         name: "Blue Wide Sofa",
         price: 1500000,
-        weight: 100000,
+        weight: 10000,
         category_id: 3,
         description: "Blue coloured three-seater sofa",
         is_active: true,
@@ -58,10 +54,9 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
-        id: 5,
         name: "Brown Coffee table",
         price: 500000,
-        weight: 35000,
+        weight: 25000,
         category_id: 1,
         description: "brown coloured coffee table",
         is_active: true,

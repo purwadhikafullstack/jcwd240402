@@ -13,17 +13,24 @@ import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
-import AccordionProduct from "../../components/user/AccordionProduct";
+import AccordionProduct from "../../components/user/accordion/AccordionProduct";
 import axios from "../../api/axios";
-import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
-import DismissableAlert from "../../components/DismissableAlert";
+import Alert from "../../components/user/Alert";
+import { cartsUser } from "../../features/cartSlice";
+import { useDispatch } from "react-redux";
+import productNotFound from "../../assets/images/productNotFound.png";
+import { profileUser } from "../../features/userDataSlice";
 
 const ProductDetail = () => {
   const { name } = useParams();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
-  const navigate = useNavigate();
 
   const [openAlert, setOpenAlert] = useState(false);
   const [detailProduct, setDetailProduct] = useState({});
@@ -32,21 +39,72 @@ const ProductDetail = () => {
   const [qty, setQty] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
+
+  useEffect(() => {
+    axios
+      .get(`/user/warehouse-stock/product/${name}`)
+      .then((res) => {
+        setDetailProduct(res.data?.result?.Product);
+        setDataImage(res.data?.result?.Product?.Image_products);
+        setStock(res.data?.result?.product_stock);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setErrMsg(error.response?.data?.message);
+      });
+  }, [name]);
 
   const handleAddProductToCart = async (name, qty) => {
     try {
-      const response = await axios.post(
-        "/user/cart",
-        { product_name: name, qty: qty },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.status === 201) {
-        setQty(0);
-        setSuccessMsg(response.data?.message);
-        setOpenAlert(true);
-      }
+      await axios
+        .post(
+          "/user/cart",
+          { product_name: name, qty: qty },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        )
+        .then((res) => {
+          axios
+            .get("/user/cart", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => {
+              dispatch(cartsUser(res.data?.result));
+            });
+          setQty(0);
+          setSuccessMsg(res.data?.message);
+          setOpenAlert(true);
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -58,25 +116,21 @@ const ProductDetail = () => {
     }
   };
 
-  useEffect(() => {
-    axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result?.Product);
-      setDataImage(res.data?.result?.Product?.Image_products);
-      setStock(res.data?.result?.product_stock);
-    });
-  }, [name]);
-
-  if (detailProduct.length === 0 || dataImage.length === 0) {
-    return <p></p>;
-  }
-
-  const product = dataImage.map((item) => {
+  const product = dataImage?.map((item) => {
     let image;
     image = {
       image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
     };
     return image;
   });
+
+  if (loading) {
+    return (
+      <div className="border-2 w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -85,33 +139,30 @@ const ProductDetail = () => {
       <div className="min-h-screen mx-6 mb-8 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
-            {successMsg ? (
-              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
-                <DismissableAlert
-                  successMsg={successMsg}
-                  openAlert={openAlert}
-                  setOpenAlert={setOpenAlert}
-                />
+            <Alert
+              successMsg={successMsg}
+              setOpenAlert={setOpenAlert}
+              openAlert={openAlert}
+              errMsg={errMsg}
+            />
+            {product.length === 0 ? (
+              <div className="w-full h-full flex flex-col justify-center items-center ">
+                <img src={productNotFound} alt="" className="w-1/2 lg:w-1/3" />
+                <p>{errMsg}</p>
               </div>
-            ) : errMsg ? (
-              <div className=" absolute left-0 right-0 md:top-16 flex justify-center items-start z-10">
-                <DismissableAlert
-                  successMsg={errMsg}
-                  openAlert={openAlert}
-                  setOpenAlert={setOpenAlert}
-                  color="failure"
-                />
-              </div>
-            ) : null}
+            ) : (
+              <CarouselProductDetail data={product} />
+            )}
 
-            <CarouselProductDetail data={product} />
             <div className="hidden lg:block md:hidden w-full">
-              <AccordionProduct
-                desc={detailProduct.description}
-                name={detailProduct.name}
-                price={detailProduct.price}
-                weight={detailProduct.weight}
-              />
+              {product.length === 0 ? null : (
+                <AccordionProduct
+                  desc={detailProduct.description}
+                  name={detailProduct.name}
+                  price={detailProduct.price}
+                  weight={detailProduct.weight}
+                />
+              )}
             </div>
           </div>
 
@@ -125,7 +176,7 @@ const ProductDetail = () => {
             <hr />
 
             <div className="flex justify-between mt-4">
-              <p>amount:</p>
+              <p>Amount:</p>
               <div className="flex justify-between items-center w-24  rounded-full px-1">
                 <button
                   onClick={() => (qty <= 0 ? 0 : setQty(qty - 1))}
@@ -145,7 +196,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="my-4">
-              {!refresh_token && !access_token ? (
+              {!refresh_token || !access_token ? (
                 <h1 className="">
                   please log in to get add to cart access{" "}
                   <span>
@@ -184,12 +235,14 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="lg:hidden">
-              <AccordionProduct
-                desc={detailProduct.description}
-                name={detailProduct.name}
-                price={detailProduct.price}
-                weight={detailProduct.weight}
-              />
+              {product.length === 0 ? null : (
+                <AccordionProduct
+                  desc={detailProduct.description}
+                  name={detailProduct.name}
+                  price={detailProduct.price}
+                  weight={detailProduct.weight}
+                />
+              )}
             </div>
           </div>
         </div>

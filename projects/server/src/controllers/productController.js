@@ -455,7 +455,7 @@ module.exports = {
           },
         ],
       });
-      console.log(productsByCategory);
+
       const formattedData = productsByCategory.map((category) => {
         return {
           id: category.id,
@@ -484,6 +484,84 @@ module.exports = {
       return res
         .status(500)
         .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+
+  getAllProductForSearchSuggestion: async (req, res) => {
+    const { searchProduct } = req.query;
+    try {
+      const productsData = await db.Product.findAll({
+        include: [
+          { model: db.Image_product },
+          { model: db.Category, as: "category" },
+        ],
+        where: {
+          name: { [db.Sequelize.Op.like]: `${searchProduct}%` },
+        },
+      });
+
+      const productName = productsData.map((item) => {
+        return {
+          name: item.name,
+          img: item.Image_products[0]?.img_product,
+          category: item.category?.name,
+        };
+      });
+
+      res.json({
+        ok: true,
+        result: productName,
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+
+  getAllProductCategoryWithParanoid: async (req, res) => {
+    const searchCategory = req.query.category || undefined;
+
+    try {
+      let whereCondition = {};
+
+      if (searchCategory) {
+        whereCondition = {
+          name: {
+            [db.Sequelize.Op.like]: `%${searchCategory}%`,
+          },
+        };
+      }
+
+      const result = await db.Product.findAll({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        paranoid: false,
+        include: [
+          {
+            model: db.Category,
+            as: "category",
+            attributes: {
+              exclude: ["updatedAt", "deletedAt", "createdAt"],
+            },
+            where: whereCondition, // Menggunakan kondisi pencarian di sini
+          },
+          {
+            model: db.Image_product,
+            attributes: { exclude: ["updatedAt", "createdAt"] },
+          },
+        ],
+      });
+
+      res.status(200).send({
+        message: "success get products",
+        data: result,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
+      });
     }
   },
 };

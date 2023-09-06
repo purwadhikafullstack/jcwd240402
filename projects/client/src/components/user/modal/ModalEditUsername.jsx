@@ -1,5 +1,5 @@
 import { Modal } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
@@ -17,38 +17,34 @@ const ModalEditUsername = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("update username successful");
 
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("username", values.username);
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          username: "",
-        });
-        setStatus({
-          success: true,
-          message: "Successful. Please check your email for verification.",
-        });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            username: "",
+          });
+          setStatus({
+            success: true,
+            message: "Successful. Please check your email for verification.",
+          });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
 
-        setIsSuccess("update username successful");
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+          setErrMsg(null);
+          props.setOpenModal(undefined);
+        });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

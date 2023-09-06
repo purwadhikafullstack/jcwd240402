@@ -8,7 +8,8 @@ const validatorMiddleware = require("../middleware/validator/user");
 const upload = require("../middleware/multer/user/imgProfile");
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
-const Warehouse_stockController = require("../controllers/warehouse_stockController");
+const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
+const Warehouse_stockController = require("../controllers/warehouseStockController");
 
 /* AUTH */
 router.post(
@@ -25,6 +26,7 @@ router.get(
 );
 router.post(
   "/auth/resend-verify",
+  Verify.verifyAccessTokenUser,
   validatorMiddleware.emailInput,
   UserController.resendVerifyAccount
 );
@@ -51,7 +53,8 @@ router.get(
 router.patch(
   "/profile",
   Verify.verifyAccessTokenUser,
-  upload.single("file"),
+  handleImageProfileUpload,
+  validatorMiddleware.updateProfile,
   UserController.updateUserInformation
 );
 
@@ -74,7 +77,7 @@ router.get(
 router.patch(
   "/profile/address/:address_id",
   Verify.verifyAccessTokenUser,
-  upload.single("file"),
+  handleImageProfileUpload,
   addressUserCoordinateUpdate,
   UserController.changeAddress
 );
@@ -104,8 +107,12 @@ router.get("/region-province", UserController.regionUserForProvince);
 
 /* PRODUCT */
 router.get("/product/:name", ProductController.getProductByProductName);
-router.get("/products", ProductController.getProductsList);
+router.get("/products", ProductController.getAllProductForSearchSuggestion);
 router.get("/products-per-category", ProductController.getProductPerCategory);
+router.get(
+  "/products/category",
+  ProductController.getAllProductCategoryWithParanoid
+);
 
 /* CATEGORY */
 router.get("/category", CategoryController.getAllCategory);
@@ -142,6 +149,24 @@ router.patch(
   Verify.verifyAccessTokenUser,
   validatorMiddleware.addToCart,
   UserController.updateCart
+);
+
+/* ORDER */
+
+router.get("/order", Verify.verifyAccessTokenUser, UserController.getOrderList);
+
+router.get("/city", Verify.verifyAccessTokenUser, UserController.getCity);
+
+router.post(
+  "/rajaongkir/cost",
+  Verify.verifyAccessTokenUser,
+  UserController.getCost
+);
+
+router.get(
+  "/closest",
+  Verify.verifyAccessTokenUser,
+  UserController.findClosestWarehouse
 );
 
 module.exports = router;

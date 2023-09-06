@@ -14,7 +14,7 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -24,9 +24,7 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/user/auth/register", values);
-
-      if (response.status === 201) {
+      await axios.post("/user/auth/register", values).then((res) => {
         setStatus({ success: true });
         setValues({
           first_name: "",
@@ -44,9 +42,7 @@ const Register = () => {
         });
 
         navigate("/verify");
-      } else {
-        throw new Error("Register Failed");
-      }
+      });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -287,4 +283,4 @@ const Register = () => {
   );
 };
 
-export default withOutAuth(Register);
+export default withOutAuthUser(Register);

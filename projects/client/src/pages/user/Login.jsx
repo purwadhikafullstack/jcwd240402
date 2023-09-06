@@ -18,7 +18,7 @@ import {
   setLocalStorage,
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
 
 const Login = () => {
   removeCookie("access_token");
@@ -28,11 +28,9 @@ const Login = () => {
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/user/auth/login", values);
-
-      if (response.status === 200 && response.data.ok) {
-        const accessToken = response.data?.accessToken;
-        const refreshToken = response.data?.refreshToken;
+      await axios.post("/user/auth/login", values).then((res) => {
+        const accessToken = res.data?.accessToken;
+        const refreshToken = res.data?.refreshToken;
         setLocalStorage("refresh_token", refreshToken);
         setCookie("access_token", accessToken, 1);
         setStatus({ success: true });
@@ -45,11 +43,8 @@ const Login = () => {
           message:
             "Sign up successful. Please check your email for verification.",
         });
-
         navigate("/");
-      } else {
-        throw new Error("Login Failed");
-      }
+      });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -90,6 +85,7 @@ const Login = () => {
   return (
     <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={login} />
+
       <div className="lg:col-span-1 ">
         <div className="h-screen flex justify-center items-center lg:h-full lg:grid lg:justify-center lg:items-center  ">
           <div className=" shadow-3xl w-64 lg:w-80 rounded-xl  ">
@@ -101,6 +97,7 @@ const Login = () => {
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
                 {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+
                 <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
                   <InputForm
                     onChange={handleForm}
@@ -150,4 +147,4 @@ const Login = () => {
   );
 };
 
-export default withOutAuth(Login);
+export default withOutAuthUser(Login);

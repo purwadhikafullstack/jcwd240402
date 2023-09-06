@@ -1,7 +1,8 @@
 import React from "react";
 import Tabs from "../../components/Tab/TabContainer";
 import { Outlet } from "react-router-dom";
-import SidebarAdminDesktop from "../../components/SidebarAdminDesktop"; 
+import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
+import withAuthAdminWarehouse from '../../components/admin/withAuthAdminWarehouse';
 
 const AdminStockPage = () => {
     const tabData = [
@@ -14,7 +15,12 @@ const AdminStockPage = () => {
           label: "Manage Stock", 
           isActive: window.location.pathname === "/admin/stock/management",
           to: "/admin/stock/management",
-        }
+        },
+        {
+          label: "Inventory Transfer",
+          isActive: window.location.pathname === "/admin/stock/inventory-transfers",
+          to: "/admin/stock/inventory-transfers",
+        },
     ];
     
 
@@ -35,5 +41,5 @@ const AdminStockPage = () => {
   );
 };
 
-export default AdminStockPage;
+export default withAuthAdminWarehouse(AdminStockPage);
 

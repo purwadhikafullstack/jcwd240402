@@ -13,8 +13,8 @@ const generateAccessToken = (user) => {
   const token = jwt.sign(
     {
       id: user.id,
-      role: user.role_id,
-      warehouse: user.warehouse_id,
+      role_id: user.role_id,
+      warehouse_id: user.warehouse_id,
     },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: "1h" }
@@ -27,7 +27,7 @@ const generateRefreshToken = (user) => {
     {
       id: user.id,
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "24h" }
   );
   return token;
@@ -75,6 +75,13 @@ module.exports = {
         attributes: {
           exclude: ["password", "createdAt", "updatedAt"],
         },
+        include:[
+          {
+            model:db.Warehouse,
+            as: 'warehouse',
+            attributes: ["warehouse_name"]
+          }
+        ]
       });
 
       if (!admin) {

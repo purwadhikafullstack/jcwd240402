@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer } from "flowbite-react";
 import {
   BsDribbble,
@@ -9,10 +9,19 @@ import {
 } from "react-icons/bs";
 
 import logo from "../../../assets/images/furnifor.png";
+import { Link } from "react-router-dom";
+import axios from "../../../api/axios";
 
 const FooterDesktop = () => {
+  const [warehouseList, setWarehouseList] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`/warehouse/warehouse-list`)
+      .then((res) => setWarehouseList(res.data?.warehouses));
+  }, []);
+  console.log(warehouseList);
   return (
-    <Footer container className="bg-blue-100 w-full">
+    <Footer container className="bg-[#F5F5F5] w-full">
       <div className="w-full lg:px-16 md:px-16">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <div className="w-20 lg:w-96 md:w-96 lg:mr-4 md:mr-4 m-auto ">
@@ -31,21 +40,30 @@ const FooterDesktop = () => {
             </div>
             <div>
               <Footer.Title title="Warehouse Branch" />
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
+              {warehouseList ? (
+                warehouseList.map((item) => (
+                  <Footer.LinkGroup col key={item.id}>
+                    <ul>
+                      <li> {item.warehouse_name}</li>
+                    </ul>
+                  </Footer.LinkGroup>
+                ))
+              ) : (
+                <p>we will be there in your city soon</p>
+              )}
             </div>
             <div>
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">Privacy Policy</Footer.Link>
-                <Footer.Link href="#">Terms & Conditions</Footer.Link>
+                <Footer.Link>
+                  <Link to="/this-is-fornifor">This Is ForniFor</Link>
+                </Footer.Link>
+                <Footer.Link>
+                  <Link to="/privacy-policy">Privacy Policy</Link>
+                </Footer.Link>
+                <Footer.Link>
+                  <Link to="/term-and-condition">Terms & Conditions</Link>
+                </Footer.Link>
               </Footer.LinkGroup>
             </div>
           </div>

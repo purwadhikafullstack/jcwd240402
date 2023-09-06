@@ -31,7 +31,12 @@ import StockList from "../components/admin/stock/StockList";
 import CreateStock from "../components/admin/stock/CreateStock";
 import ProductPerCategory from "./user/ProductPerCategory";
 import Category from "./user/Category";
-import SettingCart from "./user/SettingCart";
+import ThisIsFurniFor from "./user/ThisIsFurniFor";
+import TermAndCondition from "./user/TermAndCondition";
+import PrivacyPolicy from "./user/PrivacyPolicy";
+import SettingOrder from "./user/SettingOrder";
+import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
+import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
 
 function App() {
   return (
@@ -45,6 +50,7 @@ function App() {
           <Route path="/admin" element={<AdminList />} />
           <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
+          <Route path="/edit/:warehouseName" element={<WarehouseInputsEdit/>} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
@@ -62,18 +68,14 @@ function App() {
           <Route path="/category" element={<CategoryList />} /> {/* admin */}
           <Route path="/admin/products/*" element={<AdminProductPage />}>
             <Route index element={<ProductList />} />
-            <Route path="create" element={<ProductRegister />} />{" "}
-            {/* admin dan pathnya di lengkapi*/}
-            <Route path="edit/:productName" element={<ProductEdit />} />{" "}
-            {/* admin dan pathnya di lengkapi*/}
+            <Route path="create" element={<ProductRegister />} />
+            <Route path="edit/:productName" element={<ProductEdit />} />
           </Route>
           <Route path="/admin/stock/*" element={<AdminStockPage />}>
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
-          </Route>{" "}
-          {/* admin dan pathnya di perbaiki*/}
-          {/* 404 */}
+          </Route>
           <Route
             path="/admin/*"
             element={
@@ -92,7 +94,7 @@ function App() {
           />
           <Route path="/user/setting" element={<SettingProfile />} />
           <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/user/setting/cart" element={<SettingCart />} />
+          <Route path="/user/setting/order" element={<SettingOrder />} />
           <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
@@ -101,6 +103,9 @@ function App() {
             element={<ProductPerCategory />}
           />
           <Route path="/product-category" element={<Category />} />
+          <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
+          <Route path="/term-and-condition" element={<TermAndCondition />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         </Routes>
       </Router>
     </div>

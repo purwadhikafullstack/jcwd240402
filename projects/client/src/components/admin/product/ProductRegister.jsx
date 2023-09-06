@@ -3,10 +3,12 @@ import Button from "../../Button";
 import ImageGallery from "../image/ImageGallery";
 import axios from "../../../api/axios";
 import ProductInputs from "../product/ProductInputs";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { getCookie } from "../../../utils/tokenSetterGetter";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
+  const access_token = getCookie("access_token");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -23,13 +25,24 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
         formData.append("images", image);
       });
 
-      const response = await axios.post("/admin/product", formData, {});
+      const response = await axios.post("/admin/product", formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       formik.resetForm();
       setUploadedImages([]);
-      setSuccessMessage("Product created successfully"); // Set success message here
-      console.log("Product created:", response.data);
+      setSuccessMessage("Product created successfully");
     } catch (error) {
       console.error("Error creating product:", error.response.data);
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        const formikErrors = {};
+        serverErrors.forEach((err) => {
+          if (err.path) {
+            formikErrors[err.path] = err.msg;
+          }
+        });
+        formik.setErrors(formikErrors);
+      }
     }
   };
 

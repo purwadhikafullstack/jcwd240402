@@ -7,6 +7,9 @@ const Mailer = require("../utils/mailer");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
+const { default: axios } = require("axios");
+const { getAllWarehouses } = require("../service/warehouse");
+const qs = require('qs');
 
 module.exports = {
   /* AUTH */
@@ -272,15 +275,16 @@ module.exports = {
   },
 
   resendVerifyAccount: async (req, res) => {
+    const userData = req.user;
     const { email } = req.body;
     try {
       const isVerified = await db.User.findOne({
-        where: { email },
+        where: { email, id: userData.id },
       });
       if (!isVerified) {
         return res.status(404).json({
           ok: false,
-          message: "user not found",
+          message: "wrong email",
         });
       }
       if (isVerified.is_verify) {
@@ -507,11 +511,16 @@ module.exports = {
 
   updateUserInformation: async (req, res) => {
     const userData = req.user;
-    let data;
+    const {
+      username,
 
-    if (req.body.data) {
-      data = JSON.parse(req.body.data);
-    }
+      first_name,
+      last_name,
+      phone,
+      new_password,
+      password,
+      new_confirm_password,
+    } = req.body;
 
     const image = req.file?.filename;
 
@@ -525,9 +534,9 @@ module.exports = {
         });
       }
 
-      if (data?.username) {
+      if (username) {
         const isUsernameExist = await db.User.findOne({
-          where: { username: data.username },
+          where: { username: username },
         });
         if (isUsernameExist) {
           return res.status(400).json({
@@ -537,7 +546,7 @@ module.exports = {
         }
 
         await db.User.update(
-          { username: data.username },
+          { username: username },
           { where: { id: user.id }, transaction }
         );
 
@@ -548,9 +557,9 @@ module.exports = {
         });
       }
 
-      if (data?.first_name) {
+      if (first_name) {
         await db.User_detail.update(
-          { first_name: data.first_name },
+          { first_name: first_name },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
@@ -560,56 +569,8 @@ module.exports = {
         });
       }
 
-      if (data?.email) {
-        const isEmailExist = await db.User.findOne({
-          where: { email: data.email },
-        });
-
-        if (isEmailExist) {
-          return res.status(400).json({
-            ok: false,
-            message: "email already taken",
-          });
-        }
-
-        const verifyToken =
-          crypto.randomBytes(16).toString("hex") +
-          Math.random() +
-          new Date().getTime();
-
-        await db.User.update(
-          { email: data.email, verify_token: verifyToken, is_verify: false },
-          { where: { id: user.id }, transaction }
-        );
-        const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
-        const message =
-          "you've updated your email. Please verify the new email to ensure account security";
-        const mailing = {
-          recipient_email: data.email,
-          link,
-          subject: "EMAIL CHANGED",
-          receiver: user.username,
-          message,
-        };
-        await transaction.commit();
-        Mailer.sendEmail(mailing)
-          .then((response) =>
-            res.status(201).json({
-              ok: true,
-              message: `${response.message}, change email successful ${user.username} successful `,
-              verify_token: verifyToken,
-            })
-          )
-          .catch((error) =>
-            res
-              .status(400)
-              .json({ ok: false, message: error.message, error: error.message })
-          );
-        return;
-      }
-
-      if (data?.new_password && data?.new_confirm_password) {
-        if (data.new_password !== data.new_confirm_password) {
+      if (new_password && new_confirm_password) {
+        if (new_password !== new_confirm_password) {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
@@ -617,7 +578,7 @@ module.exports = {
           });
         }
 
-        const match = await bcrypt.compare(data.password, user.password);
+        const match = await bcrypt.compare(password, user.password);
         if (!match) {
           await transaction.rollback();
           return res.status(400).json({
@@ -627,7 +588,7 @@ module.exports = {
         }
 
         const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(data.new_password, salt);
+        const hashPassword = await bcrypt.hash(new_password, salt);
 
         await db.User.update(
           { password: hashPassword },
@@ -640,9 +601,9 @@ module.exports = {
         });
       }
 
-      if (data?.last_name) {
+      if (last_name) {
         await db.User_detail.update(
-          { last_name: data.last_name },
+          { last_name: last_name },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
@@ -652,9 +613,9 @@ module.exports = {
         });
       }
 
-      if (data?.phone) {
+      if (phone) {
         const isPhoneExist = await db.User_detail.findOne({
-          where: { phone: data?.phone },
+          where: { phone: phone },
         });
 
         if (isPhoneExist) {
@@ -665,25 +626,13 @@ module.exports = {
         }
 
         await db.User_detail.update(
-          { phone: data.phone },
+          { phone: phone },
           { where: { user_id: user.id }, transaction }
         );
         await transaction.commit();
         return res.status(201).json({
           ok: true,
           message: "change phone successful",
-        });
-      }
-
-      if (data?.address_user_id) {
-        await db.User_detail.update(
-          { address_user_id: data.address_user_id },
-          { where: { user_id: user.id }, transaction }
-        );
-        await transaction.commit();
-        return res.status(201).json({
-          ok: true,
-          message: "change address successful",
         });
       }
 
@@ -1226,21 +1175,35 @@ module.exports = {
                   },
                 ],
               },
+              {
+                model: db.Warehouse,
+                as: "Warehouse",
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+              },
             ],
           },
         ],
       });
 
       let total = 0;
+      let totalweight = 0;
       for (const item of result) {
         total +=
           Number(item.Warehouse_stock.Product.price) * Number(item.quantity);
+      }
+
+      for (const item of result) {
+        totalweight +=
+          Number(item.Warehouse_stock.Product.weight) * Number(item.quantity);
       }
 
       res.json({
         ok: true,
         result,
         total: total,
+        total_weight: totalweight,
       });
     } catch (error) {
       res.status(500).json({
@@ -1404,4 +1367,168 @@ module.exports = {
       });
     }
   },
+
+  getOrderList: async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const orderList = await db.Order.findAll({
+        where: { user_id: userId },
+      });
+
+      res.json({
+        ok: true,
+        order: orderList,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
+        error: error.message,
+      });
+    }
+  },
+
+  getCity : async (req, res) => {
+
+    const cityId = req.query.id
+    const provinceId = req.query.province
+
+    try {
+      const response = await axios.get(
+        `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
+        {
+          headers: { key: "438918ba05b00d968fd8e405ba7cc540" },
+        }
+      );
+      res.json({ ok: true, result: response.data });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error.message });
+    }
+  },
+
+  getCost : async (req, res) => {
+
+    const {
+      origin,
+      destination,
+      weight,
+      courier,
+    } = req.body;
+
+    const data = {origin: origin, destination: destination, weight: weight, courier: courier}
+
+
+    try {
+      const response = await axios({
+        method: "post",
+        url: "https://api.rajaongkir.com/starter/cost",
+        headers: { key: "438918ba05b00d968fd8e405ba7cc540",
+          'content-type': 'application/x-www-form-urlencoded' },
+        data: qs.stringify(data),
+      });
+      res.json({ ok: true, result: response.data });
+    } catch (error) {
+      res.status(500).json({ ok: false, message: error });
+    }
+  },
+
+  createNewOrder : async (req, res) => {
+
+    const {
+    user_id,
+    order_status_id,
+    total_price,
+    delivery_price,
+    delivery_courier,
+    delivery_time,
+    tracking_code,
+    no_invoice,
+    address_user_id,
+    warehouse_id
+    } = req.body;
+
+    try {
+
+      const newOrder = await db.Order.create(
+        {
+        user_id,
+        order_status_id,
+        total_price,
+        delivery_price,
+        delivery_courier,
+        delivery_time,
+        tracking_code,
+        no_invoice,
+        address_user_id,
+        warehouse_id
+        },
+      );
+      
+      res.status(200).json({
+        ok: true,
+        order: newOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  findClosestWarehouse : async (req, res) => {
+
+    const userData = req.user;
+    const address_title  = req.body.address_title || "Home";
+
+    try {
+      const userAddressData = await db.Address_user.findOne({
+        where: { user_id: userData.id , address_title: address_title},
+        include: { model: db.City },
+        attributes: {
+          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
+        },
+      });
+
+      const allWarehouseData = await getAllWarehouses();
+
+      const distanceKm = (lat1, lon1, lat2, lon2) => {
+        const r = 6371; // km
+        const p = Math.PI / 180;
+      
+        const a = 0.5 - Math.cos((lat2 - lat1) * p) / 2
+                      + Math.cos(lat1 * p) * Math.cos(lat2 * p) *
+                        (1 - Math.cos((lon2 - lon1) * p)) / 2;
+      
+        return 2 * r * Math.asin(Math.sqrt(a));
+      }
+
+      let closestWarehouse = {latitude: allWarehouseData.data[0].latitude, 
+        longitude: allWarehouseData.data[0].longitude};
+
+      for(let i = 0; i < allWarehouseData.data.length; i++){
+        if(distanceKm(allWarehouseData.data[i].latitude,
+          allWarehouseData.data[i].longitude,
+          userAddressData.latitude, userAddressData.longitude) <= 
+          distanceKm(closestWarehouse.latitude, closestWarehouse.longitude,
+            userAddressData.latitude, userAddressData.longitude)){
+              closestWarehouse = allWarehouseData.data[i]
+          }
+      }
+      
+      res.status(200).json({
+        ok: true,
+        address: userAddressData,
+        warehouse: allWarehouseData,
+        closest_warehouse: closestWarehouse
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  }
+
 };

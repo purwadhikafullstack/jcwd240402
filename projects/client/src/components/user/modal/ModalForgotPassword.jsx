@@ -19,8 +19,7 @@ export default function ModalForgotPassword() {
   const forgotPassword = async (values, { setStatus, setValues }) => {
     try {
       console.log(values);
-      const response = await axios.post("/user/auth/forgot-password", values);
-      if (response.status === 201) {
+      await axios.post("/user/auth/forgot-password", values).then((res) => {
         setStatus({ success: true });
         setValues({
           email: "",
@@ -33,10 +32,7 @@ export default function ModalForgotPassword() {
         navigate("/forgot-password");
         setErrMsg(null);
         props.setOpenModal(undefined);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+      });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");

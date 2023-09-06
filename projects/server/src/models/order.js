@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     delivery_time: DataTypes.STRING,
     tracking_code: DataTypes.STRING,
     no_invoice: DataTypes.STRING,
-    user_address_id: DataTypes.INTEGER,
+    address_user_id: DataTypes.INTEGER,
     warehouse_id: DataTypes.INTEGER,
     img_payment: DataTypes.STRING
   }, {

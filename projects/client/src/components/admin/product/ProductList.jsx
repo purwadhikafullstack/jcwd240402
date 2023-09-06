@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminCardProduct from "../card/AdminCardProduct";
 import DefaultPagination from "../../Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import debounce from "lodash/debounce";
 import axios from "../../../api/axios";
 
 const ProductList = () => {
@@ -14,6 +15,12 @@ const ProductList = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const debouncedNavigate = debounce((updatedParams) => {
+    for (const key in updatedParams) {
+      searchParams.set(key, updatedParams[key]);
+    }
+    navigate({ search: searchParams.toString() });
+  }, 150);
   const fetchCategories = async () => {
     try {
       const response = await axios.get("/admin/categories");
@@ -29,7 +36,7 @@ const ProductList = () => {
     category = selectedCategory
   ) => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/products", {
+      const response = await axios.get("/admin/products", {
         params: {
           category_id: category,
           product_name: productName,
@@ -62,21 +69,19 @@ const ProductList = () => {
     fetchCategories();
   }, []);
 
-  const handleCategoryChange = (newCategory) => {
-    setSelectedCategory(newCategory);
-    searchParams.set("category_id", newCategory);
-    navigate({ search: searchParams.toString() });
-  };
-
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    searchParams.set("product_name", e.target.value);
-    navigate({ search: searchParams.toString() });
+    debouncedNavigate({ product_name: e.target.value });
+  };
+
+  const handleCategoryChange = (newCategory) => {
+    setSelectedCategory(newCategory);
+    debouncedNavigate({ category_id: newCategory });
   };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid">
-      <div className="px-8 pt-8">
+      <div className="px-8 pt-1">
         <div className="flex items-center mb-5">
           <input
             type="text"
@@ -98,7 +103,7 @@ const ProductList = () => {
             ))}
           </select>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-5">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3">
           {products.map((product) => (
             <AdminCardProduct
               key={product.id}
@@ -136,4 +141,3 @@ const ProductList = () => {
 };
 
 export default ProductList;
-

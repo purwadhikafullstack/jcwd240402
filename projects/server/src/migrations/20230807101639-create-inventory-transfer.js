@@ -37,9 +37,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      journal: {
-        allowNull: false,
-        type: Sequelize.STRING,
+      status: {
+        type: Sequelize.ENUM("Pending", "Approve","Reject"),
+        defaultValue: null,
       },
       transaction_code: {
         allowNull: false,

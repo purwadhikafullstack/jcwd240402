@@ -19,5 +19,9 @@
   },
   "workspaces": [
     "projects/*"
-  ]
+  ],
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "qs": "^6.11.2"
+  }
 }

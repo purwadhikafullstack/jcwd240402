@@ -15,6 +15,7 @@ import {
 } from "../../utils/tokenSetterGetter";
 import { useDispatch, useSelector } from "react-redux";
 import { cartsUser } from "../../features/cartSlice";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const Cart = () => {
   const access_token = getCookie("access_token");
@@ -26,31 +27,33 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("/user/cart", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(cartsUser(res.data?.result));
-        setTotal(res.data?.total);
-      })
-      .catch((error) => {
-        if (
-          error.response?.data?.message === "Invalid token" &&
-          error.response?.data?.error?.name === "TokenExpiredError"
-        ) {
-          axios
-            .get("/user/auth/keep-login", {
-              headers: { Authorization: `Bearer ${refresh_token}` },
-            })
-            .then((res) => {
-              setNewAccessToken(res.data?.accessToken);
-              setCookie("access_token", newAccessToken, 1);
-            });
-        }
-      });
+    if (refresh_token && access_token) {
+      axios
+        .get("/user/cart", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(cartsUser(res.data?.result));
+          setTotal(res.data?.total);
+        })
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
-  console.log(total);
+
   const productsData = cartsData.map((cart) => {
     return {
       id: cart.id,
@@ -64,10 +67,6 @@ const Cart = () => {
       subtotalPrice: cart.quantity * cart.Warehouse_stock?.Product?.price,
     };
   });
-
-  const totalPrice = productsData.reduce((total, product) => {
-    return total + product.price;
-  }, 0);
 
   return (
     <div>
@@ -89,14 +88,17 @@ const Cart = () => {
         </div>
         {/* TAB AND DESKTOP */}
         <div className="h-full py-4 border-b-2">
-          <div className="w-full  grid grid-cols-4 md:grid-cols-5 lg:grid-cols-5 ">
-            <div className="col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold">
+          <div className="w-full grid grid-cols-5 md:grid-cols-6 lg:grid-cols-6 ">
+            <div className="text-xs md:text-sm lg:text-sm col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold items-center">
               <h1>Product item</h1>
             </div>
-            <div className="hidden md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
+            <div className="flex text-xs md:text-sm lg:text-sm col-span-1 md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold justify-center items-center">
+              <h1>Quantity</h1>
+            </div>
+            <div className="text-xs flex md:text-sm lg:text-sm col-span-1 md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold items-center justify-center">
               <h1>Subtotal</h1>
             </div>
-            <div className="col-span-2 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
+            <div className="text-xs md:text-sm lg:text-sm  col-span-1 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
               <h1>Edit</h1>
             </div>
             {productsData.length === 0 ? (
@@ -141,4 +143,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default withAuthUser(Cart);

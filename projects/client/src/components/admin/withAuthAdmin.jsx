@@ -71,8 +71,17 @@ function withAuthAdmin(Component) {
       return <div>Loading...</div>;
     }
 
-    if (adminData?.role_id !== 1 && adminData?.role_id !== 2) {
-      navigate("/admin/login");
+    if (!adminData) {
+      if (access_token) {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/admin/login");
+      }
+      return null;
+    }
+
+    if (adminData.role_id !== 1) {
+      navigate("/admin/dashboard");
       return null;
     }
 

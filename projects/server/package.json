@@ -9,7 +9,7 @@
   "scripts": {
     "start": "nodemon",
     "serve": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -26,7 +26,9 @@
     "sequelize": "^6.32.1"
   },
   "devDependencies": {
+    "jest": "^29.6.4",
     "nodemon": "^2.0.19",
-    "sequelize-cli": "^6.6.1"
+    "sequelize-cli": "^6.6.1",
+    "supertest": "^6.3.3"
   }
 }

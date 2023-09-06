@@ -12,10 +12,7 @@ import {
   getLocalStorage,
   setCookie,
 } from "../../../utils/tokenSetterGetter";
-import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
-import { profileUser } from "../../../features/userDataSlice";
-import { Link, useNavigate } from "react-router-dom";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 

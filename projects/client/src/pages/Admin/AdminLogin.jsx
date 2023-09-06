@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../api/axios";
 import InputForm from "../../components/InputForm";
 import Button from "../../components/Button";
 import PasswordInput from "../../components/PasswordInput";
@@ -18,13 +18,13 @@ import login from "../../assets/images/furnifor.png";
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
-  
+
   const loginUser = async (values, { setStatus, setValues }) => {
     removeCookie("access_token");
     removeLocalStorage("refresh_token");
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/admin/login",
+        "/admin/login",
         values
       );
       if (response.status === 200) {
@@ -45,7 +45,10 @@ const AdminLogin = () => {
         throw new Error("Login Failed");
       }
     } catch (err) {
-      if (!err.response) {
+      let serverErrorMsg = err.response?.data?.error;
+      if (serverErrorMsg === "Invalid credentials") {
+        setErrMsg("Incorrect username/password");
+      } else if (!err.response) {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(err.response?.data?.message);
@@ -60,15 +63,8 @@ const AdminLogin = () => {
     },
     onSubmit: loginUser,
     validationSchema: yup.object().shape({
-      username: yup.string().required("username is a required field"),
-      password: yup
-        .string()
-        .min(6)
-        .required()
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "password is required"
-        ),
+      username: yup.string().required("Username is a required"),
+      password: yup.string().required("Password is a required"),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -82,13 +78,7 @@ const AdminLogin = () => {
   return (
     <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <div className="hidden lg:flex lg:flex-col lg:items-center lg:justify-center">
-        <img
-          src={
-            login
-          }
-          alt=""
-          className="lg:w-1/2"
-        />
+        <img src={login} alt="" className="lg:w-1/2" />
         <div className="text-center">
           <p className="font-bold">Admin Portal</p>
           <p>Login to access the administration dashboard.</p>
@@ -104,15 +94,14 @@ const AdminLogin = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? <div>{errMsg}</div> : null}
                 <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
                   <InputForm
                     onChange={handleForm}
                     label="username"
                     placeholder="username"
-                    name="username" 
+                    name="username"
                     type="text"
-                    value={formik.values.username} 
+                    value={formik.values.username}
                     isError={!!formik.errors.username}
                     errorMessage={formik.errors.username}
                   />
@@ -123,7 +112,7 @@ const AdminLogin = () => {
                     isError={!!formik.errors.password}
                     errorMessage={formik.errors.password}
                   />
-
+                  {errMsg ? <div style={{ color: 'red', marginTop: '8px', textAlign: 'center' }}>{errMsg}</div> : null}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
                       buttonSize="medium"

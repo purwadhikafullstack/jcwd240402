@@ -109,6 +109,10 @@ router.get("/region-province", UserController.regionUserForProvince);
 router.get("/product/:name", ProductController.getProductByProductName);
 router.get("/products", ProductController.getAllProductForSearchSuggestion);
 router.get("/products-per-category", ProductController.getProductPerCategory);
+router.get(
+  "/products/category",
+  ProductController.getAllProductCategoryWithParanoid
+);
 
 /* CATEGORY */
 router.get("/category", CategoryController.getAllCategory);

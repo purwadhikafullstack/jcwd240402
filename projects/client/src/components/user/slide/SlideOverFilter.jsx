@@ -4,27 +4,34 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import { VscSettings } from "react-icons/vsc";
 
 import logo from "../../../assets/images/furniforNav.png";
-import { getCookie, getLocalStorage } from "../../../utils/tokenSetterGetter";
-
-import { useDispatch } from "react-redux";
 import AccordionFilter from "../accordion/AccordionFilter";
 
-export default function SlideOverFilter() {
-  const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-  const dispatch = useDispatch();
-
+export default function SlideOverFilter({
+  rangePriceMin,
+  rangePriceMax,
+  rangeWeightMin,
+  rangeWeightMax,
+  limitPrice,
+  limitWeight,
+  setSearchParams,
+  searchParams,
+  setCurrentPage,
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className=" flex justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2"
-      >
-        <VscSettings />
-        <span className="text-sm">Filter</span>
-      </button>
+      <div className="flex justify-between items-center">
+        <div>
+          <button
+            onClick={() => setOpen(true)}
+            className=" flex justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2"
+          >
+            <VscSettings />
+            <span className="text-sm">Filter</span>
+          </button>
+        </div>
+      </div>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-30" onClose={setOpen}>
           <Transition.Child
@@ -87,7 +94,17 @@ export default function SlideOverFilter() {
                         </Dialog.Title>
                       </div>
                       <div className="relative mt-4 flex-1 px-4 sm:px-6">
-                        <AccordionFilter />
+                        <AccordionFilter
+                          rangePriceMin={rangePriceMin}
+                          rangePriceMax={rangePriceMax}
+                          rangeWeightMin={rangeWeightMin}
+                          rangeWeightMax={rangeWeightMax}
+                          setSearchParams={setSearchParams}
+                          searchParams={searchParams}
+                          limitPrice={limitPrice}
+                          limitWeight={limitWeight}
+                          setCurrentPage={setCurrentPage}
+                        />
                       </div>
                     </div>
                   </Dialog.Panel>

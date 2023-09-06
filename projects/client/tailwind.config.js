@@ -19,7 +19,7 @@ module.exports = {
         blue1: "#03254C",
         blue2: "#1167B1",
         blue3: "#187BCD",
-        blue4: "#187BCD",
+        blue4: "#2A9DF4",
         blue5: "#D0EFFF",
         base_black: "#1E2329",
         base_grey: "#BEC7D0",

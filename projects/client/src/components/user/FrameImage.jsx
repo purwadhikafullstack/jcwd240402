@@ -18,12 +18,12 @@ const FrameImage = () => {
       to: "https://api.whatsapp.com/send/?phone=6289652433206&text=Hi!+I+want+to+ask+about+products+at+your+store.%0AThe+product+I%27m+interested+in+is+(please+input+the+product+name+here)%21&type=phone_number&app_absent=0",
       img: banner11,
     },
-    { to: "", img: banner12 },
+    { to: "/product/product-category/Living%20Room", img: banner12 },
   ];
   return (
     <div className="grid gap-2  lg:gap-4 md:gap-4 grid-rows-2 lg:grid-rows-1 md:grid-rows-1 md:grid-cols-2 lg:grid-cols-2 ">
       <div className="row-span-1 md:col-span-1 lg:col-span-1 h-52 lg:h-96 md:h-96">
-        <Link>
+        <Link to="/product/product-category/Kitchen%20Room">
           <img src={banner8} alt="" />
         </Link>
       </div>

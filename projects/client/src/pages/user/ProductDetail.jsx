@@ -15,17 +15,23 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
 import AccordionProduct from "../../components/user/accordion/AccordionProduct";
 import axios from "../../api/axios";
-import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
 import Alert from "../../components/user/Alert";
 import { cartsUser } from "../../features/cartSlice";
 import { useDispatch } from "react-redux";
 import productNotFound from "../../assets/images/productNotFound.png";
+import { profileUser } from "../../features/userDataSlice";
 
 const ProductDetail = () => {
   const { name } = useParams();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
+
   const [openAlert, setOpenAlert] = useState(false);
   const [detailProduct, setDetailProduct] = useState({});
   const [dataImage, setDataImage] = useState([]);
@@ -33,16 +39,44 @@ const ProductDetail = () => {
   const [qty, setQty] = useState(0);
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   useEffect(() => {
     axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
-        console.log(res);
         setDetailProduct(res.data?.result?.Product);
         setDataImage(res.data?.result?.Product?.Image_products);
         setStock(res.data?.result?.product_stock);
+        setLoading(false);
       })
       .catch((error) => {
         setErrMsg(error.response?.data?.message);
@@ -89,11 +123,14 @@ const ProductDetail = () => {
     };
     return image;
   });
-  console.log(product);
-  console.log(detailProduct);
-  console.log(dataImage);
-  console.log(stock);
-  console.log(name);
+
+  if (loading) {
+    return (
+      <div className="border-2 w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -132,12 +169,14 @@ const ProductDetail = () => {
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
             <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
 
-            <h1 className="font-bold text-xl">{detailProduct.price}</h1>
+            <h1 className="font-bold text-xl">
+              {toRupiah(detailProduct.price)}
+            </h1>
 
             <hr />
 
             <div className="flex justify-between mt-4">
-              <p>amount:</p>
+              <p>Amount:</p>
               <div className="flex justify-between items-center w-24  rounded-full px-1">
                 <button
                   onClick={() => (qty <= 0 ? 0 : setQty(qty - 1))}

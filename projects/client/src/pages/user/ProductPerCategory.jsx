@@ -11,6 +11,15 @@ import CardProduct from "../../components/user/card/CardProduct";
 import { Pagination } from "flowbite-react";
 import SlideOverFilter from "../../components/user/slide/SlideOverFilter";
 import productNotFound from "../../assets/images/productNotFound.png";
+import { useDispatch } from "react-redux";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../utils/tokenSetterGetter";
+import { profileUser } from "../../features/userDataSlice";
+import NavbarFilterPagination from "../../components/user/navbar/NavbarFilterPagination";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const ProductPerCategory = () => {
   const [errMsg, setErrMsg] = useState("");
@@ -21,13 +30,87 @@ const ProductPerCategory = () => {
   const [display, setDisplay] = useState([]);
   const { categoryName } = useParams();
 
+  const refresh_token = getLocalStorage("refresh_token");
+  const access_token = getCookie("access_token");
+
+  const dispatch = useDispatch();
+
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [category, setCategory] = useState([]);
+
+  const [limitPrice, setLimitPrice] = useState(0);
+  const [limitWeight, setLimitWeight] = useState(0);
+  const [rangePriceMin, setRangePriceMin] = useState(0);
+  const [rangePriceMax, setRangePriceMax] = useState(0);
+  const [rangeWeightMin, setRangeWeightMin] = useState(0);
+  const [rangeWeightMax, setRangeWeightMax] = useState(0);
+
   const currentPagination = searchParams.get("page");
+  const currentPriceMax = searchParams.get("priceMax") || limitPrice;
+  const currentPriceMin = searchParams.get("priceMin") || 0;
+  const currentWeightMax = searchParams.get("weightMax") || limitWeight;
+  const currentWeightMin = searchParams.get("weightMin") || 0;
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?perPage=20&page=&product=&category=${categoryName}`
+        `/user/warehouse-stock/filter?perPage=9&page=${currentPagination}&product=&category=${categoryName}&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
+      .then((res) => {
+        setProductData(res.data?.data);
+        setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
+        setRangePriceMin(res.data?.pagination?.rangePriceMin);
+        setRangePriceMax(res.data?.pagination?.rangePriceMax);
+        setRangeWeightMin(res.data?.pagination?.rangeWeightMin);
+        setRangeWeightMax(res.data?.pagination?.rangeWeightMax);
+        setLimitPrice(res.data?.pagination?.limitPriceMax);
+        setLimitWeight(res.data?.pagination?.limitWeightMax);
+        setErrMsg("");
+      })
+      .catch((error) => {
+        setErrMsg("product not found");
+        setTimeout(() => {
+          setSearchParams({});
+        }, 4000);
+      });
+  }, [
+    categoryName,
+    currentPagination,
+    currentPriceMax,
+    currentPriceMin,
+    currentWeightMax,
+    currentWeightMin,
+    setSearchParams,
+  ]);
+
+  useEffect(() => {
+    axios
+      .get(`/user/products/category?category=${categoryName}`)
       .then((res) => {
         setDisplay(res.data?.data);
       })
@@ -37,35 +120,30 @@ const ProductPerCategory = () => {
       });
   }, [categoryName, currentPagination]);
 
-  useEffect(() => {
-    axios
-      .get(
-        `/user/warehouse-stock/filter?perPage=9&page=${currentPagination}&product=&category=${categoryName}`
-      )
-      .then((res) => {
-        setProductData(res.data?.data);
-        setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
-      })
-      .catch((error) => {
-        setSearchParams({ page: 1 });
-      });
-  }, [categoryName, currentPagination, setSearchParams]);
+  const imageDisplay = display.map((item) => {
+    return {
+      banner: item?.Image_products[2]?.img_product,
+      name: item?.name,
+      price: item?.price,
+      category: item?.category?.name,
+    };
+  });
+
+  const categoryImage = productData[0]?.Product?.category?.category_img;
 
   function handlePage(page) {
     setCurrentPage(page);
-    setSearchParams({ page: page });
+    const { ...otherParams } = Object.fromEntries(searchParams);
+    setSearchParams({
+      ...otherParams,
+      page: page,
+    });
   }
-  console.log(display);
 
-  const imageDisplay = display.map((item) => {
-    return {
-      banner: item?.Product?.Image_products[3]?.img_product,
-      name: item?.Product?.name,
-      price: item?.Product?.price,
-    };
-  });
-  console.log(imageDisplay);
-  const categoryImage = productData[0]?.Product?.category?.category_img;
+  function handleResetFilter() {
+    setSearchParams({});
+    setCurrentPage(1);
+  }
 
   return (
     <div>
@@ -90,12 +168,13 @@ const ProductPerCategory = () => {
                     src={`${process.env.REACT_APP_API_BASE_URL}${categoryImage}`}
                     alt=""
                     className="md:w-full"
+                    d
                   />
                 </div>
                 <div className="lg:col-span-1 grid grid-cols-2 grid-rows-1">
                   <>
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[1]?.banner}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[7]?.banner}`}
                       alt=""
                       className="row-span-1 col-span-1"
                     />
@@ -127,7 +206,7 @@ const ProductPerCategory = () => {
               </h4>
               <div className="grid grid-cols-4">
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[1]?.banner}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[8]?.banner}`}
                   alt=""
                   className=""
                 />
@@ -142,7 +221,7 @@ const ProductPerCategory = () => {
                   className=""
                 />
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[11]?.banner}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[10]?.banner}`}
                   alt=""
                   className=""
                 />
@@ -155,31 +234,49 @@ const ProductPerCategory = () => {
                 you'll truly feel at ease
               </h4>
             </div>
-            <div className="mt-4 py-2 sticky top-14 lg:top-[3.9rem] h-full m-0 z-10 w-full bg-white">
-              <SlideOverFilter />
+            <div className="mt-4 py-2 flex justify-between sticky top-14 lg:top-[3.9rem] h-full m-0 z-10 w-full bg-white">
+              <NavbarFilterPagination
+                rangePriceMin={rangePriceMin}
+                rangePriceMax={rangePriceMax}
+                rangeWeightMin={rangeWeightMin}
+                rangeWeightMax={rangeWeightMax}
+                setSearchParams={setSearchParams}
+                searchParams={searchParams}
+                limitPrice={limitPrice}
+                limitWeight={limitWeight}
+                currentPriceMax={currentPriceMax}
+                currentPriceMin={currentPriceMin}
+                currentWeightMax={currentWeightMax}
+                currentWeightMin={currentWeightMin}
+                currentPage={currentPage}
+                totalPage={totalPage}
+                handlePage={handlePage}
+                handleResetFilter={handleResetFilter}
+                setCurrentPage={setCurrentPage}
+              />
             </div>
             <div className="flex flex-col justify-center  ">
-              <div className="w-full flex justify-center lg:hidden md:hidden">
-                <Pagination
-                  layout="navigation"
-                  showIcons
-                  currentPage={currentPage}
-                  onPageChange={handlePage}
-                  totalPages={totalPage}
-                />
-              </div>
               <div className=" lg:h-[42rem] md:h-[72rem]  mt-4 mb-4 md:mb-0 lg:mb-0">
                 <div className="flex flex-wrap justify-center ">
-                  {productData.map((productItem) => (
-                    <CardProduct
-                      src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Product?.Image_products[0]?.img_product}`}
-                      category={productItem.Product?.category?.name}
-                      name={productItem.Product?.name}
-                      desc={productItem.Product?.description}
-                      price={productItem.Product?.price}
-                      key={productItem.id}
-                    />
-                  ))}
+                  {errMsg ? (
+                    <div className=" flex flex-col justify-center items-center">
+                      <AlertWithIcon errMsg={errMsg} />
+                      <img src={productNotFound} alt="" className="w-96" />
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap justify-center">
+                      {productData.map((productItem) => (
+                        <CardProduct
+                          src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Product?.Image_products[0]?.img_product}`}
+                          category={productItem.Product?.category?.name}
+                          name={productItem.Product?.name}
+                          desc={productItem.Product?.description}
+                          price={productItem.Product?.price}
+                          key={productItem.id}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <a
@@ -190,15 +287,7 @@ const ProductPerCategory = () => {
                 </a>
               </div>
 
-              <div className="w-full justify-center hidden lg:flex md:flex mb-4">
-                <Pagination
-                  layout="navigation"
-                  showIcons
-                  currentPage={currentPage}
-                  onPageChange={handlePage}
-                  totalPages={totalPage}
-                />
-              </div>
+              <div className="w-full justify-center hidden lg:flex md:flex mb-4"></div>
             </div>
           </div>
         )}

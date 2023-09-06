@@ -71,7 +71,7 @@ const NavbarMobile = () => {
           />
         </div>
         <div className="flex w-24 justify-evenly gap-2 items-center">
-          {cartsData ? (
+          {cartsData && access_token && refresh_token ? (
             <Link to="/cart" className="relative">
               <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
@@ -80,7 +80,7 @@ const NavbarMobile = () => {
             </Link>
           ) : (
             <Link to="/cart">
-              <BsFillCartFill className="hover:text-blue3 text-base_grey transition-all" />
+              <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
             </Link>
           )}
           <button>

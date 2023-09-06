@@ -118,10 +118,7 @@ const SettingProfile = () => {
                       </tr>
                       <tr className="h-10">
                         <td>email</td>
-                        <td>
-                          {userData.email}
-                          <ModalEditEmail />
-                        </td>
+                        <td>{userData.email}</td>
                         <td></td>
                       </tr>
 

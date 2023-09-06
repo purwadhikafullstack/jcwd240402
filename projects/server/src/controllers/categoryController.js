@@ -44,7 +44,7 @@ module.exports = {
       });
     }
   },
-  
+
   async updateCategoryImage(req, res) {
     const categoryId = req.params.id;
 

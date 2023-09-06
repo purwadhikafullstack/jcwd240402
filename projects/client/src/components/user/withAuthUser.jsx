@@ -40,7 +40,7 @@ function withAuthUser(Component) {
             }
           });
       }
-    }, [dispatch, newAccessToken]);
+    }, [access_token, dispatch, newAccessToken, refresh_token]);
 
     if (access_token && userData?.role_id === 3) {
       return <Component {...props} />;

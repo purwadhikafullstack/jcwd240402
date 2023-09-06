@@ -88,14 +88,17 @@ const Cart = () => {
         </div>
         {/* TAB AND DESKTOP */}
         <div className="h-full py-4 border-b-2">
-          <div className="w-full  grid grid-cols-4 md:grid-cols-5 lg:grid-cols-5 ">
-            <div className="col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold">
+          <div className="w-full grid grid-cols-5 md:grid-cols-6 lg:grid-cols-6 ">
+            <div className="text-xs md:text-sm lg:text-sm col-span-2 md:col-span-3 lg:col-span-3 border-b-2 font-bold items-center">
               <h1>Product item</h1>
             </div>
-            <div className="hidden md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold md:grid lg:grid justify-center">
+            <div className="flex text-xs md:text-sm lg:text-sm col-span-1 md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold justify-center items-center">
+              <h1>Quantity</h1>
+            </div>
+            <div className="text-xs flex md:text-sm lg:text-sm col-span-1 md:lg:col-span-1 lg:col-span-1 border-b-2 font-bold items-center justify-center">
               <h1>Subtotal</h1>
             </div>
-            <div className="col-span-2 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
+            <div className="text-xs md:text-sm lg:text-sm  col-span-1 md:col-span-1 lg:col-span-1 border-b-2 font-bold grid justify-center">
               <h1>Edit</h1>
             </div>
             {productsData.length === 0 ? (

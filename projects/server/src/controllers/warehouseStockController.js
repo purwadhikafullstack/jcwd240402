@@ -226,6 +226,12 @@ module.exports = {
       searchWarehouseName: req.query.warehouseName,
       searchCategory: req.query.category || undefined,
       searchProduct: req.query.product || undefined,
+      rangeWeightMin: Number(req.query.weightMin) || 0,
+      rangeWeightMax: Number(req.query.weightMax) || maxWeight,
+      rangePriceMin: Number(req.query.priceMin) || 0,
+      rangePriceMax: Number(req.query.priceMax) || maxPrice,
+      // rangeStockMin: req.query.stockMin || 0,
+      // rangeStockMax: req.query.stockMax || maxStock,
     };
 
     try {
@@ -328,6 +334,7 @@ module.exports = {
       });
       console.log(totalCount);
       const totalPages = Math.ceil(totalCount / pagination.perPage);
+      console.log(totalPages);
 
       if (pagination.page > totalPages) {
         return res.status(400).send({
@@ -340,6 +347,8 @@ module.exports = {
         pagination: {
           ...pagination,
           totalPages: totalPages,
+          limitPriceMax: maxPrice,
+          limitWeightMax: maxWeight,
         },
         data: result,
       });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Footer } from "flowbite-react";
 import {
   BsDribbble,
@@ -10,8 +10,16 @@ import {
 
 import logo from "../../../assets/images/furnifor.png";
 import { Link } from "react-router-dom";
+import axios from "../../../api/axios";
 
 const FooterDesktop = () => {
+  const [warehouseList, setWarehouseList] = useState([]);
+  useEffect(() => {
+    axios
+      .get(`/warehouse/warehouse-list`)
+      .then((res) => setWarehouseList(res.data?.warehouses));
+  }, []);
+  console.log(warehouseList);
   return (
     <Footer container className="bg-[#F5F5F5] w-full">
       <div className="w-full lg:px-16 md:px-16">
@@ -32,15 +40,17 @@ const FooterDesktop = () => {
             </div>
             <div>
               <Footer.Title title="Warehouse Branch" />
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
-              <Footer.LinkGroup col>
-                <Footer.Link href="#">warehouse kebonjati</Footer.Link>
-              </Footer.LinkGroup>
+              {warehouseList ? (
+                warehouseList.map((item) => (
+                  <Footer.LinkGroup col key={item.id}>
+                    <ul>
+                      <li> {item.warehouse_name}</li>
+                    </ul>
+                  </Footer.LinkGroup>
+                ))
+              ) : (
+                <p>we will be there in your city soon</p>
+              )}
             </div>
             <div>
               <Footer.Title title="Legal" />
@@ -49,10 +59,10 @@ const FooterDesktop = () => {
                   <Link to="/this-is-fornifor">This Is ForniFor</Link>
                 </Footer.Link>
                 <Footer.Link>
-                  <Link>Privacy Policy</Link>
+                  <Link to="/privacy-policy">Privacy Policy</Link>
                 </Footer.Link>
                 <Footer.Link>
-                  <Link>Terms & Conditions</Link>
+                  <Link to="/term-and-condition">Terms & Conditions</Link>
                 </Footer.Link>
               </Footer.LinkGroup>
             </div>

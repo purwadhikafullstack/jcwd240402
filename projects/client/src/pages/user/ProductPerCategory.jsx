@@ -110,9 +110,7 @@ const ProductPerCategory = () => {
 
   useEffect(() => {
     axios
-      .get(
-        `/user/warehouse-stock/filter?perPage=20&page=&product=&category=${categoryName}`
-      )
+      .get(`/user/products/category?category=${categoryName}`)
       .then((res) => {
         setDisplay(res.data?.data);
       })
@@ -124,10 +122,10 @@ const ProductPerCategory = () => {
 
   const imageDisplay = display.map((item) => {
     return {
-      banner: item?.Product?.Image_products[2]?.img_product,
-      name: item?.Product?.name,
-      price: item?.Product?.price,
-      category: item?.Product?.category?.name,
+      banner: item?.Image_products[2]?.img_product,
+      name: item?.name,
+      price: item?.price,
+      category: item?.category?.name,
     };
   });
 
@@ -144,6 +142,7 @@ const ProductPerCategory = () => {
 
   function handleResetFilter() {
     setSearchParams({});
+    setCurrentPage(1);
   }
 
   return (
@@ -175,7 +174,7 @@ const ProductPerCategory = () => {
                 <div className="lg:col-span-1 grid grid-cols-2 grid-rows-1">
                   <>
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[1]?.banner}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[7]?.banner}`}
                       alt=""
                       className="row-span-1 col-span-1"
                     />
@@ -253,6 +252,7 @@ const ProductPerCategory = () => {
                 totalPage={totalPage}
                 handlePage={handlePage}
                 handleResetFilter={handleResetFilter}
+                setCurrentPage={setCurrentPage}
               />
             </div>
             <div className="flex flex-col justify-center  ">

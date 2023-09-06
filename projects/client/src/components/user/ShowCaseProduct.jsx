@@ -51,6 +51,7 @@ const ShowCaseProduct = () => {
         }, 4000);
       });
   }, [
+    currentPage,
     currentPagination,
     currentPriceMax,
     currentPriceMin,
@@ -62,6 +63,7 @@ const ShowCaseProduct = () => {
   function handlePage(page) {
     setCurrentPage(page);
     const { ...otherParams } = Object.fromEntries(searchParams);
+
     setSearchParams({
       ...otherParams,
       page: page,
@@ -70,6 +72,7 @@ const ShowCaseProduct = () => {
 
   function handleResetFilter() {
     setSearchParams({});
+    setCurrentPage(1);
   }
 
   return (
@@ -92,6 +95,7 @@ const ShowCaseProduct = () => {
           totalPage={totalPage}
           handlePage={handlePage}
           handleResetFilter={handleResetFilter}
+          setCurrentPage={setCurrentPage}
         />
       </div>
       <div className="flex flex-col justify-center">

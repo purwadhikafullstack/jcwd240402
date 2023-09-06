@@ -59,7 +59,7 @@ const FooterDesktop = () => {
                   <Link to="/this-is-fornifor">This Is ForniFor</Link>
                 </Footer.Link>
                 <Footer.Link>
-                  <Link>Privacy Policy</Link>
+                  <Link to="/privacy-policy">Privacy Policy</Link>
                 </Footer.Link>
                 <Footer.Link>
                   <Link to="/term-and-condition">Terms & Conditions</Link>

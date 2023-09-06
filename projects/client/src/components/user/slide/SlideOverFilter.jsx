@@ -15,6 +15,7 @@ export default function SlideOverFilter({
   limitWeight,
   setSearchParams,
   searchParams,
+  setCurrentPage,
 }) {
   const [open, setOpen] = useState(false);
 
@@ -102,6 +103,7 @@ export default function SlideOverFilter({
                           searchParams={searchParams}
                           limitPrice={limitPrice}
                           limitWeight={limitWeight}
+                          setCurrentPage={setCurrentPage}
                         />
                       </div>
                     </div>

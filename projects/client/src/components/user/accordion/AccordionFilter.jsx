@@ -12,9 +12,13 @@ const AccordionFilter = ({
   limitWeight,
   setSearchParams,
   searchParams,
+  setCurrentPage,
 }) => {
   const [price, setPrice] = useState([rangePriceMin, limitPrice]);
   const [weight, setWeight] = useState([rangeWeightMin, limitWeight]);
+
+  const currentPage = searchParams.get("page");
+  console.log(currentPage);
 
   const handleChangeRangePrice = (event, newPrice) => {
     setPrice(newPrice);
@@ -28,6 +32,7 @@ const AccordionFilter = ({
 
   const handleFilterPrice = () => {
     const { ...otherParams } = Object.fromEntries(searchParams);
+    setCurrentPage(1);
     setSearchParams({
       ...otherParams,
       page: 1,
@@ -38,7 +43,7 @@ const AccordionFilter = ({
 
   const handleFilterWeight = () => {
     const { ...otherParams } = Object.fromEntries(searchParams);
-
+    setCurrentPage(1);
     setSearchParams({
       ...otherParams,
       page: 1,

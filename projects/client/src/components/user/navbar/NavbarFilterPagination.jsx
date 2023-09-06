@@ -23,6 +23,7 @@ const NavbarFilterPagination = ({
   totalPage,
   handlePage,
   handleResetFilter,
+  setCurrentPage,
 }) => {
   return (
     <div className="w-full">
@@ -37,6 +38,7 @@ const NavbarFilterPagination = ({
             searchParams={searchParams}
             limitPrice={limitPrice}
             limitWeight={limitWeight}
+            setCurrentPage={setCurrentPage}
           />
           <div className="hidden lg:flex md:flex">
             {currentPriceMin && currentPriceMax ? (

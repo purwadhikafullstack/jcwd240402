@@ -47,6 +47,7 @@ const ModalUploadProfileImage = () => {
           setErrMsg("");
           setShowImage(URL.createObjectURL(image));
           navigate("/user/setting");
+          console.log(res);
           setOpenModal(false);
         });
     } catch (err) {

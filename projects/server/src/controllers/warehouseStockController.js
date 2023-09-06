@@ -403,8 +403,6 @@ module.exports = {
       // rangeStockMin: req.query.stockMin || 0,
       // rangeStockMax: req.query.stockMax || maxStock,
     };
-    console.log(pagination.rangePriceMax);
-    console.log(pagination.rangePriceMin);
 
     try {
       const result = await db.Warehouse_stock.findAll({

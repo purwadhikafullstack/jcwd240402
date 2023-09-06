@@ -16,6 +16,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { cartsUser } from "../../features/cartSlice";
 import withAuthUser from "../../components/user/withAuthUser";
+import Loading from "../../components/Loading";
 
 const Cart = () => {
   const access_token = getCookie("access_token");
@@ -73,7 +74,7 @@ const Cart = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

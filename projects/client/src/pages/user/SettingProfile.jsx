@@ -23,10 +23,12 @@ import ModalEditEmail from "../../components/user/modal/ModalEditEmail";
 import ModalEditPasswordUser from "../../components/user/modal/ModalEditPasswordUser";
 import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProfileImage";
 import withAuthUser from "../../components/user/withAuthUser";
+import Loading from "../../components/Loading";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
   const [newAccessToken, setNewAccessToken] = useState("");
+  const [loading, setLoading] = useState(true);
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
@@ -49,8 +51,19 @@ const SettingProfile = () => {
       .get("/user/profile", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => dispatch(profileUser(res.data.result)));
+      .then((res) => {
+        dispatch(profileUser(res.data.result));
+        setLoading(false);
+      });
   }, [access_token, dispatch]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -5,6 +5,7 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 const AllCategories = () => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +21,7 @@ const AllCategories = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

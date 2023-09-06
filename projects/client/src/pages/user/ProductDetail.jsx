@@ -27,6 +27,7 @@ import { useDispatch } from "react-redux";
 import productNotFound from "../../assets/images/productNotFound.png";
 import { profileUser } from "../../features/userDataSlice";
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
+import Loading from "../../components/Loading";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -130,7 +131,7 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="border-2 w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

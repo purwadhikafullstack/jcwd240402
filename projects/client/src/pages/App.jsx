@@ -7,12 +7,12 @@ import WarehouseList from "../pages/admin/WarehouseList";
 import Home from "./user/Home";
 import Register from "./user/Register";
 import Login from "./user/Login";
-import NotifVerify from "./user/NotifVerify";
-import NotifVerified from "./user/NotifVerified";
+import NotifVerify from "../components/user/notif/NotifVerify";
+import NotifVerified from "../components/user/notif/NotifVerified";
 import SignUp from "./user/SignUp";
-import NotifForgotPassword from "./user/NotifForgotPassword";
+import NotifForgotPassword from "../components/user/notif/NotifForgotPassword";
 import ResetPassword from "./user/ResetPassword";
-import NotifResetPassword from "./user/NotifResetPassword";
+import NotifResetPassword from "../components/user/notif/NotifResetPassword";
 import NotFound from "./user/NotFound";
 import NotAuth from "./user/NotAuth";
 import SettingProfile from "./user/SettingProfile";
@@ -34,13 +34,11 @@ import Category from "./user/Category";
 import ThisIsFurniFor from "./user/ThisIsFurniFor";
 import TermAndCondition from "./user/TermAndCondition";
 import PrivacyPolicy from "./user/PrivacyPolicy";
-
 import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
 import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
-
 import SettingOrder from "./user/SettingOrder";
-import WarehouseInputsEdit from "../components/admin/warehouse/WarehouseInputEdit";
-import InventoryTransferList from "../components/admin/inventoryTransfer/InventoryTransferList";
+import AllCategories from "./user/AllCategories";
+import AllProducts from "./user/AllProducts";
 
 function App() {
   return (
@@ -54,7 +52,10 @@ function App() {
           <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
 
-          <Route path="/edit/:warehouseName" element={<WarehouseInputsEdit/>} />
+          <Route
+            path="/edit/:warehouseName"
+            element={<WarehouseInputsEdit />}
+          />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
@@ -132,6 +133,8 @@ function App() {
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
+          <Route path="/all-category" element={<AllCategories />} />
+          <Route path="/all-product" element={<AllProducts />} />
         </Routes>
       </Router>
     </div>

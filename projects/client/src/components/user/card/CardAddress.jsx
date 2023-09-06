@@ -110,6 +110,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
                       handleDelete={deleteAddress}
                       errMsg={errMsg}
                       topic="address"
+                      deleteFor="Delete Address"
                     />
                   </li>
                 ) : null}

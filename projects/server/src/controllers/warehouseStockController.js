@@ -220,7 +220,6 @@ module.exports = {
   },
 
   getAllWarehouseStockFilter: async (req, res) => {
-
     const findMaxWeight = await db.Product.findOne({
       attributes: [Sequelize.fn("MAX", Sequelize.col("weight"))],
       raw: true,
@@ -252,11 +251,6 @@ module.exports = {
     const pagination = {
       page: Number(req.query.page) || 1,
       perPage: Number(req.query.perPage) || 9,
-      searchWarehouseName: req.query.warehouseName || undefined,
-
-    const pagination = {
-      page: Number(req.query.page) || 1,
-      perPage: 9,
       searchWarehouseName: req.query.warehouseName,
 
       searchCategory: req.query.category || undefined,
@@ -284,7 +278,6 @@ module.exports = {
                   },
                   is_active: true,
                 }
-
               : {
                   is_active: true,
                   weight: {
@@ -342,7 +335,6 @@ module.exports = {
       });
 
       const totalCount = await db.Warehouse_stock.count({
-
         attributes: { exclude: ["updatedAt", "createdAt"] },
 
         include: [
@@ -356,7 +348,6 @@ module.exports = {
                   },
                   is_active: true,
                 }
-
               : {
                   is_active: true,
                   weight: {
@@ -469,7 +460,6 @@ module.exports = {
         result,
       });
     } catch (error) {
-
       res.status(500).json({
         message: "An error occurred while fetching product stocks",
         error: error.message,

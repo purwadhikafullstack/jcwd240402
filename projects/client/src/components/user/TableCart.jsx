@@ -130,6 +130,7 @@ const TableCart = ({
                       handleDelete={deleteCart}
                       errMsg={errMsg}
                       topic="cart"
+                      deleteFor="Delete Cart"
                     />
                   </li>
                 </ul>

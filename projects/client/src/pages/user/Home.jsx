@@ -121,7 +121,12 @@ const Home = () => {
         <StaticBanner />
         <div className="">
           {category ? (
-            <SelectionCategory category={category} />
+            <>
+              <h1 className="font-bold text-center lg:text-3xl mb-2">
+                Selected Preferences
+              </h1>
+              <SelectionCategory category={category} />
+            </>
           ) : (
             <div>
               <h1>Empty Categories</h1>
@@ -129,7 +134,7 @@ const Home = () => {
           )}
         </div>
         <div className="relative z-0">
-          {productData.slice(0, 3).map((item) => (
+          {productData.slice(0, 4).map((item) => (
             <div key={item.id}>
               <h1 className="font-bold mx-3 lg:text-xl">{item.category}</h1>
               <CarouselProduct products={item.products} />
@@ -149,7 +154,10 @@ const Home = () => {
           <FrameImage />
         </div>
         <div className="h-fit">
-          <ShowCaseProduct />
+          <h1 className="font-bold text-center lg:text-3xl mb-2">
+            Our Products
+          </h1>
+          <ShowCaseProduct perPage={10} />
         </div>
         <div className="">
           <ServiceCard services={services} />

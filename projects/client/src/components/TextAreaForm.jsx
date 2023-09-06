@@ -20,7 +20,7 @@ const TextAreaForm = ({
       <Textarea
         className={`resize-none text-sm font-poppins ${
           isError ? "text-failure" : ""
-        }`}
+        } text-inherit font-inherit`}
         color={isError ? "failure" : null}
         placeholder={placeholder}
         name={name}

@@ -4,11 +4,8 @@ import { Link } from "react-router-dom";
 const SelectionCategory = ({ category }) => {
   return (
     <div className="">
-      <h1 className="font-bold text-center lg:text-3xl mb-2">
-        Selected Preferences
-      </h1>
       <div className="flex gap-4 lg:gap-x-4 justify-center items-center flex-wrap ">
-        {category.slice(0, 6).map((item) => (
+        {category.slice(0, 4).map((item) => (
           <Link
             key={item.id}
             className="hover:shadow-3xl shadow-3xl lg:shadow-none rounded-lg flex justify-center items-center flex-col"

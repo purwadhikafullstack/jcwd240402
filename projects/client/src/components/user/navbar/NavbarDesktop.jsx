@@ -20,8 +20,9 @@ import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
 
 const userNavigation = [
-  { name: "Your Profile", to: "/user/setting", onClick: {} },
-  { name: "Settings", to: "/checkout", onClick: {} },
+  { name: "Profile", to: "/user/setting", onClick: {} },
+  { name: "Cart", to: "/cart", onClick: {} },
+  { name: "Order", to: "/", onClick: {} },
   { name: "Sign out", to: "/log-in", onClick: () => logout() },
 ];
 
@@ -84,8 +85,8 @@ const NavbarDesktop = () => {
           <img src={logo} alt="" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
-          <Link to="/product-category">Category</Link>
-          <Link to="">Inspiration</Link>
+          <Link to="/product-category">Categories</Link>
+          <Link to="/all-product">Products</Link>
         </div>
         <div className="w-96">
           <SearchBar

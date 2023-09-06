@@ -15,6 +15,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
+import logo from "../../../assets/images/furnifor.png";
 
 const NavbarMobile = () => {
   const cartsData = useSelector((state) => state.carter.value);
@@ -61,9 +62,12 @@ const NavbarMobile = () => {
   return (
     <div className="sticky top-0 w-full z-20">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
+        <Link to="/" className="ml-4 w-12">
+          <img src={logo} alt="" className="w-full " />
+        </Link>
         <div className="w-full">
           <SearchBar
-            width="w-52 md:w-[700px]"
+            width="w-52 md:w-[600px]"
             position="left-44 md:left-[670px]"
             rounded="rounded-md"
             height="h-7"

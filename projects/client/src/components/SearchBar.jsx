@@ -36,22 +36,23 @@ const SearchBar = ({
         setErrMsg("No Server Response");
       } else {
         setErrMsg(error.response?.data?.message);
+        setSearchProduct("");
       }
     }
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      axios
-        .get(`/user/products?searchProduct=${searchProduct}`)
-        .then((res) => setProductList(res.data.result));
-    }, 2000);
+    axios
+      .get(`/user/products?searchProduct=${searchProduct}`)
+      .then((res) => setProductList(res.data.result))
+      .catch((error) => {
+        setErrMsg(error.response?.data?.message);
+      });
   }, [searchProduct]);
 
   return (
     <>
       <div className="relative ">
-        {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
         <form action="">
           <input
             type="search"
@@ -64,7 +65,7 @@ const SearchBar = ({
             }}
           />
           <span
-            className={`absolute ${position}  md:right-0  top-1/2 transform -translate-y-1/2 text-lg`}
+            className={`absolute ${position}  md:left-[565px]  top-1/2 transform -translate-y-1/2 text-lg`}
           >
             <button
               className={`flex justify-center items-center w-12 h-7 ${bgColor} rounded-lg`}
@@ -75,21 +76,22 @@ const SearchBar = ({
             </button>
           </span>
           <div
-            className={`absolute w-full mt-1 bg-white   ${
+            className={`absolute w-full mt-1 bg-white ${
               searchProduct ? "rounded-lg border-b-2 shadow-card-1" : null
             }`}
           >
-            {searchProduct
-              ? productList.slice(0, 5).map((item, idx) => (
+            {searchProduct && productList ? (
+              productList.length > 0 ? (
+                productList.slice(0, 5).map((item, idx) => (
                   <Link
                     key={idx}
-                    className="p-2 relative gap-2 flex border-t-2"
+                    className="p-2 relative gap-2 flex border-t-2 "
                     to={`/product/${item.name}`}
                   >
                     <img
                       src={`${process.env.REACT_APP_API_BASE_URL}${item.img}`}
                       alt=""
-                      className="w-20"
+                      className="w-20 rounded-md"
                     />
                     <div className="flex flex-col">
                       <h1 className="text-base font-semibold">{item.name}</h1>
@@ -99,7 +101,16 @@ const SearchBar = ({
                     </div>
                   </Link>
                 ))
-              : null}
+              ) : (
+                <div className="p-2 relative gap-2 flex border-t-2">
+                  <div className="flex flex-col">
+                    <h1 className="text-xs text-grayText font-semibold">
+                      Product not found
+                    </h1>
+                  </div>
+                </div>
+              )
+            ) : null}
           </div>
         </form>
       </div>

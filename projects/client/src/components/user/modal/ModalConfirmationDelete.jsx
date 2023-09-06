@@ -3,21 +3,13 @@
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { useDispatch } from "react-redux";
-
-import axios from "../../../api/axios";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
-import { addressUser } from "../../../features/userAddressSlice";
 
 export default function ModalConfirmationDelete({
   handleDelete,
   errMsg,
   topic,
+  deleteFor,
 }) {
   const [openModal, setOpenModal] = useState();
 
@@ -26,7 +18,7 @@ export default function ModalConfirmationDelete({
   return (
     <>
       <button onClick={() => props.setOpenModal("pop-up")}>
-        <p className="text-xs">delete address</p>
+        <p className="text-xs">{deleteFor}</p>
       </button>
       <Modal
         show={props.openModal === "pop-up"}

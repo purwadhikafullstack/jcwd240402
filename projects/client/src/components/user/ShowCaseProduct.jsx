@@ -7,10 +7,11 @@ import AlertWithIcon from "../AlertWithIcon";
 import NavbarFilterPagination from "./navbar/NavbarFilterPagination";
 import productNotFound from "../../assets/images/productNotFound.png";
 
-const ShowCaseProduct = () => {
+const ShowCaseProduct = ({ perPage }) => {
   const [productData, setProductData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   const [openAlert, setOpenAlert] = useState(false);
   const [errMsg, setErrMsg] = useState("");
@@ -31,7 +32,7 @@ const ShowCaseProduct = () => {
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?perPage=20&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
+        `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
         setProductData(res.data?.data);
@@ -43,6 +44,7 @@ const ShowCaseProduct = () => {
         setLimitPrice(res.data?.pagination?.limitPriceMax);
         setLimitWeight(res.data?.pagination?.limitWeightMax);
         setErrMsg("");
+        setLoading(false);
       })
       .catch((error) => {
         setErrMsg("product not found");
@@ -57,6 +59,7 @@ const ShowCaseProduct = () => {
     currentPriceMin,
     currentWeightMax,
     currentWeightMin,
+    perPage,
     setSearchParams,
   ]);
 
@@ -73,6 +76,14 @@ const ShowCaseProduct = () => {
   function handleResetFilter() {
     setSearchParams({});
     setCurrentPage(1);
+  }
+
+  if (loading) {
+    return (
+      <div className=" w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
 
   return (

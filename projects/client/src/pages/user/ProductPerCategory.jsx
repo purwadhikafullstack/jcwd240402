@@ -22,13 +22,15 @@ import NavbarFilterPagination from "../../components/user/navbar/NavbarFilterPag
 import AlertWithIcon from "../../components/AlertWithIcon";
 
 const ProductPerCategory = () => {
+  const { categoryName } = useParams();
+
   const [errMsg, setErrMsg] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const [productData, setProductData] = useState([]);
   const [display, setDisplay] = useState([]);
-  const { categoryName } = useParams();
+  const [loading, setLoading] = useState(true);
 
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
@@ -91,6 +93,7 @@ const ProductPerCategory = () => {
         setLimitPrice(res.data?.pagination?.limitPriceMax);
         setLimitWeight(res.data?.pagination?.limitWeightMax);
         setErrMsg("");
+        setLoading(false);
       })
       .catch((error) => {
         setErrMsg("product not found");
@@ -143,6 +146,14 @@ const ProductPerCategory = () => {
   function handleResetFilter() {
     setSearchParams({});
     setCurrentPage(1);
+  }
+
+  if (loading) {
+    return (
+      <div className="border-2 w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
 
   return (

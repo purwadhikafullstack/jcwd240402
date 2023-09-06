@@ -21,8 +21,9 @@ const Cart = () => {
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
   const dispatch = useDispatch();
-
   const cartsData = useSelector((state) => state.carter.value);
+
+  const [loading, setLoading] = useState(true);
   const [newAccessToken, setNewAccessToken] = useState("");
   const [total, setTotal] = useState(0);
 
@@ -35,6 +36,7 @@ const Cart = () => {
         .then((res) => {
           dispatch(cartsUser(res.data?.result));
           setTotal(res.data?.total);
+          setLoading(false);
         })
         .catch((error) => {
           if (
@@ -67,6 +69,14 @@ const Cart = () => {
       subtotalPrice: cart.quantity * cart.Warehouse_stock?.Product?.price,
     };
   });
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div>

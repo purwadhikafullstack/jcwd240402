@@ -1,8 +1,8 @@
 import React from "react";
 
-import verifyPage from "../../assets/images/verify.webp";
-import { removeCookie } from "../../utils/tokenSetterGetter";
-import NotifVerifies from "../../components/user/notif/NotifVerifies";
+import verifyPage from "../../../assets/images/verify.webp";
+import { removeCookie } from "../../../utils/tokenSetterGetter";
+import NotifVerifies from "./NotifVerifies";
 
 const NotifVerify = () => {
   const msg = "Please Check Your Email to Verify Your Account";

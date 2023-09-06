@@ -26,6 +26,7 @@ import { cartsUser } from "../../features/cartSlice";
 import { useDispatch } from "react-redux";
 import productNotFound from "../../assets/images/productNotFound.png";
 import { profileUser } from "../../features/userDataSlice";
+import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -104,6 +105,7 @@ const ProductDetail = () => {
           setQty(0);
           setSuccessMsg(res.data?.message);
           setOpenAlert(true);
+          setLoading(false);
         });
     } catch (error) {
       if (!error.response) {
@@ -112,6 +114,7 @@ const ProductDetail = () => {
         setErrMsg(error.response?.data?.message);
         setOpenAlert(true);
         setQty(0);
+        setLoading(false);
       }
     }
   };
@@ -247,12 +250,7 @@ const ProductDetail = () => {
           </div>
         </div>
         <div className="relative z-0">
-          {/* {listCategory.map((item) => (
-            <div key={item.id}>
-              <h1 className="font-bold mx-3 lg:text-3xl">{item.name}</h1>
-              <CarouselProduct productsData={productsData} />
-            </div>
-          ))} */}
+          <ShowCaseProduct perPage={10} />
         </div>
       </div>
       <FooterDesktop />

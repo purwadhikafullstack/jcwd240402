@@ -6,6 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import AlertWithIcon from "../AlertWithIcon";
 import NavbarFilterPagination from "./navbar/NavbarFilterPagination";
 import productNotFound from "../../assets/images/productNotFound.png";
+import Loading from "../Loading";
 
 const ShowCaseProduct = ({ perPage }) => {
   const [productData, setProductData] = useState([]);
@@ -81,7 +82,7 @@ const ShowCaseProduct = ({ perPage }) => {
   if (loading) {
     return (
       <div className=" w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

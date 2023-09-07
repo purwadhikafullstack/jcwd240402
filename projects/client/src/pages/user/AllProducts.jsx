@@ -7,6 +7,7 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import axios from "../../api/axios";
+import Loading from "../../components/Loading";
 
 const AllProducts = () => {
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ const AllProducts = () => {
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

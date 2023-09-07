@@ -41,13 +41,18 @@ const FooterDesktop = () => {
             <div>
               <Footer.Title title="Warehouse Branch" />
               {warehouseList ? (
-                warehouseList.map((item) => (
-                  <Footer.LinkGroup col key={item.id}>
-                    <ul>
-                      <li> {item.warehouse_name}</li>
-                    </ul>
+                <>
+                  {warehouseList.slice(0, 5).map((item) => (
+                    <Footer.LinkGroup col key={item.id}>
+                      <ul>
+                        <li> {item.warehouse_name}</li>
+                      </ul>
+                    </Footer.LinkGroup>
+                  ))}
+                  <Footer.LinkGroup col>
+                    <Link to="/all-warehouse">See More Warehouse</Link>
                   </Footer.LinkGroup>
-                ))
+                </>
               ) : (
                 <p>we will be there in your city soon</p>
               )}

@@ -7,6 +7,7 @@ import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
+import Loading from "../../components/Loading";
 
 const Category = () => {
   const [categoryList, setCategoryList] = useState([]);
@@ -21,7 +22,7 @@ const Category = () => {
   if (loading) {
     return (
       <div className="border-2 w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

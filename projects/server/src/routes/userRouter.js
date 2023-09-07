@@ -10,6 +10,7 @@ const addressUserCoordinate = require("../middleware/openCage/addressUserCoordin
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
+const WarehouseController = require("../controllers/warehouseController");
 
 /* AUTH */
 router.post(
@@ -167,6 +168,14 @@ router.get(
   "/closest",
   Verify.verifyAccessTokenUser,
   UserController.findClosestWarehouse
+);
+
+/* WAREHOUSE */
+router.get("/all-warehouse", WarehouseController.getAllWarehousesForUser);
+router.post(
+  "/warehouse-closest",
+  Verify.verifyAccessTokenUser,
+  UserController.findClosestWarehouseByAddressId
 );
 
 module.exports = router;

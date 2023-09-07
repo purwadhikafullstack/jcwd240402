@@ -27,6 +27,8 @@ import { useDispatch } from "react-redux";
 import productNotFound from "../../assets/images/productNotFound.png";
 import { profileUser } from "../../features/userDataSlice";
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
+import Loading from "../../components/Loading";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -81,6 +83,7 @@ const ProductDetail = () => {
       })
       .catch((error) => {
         setErrMsg(error.response?.data?.message);
+        setLoading(false);
       });
   }, [name]);
 
@@ -130,7 +133,7 @@ const ProductDetail = () => {
   if (loading) {
     return (
       <div className="border-2 w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }
@@ -149,9 +152,9 @@ const ProductDetail = () => {
               errMsg={errMsg}
             />
             {product.length === 0 ? (
-              <div className="w-full h-full flex flex-col justify-center items-center ">
-                <img src={productNotFound} alt="" className="w-1/2 lg:w-1/3" />
-                <p>{errMsg}</p>
+              <div className="w-full h-full mt-10 flex flex-col justify-center items-center ">
+                <AlertWithIcon errMsg={errMsg} />
+                <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
               </div>
             ) : (
               <CarouselProductDetail data={product} />
@@ -170,11 +173,14 @@ const ProductDetail = () => {
           </div>
 
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
-            <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
-
-            <h1 className="font-bold text-xl">
-              {toRupiah(detailProduct.price)}
-            </h1>
+            {product.length === 0 ? null : (
+              <>
+                <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
+                <h1 className="font-bold text-xl">
+                  {toRupiah(detailProduct.price)}
+                </h1>
+              </>
+            )}
 
             <hr />
 

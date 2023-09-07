@@ -14,7 +14,7 @@ const CarouselProductDetail = ({ data }) => {
   return (
     <Carousel
       data={data}
-      time={2000}
+      time={1000}
       width="400px"
       height="400px"
       captionStyle={captionStyle}

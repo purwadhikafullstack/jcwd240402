@@ -1558,6 +1558,89 @@ module.exports = {
     }
   },
 
+  findClosestWarehouseByAddressId: async (req, res) => {
+    const userData = req.user;
+    console.log(userData);
+    const primary_address = req.body.primary_address_id || "ehehe";
+
+    try {
+      const userAddressData = await db.User_detail.findOne({
+        where: { user_id: userData.id, address_user_id: primary_address },
+        include: {
+          model: db.Address_user,
+          attributes: { exclude: ["address_user_id"] },
+          include: { model: db.City, include: { model: db.Province } },
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+
+      if (!userAddressData) {
+        return res.status(404).json({
+          ok: false,
+          message: "User address not found",
+        });
+      }
+
+      const allWarehouseData = await getAllWarehouses({
+        include: { model: db.City, include: { model: db.Province } },
+      });
+
+      const distanceKm = (lat1, lon1, lat2, lon2) => {
+        const r = 6371; // km
+        const p = Math.PI / 180;
+        console.log(lat1);
+        const a =
+          0.5 -
+          Math.cos((lat2 - lat1) * p) / 2 +
+          (Math.cos(lat1 * p) *
+            Math.cos(lat2 * p) *
+            (1 - Math.cos((lon2 - lon1) * p))) /
+            2;
+
+        return 2 * r * Math.asin(Math.sqrt(a));
+      };
+
+      let closestWarehouse = {
+        latitude: allWarehouseData.data[0].latitude,
+        longitude: allWarehouseData.data[0].longitude,
+      };
+
+      for (let i = 0; i < allWarehouseData.data.length; i++) {
+        if (
+          distanceKm(
+            allWarehouseData.data[i].latitude,
+            allWarehouseData.data[i].longitude,
+            userAddressData.Address_user.latitude,
+            userAddressData.Address_user.longitude
+          ) <=
+          distanceKm(
+            closestWarehouse.latitude,
+            closestWarehouse.longitude,
+            userAddressData.Address_user.latitude,
+            userAddressData.Address_user.longitude
+          )
+        ) {
+          closestWarehouse = allWarehouseData.data[i];
+        }
+      }
+
+      res.status(200).json({
+        ok: true,
+        address: userAddressData,
+        warehouse: allWarehouseData,
+        closest_warehouse: closestWarehouse,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "Something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
   uploadPaymentProof: async (req, res) => {
 
     const userId = req.user.id;

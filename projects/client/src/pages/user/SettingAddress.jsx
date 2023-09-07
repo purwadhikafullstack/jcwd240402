@@ -19,6 +19,7 @@ import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
 import addressEmpty from "../../assets/images/addressEmpty.png";
 import withAuthUser from "../../components/user/withAuthUser";
+import Loading from "../../components/Loading";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -26,6 +27,7 @@ const SettingAddress = () => {
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const addressData = useSelector((state) => state.addresser.value);
+  const [loading, setLoading] = useState(true);
 
   console.log(addressData);
 
@@ -47,7 +49,10 @@ const SettingAddress = () => {
       .get("/user/profile", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => dispatch(profileUser(res.data?.result)));
+      .then((res) => {
+        dispatch(profileUser(res.data?.result));
+        setLoading(false);
+      });
   }, [access_token, dispatch]);
 
   useEffect(() => {
@@ -57,9 +62,17 @@ const SettingAddress = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
-        console.log(res.data);
+        setLoading(false);
       });
   }, [access_token, dispatch]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>

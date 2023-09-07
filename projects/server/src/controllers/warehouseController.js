@@ -1,5 +1,5 @@
 const db = require("../models");
-const { getAllWarehouses,getOneWarehouse } = require("../service/warehouse");
+const { getAllWarehouses, getOneWarehouse } = require("../service/warehouse");
 
 module.exports = {
   async registerWarehouse(req, res) {
@@ -42,14 +42,14 @@ module.exports = {
       "warehouse_contact",
       "address_warehouse",
       "latitude",
-      "longitude"
+      "longitude",
     ];
-    
+
     const t = await db.sequelize.transaction();
-  
+
     try {
       const warehouse = await db.Warehouse.findByPk(id, { transaction: t });
-  
+
       if (!warehouse) {
         await t.rollback();
         return res.status(404).send({ message: "Warehouse not found" });
@@ -60,10 +60,10 @@ module.exports = {
           warehouse[field] = req.body[field];
         }
       });
-  
+
       await warehouse.save({ transaction: t });
       await t.commit();
-  
+
       return res.status(200).send({
         message: "Warehouse updated successfully",
         data: warehouse,
@@ -77,17 +77,17 @@ module.exports = {
       });
     }
   },
-  
+
   async getWarehouseByName(req, res) {
     const warehouseName = req.params.name;
-  
+
     try {
       const response = await getOneWarehouse({ warehouse_name: warehouseName });
-  
+
       if (response.success && response.data) {
         res.status(200).send({
           message: "Warehouse details retrieved successfully",
-          warehouse: response.data
+          warehouse: response.data,
         });
       } else if (response.success && !response.data) {
         res.status(404).send({
@@ -100,7 +100,7 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "Fatal error on server",
-        errors: error.message
+        errors: error.message,
       });
     }
   },
@@ -143,6 +143,25 @@ module.exports = {
       } else {
         throw new Error(response.error);
       }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  getAllWarehousesForUser: async (req, res) => {
+    try {
+      const result = await db.Warehouse.findAll({
+        include: [{ model: db.City, include: [{ model: db.Province }] }],
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+      });
+      res.status(200).json({
+        ok: true,
+        result,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).send({

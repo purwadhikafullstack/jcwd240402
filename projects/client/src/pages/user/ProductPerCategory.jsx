@@ -20,6 +20,7 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import NavbarFilterPagination from "../../components/user/navbar/NavbarFilterPagination";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import Loading from "../../components/Loading";
 
 const ProductPerCategory = () => {
   const { categoryName } = useParams();
@@ -151,7 +152,7 @@ const ProductPerCategory = () => {
   if (loading) {
     return (
       <div className="border-2 w-full h-screen flex justify-center items-center">
-        Loading...
+        <Loading />
       </div>
     );
   }

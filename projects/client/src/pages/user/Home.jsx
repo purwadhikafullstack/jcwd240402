@@ -29,6 +29,7 @@ import { profileUser } from "../../features/userDataSlice";
 
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import { Link } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 const Home = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -39,6 +40,7 @@ const Home = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const [category, setCategory] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategory(res.data.result));
@@ -47,6 +49,7 @@ const Home = () => {
   useEffect(() => {
     axios.get(`/user/products-per-category`).then((res) => {
       setProductData(res.data?.result);
+      setLoading(false);
     });
   }, []);
 
@@ -110,6 +113,14 @@ const Home = () => {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <div>
       <NavbarDesktop />
@@ -157,7 +168,7 @@ const Home = () => {
           <h1 className="font-bold text-center lg:text-3xl mb-2">
             Our Products
           </h1>
-          <ShowCaseProduct perPage={10} />
+          <ShowCaseProduct perPage={15} />
         </div>
         <div className="">
           <ServiceCard services={services} />

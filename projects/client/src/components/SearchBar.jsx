@@ -27,10 +27,15 @@ const SearchBar = ({
         .then((res) => {
           setSearchProduct("");
           if (searchProduct) {
-            navigate(`/product/${searchProduct}`);
+            console.log(searchProduct);
             setSearchProduct("");
+            navigate(`/product/${searchProduct}`);
+            return;
           }
-        });
+          setSearchProduct("");
+          navigate("/all-product");
+        })
+        .catch((error) => navigate(`/product/not-found/${searchProduct}`));
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -63,9 +68,15 @@ const SearchBar = ({
             onChange={(e) => {
               setSearchProduct(e.target.value);
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleSearch();
+              }
+            }}
           />
           <span
-            className={`absolute ${position}  md:left-[565px]  top-1/2 transform -translate-y-1/2 text-lg`}
+            className={`absolute ${position} md:left-[560px] lg:left-[335px] top-1/2 transform -translate-y-1/2 text-lg`}
           >
             <button
               className={`flex justify-center items-center w-12 h-7 ${bgColor} rounded-lg`}
@@ -87,6 +98,7 @@ const SearchBar = ({
                     key={idx}
                     className="p-2 relative gap-2 flex border-t-2 "
                     to={`/product/${item.name}`}
+                    onClick={() => setSearchProduct("")}
                   >
                     <img
                       src={`${process.env.REACT_APP_API_BASE_URL}${item.img}`}

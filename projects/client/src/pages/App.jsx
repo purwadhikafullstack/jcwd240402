@@ -39,6 +39,8 @@ import InventoryTransferList from "../components/admin/inventoryTransfer/Invento
 import SettingOrder from "./user/SettingOrder";
 import AllCategories from "./user/AllCategories";
 import AllProducts from "./user/AllProducts";
+import AllWarehouse from "./user/AllWarehouse";
+import NotFoundProduct from "./user/NotFoundProduct";
 
 function App() {
   return (
@@ -135,6 +137,11 @@ function App() {
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
           <Route path="/all-category" element={<AllCategories />} />
           <Route path="/all-product" element={<AllProducts />} />
+          <Route path="/all-warehouse" element={<AllWarehouse />} />
+          <Route
+            path="/product/not-found/:name"
+            element={<NotFoundProduct />}
+          />
         </Routes>
       </Router>
     </div>

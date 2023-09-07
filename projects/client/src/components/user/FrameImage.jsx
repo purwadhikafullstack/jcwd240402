@@ -9,7 +9,7 @@ import banner12 from "../../assets/images/banner_12.png";
 
 const FrameImage = () => {
   const fourSquare = [
-    { to: "", img: banner10 },
+    { to: "/all-warehouse", img: banner10 },
     {
       to: "https://api.whatsapp.com/send/?phone=6289652433206&text=Hi!+I+have+a+great+interior+design+idea+and+I'm+looking+for+an+expert+to+help+me+bring+it+to+life.%0AI'd+like+to+discuss+my+idea+of+(briefly+describe+your+idea+here).+Could+you+provide+me+with+some+insights+and+assistance%3F&type=phone_number&app_absent=0",
       img: banner9,
@@ -29,8 +29,8 @@ const FrameImage = () => {
       </div>
       <div className="grid gap-2 lg:gap-4 md:gap-4 grid-cols-2 grid-rows-2  row-span-1 md:col-span-1 lg:col-span-1">
         {fourSquare.map((item, idx) => (
-          <div className=" cols-span-1 row-span-1" key={idx}>
-            <Link to={item.to}>
+          <div className=" cols-span-1 row-span-1 " key={idx}>
+            <Link to={item.to} className="cursor-pointer">
               <img src={item.img} alt="" />
             </Link>
           </div>

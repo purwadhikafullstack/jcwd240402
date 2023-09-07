@@ -1449,15 +1449,13 @@ module.exports = {
   },
 
   createNewOrder: async (req, res) => {
+
     const {
       user_id,
-      order_status_id,
       total_price,
       delivery_price,
       delivery_courier,
       delivery_time,
-      tracking_code,
-      no_invoice,
       address_user_id,
       warehouse_id,
     } = req.body;
@@ -1465,12 +1463,11 @@ module.exports = {
     try {
       const newOrder = await db.Order.create({
         user_id,
-        order_status_id,
+        order_status_id: 1,
         total_price,
         delivery_price,
         delivery_courier,
         delivery_time,
-        tracking_code,
         no_invoice,
         address_user_id,
         warehouse_id,
@@ -1488,6 +1485,7 @@ module.exports = {
       });
     }
   },
+  
 
   findClosestWarehouse: async (req, res) => {
     const userData = req.user;
@@ -1561,7 +1559,7 @@ module.exports = {
   findClosestWarehouseByAddressId: async (req, res) => {
     const userData = req.user;
     console.log(userData);
-    const primary_address = req.body.primary_address_id || "ehehe";
+    const primary_address = req.body.primary_address_id;
 
     try {
       const userAddressData = await db.User_detail.findOne({
@@ -1641,28 +1639,39 @@ module.exports = {
     }
   },
 
+  
+
   uploadPaymentProof: async (req, res) => {
 
     const userId = req.user.id;
-    const paymentImage = req.files;
+    const paymentImage = req.file?.filename;
 
     try {
       const orderData = await db.Order.findOne({
-        where: { user_id: userId, order_status_id: 1},
+        where: { user_id: userId, order_status_id: 3},
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
+          
         },
       });
       if (!orderData) {
         return res.status(404).json({
           ok: false,
-          message: "user not found",
+          message: "order not found",
         });
       }
 
+      const orderDataWithPaymentProof = await db.Order.update(
+        {
+          img_payment: `payment-proof/${paymentImage}`,
+          order_status_id: 6
+        },
+        { where: { user_id: userId }}
+      );
+
       res.status(200).json({
         ok: true,
-        order: newOrder,
+        order: orderDataWithPaymentProof,
       });
     } catch (error) {
       res.status(500).json({

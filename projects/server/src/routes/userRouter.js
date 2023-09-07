@@ -10,6 +10,7 @@ const addressUserCoordinate = require("../middleware/openCage/addressUserCoordin
 const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
+const handlePaymentProofUpload = require("../middleware/multer/user/paymentProof");
 const WarehouseController = require("../controllers/warehouseController");
 
 /* AUTH */
@@ -168,6 +169,13 @@ router.get(
   "/closest",
   Verify.verifyAccessTokenUser,
   UserController.findClosestWarehouse
+);
+
+router.patch(
+  "/payment-proof",
+  Verify.verifyAccessTokenUser,
+  handlePaymentProofUpload,
+  UserController.uploadPaymentProof
 );
 
 /* WAREHOUSE */

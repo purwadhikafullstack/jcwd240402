@@ -121,6 +121,12 @@ const CheckOut = () => {
       });
   };
 
+  const handlePaymentClick = () => {
+
+
+
+  };
+
   const handleCourierService = (courier) => {
     setChosenCourierService(courier.label);
     setChosenCourierPrice(courier.value);
@@ -226,7 +232,7 @@ const CheckOut = () => {
               <hr className="border-2 " />
               <h1>Total Payment: {toRupiah(totalPrice)}</h1>
               <h1>delivering from: {closestWarehouse.warehouse_name}</h1>
-              <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
+              <button onClick={handlePaymentClick} className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>
             </div>

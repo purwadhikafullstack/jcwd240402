@@ -1557,4 +1557,37 @@ module.exports = {
       });
     }
   },
+
+  uploadPaymentProof: async (req, res) => {
+
+    const userId = req.user.id;
+    const paymentImage = req.files;
+
+    try {
+      const orderData = await db.Order.findOne({
+        where: { user_id: userId, order_status_id: 1},
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "user_id"],
+        },
+      });
+      if (!orderData) {
+        return res.status(404).json({
+          ok: false,
+          message: "user not found",
+        });
+      }
+
+      res.status(200).json({
+        ok: true,
+        order: newOrder,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
 };

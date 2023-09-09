@@ -1468,7 +1468,6 @@ module.exports = {
         delivery_price,
         delivery_courier,
         delivery_time,
-        no_invoice,
         address_user_id,
         warehouse_id,
       });

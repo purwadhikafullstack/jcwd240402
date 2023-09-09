@@ -171,6 +171,12 @@ router.get(
   UserController.findClosestWarehouse
 );
 
+router.post(
+  "/check-out",
+  Verify.verifyAccessTokenUser,
+  UserController.createNewOrder
+);
+
 router.patch(
   "/payment-proof",
   Verify.verifyAccessTokenUser,

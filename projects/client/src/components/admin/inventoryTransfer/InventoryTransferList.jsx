@@ -18,6 +18,9 @@ const InventoryTransferList = () => {
     fetchTransfers();
   }, [currentPage]);
 
+  useEffect(() => {
+  }, [selectedTransfer]);
+
   const fetchTransfers = async () => {
     try {
       const response = await axios.get(`/admin/transfers`, {
@@ -25,11 +28,9 @@ const InventoryTransferList = () => {
           page: currentPage,
         },
       });
-
       if (response.data && response.data.transfers) {
         setTransfers(response.data.transfers);
       }
-
       if (response.data && response.data.pagination) {
         setTotalPages(response.data.pagination.totalPages);
       }
@@ -48,7 +49,8 @@ const InventoryTransferList = () => {
             "Product Name",
             "Quantity",
             "Status",
-            "Date",
+            "Request Date",
+            "Response Date"
           ]}
           data={transfers.map((transfer) => ({
             "Transfer ID": transfer.id,
@@ -56,7 +58,8 @@ const InventoryTransferList = () => {
             "To Warehouse": transfer.ToWarehouse.toWarehouseName,
             "Product Name": transfer.Warehouse_stock.Product.name,
             Quantity: transfer.quantity,
-            Date: moment(transfer.timestamp).format("DD/MM/YY HH:mm"),
+            "Request Date": moment(transfer.createdAt).format("DD/MM/YY HH:mm"),
+            "Response Date": transfer.status !== "Pending" ? moment(transfer.updatedAt).format("DD/MM/YY HH:mm") : "-",
             Status: transfer.status,
             _original: transfer,
           }))}
@@ -67,7 +70,9 @@ const InventoryTransferList = () => {
           showIcon={false}
           showApproveReject={true}
           onApproveReject={(row) => {
+            console.log(row)
             setSelectedTransfer(row._original);
+            console.log(selectedTransfer)
             setShowApproveRejectModal(true);
           }}
         />
@@ -95,3 +100,9 @@ const InventoryTransferList = () => {
 };
 
 export default InventoryTransferList;
+
+
+
+
+
+

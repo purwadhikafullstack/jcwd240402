@@ -47,7 +47,7 @@ module.exports = {
           quantity: quantity,
           status: "Pending",
           transaction_code: "TRX" + Date.now(),
-          timestamp: db.Sequelize.fn('NOW'),
+          timestamp: db.Sequelize.fn("NOW"),
         },
         { transaction: t }
       );
@@ -216,29 +216,26 @@ module.exports = {
   async getInventoryTransferList(req, res) {
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
-    const productId = req.query.productId;
-  
+    const productName = req.query.productName;
+    const to_warehouse_id = req.query.warehouseId;
+    const sortOrder = req.query.sortOrder === "asc" ? "ASC" : "DESC";
+    const status = req.query.status; 
+
     let options = {
-      where: {}
+      order: [["createdAt", sortOrder]],
+      productName: productName,
+      warehouseId: to_warehouse_id,
+      status: status
     };
-  
-    if (productId) {
-      const warehouseStocks = await db.Warehouse_stock.findAll({
-        where: { product_id: productId },
-        attributes: ["id"]
-      });
-      const warehouseStockIds = warehouseStocks.map((stock) => stock.id);
-      options.where.warehouse_stock_id = warehouseStockIds;
-    }
-  
+
     try {
       const response = await getAllInventoryTransfers(options, page, perPage);
-  
+
       if (response.success) {
         res.status(200).send({
           message: "Inventory transfer list retrieved successfully",
           transfers: response.data,
-          pagination: response.pagination
+          pagination: response.pagination,
         });
       } else {
         throw new Error(response.error);
@@ -247,9 +244,9 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "Fatal error on server",
-        errors: error.message
+        errors: error.message,
       });
     }
-  },
-  
+}
+
 };

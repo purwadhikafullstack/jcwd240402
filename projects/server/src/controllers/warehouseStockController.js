@@ -105,64 +105,24 @@ module.exports = {
   },
 
   async getWarehouseStocks(req, res) {
-    const page = Number(req.query.page) || 1;
-    const pageSize = Number(req.query.pageSize) || 20;
-    const searchWarehouseName = req.query.warehouseName;
-
-    const options = {
-      where: {},
-      include: [
-        {
-          model: db.Product,
-          as: "Product",
-          attributes: ["name", "description"],
-        },
-        {
-          model: db.Warehouse,
-          as: "Warehouse",
-          attributes: ["id", "warehouse_name"],
-          ...(searchWarehouseName && {
-            where: {
-              warehouse_name: {
-                [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
-              },
-            },
-          }),
-        },
-      ],
-    };
-
     try {
-      const stockResponse = await getAllWarehouseStocks(
-        options,
-        page,
-        pageSize
-      );
-      const stocks = stockResponse.data;
+      const options = {
+        page: Number(req.query.page) || 1,
+        pageSize: Number(req.query.pageSize) || 20,
+        warehouseId: req.query.warehouseId, 
+        categoryId: req.query.categoryId,
+        productName: req.query.productName,
+      };
+
+      const stockResponse = await getAllWarehouseStocks(options);
 
       if (!stockResponse.success) {
         throw new Error(stockResponse.error);
       }
 
-      const groupedStocks = stocks.reduce((acc, stock) => {
-        const warehouseName = stock.Warehouse.warehouse_name;
-        const warehouseId = stock.Warehouse.id;
-        if (!acc[warehouseName]) {
-          acc[warehouseName] = [];
-        }
-        acc[warehouseName].push({
-          warehouse_id: warehouseId,
-          product_stock: stock.product_stock,
-          createdAt: stock.createdAt,
-          updatedAt: stock.updatedAt,
-          Product: stock.Product,
-        });
-        return acc;
-      }, {});
-
       res.status(200).send({
         message: "Warehouse stocks fetched successfully",
-        stocks: groupedStocks,
+        stocks: stockResponse.data,
         pagination: stockResponse.pagination,
       });
     } catch (error) {
@@ -220,7 +180,6 @@ module.exports = {
   },
 
   getAllWarehouseStockFilter: async (req, res) => {
-
     const findMaxWeight = await db.Product.findOne({
       attributes: [Sequelize.fn("MAX", Sequelize.col("weight"))],
       raw: true,
@@ -248,11 +207,6 @@ module.exports = {
       maxStock = findMaxStock[item];
     }
     console.log(maxStock);
-
-    const pagination = {
-      page: Number(req.query.page) || 1,
-      perPage: Number(req.query.perPage) || 9,
-      searchWarehouseName: req.query.warehouseName || undefined,
 
     const pagination = {
       page: Number(req.query.page) || 1,
@@ -284,7 +238,6 @@ module.exports = {
                   },
                   is_active: true,
                 }
-
               : {
                   is_active: true,
                   weight: {
@@ -342,7 +295,6 @@ module.exports = {
       });
 
       const totalCount = await db.Warehouse_stock.count({
-
         attributes: { exclude: ["updatedAt", "createdAt"] },
 
         include: [
@@ -356,7 +308,6 @@ module.exports = {
                   },
                   is_active: true,
                 }
-
               : {
                   is_active: true,
                   weight: {
@@ -469,7 +420,6 @@ module.exports = {
         result,
       });
     } catch (error) {
-
       res.status(500).json({
         message: "An error occurred while fetching product stocks",
         error: error.message,

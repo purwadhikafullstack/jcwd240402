@@ -8,6 +8,7 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const Category = () => {
   const [categoryList, setCategoryList] = useState([]);
@@ -31,6 +32,9 @@ const Category = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[{ title: ["Category"], link: "/product-category" }]}
+      />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex flex-col gap-4">
           {categoryList == false ? (
@@ -39,7 +43,7 @@ const Category = () => {
             <div className="flex justify-between items-end">
               <h1 className="font-bold mt-4 text-xl">All Categories</h1>
               <Link
-                to="/all-category"
+                to="/all-categories"
                 className="flex items-center text-xs md:text-sm lg:text-sm hover:underline hover:decoration-black"
               >
                 see more category

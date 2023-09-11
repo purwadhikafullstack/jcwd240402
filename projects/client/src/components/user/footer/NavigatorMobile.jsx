@@ -55,7 +55,7 @@ const NavigatorMobile = () => {
   }, [access_token, dispatch, newAccessToken, refresh_token]);
 
   return (
-    <div className="sticky bottom-0 lg:hidden ">
+    <div className="sticky bottom-0 z-20 lg:hidden ">
       <div className="bg-blue4 w-full h-12 grid grid-cols-4 justify-center items-center">
         {/* HOME */}
         <div

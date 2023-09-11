@@ -20,6 +20,7 @@ import { profileUser } from "../../features/userDataSlice";
 import addressEmpty from "../../assets/images/addressEmpty.png";
 import withAuthUser from "../../components/user/withAuthUser";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -78,6 +79,12 @@ const SettingAddress = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Profile"], link: "/user/setting" },
+          { title: ["Address"], link: "/user/setting/address" },
+        ]}
+      />
       <div className="min-h-screen mt-4 mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 ">
         <div className=" lg:grid lg:grid-cols-5 gap-4 mb-4 lg:mb-0 ">
           <CardProfile />

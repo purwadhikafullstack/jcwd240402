@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   AiFillCloseCircle,
   AiFillPlusSquare,
@@ -10,19 +9,13 @@ import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
-
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import ModalLogin from "../../components/user/modal/ModalLogin";
-
 import productNotFound from "../../assets/images/productNotFound.png";
-
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
-
 import AlertWithIcon from "../../components/AlertWithIcon";
-import { useParams } from "react-router-dom";
 
 const NotFoundProduct = () => {
-  const { name } = useParams();
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
 
@@ -34,7 +27,7 @@ const NotFoundProduct = () => {
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
             <div className="w-full h-full mt-10 flex flex-col justify-center items-center ">
-              <AlertWithIcon errMsg={`product ${name} not found`} />
+              <AlertWithIcon errMsg={`product not found`} />
               <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
             </div>
           </div>

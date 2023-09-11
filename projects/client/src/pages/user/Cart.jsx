@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { cartsUser } from "../../features/cartSlice";
 import withAuthUser from "../../components/user/withAuthUser";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const Cart = () => {
   const access_token = getCookie("access_token");
@@ -83,6 +84,7 @@ const Cart = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb crumbs={[{ title: ["Cart"], link: "/cart" }]} />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <h1 className="text-xl font-bold md:text-2xl lg:text-3xl">
           Your Shopping Cart

@@ -21,6 +21,7 @@ import { profileUser } from "../../features/userDataSlice";
 import NavbarFilterPagination from "../../components/user/navbar/NavbarFilterPagination";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const ProductPerCategory = () => {
   const { categoryName } = useParams();
@@ -161,6 +162,15 @@ const ProductPerCategory = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Category"], link: "/product-category" },
+          {
+            title: ["Product per Category"],
+            link: "/product/product-category/",
+          },
+        ]}
+      />
       <div
         className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32"
         id="back-to-the-top"

@@ -543,7 +543,7 @@ module.exports = {
             attributes: {
               exclude: ["updatedAt", "deletedAt", "createdAt"],
             },
-            where: whereCondition, // Menggunakan kondisi pencarian di sini
+            where: whereCondition,
           },
           {
             model: db.Image_product,

@@ -86,7 +86,7 @@ const NavbarDesktop = () => {
         </Link>
         <div className="flex w-60 justify-around">
           <Link to="/product-category">Categories</Link>
-          <Link to="/all-product">Products</Link>
+          <Link to="/all-products">Products</Link>
         </div>
         <div className="w-96">
           <SearchBar

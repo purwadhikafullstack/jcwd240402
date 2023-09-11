@@ -171,4 +171,21 @@ module.exports = {
       });
     }
   },
+  getAllCategoryWithParanoid: async (req, res) => {
+    try {
+      const allCategory = await db.Category.findAll({
+        attributes: { exclude: ["deletedAt", "updatedAt", "createdAt"] },
+        paranoid: false,
+      });
+      res.json({
+        ok: true,
+        result: allCategory,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
 };

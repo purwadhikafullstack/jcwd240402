@@ -117,6 +117,7 @@ router.get(
 
 /* CATEGORY */
 router.get("/category", CategoryController.getAllCategory);
+router.get("/paranoid-category", CategoryController.getAllCategoryWithParanoid);
 
 /* WAREHOUSE STOCK */
 

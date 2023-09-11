@@ -6,6 +6,7 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const AllCategories = () => {
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,15 @@ const AllCategories = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Category"], link: "/product-category" },
+          {
+            title: ["All Categories"],
+            link: "/all-categories",
+          },
+        ]}
+      />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
           {categoryProducts.map((categoryProduct) => (

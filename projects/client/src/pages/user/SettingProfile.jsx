@@ -19,11 +19,11 @@ import ModalEditUsername from "../../components/user/modal/ModalEditUsername";
 import ModalEditFirstName from "../../components/user/modal/ModalEditFirstName";
 import ModalEditLastName from "../../components/user/modal/ModalEditLastName";
 import ModalEditPhone from "../../components/user/modal/ModalEditPhone";
-import ModalEditEmail from "../../components/user/modal/ModalEditEmail";
 import ModalEditPasswordUser from "../../components/user/modal/ModalEditPasswordUser";
 import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProfileImage";
 import withAuthUser from "../../components/user/withAuthUser";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -69,6 +69,7 @@ const SettingProfile = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb crumbs={[{ title: ["Profile"], link: "/user/setting" }]} />
       <div className="min-h-screen mt-4 mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 ">
         <div className="lg:grid lg:grid-cols-5 gap-4 mb-4 md:mb-0 lg:mb-0 ">
           <CardProfile />

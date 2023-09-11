@@ -135,8 +135,8 @@ function App() {
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
           <Route path="/forgot-password" element={<NotifForgotPassword />} />
-          <Route path="/all-category" element={<AllCategories />} />
-          <Route path="/all-product" element={<AllProducts />} />
+          <Route path="/all-categories" element={<AllCategories />} />
+          <Route path="/all-products" element={<AllProducts />} />
           <Route path="/all-warehouse" element={<AllWarehouse />} />
           <Route
             path="/product/not-found/:name"

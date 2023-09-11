@@ -29,6 +29,7 @@ import { profileUser } from "../../features/userDataSlice";
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import Loading from "../../components/Loading";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -142,6 +143,12 @@ const ProductDetail = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Products"], link: "/all-products" },
+          { title: [`${name}`], link: `/product/${name}` },
+        ]}
+      />
       <div className="min-h-screen mx-6 mb-8 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">

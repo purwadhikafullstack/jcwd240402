@@ -30,6 +30,7 @@ import { profileUser } from "../../features/userDataSlice";
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const Home = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -125,6 +126,7 @@ const Home = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />

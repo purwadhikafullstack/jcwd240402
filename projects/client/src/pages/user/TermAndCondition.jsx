@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-has-content */
 import React from "react";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -1906,7 +1907,6 @@ const TermAndCondition = () => {
                 id="purchases"
                 style={{ lineHeight: "1.5" }}
               >
-                <a name="_ynub0jdx8pob" />
                 <strong>
                   <span
                     style={{

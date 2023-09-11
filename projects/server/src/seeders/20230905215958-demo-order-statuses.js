@@ -49,6 +49,12 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        id: 7,
+        name: "Order Confirmed",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
   },
 
@@ -59,6 +65,8 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    await queryInterface.bulkDelete("Order_details", null, {});
+    await queryInterface.bulkDelete("Orders", null, {});
     return queryInterface.bulkDelete("Order_statuses", null, {});
   },
 };

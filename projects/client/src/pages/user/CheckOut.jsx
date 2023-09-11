@@ -28,6 +28,7 @@ const CheckOut = () => {
   const [closestWarehouse, setClosestWarehouse] = useState({});
   const [rajaOngkir, setRajaOngkir] = useState({});
   const [serviceOptions, setServiceOptions] = useState({});
+  const [checkoutDetails, SetCheckoutDetails] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalWeight, setTotalWeight] = useState("");
@@ -143,14 +144,14 @@ const CheckOut = () => {
         }
       )
       .then((res) => {
-        for (let i = 0; i < cartData.length; i++) {
+        for (const i in cartData) {
           axios
           .post(
             "/user/check-out-details",
             {
               order_id: res.data?.order?.id,
-              warehouse_stock_id: cartData[i].warehouse_stock_id,
-              quantity: cartData[i].quantity,
+              warehouse_stock_id: cartData[i]?.warehouse_stock_id,
+              quantity: cartData[i]?.quantity,
             },
             {
               headers: { Authorization: `Bearer ${access_token}` },
@@ -159,7 +160,6 @@ const CheckOut = () => {
           .then((res) => {
           });
         }
-        navigate(`/payment`);
       });
   };
 

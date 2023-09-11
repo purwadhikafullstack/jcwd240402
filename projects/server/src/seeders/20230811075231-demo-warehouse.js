@@ -14,6 +14,7 @@ module.exports = {
     */
     return queryInterface.bulkInsert("Warehouses", [
       {
+        id: 1,
         address_warehouse: "Sampora, Cisauk, Tangerang Regency, Banten 15345",
         warehouse_name: "Furnifor BSD",
         city_id: 455,
@@ -24,6 +25,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 2,
         address_warehouse: "Surabaya, Balongsari, Tandes, Surabaya, East Java 60186",
         warehouse_name: "Furnifor Surabaya",
         city_id: 444,

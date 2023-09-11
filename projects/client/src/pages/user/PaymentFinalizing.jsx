@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -25,10 +25,13 @@ const PaymentFinalizing = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
-  const [file, setFile] = useState({})
+  const navigate = useNavigate();
+  const [file, setFile] = useState({});
+  const [isFilePicked, setIsFilePicked] = useState(false);
 
   function handleChange(event) {
-    setFile(event.target.files[0])
+    setFile(event.target.files[0]);
+    setIsFilePicked(true);
   }
 
   const formData = new FormData();
@@ -36,12 +39,16 @@ const PaymentFinalizing = () => {
   formData.append('fileName', file.name);
 
   const handleSubmit = (event) => {
+    event.preventDefault()
       axios
         .patch("/user/payment-proof", formData, {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
           setPaymentProofData(res.data?.order)
+          setTimeout(() => {
+            navigate(`/user/setting/order`);
+          }, 3000);
         });
     };
 
@@ -118,12 +125,25 @@ const PaymentFinalizing = () => {
                       </div>               
                     </div>
                   ))}
-                  <h1>Order Total: {toRupiah(yourOrder?.total_price)}</h1>
+                  <h1>Order Total: {yourOrder?.total_price}</h1>
                   <h1>Courier Used: {yourOrder?.delivery_courier}</h1>
                   <form>
-                    <h1>React File Upload</h1>
-                    <input type="file" onChange={handleChange}/>
-                    <button type="submit">Upload</button>
+                    <h1>Upload Payment Proof</h1>
+                    <input type="file" name="file" onChange={handleChange}/>
+                    {isFilePicked ? (
+                      <div>
+                        <p>Filename: {file.name}</p>
+                        <p>Filetype: {file.type}</p>
+                        <p>Size in bytes: {file.size}</p>
+                        <p>
+                          lastModifiedDate:{' '}
+                          {file.lastModifiedDate.toLocaleDateString()}
+                        </p>
+                      </div>
+                    ) : (
+                      <p>Select a file to show details</p>
+                    )}
+                    <button onClick={handleSubmit} type="submit">Upload</button>
                   </form>
                   <Badge color="green" className="w-fit">
                       {yourOrder?.Order_status?.name}

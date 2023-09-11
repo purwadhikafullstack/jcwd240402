@@ -143,6 +143,22 @@ const CheckOut = () => {
         }
       )
       .then((res) => {
+        for (let i = 0; i < cartData.length; i++) {
+          axios
+          .post(
+            "/user/check-out-details",
+            {
+              order_id: res.data?.order?.id,
+              warehouse_stock_id: cartData[i].warehouse_stock_id,
+              quantity: cartData[i].quantity,
+            },
+            {
+              headers: { Authorization: `Bearer ${access_token}` },
+            }
+          )
+          .then((res) => {
+          });
+        }
         navigate(`/payment`);
       });
   };

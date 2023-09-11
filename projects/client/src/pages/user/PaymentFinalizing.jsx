@@ -5,7 +5,6 @@ import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import { useDispatch, useSelector } from "react-redux";
-import ModalSetPrimaryAddress from "../../components/user/modal/ModalSetPrimaryAddress";
 import axios from "../../api/axios";
 import {
   getCookie,
@@ -15,19 +14,36 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
-import Select from "react-select";
 import toRupiah from "@develoka/angka-rupiah-js";
+import { Badge } from "flowbite-react";
 
 const PaymentFinalizing = () => {
-  const userData = useSelector((state) => state.profiler.value);
-  const cartData = useSelector((state) => state.carter.value);
-  const addressData = useSelector((state) => state.addresser.value);
   const [totalCart, setTotalCart] = useState(0);
-  const [yourOrder, setYourOrder] = useState(0);
+  const [paymentProofData, setPaymentProofData] = useState("");
+  const [yourOrder, setYourOrder] = useState({});
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const [file, setFile] = useState({})
+
+  function handleChange(event) {
+    setFile(event.target.files[0])
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('fileName', file.name);
+
+  const handleSubmit = (event) => {
+      axios
+        .patch("/user/payment-proof", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setPaymentProofData(res.data?.order)
+        });
+    };
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -75,7 +91,7 @@ const PaymentFinalizing = () => {
 
   useEffect(() => {
     axios
-      .get("/user/order", {
+      .get("/user/current-order", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -89,6 +105,33 @@ const PaymentFinalizing = () => {
       <NavbarMobile />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <h1 className="text-xl font-bold">Payment</h1>
+        <div className="p-4">
+              <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                    <div className="p-4">
+                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                      <h1>{yourOrder.delivery_time}</h1>
+                      {yourOrder.Order_details.map((details) => (
+                    <div className="p-1">
+                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">        
+                          <h1 className="font-bold">{details.Warehouse_stock?.Product?.name}</h1>
+                          <h1> {details.quantity} unit</h1>
+                      </div>               
+                    </div>
+                  ))}
+                  <h1>Order Total: {toRupiah(yourOrder?.total_price)}</h1>
+                  <h1>Courier Used: {yourOrder.delivery_courier}</h1>
+                  <form>
+                    <h1>React File Upload</h1>
+                    <input type="file" onChange={handleChange}/>
+                    <button type="submit">Upload</button>
+                  </form>
+                  <Badge color="green" className="w-fit">
+                      {yourOrder.Order_status?.name}
+                    </Badge>
+                      </div>
+                    </div>
+              </div>
+          </div>
       </div>
       <FooterDesktop />
       <NavigatorMobile />

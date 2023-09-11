@@ -1482,6 +1482,34 @@ module.exports = {
       });
     }
   },
+
+  createNewOrderDetails: async (req, res) => {
+
+    const {
+      order_id,
+      warehouse_stock_id,
+      quantity,
+    } = req.body;
+
+    try {
+      const newOrderDetails = await db.Order_detail.create({
+        order_id,
+        warehouse_stock_id,
+        quantity,
+      });
+
+      res.status(200).json({
+        ok: true,
+        order: newOrderDetails,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
   
 
   findClosestWarehouse: async (req, res) => {
@@ -1645,7 +1673,7 @@ module.exports = {
 
     try {
       const orderData = await db.Order.findOne({
-        where: { user_id: userId, order_status_id: 3},
+        where: { user_id: userId, order_status_id: 1},
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
           
@@ -1674,6 +1702,44 @@ module.exports = {
       res.status(500).json({
         ok: false,
         message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  getCurrentOrderList: async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const orderList = await db.Order.findOne({
+        where: { user_id: userId },
+        include: [
+        { model: db.Order_status,
+          where: { id: 1 },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+        { model: db.Order_detail,
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+          include: 
+            { model: db.Warehouse_stock,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: 
+                { model: db.Product,
+                  attributes: { exclude: ["createdAt", "updatedAt"] },
+                },
+              
+            },
+          
+        },
+      ]
+      });
+
+      res.json({
+        ok: true,
+        order: orderList,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
         error: error.message,
       });
     }

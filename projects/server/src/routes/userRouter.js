@@ -157,6 +157,8 @@ router.patch(
 
 router.get("/order", Verify.verifyAccessTokenUser, UserController.getOrderList);
 
+router.get("/current-order", Verify.verifyAccessTokenUser, UserController.getCurrentOrderList);
+
 router.get("/city", Verify.verifyAccessTokenUser, UserController.getCity);
 
 router.post(
@@ -175,6 +177,12 @@ router.post(
   "/check-out",
   Verify.verifyAccessTokenUser,
   UserController.createNewOrder
+);
+
+router.post(
+  "/check-out-details",
+  Verify.verifyAccessTokenUser,
+  UserController.createNewOrderDetails
 );
 
 router.patch(

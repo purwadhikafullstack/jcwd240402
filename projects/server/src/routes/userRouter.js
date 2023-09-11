@@ -165,10 +165,10 @@ router.post(
   UserController.getCost
 );
 
-router.get(
+router.post(
   "/closest",
   Verify.verifyAccessTokenUser,
-  UserController.findClosestWarehouse
+  UserController.findClosestWarehouseByAddressId
 );
 
 router.post(

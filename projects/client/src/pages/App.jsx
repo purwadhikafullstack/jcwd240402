@@ -41,6 +41,7 @@ import AllCategories from "./user/AllCategories";
 import AllProducts from "./user/AllProducts";
 import AllWarehouse from "./user/AllWarehouse";
 import NotFoundProduct from "./user/NotFoundProduct";
+import PaymentFinalizing from "./user/PaymentFinalizing";
 
 function App() {
   return (
@@ -113,6 +114,7 @@ function App() {
           <Route path="/product/:name" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
+          <Route path="/payment" element={<PaymentFinalizing />} />
           <Route
             path="/product/product-category/:categoryName"
             element={<ProductPerCategory />}

@@ -1455,7 +1455,6 @@ module.exports = {
       total_price,
       delivery_price,
       delivery_courier,
-      delivery_time,
       address_user_id,
       warehouse_id,
     } = req.body;
@@ -1467,7 +1466,6 @@ module.exports = {
         total_price,
         delivery_price,
         delivery_courier,
-        delivery_time,
         address_user_id,
         warehouse_id,
       });

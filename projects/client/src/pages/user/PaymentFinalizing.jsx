@@ -114,21 +114,22 @@ const PaymentFinalizing = () => {
         <h1 className="text-xl font-bold">Payment</h1>
         <div className="p-4">
               <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
-                    <div className="p-4">
-                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                  <div className="grid grid-cols-2 p-4">
+                      <div className="">
                       <h1>{yourOrder?.delivery_time}</h1>
                       {yourOrder?.Order_details?.map((details) => (
                     <div className="p-1">
                       <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">        
-                          <h1 className="font-bold">{details?.Warehouse_stock?.Product?.name}</h1>
+                          <h1 className=" font-bold">{details?.Warehouse_stock?.Product?.name}</h1>
                           <h1> {details?.quantity} unit</h1>
                       </div>               
                     </div>
                   ))}
-                  <h1>Order Total: {yourOrder?.total_price}</h1>
-                  <h1>Courier Used: {yourOrder?.delivery_courier}</h1>
-                  <form>
-                    <h1>Upload Payment Proof</h1>
+                  <h1 className="py-1">Order Total: {yourOrder?.total_price}</h1>
+                  <h1 className="py-1">Courier Used: {yourOrder?.delivery_courier}</h1>
+                  <h1 className="py-1 font-bold">Upload Payment Proof</h1>
+                  <form className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                    
                     <input type="file" name="file" onChange={handleChange}/>
                     {isFilePicked ? (
                       <div>
@@ -143,13 +144,15 @@ const PaymentFinalizing = () => {
                     ) : (
                       <p>Select a file to show details</p>
                     )}
-                    <button onClick={handleSubmit} type="submit">Upload</button>
+                    <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={handleSubmit} type="submit">Upload</button>
                   </form>
-                  <Badge color="green" className="w-fit">
-                      {yourOrder?.Order_status?.name}
-                    </Badge>
-                      </div>
                     </div>
+                    <div className="">
+                      <Badge color="green" className="w-fit">
+                          {yourOrder?.Order_status?.name}
+                        </Badge>
+                      </div>
+                  </div>
               </div>
           </div>
       </div>

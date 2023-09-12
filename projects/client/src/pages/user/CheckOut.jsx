@@ -214,10 +214,10 @@ const CheckOut = () => {
                         />
                       </div>
                       <div>
-                        <h1>{item.Warehouse_stock.Product.name}</h1>
-                        <h1>{item.Warehouse_stock.Product.category.name}</h1>
+                        <h1 className="py-1">{item.Warehouse_stock.Product.name}</h1>
+                        <h1 className="py-1">{item.Warehouse_stock.Product.category.name}</h1>
                         {item.Warehouse_stock.Product.description > 25 ? (
-                          <h1>
+                          <h1 className="py-1">
                             {item.Warehouse_stock.Product.description.slice(
                               0,
                               25
@@ -225,14 +225,14 @@ const CheckOut = () => {
                             ...
                           </h1>
                         ) : (
-                          <h1>{item.Warehouse_stock.Product.description}</h1>
+                          <h1 className="py-1">{item.Warehouse_stock.Product.description}</h1>
                         )}
 
-                        <h1>
+                        <h1 className="py-1">
                           {toRupiah(item.Warehouse_stock.Product.price)} x{" "}
                           {item.quantity} {item.quantity > 1 ? "units" : "unit"}
                         </h1>
-                        <h1>
+                        <h1 className="py-1">
                           total:{" "}
                           {toRupiah(
                             item.Warehouse_stock.Product.price * item.quantity
@@ -261,13 +261,13 @@ const CheckOut = () => {
             </div>
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
-              <h1>Subtotal price: {toRupiah(totalCart)} </h1>
-              <h1>Shipping price: {toRupiah(chosenCourierPrice)}</h1>
-              <h1>Courier : {chosenCourier}</h1>
-              <h1>Service : {chosenCourierService}</h1>
+              <h1 className="py-1">Subtotal price: {toRupiah(totalCart)} </h1>
+              <h1 className="py-1">Shipping price: {toRupiah(chosenCourierPrice)}</h1>
+              <h1 className="py-1">Courier : {chosenCourier}</h1>
+              <h1 className="py-1">Service : {chosenCourierService}</h1>
               <hr className="border-2 " />
-              <h1>Total Payment: {toRupiah(totalPrice)}</h1>
-              <h1>delivering from: {closestWarehouse.warehouse_name}</h1>
+              <h1 className="py-1">Total Payment: {toRupiah(totalPrice)}</h1>
+              <h1 className="py-1">delivering from: {closestWarehouse.warehouse_name}</h1>
               <button onClick={handlePaymentClick} className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>

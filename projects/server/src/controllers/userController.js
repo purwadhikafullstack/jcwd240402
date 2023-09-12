@@ -1505,7 +1505,7 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "something bad happened 1",
         error: error.message,
       });
     }
@@ -1676,7 +1676,6 @@ module.exports = {
         where: { user_id: userId, order_status_id: 1},
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
-          
         },
       });
       if (!orderData) {
@@ -1689,9 +1688,9 @@ module.exports = {
       const orderDataWithPaymentProof = await db.Order.update(
         {
           img_payment: `payment-proof/${paymentImage}`,
-          order_status_id: 6
+          order_status_id: 2
         },
-        { where: { user_id: userId }}
+        { where: { user_id: userId, order_status_id: 1 }}
       );
 
       res.status(200).json({

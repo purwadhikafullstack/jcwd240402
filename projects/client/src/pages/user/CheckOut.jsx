@@ -144,14 +144,12 @@ const CheckOut = () => {
         }
       )
       .then((res) => {
-        for (const i in cartData) {
           axios
           .post(
             "/user/check-out-details",
             {
               order_id: res.data?.order?.id,
-              warehouse_stock_id: cartData[i]?.warehouse_stock_id,
-              quantity: cartData[i]?.quantity,
+              cart_data: cartData
             },
             {
               headers: { Authorization: `Bearer ${access_token}` },
@@ -160,7 +158,7 @@ const CheckOut = () => {
           .then((res) => {
           });
         }
-      });
+      );
   };
 
   const handleCourierService = (courier) => {

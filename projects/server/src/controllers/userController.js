@@ -1487,16 +1487,25 @@ module.exports = {
 
     const {
       order_id,
-      warehouse_stock_id,
-      quantity,
+      ...cart_data
     } = req.body;
 
+    const newOrderDetails = []
+
     try {
-      const newOrderDetails = await db.Order_detail.create({
-        order_id,
-        warehouse_stock_id,
-        quantity,
-      });
+
+
+      for (const i in cart_data.cart_data) {
+
+        newOrderDetails.push(await db.Order_detail.create({
+          order_id,
+          warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
+          quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
+
+      }
+
 
       res.status(200).json({
         ok: true,

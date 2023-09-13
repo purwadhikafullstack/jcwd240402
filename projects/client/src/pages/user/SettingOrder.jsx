@@ -121,15 +121,16 @@ const SettingOrder = () => {
                     <Badge color="green" className="w-fit">
                       {order.Order_status?.name}
                     </Badge>
+                    {order.Order_status?.id == 1 ?
+                    (<button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={() => navigate("/payment")}>Finish Payment</button>
+                    ) : (
+                      <h1></h1>
+                    )}
+                    
                       </div>
                       
                     <OrderButton statusBefore={order.Order_status?.id} orderId={order.id} />
 
-                    {/* {order.Order_status?.id === 6 ? (
-                      <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 3)}>Confirm</button>
-                    ) : (
-                      <button className="w-full bg-danger1 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 5)}>Cancel</button>
-                    )} */}
                     </div>
                   ))
                 )}

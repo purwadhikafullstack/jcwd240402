@@ -157,6 +157,7 @@ const CheckOut = () => {
           )
           .then((res) => {
           });
+          navigate("/payment")
         }
       );
   };

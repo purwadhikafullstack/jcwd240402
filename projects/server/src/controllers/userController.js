@@ -1423,12 +1423,21 @@ module.exports = {
   },
 
   getCost: async (req, res) => {
+
     const { origin, destination, weight, courier } = req.body;
+
+    const weightlimit = (weight) => {
+      if(weight > 30000){
+        return 30000
+      }else{
+        return weight
+      }
+    }
 
     const data = {
       origin: origin,
       destination: destination,
-      weight: weight,
+      weight: weightlimit(weight),
       courier: courier,
     };
 

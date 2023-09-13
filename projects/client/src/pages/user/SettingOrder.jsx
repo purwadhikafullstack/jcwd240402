@@ -73,6 +73,18 @@ const SettingOrder = () => {
       );
   };
 
+  const OrderButton = ({statusBefore, orderId}) => {
+
+    if(statusBefore === 6){
+      return (<button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(orderId, 3)}>Confirm</button>)
+    }else if(statusBefore === 5){
+      return (<button className="w-full bg-danger3 p-2 font-semibold text-white rounded-md" disabled={true}>Order Canceled</button>)
+    }else{
+      return <button className="w-full bg-danger1 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(orderId, 5)}>Cancel</button>
+    }
+    
+  }
+
   return (
     <div>
       <NavbarDesktop />
@@ -110,11 +122,14 @@ const SettingOrder = () => {
                       {order.Order_status?.name}
                     </Badge>
                       </div>
-                    {order.Order_status?.id === 6 ? (
+                      
+                    <OrderButton statusBefore={order.Order_status?.id} orderId={order.id} />
+
+                    {/* {order.Order_status?.id === 6 ? (
                       <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 3)}>Confirm</button>
                     ) : (
                       <button className="w-full bg-danger1 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 5)}>Cancel</button>
-                    )}
+                    )} */}
                     </div>
                   ))
                 )}

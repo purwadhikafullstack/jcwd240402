@@ -5,6 +5,8 @@ import AsyncSelect from "react-select/async";
 import UpdateStock from "../../modal/stock/ModalUpdateStock";
 import ConfirmDeleteStock from "../../modal/stock/ModalDeleteStock";
 import TransferStockModal from "../../modal/inventoryTransfer/TransferStockModal";
+import { getCookie } from "../../../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 import ProductDetailsModal from "../../modal/stock/ModalProductDetails";
 import axios from "../../../api/axios";
 
@@ -22,6 +24,8 @@ const StockList = () => {
   const [productToTransfer, setProductToTransfer] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedProductDetails, setSelectedProductDetails] = useState(null);
+  const adminData = useSelector((state) => state.profilerAdmin.value);
+  const access_token = getCookie("access_token");
 
   useEffect(() => {
     fetchStocks();
@@ -38,6 +42,7 @@ const StockList = () => {
           productName: searchProductName,
           page: currentPage,
         },
+        headers: { Authorization: `Bearer ${access_token}` },
       });
       if (response.data && response.data.stocks) {
         const flattenedStocks = [];
@@ -157,7 +162,7 @@ const StockList = () => {
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"
-          className="flex-1"
+          className={`flex-1 ${adminData.role_id !== 1 ? 'hidden' : ''}`}
         />
         <AsyncSelect
           cacheOptions
@@ -165,7 +170,7 @@ const StockList = () => {
           loadOptions={loadCategories}
           onChange={setSelectedCategory}
           placeholder="Select a category"
-          className="flex-1 ml-4"
+          className={`flex-1 ${adminData.role_id !== 1 ? '' : 'ml-4'}`}
         />
         <input
           type="text"

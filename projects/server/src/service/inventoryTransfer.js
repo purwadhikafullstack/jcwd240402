@@ -39,9 +39,9 @@ module.exports = {
       ];
     }
 
-    if(options.status) {
+    if (options.status) {
       filter.status = options.status;
-  }
+    }
 
     const queryOptions = {
       where: filter,
@@ -51,7 +51,6 @@ module.exports = {
         "from_warehouse_id",
         "to_warehouse_id",
         "quantity",
-        "transaction_code",
         "createdAt",
         "updatedAt",
         "status",
@@ -59,15 +58,20 @@ module.exports = {
       include: [
         {
           model: db.Warehouse_stock,
+          required: true,
           attributes: ["id"],
           include: [
             {
               model: db.Product,
               attributes: ["name"],
               where: options.productName
-                ? { name: { [db.Sequelize.Op.like]: `%${options.productName}%` } }
+                ? {
+                    name: {
+                      [db.Sequelize.Op.like]: `%${options.productName}%`,
+                    },
+                  }
                 : undefined,
-              required: false,
+              required: true,
             },
           ],
         },

@@ -217,20 +217,24 @@ module.exports = {
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
     const productName = req.query.productName;
-    const to_warehouse_id = req.query.warehouseId;
-    const sortOrder = req.query.sortOrder === "asc" ? "ASC" : "DESC";
+    let to_warehouse_id = req.query.warehouseId; 
+    const sort = req.query.sort === "asc" ? "ASC" : "DESC";
     const status = req.query.status; 
-
+  
+    if(req.user.role_id == 2) {
+      to_warehouse_id = req.user.warehouse_id; 
+    }
+  
     let options = {
-      order: [["createdAt", sortOrder]],
+      order: [["createdAt", sort]],
       productName: productName,
       warehouseId: to_warehouse_id,
       status: status
     };
-
+  
     try {
       const response = await getAllInventoryTransfers(options, page, perPage);
-
+  
       if (response.success) {
         res.status(200).send({
           message: "Inventory transfer list retrieved successfully",
@@ -247,6 +251,7 @@ module.exports = {
         errors: error.message,
       });
     }
-}
+  }
+  
 
 };

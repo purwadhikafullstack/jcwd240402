@@ -50,12 +50,12 @@ router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 
 // Inventory Transfer Routes
 
-router.get('/transfers', inventoryController.getInventoryTransferList);
+router.get('/transfers',authMiddleware.verifyAccessTokenAdmin ,inventoryController.getInventoryTransferList);
 
-router.post("/stock-transfer", inventoryController.stockTransfer);
+router.post("/stock-transfer",authMiddleware.verifyAccessTokenAdmin , inventoryController.stockTransfer);
 
-router.patch("/stock-transfers/:transferid/approve", inventoryController.approveStockTransfer);
-router.patch("/stock-transfers/:transferid/reject", inventoryController.rejectStockTransfer);
+router.patch("/stock-transfers/:transferid/approve",authMiddleware.verifyAccessTokenAdmin , inventoryController.approveStockTransfer);
+router.patch("/stock-transfers/:transferid/reject",authMiddleware.verifyAccessTokenAdmin , inventoryController.rejectStockTransfer);
 
 // List Routes
 

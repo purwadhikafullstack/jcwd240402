@@ -159,6 +159,8 @@ router.get("/order", Verify.verifyAccessTokenUser, UserController.getOrderList);
 
 router.get("/current-order", Verify.verifyAccessTokenUser, UserController.getCurrentOrderList);
 
+router.post("/order-status", Verify.verifyAccessTokenUser, UserController.changeOrderStatus);
+
 router.get("/city", Verify.verifyAccessTokenUser, UserController.getCity);
 
 router.post(

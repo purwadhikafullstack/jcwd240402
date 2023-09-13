@@ -1753,4 +1753,30 @@ module.exports = {
     }
   },
 
+  changeOrderStatus: async (req, res) => {
+
+    const { id, statusId } = req.body
+
+    try {
+
+      const orderStatusChanged = await db.Order.update(
+        {
+          order_status_id: statusId
+        },
+        { where: { id }}
+      );
+
+      res.status(200).json({
+        ok: true,
+        order: orderStatusChanged,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
 };

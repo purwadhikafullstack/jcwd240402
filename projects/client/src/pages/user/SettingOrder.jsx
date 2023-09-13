@@ -18,6 +18,8 @@ import {
 import withAuthUser from "../../components/user/withAuthUser";
 import toRupiah from "@develoka/angka-rupiah-js";
 import { Badge } from "flowbite-react";
+import { useNavigate } from "react-router-dom";
+
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -25,6 +27,8 @@ const SettingOrder = () => {
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const [userOrder, setUserOrder] = useState([])
+  const [orderStatus, setOrderStatus] = useState([])
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -50,6 +54,25 @@ const SettingOrder = () => {
       );
   }, []);
 
+  const handleClickStatus = (id, status) => {
+    axios
+      .post(
+        "/user/order-status",
+        {
+          id: id,
+          statusId: status,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      )
+      .then((res) => {
+        setOrderStatus(res.data.order)
+        navigate(0);
+        }
+      );
+  };
+
   return (
     <div>
       <NavbarDesktop />
@@ -70,7 +93,7 @@ const SettingOrder = () => {
                   </div>
                 ) : (
                   userOrder.map((order) => (
-                    <div className="p-4">
+                    <div className="grid grid-cols-2 p-4">
                       <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
                       <h1>{order.delivery_time}</h1>
                       {order.Order_details.map((details) => (
@@ -80,13 +103,18 @@ const SettingOrder = () => {
                           <h1> {details.quantity} unit</h1>
                       </div>               
                     </div>
-                  ))}
-                  <h1>Order Total: {toRupiah(order.total_price)}</h1>
-                  <h1>Courier Used: {order.delivery_courier}</h1>
-                  <Badge color="green" className="w-fit">
+                    ))}
+                    <h1>Order Total: {toRupiah(order.total_price)}</h1>
+                    <h1>Courier Used: {order.delivery_courier}</h1>
+                    <Badge color="green" className="w-fit">
                       {order.Order_status?.name}
                     </Badge>
                       </div>
+                    {order.Order_status?.id === 6 ? (
+                      <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 3)}>Confirm</button>
+                    ) : (
+                      <button className="w-full bg-danger1 p-2 font-semibold text-white rounded-md" onClick={() => handleClickStatus(order.id, 5)}>Cancel</button>
+                    )}
                     </div>
                   ))
                 )}

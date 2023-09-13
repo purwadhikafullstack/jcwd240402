@@ -128,6 +128,108 @@ module.exports = {
     }
   },
 
+  registerUserByEmail: async (req, res) => {
+    const {
+      role_id = 3,
+      email,
+      fullname,
+      is_verify,
+      phone,
+      img_profile = "photo-profile/imgprofiledefault.png",
+    } = req.body;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const isEmailExist = await db.User.findOne({ where: { email } });
+
+      const isPhoneExist = await db.User_detail.findOne({ where: { phone } });
+
+      if (isEmailExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "email already taken",
+        });
+      }
+
+      if (isPhoneExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "phone already taken",
+        });
+      }
+      const first_name = fullname.split(" ")[0];
+      const last_name = fullname.split(" ")[1];
+      const newUsername = fullname.replace(" ", "_");
+
+      const isUsernameExist = await db.User.findOne({
+        where: { username: newUsername },
+      });
+
+      if (isUsernameExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "username already taken",
+        });
+      }
+
+      const newUser = await db.User.create(
+        {
+          role_id,
+          username: newUsername,
+          email,
+          is_verify,
+        },
+        { transaction }
+      );
+
+      await db.User_detail.create(
+        {
+          user_id: newUser.id,
+          first_name,
+          last_name,
+          img_profile,
+          phone,
+        },
+        { transaction }
+      );
+
+      const accessToken = Generate.token(
+        {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role_id: user.role_id,
+          is_verify: user.is_verify,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        "1h"
+      );
+      const refreshToken = Generate.token(
+        {
+          id: user.id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        "24h"
+      );
+
+      res.status(201).json({
+        ok: true,
+        message: "register successful",
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
   updateVerify: async (req, res) => {
     const { verify_token } = req.params;
     const transaction = await db.sequelize.transaction();
@@ -713,911 +815,6 @@ module.exports = {
       return res.status(500).json({
         ok: false,
         message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  /* PROFILING USER ADDRESS */
-  userAddress: async (req, res) => {
-    const userData = req.user;
-    try {
-      const userAddressData = await db.Address_user.findAll({
-        where: { user_id: userData.id },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      res.status(200).json({
-        ok: true,
-        result: userAddressData,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  registerAddress: async (req, res) => {
-    const userData = req.user;
-    const {
-      city_id,
-      user_id = userData.id,
-      longitude,
-      latitude,
-      address_details,
-      postal_code,
-      address_title,
-    } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const newAddress = await db.Address_user.create(
-        {
-          city_id,
-          user_id,
-          longitude,
-          latitude,
-          address_details,
-          postal_code,
-          address_title,
-        },
-        { transaction }
-      );
-
-      if (!newAddress) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "register address failed",
-        });
-      }
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "register address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  changeAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    let data;
-    if (req.body.data) {
-      data = JSON.parse(req.body.data);
-    }
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      if (data.city_id) {
-        await db.Address_user.update(
-          {
-            city_id: data.city_id,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.address_details) {
-        await db.Address_user.update(
-          {
-            address_details: data.address_details,
-            longitude: data.longitude,
-            latitude: data.latitude,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.postal_code) {
-        await db.Address_user.update(
-          {
-            postal_code: data.postal_code,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.address_title) {
-        await db.Address_user.update(
-          {
-            address_title: data.address_title,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "change address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  changePrimaryAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isPrimary = await db.User_detail.findOne({
-        where: { address_user_id: address_id },
-      });
-
-      if (isPrimary) {
-        await transaction.rollback();
-        return res.status(400).json({
-          ok: false,
-          message: "this address already primary",
-        });
-      }
-
-      const isAddressExist = await db.Address_user.findOne({
-        where: { id: address_id, user_id: userData.id },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-      if (!isAddressExist) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: false,
-          message: "address not found",
-        });
-      }
-
-      await db.User_detail.update(
-        { address_user_id: address_id },
-        {
-          where: { user_id: userData.id },
-          transaction,
-        }
-      );
-
-      await transaction.commit();
-      return res.status(201).json({
-        ok: true,
-        message: "set primary address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  deleteAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      const address = await db.Address_user.findOne({
-        where: { id: address_id, user_id: userData.id },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      if (!address) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: false,
-          message: "Address not found",
-        });
-      }
-
-      const isPrimaryAddress = await db.User_detail.findOne({
-        where: { user_id: userData.id, address_user_id: address_id },
-      });
-
-      if (isPrimaryAddress) {
-        await db.User_detail.update(
-          { address_user_id: null },
-          {
-            where: { user_id: userData.id, address_user_id: address_id },
-            transaction,
-          }
-        );
-      }
-
-      await db.Address_user.destroy({
-        where: { id: address_id, user_id: userData.id },
-        transaction,
-      });
-
-      await transaction.commit();
-
-      res.status(200).json({
-        ok: true,
-        message: "Delete address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "Something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getAddressById: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    console.log(userData);
-    try {
-      const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, id: address_id },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      if (!userAddressData) {
-        return res.status(404).json({
-          ok: false,
-          message: "address not found",
-        });
-      }
-
-      res.status(200).json({
-        ok: true,
-        result: userAddressData,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForProvince: async (req, res) => {
-    try {
-      const result = await db.Province.findAll();
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForCity: async (req, res) => {
-    const { province_id } = req.query;
-
-    try {
-      let result;
-
-      if (province_id) {
-        const cityListInProvince = await db.City.findAll({
-          where: { province_id },
-        });
-        result = cityListInProvince;
-      } else {
-        const allProvince = await db.Province.findAll();
-        result = allProvince;
-      }
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  /* CART */
-
-  addToCart: async (req, res) => {
-    const userData = req.user;
-    const { product_name, qty } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isUserVerify = await db.User.findOne({
-        where: { id: userData.id },
-      });
-
-      if (!isUserVerify.is_verify) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you have to verify your account",
-        });
-      }
-
-      const productIdByName = await db.Product.findOne({
-        where: { name: product_name },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-
-      if (isCartExist) {
-        await db.Cart.update(
-          {
-            quantity: isCartExist.quantity + Number(qty),
-          },
-          {
-            where: {
-              user_id: userData.id,
-              warehouse_stock_id: getWarehouseStockIdByProductName.id,
-            },
-            transaction,
-          }
-        );
-        await transaction.commit();
-        return res.status(201).json({
-          ok: true,
-          message: "cart updated",
-        });
-      }
-
-      const limitMaxFive = await db.Cart.findAll({
-        where: { user_id: userData.id },
-      });
-
-      if (limitMaxFive.length >= 5) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you only can add 5 item to your cart",
-        });
-      }
-      await db.Cart.create(
-        {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-          quantity: Number(qty),
-        },
-        { transaction }
-      );
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "add to cart successful",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getUserCart: async (req, res) => {
-    const userData = req.user;
-    try {
-      const result = await db.Cart.findAll({
-        where: { user_id: userData.id },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [
-          {
-            model: db.Warehouse_stock,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: [
-              {
-                model: db.Product,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-                include: [
-                  {
-                    model: db.Category,
-                    as: "category",
-                    attributes: {
-                      exclude: ["createdAt", "updatedAt", "deletedAt"],
-                    },
-                  },
-                  {
-                    model: db.Image_product,
-                    attributes: { exclude: ["updatedAt", "createdAt"] },
-                  },
-                ],
-              },
-              {
-                model: db.Warehouse,
-                as: "Warehouse",
-                attributes: {
-                  exclude: ["createdAt", "updatedAt"],
-                },
-              },
-            ],
-          },
-        ],
-      });
-
-      let total = 0;
-      let totalweight = 0;
-      for (const item of result) {
-        total +=
-          Number(item.Warehouse_stock.Product.price) * Number(item.quantity);
-      }
-
-      for (const item of result) {
-        totalweight +=
-          Number(item.Warehouse_stock.Product.weight) * Number(item.quantity);
-      }
-
-      res.json({
-        ok: true,
-        result,
-        total: total,
-        total_weight: totalweight,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  cancelCart: async (req, res) => {
-    const userData = req.user;
-    const { productName } = req.params;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const productIdByName = await db.Product.findOne({
-        where: { name: productName },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-
-      if (!isCartExist) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: true,
-          message: "cart is empty",
-        });
-      }
-
-      await db.Cart.destroy({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-        transaction,
-      });
-      await transaction.commit();
-      res.status(200).json({
-        ok: true,
-        message: "cart deleted",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  updateCart: async (req, res) => {
-    const userData = req.user;
-    const { product_name, qty } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isUserVerify = await db.User.findOne({
-        where: { id: userData.id },
-      });
-
-      if (!isUserVerify.is_verify) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you have to verify your account",
-        });
-      }
-
-      const productIdByName = await db.Product.findOne({
-        where: { name: product_name },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-      if (!isCartExist) {
-        await db.Cart.create(
-          {
-            user_id: userData.id,
-            warehouse_stock_id: getWarehouseStockIdByProductName.id,
-            quantity: Number(qty),
-          },
-          { transaction }
-        );
-        await transaction.commit();
-        res.status(201).json({
-          ok: true,
-          message: "add to cart successful",
-        });
-      }
-      await db.Cart.update(
-        {
-          quantity: Number(qty),
-        },
-        {
-          where: {
-            user_id: userData.id,
-            warehouse_stock_id: getWarehouseStockIdByProductName.id,
-          },
-          transaction,
-        }
-      );
-      await transaction.commit();
-      return res.status(201).json({
-        ok: true,
-        message: "cart updated",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getOrderList: async (req, res) => {
-    const userId = req.user.id;
-    try {
-      const orderList = await db.Order.findAll({
-        where: { user_id: userId },
-      });
-
-      res.json({
-        ok: true,
-        order: orderList,
-      });
-    } catch (error) {
-      res.status(500).send({
-        message: "An error occurred while fetching order list",
-        error: error.message,
-      });
-    }
-  },
-
-  getCity: async (req, res) => {
-    const cityId = req.query.id;
-    const provinceId = req.query.province;
-
-    try {
-      const response = await axios.get(
-        `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
-        {
-          headers: { key: `${process.env.KEY_RAJAONGKIR}` },
-        }
-      );
-      res.json({ ok: true, result: response.data });
-    } catch (error) {
-      res.status(500).json({ ok: false, message: error.message });
-    }
-  },
-
-  getCost: async (req, res) => {
-    const { origin, destination, weight, courier } = req.body;
-
-    const data = {
-      origin: origin,
-      destination: destination,
-      weight: weight,
-      courier: courier,
-    };
-
-    try {
-      const response = await axios({
-        method: "post",
-        url: "https://api.rajaongkir.com/starter/cost",
-        headers: {
-          key: `${process.env.KEY_RAJAONGKIR}`,
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        data: qs.stringify(data),
-      });
-      res.json({ ok: true, result: response.data });
-    } catch (error) {
-      res.status(500).json({ ok: false, message: error });
-    }
-  },
-
-  createNewOrder: async (req, res) => {
-    const {
-      user_id,
-      order_status_id,
-      total_price,
-      delivery_price,
-      delivery_courier,
-      delivery_time,
-      tracking_code,
-      no_invoice,
-      address_user_id,
-      warehouse_id,
-    } = req.body;
-
-    try {
-      const newOrder = await db.Order.create({
-        user_id,
-        order_status_id,
-        total_price,
-        delivery_price,
-        delivery_courier,
-        delivery_time,
-        tracking_code,
-        no_invoice,
-        address_user_id,
-        warehouse_id,
-      });
-
-      res.status(200).json({
-        ok: true,
-        order: newOrder,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  findClosestWarehouse: async (req, res) => {
-    const userData = req.user;
-    const address_title = req.body.address_title || "ehehe";
-
-    try {
-      const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, address_title },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      const allWarehouseData = await getAllWarehouses();
-
-      const distanceKm = (lat1, lon1, lat2, lon2) => {
-        const r = 6371; // km
-        const p = Math.PI / 180;
-        console.log(lat1);
-        const a =
-          0.5 -
-          Math.cos((lat2 - lat1) * p) / 2 +
-          (Math.cos(lat1 * p) *
-            Math.cos(lat2 * p) *
-            (1 - Math.cos((lon2 - lon1) * p))) /
-            2;
-
-        return 2 * r * Math.asin(Math.sqrt(a));
-      };
-
-      let closestWarehouse = {
-        latitude: allWarehouseData.data[0].latitude,
-        longitude: allWarehouseData.data[0].longitude,
-      };
-
-      for (let i = 0; i < allWarehouseData.data.length; i++) {
-        if (
-          distanceKm(
-            allWarehouseData.data[i].latitude,
-            allWarehouseData.data[i].longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
-          ) <=
-          distanceKm(
-            closestWarehouse.latitude,
-            closestWarehouse.longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
-          )
-        ) {
-          closestWarehouse = allWarehouseData.data[i];
-        }
-      }
-
-      res.status(200).json({
-        ok: true,
-        address: userAddressData,
-        warehouse: allWarehouseData,
-        closest_warehouse: closestWarehouse,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  findClosestWarehouseByAddressId: async (req, res) => {
-    const userData = req.user;
-    console.log(userData);
-    const primary_address = req.body.primary_address_id || "ehehe";
-
-    try {
-      const userAddressData = await db.User_detail.findOne({
-        where: { user_id: userData.id, address_user_id: primary_address },
-        include: {
-          model: db.Address_user,
-          attributes: { exclude: ["address_user_id"] },
-          include: { model: db.City, include: { model: db.Province } },
-        },
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      });
-
-      if (!userAddressData) {
-        return res.status(404).json({
-          ok: false,
-          message: "User address not found",
-        });
-      }
-
-      const allWarehouseData = await getAllWarehouses({
-        include: { model: db.City, include: { model: db.Province } },
-      });
-
-      const distanceKm = (lat1, lon1, lat2, lon2) => {
-        const r = 6371; // km
-        const p = Math.PI / 180;
-        console.log(lat1);
-        const a =
-          0.5 -
-          Math.cos((lat2 - lat1) * p) / 2 +
-          (Math.cos(lat1 * p) *
-            Math.cos(lat2 * p) *
-            (1 - Math.cos((lon2 - lon1) * p))) /
-            2;
-
-        return 2 * r * Math.asin(Math.sqrt(a));
-      };
-
-      let closestWarehouse = {
-        latitude: allWarehouseData.data[0].latitude,
-        longitude: allWarehouseData.data[0].longitude,
-      };
-
-      for (let i = 0; i < allWarehouseData.data.length; i++) {
-        if (
-          distanceKm(
-            allWarehouseData.data[i].latitude,
-            allWarehouseData.data[i].longitude,
-            userAddressData.Address_user.latitude,
-            userAddressData.Address_user.longitude
-          ) <=
-          distanceKm(
-            closestWarehouse.latitude,
-            closestWarehouse.longitude,
-            userAddressData.Address_user.latitude,
-            userAddressData.Address_user.longitude
-          )
-        ) {
-          closestWarehouse = allWarehouseData.data[i];
-        }
-      }
-
-      res.status(200).json({
-        ok: true,
-        address: userAddressData,
-        warehouse: allWarehouseData,
-        closest_warehouse: closestWarehouse,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "Something bad happened",
         error: error.message,
       });
     }

@@ -41,108 +41,111 @@ import AllCategories from "./user/AllCategories";
 import AllProducts from "./user/AllProducts";
 import AllWarehouse from "./user/AllWarehouse";
 import NotFoundProduct from "./user/NotFoundProduct";
+import { AuthContextProvider } from "../context/AuthContext";
 
 function App() {
   return (
     <div className="App font-poppins">
       <Router>
-        <Routes>
-          {/* ADMIN */}
-          <Route path="/admin-dashboard" element={<AdminHome />} />
-          <Route path="/admin/login" element={<AdminLoginPage />} />
-          <Route path="/admin" element={<AdminList />} />
-          <Route path="/stock-history" element={<StockHistory />} />
-          <Route path="/warehouse" element={<WarehouseList />} />
-
-          <Route
-            path="/edit/:warehouseName"
-            element={<WarehouseInputsEdit />}
-          />
-          <Route path="/register" element={<Register />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/log-in" element={<Login />} />
-          <Route path="/verify" element={<NotifVerify />} />
-          <Route path="/verify/:verify_token" element={<NotifVerified />} />
-
-          <Route
-            path="/edit/:warehouseName"
-            element={<WarehouseInputsEdit />}
-          />
-          <Route path="/category" element={<CategoryList />} />
-          <Route path="/admin/products/*" element={<AdminProductPage />}>
-            <Route index element={<ProductList />} />
-            <Route path="create" element={<ProductRegister />} />
-            <Route path="edit/:productName" element={<ProductEdit />} />
-          </Route>
-          <Route path="/admin/stock/*" element={<AdminStockPage />}>
-            <Route index element={<StockList />} />
-            <Route path="management" element={<CreateStock />} />
-            <Route path="edit/:productName" element={<ProductEdit />} />
+        <AuthContextProvider>
+          <Routes>
+            {/* ADMIN */}
+            <Route path="/admin-dashboard" element={<AdminHome />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin" element={<AdminList />} />
+            <Route path="/stock-history" element={<StockHistory />} />
+            <Route path="/warehouse" element={<WarehouseList />} />
 
             <Route
-              path="inventory-transfers"
-              element={<InventoryTransferList />}
+              path="/edit/:warehouseName"
+              element={<WarehouseInputsEdit />}
             />
-          </Route>
+            <Route path="/register" element={<Register />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/log-in" element={<Login />} />
+            <Route path="/verify" element={<NotifVerify />} />
+            <Route path="/verify/:verify_token" element={<NotifVerified />} />
 
-          {/* HOC */}
+            <Route
+              path="/edit/:warehouseName"
+              element={<WarehouseInputsEdit />}
+            />
+            <Route path="/category" element={<CategoryList />} />
+            <Route path="/admin/products/*" element={<AdminProductPage />}>
+              <Route index element={<ProductList />} />
+              <Route path="create" element={<ProductRegister />} />
+              <Route path="edit/:productName" element={<ProductEdit />} />
+            </Route>
+            <Route path="/admin/stock/*" element={<AdminStockPage />}>
+              <Route index element={<StockList />} />
+              <Route path="management" element={<CreateStock />} />
+              <Route path="edit/:productName" element={<ProductEdit />} />
 
-          <Route
-            path="/admin/*"
-            element={
-              <NotFound
-                to="/admin/stock"
-                buttonText="back"
-                toPage="dashboard"
+              <Route
+                path="inventory-transfers"
+                element={<InventoryTransferList />}
               />
-            }
-          />
-          <Route
-            path="/*"
-            element={
-              <NotFound to="/" buttonText="go home" toPage="home page" />
-            }
-          />
+            </Route>
 
-          {/* USER */}
-          <Route path="/" element={<Home />} />
-          <Route path="/redirect-login" element={<NotAuth />} />
-          <Route path="/user/setting" element={<SettingProfile />} />
-          <Route path="/user/setting/address" element={<SettingAddress />} />
-          <Route path="/user/setting/order" element={<SettingOrder />} />
-          <Route path="/product/:name" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
-          <Route
-            path="/product/product-category/:categoryName"
-            element={<ProductPerCategory />}
-          />
-          <Route path="/product-category" element={<Category />} />
-          <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
-          <Route path="/term-and-condition" element={<TermAndCondition />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route
-            path="/reset-password/:resetToken"
-            element={<ResetPassword />}
-          />
-          <Route
-            path="/reset-password-success"
-            element={<NotifResetPassword />}
-          />
-          <Route path="/register" element={<Register />} />
-          <Route path="/sign-up" element={<SignUp />} />
-          <Route path="/log-in" element={<Login />} />
-          <Route path="/verify" element={<NotifVerify />} />
-          <Route path="/verify/:verify_token" element={<NotifVerified />} />
-          <Route path="/forgot-password" element={<NotifForgotPassword />} />
-          <Route path="/all-categories" element={<AllCategories />} />
-          <Route path="/all-products" element={<AllProducts />} />
-          <Route path="/all-warehouse" element={<AllWarehouse />} />
-          <Route
-            path="/product/not-found/:name"
-            element={<NotFoundProduct />}
-          />
-        </Routes>
+            {/* HOC */}
+
+            <Route
+              path="/admin/*"
+              element={
+                <NotFound
+                  to="/admin/stock"
+                  buttonText="back"
+                  toPage="dashboard"
+                />
+              }
+            />
+            <Route
+              path="/*"
+              element={
+                <NotFound to="/" buttonText="go home" toPage="home page" />
+              }
+            />
+
+            {/* USER */}
+            <Route path="/" element={<Home />} />
+            <Route path="/redirect-login" element={<NotAuth />} />
+            <Route path="/user/setting" element={<SettingProfile />} />
+            <Route path="/user/setting/address" element={<SettingAddress />} />
+            <Route path="/user/setting/order" element={<SettingOrder />} />
+            <Route path="/product/:name" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<CheckOut />} />
+            <Route
+              path="/product/product-category/:categoryName"
+              element={<ProductPerCategory />}
+            />
+            <Route path="/product-category" element={<Category />} />
+            <Route path="/this-is-fornifor" element={<ThisIsFurniFor />} />
+            <Route path="/term-and-condition" element={<TermAndCondition />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route
+              path="/reset-password/:resetToken"
+              element={<ResetPassword />}
+            />
+            <Route
+              path="/reset-password-success"
+              element={<NotifResetPassword />}
+            />
+            <Route path="/register" element={<Register />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/log-in" element={<Login />} />
+            <Route path="/verify" element={<NotifVerify />} />
+            <Route path="/verify/:verify_token" element={<NotifVerified />} />
+            <Route path="/forgot-password" element={<NotifForgotPassword />} />
+            <Route path="/all-categories" element={<AllCategories />} />
+            <Route path="/all-products" element={<AllProducts />} />
+            <Route path="/all-warehouse" element={<AllWarehouse />} />
+            <Route
+              path="/product/not-found/:name"
+              element={<NotFoundProduct />}
+            />
+          </Routes>
+        </AuthContextProvider>
       </Router>
     </div>
   );

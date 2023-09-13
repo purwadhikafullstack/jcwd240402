@@ -30,6 +30,7 @@ import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import Loading from "../../components/Loading";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import ShareButton from "../../components/user/ShareButton";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -249,7 +250,9 @@ const ProductDetail = () => {
                   </>
                 )}
               </div>
+              <ShareButton />
             </div>
+
             <div className="lg:hidden">
               {product.length === 0 ? null : (
                 <AccordionProduct

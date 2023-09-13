@@ -19,7 +19,7 @@ const FooterDesktop = () => {
       .get(`/warehouse/warehouse-list`)
       .then((res) => setWarehouseList(res.data?.warehouses));
   }, []);
-  console.log(warehouseList);
+
   return (
     <Footer container className="bg-[#F5F5F5] w-full">
       <div className="w-full lg:px-16 md:px-16">
@@ -44,9 +44,7 @@ const FooterDesktop = () => {
                 <>
                   {warehouseList.slice(0, 5).map((item) => (
                     <Footer.LinkGroup col key={item.id}>
-                      <ul>
-                        <li> {item.warehouse_name}</li>
-                      </ul>
+                      {item.warehouse_name}
                     </Footer.LinkGroup>
                   ))}
                   <Footer.LinkGroup col>

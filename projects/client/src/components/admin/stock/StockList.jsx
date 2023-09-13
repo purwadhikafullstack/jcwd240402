@@ -18,6 +18,7 @@ const StockList = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [productToTransfer, setProductToTransfer] = useState(null);
+  const [searchName, setSearchName] = useState();
 
   useEffect(() => {
     fetchStocks();
@@ -118,7 +119,7 @@ const StockList = () => {
   return (
     <div className="container mx-auto pt-1">
       <div className="flex items-center">
-      <AsyncSelect
+        <AsyncSelect
           cacheOptions
           defaultOptions
           loadOptions={loadWarehouses}

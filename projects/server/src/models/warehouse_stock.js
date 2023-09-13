@@ -23,21 +23,27 @@ module.exports = (sequelize, DataTypes) => {
       Warehouse_stock.hasMany(models.Cart, {
         foreignKey: "warehouse_stock_id",
       });
+      Warehouse_stock.hasMany(models.Bookmark, {
+        foreignKey: "warehouse_stock_id",
+      });
       Warehouse_stock.hasMany(models.History_stock, {
         foreignKey: "warehouse_stock_id",
       });
     }
   }
-  Warehouse_stock.init({
-    warehouse_id: DataTypes.INTEGER,
-    product_id: DataTypes.INTEGER,
-    product_stock: DataTypes.INTEGER,
-    status: {
-      type: DataTypes.ENUM('Empty', 'In Stock'),
+  Warehouse_stock.init(
+    {
+      warehouse_id: DataTypes.INTEGER,
+      product_id: DataTypes.INTEGER,
+      product_stock: DataTypes.INTEGER,
+      status: {
+        type: DataTypes.ENUM("Empty", "In Stock"),
+      },
     },
-  }, {
-    sequelize,
-    modelName: 'Warehouse_stock',
-  });
+    {
+      sequelize,
+      modelName: "Warehouse_stock",
+    }
+  );
   return Warehouse_stock;
 };

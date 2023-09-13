@@ -1,5 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { GoogleButton, FacebookButton } from "react-google-button";
 
 import register from "../../assets/images/furnifor.png";
 import ButtonLink from "../../components/ButtonLink";
@@ -9,19 +10,64 @@ import facebook from "../../assets/icons/facebook.png";
 import {
   removeCookie,
   removeLocalStorage,
+  setCookie,
+  setLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import withOutAuthUser from "../../components/user/withoutAuthUser";
+import { UserAuth } from "../../context/AuthContext";
+import axios from "../../api/axios";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const SignUp = () => {
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
+
+  const navigate = useNavigate();
+  const [errMsg, setErrMsg] = useState("");
+  const { googleSignIn, user } = UserAuth();
+
+  const handleGoogleSign = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (user != null) {
+      axios
+        .post("user/auth/register/oAuth", {
+          email: user.email,
+          fullname: user.displayName,
+          is_verify: user.emailVerified,
+          phone: user.phoneNumber,
+        })
+        .then((res) => {
+          console.log(res.data);
+          setLocalStorage("refresh_token", res.data?.refreshToken);
+          setCookie("access_token", res.data?.accessToken);
+          setErrMsg("");
+          navigate("/");
+        })
+        .catch((error) => {
+          if (!error.response) {
+            setErrMsg("No Server Response");
+          } else {
+            setErrMsg(error.response?.data?.message);
+          }
+        });
+    }
+  }, [navigate, user]);
+  console.log(errMsg);
   return (
     <div className="bg-white h-screen lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />
       <div className="lg:col-span-1 ">
         <div className="h-screen flex justify-center items-center lg:h-full lg:grid lg:justify-center lg:items-center  ">
           <div className="shadow-3xl w-64 lg:w-80 rounded-xl ">
-            <div className="flex mt-4 px-3 justify-between items-end ">
+            <div className="flex flex-col mt-4 px-3 justify-start items-start ">
+              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
                 Sign up
               </h1>
@@ -30,7 +76,11 @@ const SignUp = () => {
               <form className="lg:rounded-xl">
                 <div className="mt-5 px-6 justify-center grid gap-y-3 lg:rounded-xl">
                   <div className="w-52  flex flex-col gap-y-2 justify-center">
-                    <button className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center">
+                    <button
+                      className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center"
+                      onClick={handleGoogleSign}
+                      type="button"
+                    >
                       <div className="flex justify-start">
                         <img src={google} alt="" className="w-10 " />
                       </div>
@@ -38,6 +88,7 @@ const SignUp = () => {
                         <h1 className="text-sm">Sign up with Google </h1>
                       </div>
                     </button>
+
                     <button className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center">
                       <img src={facebook} alt="" className="w-10 p-1" />
                       <div>

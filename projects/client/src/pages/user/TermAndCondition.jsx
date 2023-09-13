@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable react/jsx-no-target-blank */
 /* eslint-disable jsx-a11y/anchor-has-content */
 import React from "react";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
@@ -68,9 +70,7 @@ const TermAndCondition = () => {
                 className="MsoNormal"
                 id="agreement"
                 style={{ lineHeight: "1.5" }}
-              >
-                <a name="_6aa3gkhykvst" />
-              </div>
+              ></div>
             </div>
             <div align="center" style={{ lineHeight: 1 }}>
               <br />
@@ -551,7 +551,6 @@ const TermAndCondition = () => {
                 </a>
               </div>
               <div className="MsoNormal" style={{ lineHeight: "1.5" }}>
-                <a data-custom-class="link" href="#userreps" />
                 <a data-custom-class="link" href="#userreps">
                   <span style={{ fontSize: 15 }}>
                     <span data-custom-class="body_text">
@@ -578,7 +577,6 @@ const TermAndCondition = () => {
                     <bdt className="statement-end-if-in-editor" />
                   </span>
                 </span>{" "}
-                <a data-custom-class="link" href="#products" />
               </div>
               <div className="MsoNormal" style={{ lineHeight: "1.5" }}>
                 <a data-custom-class="link" href="#products">
@@ -592,7 +590,6 @@ const TermAndCondition = () => {
                     </span>
                   </span>
                 </a>{" "}
-                <a data-custom-class="link" href="#purchases" />
               </div>
               <div className="MsoNormal" style={{ lineHeight: "1.5" }}>
                 <a data-custom-class="link" href="#purchases">
@@ -634,8 +631,6 @@ const TermAndCondition = () => {
                     <bdt className="block-component" />
                   </span>
                 </span>{" "}
-                <a data-custom-class="link" href="#software" />{" "}
-                <a data-custom-class="link" href="#software" />
               </div>
               <div className="MsoNormal" style={{ lineHeight: "1.5" }}>
                 <a data-custom-class="link" href="#software">
@@ -940,9 +935,7 @@ const TermAndCondition = () => {
                 className="MsoNormal"
                 data-custom-class="heading_1"
                 style={{ lineHeight: "1.5" }}
-              >
-                <a name="_b6y29mp52qvx" />
-              </div>
+              ></div>
               <div className="MsoNormal" style={{ lineHeight: "1.5" }}>
                 <br />
               </div>
@@ -1469,7 +1462,6 @@ const TermAndCondition = () => {
                 id="userreps"
                 style={{ lineHeight: "1.5" }}
               >
-                <a name="_5hg7kgyv9l8z" />
                 <strong>
                   <span
                     style={{

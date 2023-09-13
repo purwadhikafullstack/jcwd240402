@@ -22,6 +22,8 @@ import SelectionCategory from "../../components/user/SelectionCategory";
 import {
   getCookie,
   getLocalStorage,
+  removeCookie,
+  removeLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
@@ -31,6 +33,7 @@ import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import { UserAuth } from "../../context/AuthContext";
 
 const Home = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -42,6 +45,8 @@ const Home = () => {
   const [category, setCategory] = useState([]);
   const [productData, setProductData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { logOut, user } = UserAuth();
 
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategory(res.data.result));
@@ -114,6 +119,14 @@ const Home = () => {
     },
   ];
 
+  const handleLogOut = async () => {
+    try {
+      await logOut();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
@@ -127,6 +140,7 @@ const Home = () => {
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb />
+      <button onClick={handleLogOut}>LOGOUT</button>
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />

@@ -12,7 +12,7 @@ module.exports = {
       username: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
+        // unique: true,
       },
       role_id: {
         allowNull: false,
@@ -50,6 +50,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {

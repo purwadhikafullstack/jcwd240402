@@ -396,31 +396,5 @@ module.exports = {
     }
   },
 
-  async getRole(req, res) {
-    const adminData = req.user;
-    try {
-      const adminRole = await db.Admin.findOne({
-        where: { id: adminData.id },
-      });
 
-      if (!adminRole) {
-        return res.status(401).json({
-          ok: false,
-          message: "token unauthorized",
-        });
-      }
-
-      res.json({
-        ok: true,
-        message: "admin role get",
-        role: adminRole.role_id,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
 };

@@ -5,114 +5,8 @@ const {
   getAllStockHistory,
 } = require("../service/warehouse_stock");
 const { Sequelize } = require("sequelize");
+const { autoStockTransfer } = require("../utils");
 
-const distanceKm = (lat1, lon1, lat2, lon2) => {
-  const r = 6371;
-  const p = Math.PI / 180;
-  const a =
-    0.5 -
-    Math.cos((lat2 - lat1) * p) / 2 +
-    (Math.cos(lat1 * p) *
-      Math.cos(lat2 * p) *
-      (1 - Math.cos((lon2 - lon1) * p))) /
-      2;
-  return 2 * r * Math.asin(Math.sqrt(a));
-};
-
-async function autoStockTransfer(warehouse_id, product_id, requiredStock) {
-  const t = await db.sequelize.transaction();
-
-  try {
-    let currentWarehouseStock = await db.Warehouse_stock.findOne({
-      where: { warehouse_id, product_id },
-      transaction: t,
-    });
-
-    if (!currentWarehouseStock) {
-      currentWarehouseStock = await db.Warehouse_stock.create({
-        warehouse_id,
-        product_id,
-        product_stock: 0,
-        transaction: t,
-      });
-    }
-
-    const currentStock = currentWarehouseStock.product_stock;
-
-    if (currentStock < requiredStock) {
-      const deficit = requiredStock - currentStock;
-
-      const warehousesWithStock = await db.Warehouse_stock.findAll({
-        where: {
-          product_id,
-          product_stock: { [db.Sequelize.Op.gt]: 0 },
-          warehouse_id: { [db.Sequelize.Op.ne]: warehouse_id },
-        },
-        include: [
-          {
-            model: db.Warehouse,
-            as: "Warehouse",
-            attributes: ["id", "latitude", "longitude"],
-          },
-        ],
-        transaction: t,
-      });
-
-      if (!warehousesWithStock || warehousesWithStock.length === 0) {
-        await t.rollback();
-        throw new Error("No other warehouses have the product in stock.");
-      }
-
-      const currentWarehouse = await db.Warehouse.findOne({
-        where: { id: warehouse_id },
-        transaction: t,
-      });
-      
-      let nearestWarehouse = null;
-      let shortestDistance = Infinity;
-
-      warehousesWithStock.forEach((warehouseWithStock) => {
-        const distance = distanceKm(
-          currentWarehouse.latitude,
-          currentWarehouse.longitude,
-          warehouseWithStock.Warehouse.latitude,
-          warehouseWithStock.Warehouse.longitude
-        );
-
-        if (
-          distance < shortestDistance &&
-          warehouseWithStock.product_stock >= deficit
-        ) {
-          shortestDistance = distance;
-          nearestWarehouse = warehouseWithStock;
-        }
-      });
-
-      if (!nearestWarehouse) {
-        await t.rollback();
-        throw new Error("No nearby warehouses can fulfill the required stock.");
-      }
-
-      nearestWarehouse.product_stock -= deficit;
-      currentWarehouseStock.product_stock += deficit;
-
-      await nearestWarehouse.save({ transaction: t });
-      await currentWarehouseStock.save({ transaction: t });
-    }
-
-    await t.commit();
-    return {
-      status: "success",
-      message: "Stock transferred successfully.",
-      stock: currentWarehouseStock,
-    };
-    
-  } catch (error) {
-    await t.rollback();
-    console.error(error);
-    throw error;
-  }
-}
 
 module.exports = {
   async createStockForWarehouse(req, res) {
@@ -156,6 +50,27 @@ module.exports = {
         message: "An error occurred while creating stock.",
         error: error.message,
       });
+    }
+  },
+
+  async test(req, res) {
+    try {
+      const warehouse_id = req.query.warehouseId;
+      const product_id = req.query.productId;
+      const requiredStock = req.query.requiredStock;
+
+      const result = await autoStockTransfer(
+        warehouse_id,
+        product_id,
+        requiredStock
+      );
+
+      // Respond with a success message or the result
+      res.status(200).json(result);
+    } catch (error) {
+      // Handle errors and respond with an error message
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 
@@ -219,19 +134,19 @@ module.exports = {
         categoryId: req.query.categoryId,
         productName: req.query.productName,
       };
-  
+
       if (req.user.role_id == 2) {
-        options.warehouseId = req.user.warehouse_id; 
+        options.warehouseId = req.user.warehouse_id;
       } else {
         options.warehouseId = req.query.warehouseId;
       }
-  
+
       const stockResponse = await getAllWarehouseStocks(options);
-  
+
       if (!stockResponse.success) {
         throw new Error(stockResponse.error);
       }
-  
+
       res.status(200).send({
         message: "Warehouse stocks fetched successfully",
         stocks: stockResponse.data,

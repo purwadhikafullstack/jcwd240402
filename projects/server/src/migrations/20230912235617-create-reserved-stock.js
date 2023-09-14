@@ -9,20 +9,18 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      order_id: {
-        type: Sequelize.STRING
-      },
-      warehouse_id: {
-        type: Sequelize.INTEGER
-      },
       warehouse_stock_id: {
-        type: Sequelize.INTEGER
-      },
-      product_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Warehouse_stocks',
+          key: 'id',
+        },
+        allowNull: false,
+        onDelete: 'NO ACTION',
       },
       reserve_quantity: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull:false
       },
       createdAt: {
         allowNull: false,

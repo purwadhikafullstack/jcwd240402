@@ -46,8 +46,6 @@ const Home = () => {
   const [productData, setProductData] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { logOut, user } = UserAuth();
-
   useEffect(() => {
     axios.get(`/user/category`).then((res) => setCategory(res.data.result));
   }, []);
@@ -119,14 +117,6 @@ const Home = () => {
     },
   ];
 
-  const handleLogOut = async () => {
-    try {
-      await logOut();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   if (loading) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
@@ -140,7 +130,7 @@ const Home = () => {
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb />
-      <button onClick={handleLogOut}>LOGOUT</button>
+
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex justify-center">
           <CarouselBanner imageUrls={imageUrls} />

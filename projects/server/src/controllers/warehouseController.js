@@ -1,5 +1,7 @@
 const db = require("../models");
 const { getAllWarehouses, getOneWarehouse } = require("../service/warehouse");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   async registerWarehouse(req, res) {
@@ -12,21 +14,34 @@ module.exports = {
       warehouse_contact,
     } = req.body;
 
-    try {
-      const newWarehouse = await db.Warehouse.create({
-        address_warehouse,
-        warehouse_name,
-        city_id,
-        latitude,
-        longitude,
-        warehouse_contact,
-      });
+    const image = req.file?.filename;
+    const warehouse_img = image
+      ? `/photo-warehouse/${image}`
+      : "/photo-warehouse/imgwarehousedefault.png";
 
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const newWarehouse = await db.Warehouse.create(
+        {
+          address_warehouse,
+          warehouse_name,
+          city_id,
+          latitude,
+          longitude,
+          warehouse_contact,
+          warehouse_img,
+        },
+        { transaction }
+      );
+
+      await transaction.commit();
       return res.status(201).send({
         message: "Warehouse registration successful",
         data: newWarehouse,
       });
     } catch (error) {
+      await transaction.rollback();
       res.status(500).send({
         message: "Fatal error on server",
         errors: error.message,
@@ -72,6 +87,114 @@ module.exports = {
       await t.rollback();
       console.error("Error:", error);
       res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  updateWarehouseImage: async (req, res) => {
+    const { warehouse_name } = req.params;
+    const image = req.file?.filename;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const warehouseData = await db.Warehouse.findOne({
+        where: { warehouse_name },
+      });
+      if (!warehouseData) {
+        await transaction.rollback();
+        return res.status(404).json({
+          ok: false,
+          message: "warehouse not found`",
+        });
+      }
+      if (image) {
+        const warehouseData = await db.Warehouse.findOne({
+          where: { warehouse_name },
+        });
+
+        if (!warehouseData) {
+          res.status(401).json({
+            ok: false,
+            message: "user data not found",
+          });
+        }
+        const previousImageName = warehouseData
+          .getDataValue("warehouse_img")
+          ?.split("/")[2];
+
+        if (!previousImageName) {
+          await db.Warehouse.update(
+            {
+              warehouse_img: `/photo-warehouse/imgwarehousedefault.png`,
+            },
+            {
+              where: { id: warehouseData.id },
+            },
+            transaction
+          );
+        }
+
+        if (previousImageName) {
+          if (previousImageName === "imgwarehousedefault.png") {
+            await db.Warehouse.update(
+              {
+                warehouse_img: `/photo-warehouse/${image}`,
+              },
+              {
+                where: { id: warehouseData.id },
+              },
+              transaction
+            );
+          }
+          const imagePath = path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "server",
+            "src",
+            "public",
+            "imgWarehouse",
+            previousImageName
+          );
+          if (previousImageName !== "imgwarehousedefault.png") {
+            fs.unlinkSync(imagePath);
+            await db.Warehouse.update(
+              {
+                warehouse_img: `/photo-warehouse/${image}`,
+              },
+              {
+                where: { id: warehouseData.id },
+              },
+              transaction
+            );
+          }
+          await db.Warehouse.update(
+            {
+              warehouse_img: `/photo-warehouse/${image}`,
+            },
+            {
+              where: { id: warehouseData.id },
+            },
+            transaction
+          );
+        }
+      }
+      const warehouseNewData = await db.Warehouse.findOne({
+        where: { warehouse_name },
+      });
+      await transaction.commit();
+      return res.json({
+        ok: true,
+        warehouse_name,
+        warehouseNewData,
+        message: "update image successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      return res.status(500).send({
+        ok: false,
         message: "Fatal error on server",
         errors: error.message,
       });
@@ -165,6 +288,7 @@ module.exports = {
     } catch (error) {
       console.error(error);
       res.status(500).send({
+        ok: false,
         message: "Fatal error on server",
         errors: error.message,
       });

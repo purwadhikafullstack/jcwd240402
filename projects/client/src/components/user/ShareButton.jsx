@@ -48,11 +48,9 @@ import {
 
 const ShareButton = () => {
   const location = useLocation();
-  console.log(process.env.REACT_APP_FRONT_END_BASE_URL);
-  console.log(process.env.REACT_APP_API_BASE_URL);
-  console.log(location.pathname);
+
   return (
-    <div className="flex mt-2">
+    <div className="flex ">
       <TelegramShareButton
         url={`${process.env.REACT_APP_FRONT_END_BASE_URL}${location.pathname}`}
       >

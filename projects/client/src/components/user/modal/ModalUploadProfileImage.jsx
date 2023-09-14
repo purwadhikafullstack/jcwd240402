@@ -47,7 +47,6 @@ const ModalUploadProfileImage = () => {
           setErrMsg("");
           setShowImage(URL.createObjectURL(image));
           navigate("/user/setting");
-          console.log(res);
           setOpenModal(false);
         });
     } catch (err) {
@@ -91,7 +90,7 @@ const ModalUploadProfileImage = () => {
                 src={
                   showImage
                     ? showImage
-                    : `${process.env.REACT_APP_API_BASE_URL}/${userData?.User_detail?.img_profile}`
+                    : `${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`
                 }
                 alt=""
               />

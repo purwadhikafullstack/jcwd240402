@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       User.belongsTo(models.Role, { foreignKey: "role_id" });
       User.hasMany(models.Address_user, { foreignKey: "address_user_id" });
       User.hasMany(models.Cart, { foreignKey: "user_id" });
-      User.hasMany(models.Bookmark, { foreignKey: "user_id" });
+      User.hasMany(models.Wishlist, { foreignKey: "user_id" });
     }
   }
   User.init(
@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       verify_token: DataTypes.STRING,
       reset_password_token: DataTypes.STRING,
       is_verify: DataTypes.STRING,
+      by_form: DataTypes.BOOLEAN,
     },
     {
       sequelize,

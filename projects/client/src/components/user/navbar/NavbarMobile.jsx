@@ -4,6 +4,7 @@ import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { RiBookmark3Fill, RiBookmark3Line } from "react-icons/ri";
 
 import SearchBar from "../../SearchBar";
 import {
@@ -16,14 +17,21 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
 import logo from "../../../assets/images/furnifor.png";
+import { UserAuth } from "../../../context/AuthContext";
+import { wishlistUser } from "../../../features/wishlistDataSlice";
 
 const NavbarMobile = () => {
   const cartsData = useSelector((state) => state.carter.value);
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
+  let [open, setOpen] = useState(false);
   const userData = useSelector((state) => state.profiler.value);
+
+  const wishlistData = useSelector((state) => state.wishlister.value);
+
   const dispatch = useDispatch();
+  const { logOutAuth } = UserAuth();
 
   useEffect(() => {
     if (access_token && refresh_token) {
@@ -52,13 +60,30 @@ const NavbarMobile = () => {
     }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
 
+  useEffect(() => {
+    axios
+      .get("/user/wishlist", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(wishlistUser(res.data?.result));
+      })
+      .catch((error) => {
+        console.log(error.response?.data?.message);
+      });
+  }, [access_token, dispatch]);
+
   let Links = [
     { name: "HOME", to: "/" },
     { name: "PROFILE", to: "/user/setting" },
     { name: "CART", to: "/cart" },
     { name: "ORDER", to: "/checkout" },
   ];
-  let [open, setOpen] = useState(false);
+
+  const handleLogOut = () => {
+    logOutAuth();
+    logout();
+  };
   return (
     <div className="sticky top-0 w-full z-20">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
@@ -87,9 +112,19 @@ const NavbarMobile = () => {
               <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
             </Link>
           )}
-          <button>
-            <BiSolidPurchaseTag className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
-          </button>
+
+          {wishlistData && access_token && refresh_token ? (
+            <Link to="/all-wishlist" className="relative">
+              <RiBookmark3Fill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {wishlistData.length === 0 ? null : wishlistData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/all-wishlist">
+              <RiBookmark3Fill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+            </Link>
+          )}
         </div>
         <div className="mr-2 mt-1">
           <button onClick={() => setOpen(!open)} className="cursor-pointer ">
@@ -115,7 +150,7 @@ const NavbarMobile = () => {
                 <Link
                   to="/"
                   onClick={() => {
-                    logout();
+                    handleLogOut();
                     setOpen(false);
                   }}
                 >

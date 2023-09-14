@@ -17,6 +17,7 @@ import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalChangeAddress = ({ idAddress }) => {
   const dispatch = useDispatch();
+  console.log(idAddress);
 
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");

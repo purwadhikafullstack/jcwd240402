@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Warehouse extends Model {
     /**
@@ -11,42 +9,48 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Warehouse.hasMany(models.Admin, { foreignKey: 'warehouse_id' });
-      Warehouse.belongsTo(models.City, { foreignKey: 'city_id' });
+      Warehouse.hasMany(models.Admin, { foreignKey: "warehouse_id" });
+      Warehouse.belongsTo(models.City, { foreignKey: "city_id" });
       Warehouse.hasMany(models.Order, { foreignKey: "warehouse_id" });
-      Warehouse.hasMany(models.Inventory_transfer, { foreignKey: "warehouse_id" });
+      Warehouse.hasMany(models.Inventory_transfer, {
+        foreignKey: "warehouse_id",
+      });
       Warehouse.hasMany(models.History_stock, { foreignKey: "warehouse_id" });
-      Warehouse.hasMany(models.Warehouse_stock, { foreignKey: 'warehouse_id' });
+      Warehouse.hasMany(models.Warehouse_stock, { foreignKey: "warehouse_id" });
     }
   }
-  Warehouse.init({
-    address_warehouse: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  Warehouse.init(
+    {
+      address_warehouse: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      warehouse_name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      city_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      latitude: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      longitude: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      warehouse_contact: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      warehouse_img: DataTypes.STRING,
     },
-    warehouse_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    city_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    latitude: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    longitude: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    warehouse_contact: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'Warehouse',
-  });
+    {
+      sequelize,
+      modelName: "Warehouse",
+    }
+  );
   return Warehouse;
 };

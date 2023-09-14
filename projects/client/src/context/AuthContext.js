@@ -18,8 +18,9 @@ export const AuthContextProvider = ({ children }) => {
     signInWithPopup(auth, provider);
   };
 
-  const logOut = () => {
+  const logOutAuth = () => {
     signOut(auth);
+    setUser({});
   };
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ googleSignIn, logOut, user }}>
+    <AuthContext.Provider value={{ googleSignIn, logOutAuth, user }}>
       {children}
     </AuthContext.Provider>
   );

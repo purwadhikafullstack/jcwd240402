@@ -5,15 +5,15 @@ const ProductController = require("../controllers/productController");
 const CategoryController = require("../controllers/categoryController");
 const Verify = require("../middleware/auth");
 const validatorMiddleware = require("../middleware/validator/user");
-const upload = require("../middleware/multer/user/imgProfile");
+
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
-const addressUserCoordinateUpdate = require("../middleware/openCage/addressUserCoordinateUpdate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
 const WarehouseController = require("../controllers/warehouseController");
 const CartController = require("../controllers/cartController");
 const OrderController = require("../controllers/orderController");
-const AddressController = require("../controllers/addressController");
+const AddressController = require("../controllers/addressUserController");
+const WishlistController = require("../controllers/wishlistController");
 
 /* AUTH */
 router.post(
@@ -44,7 +44,16 @@ router.patch(
   validatorMiddleware.resetPassword,
   UserController.resetPassword
 );
-router.post("/auth/register/oAuth", UserController.registerUserByEmail);
+router.post(
+  "/auth/register/oAuth",
+  validatorMiddleware.registrationByOAuth,
+  UserController.registerUserByEmail
+);
+router.post(
+  "/auth/login/oAuth",
+  validatorMiddleware.loginByOAuth,
+  UserController.loginByEmail
+);
 
 router.patch("/auth/close-account", UserController.closeAccount);
 
@@ -84,7 +93,7 @@ router.patch(
   "/profile/address/:address_id",
   Verify.verifyAccessTokenUser,
   handleImageProfileUpload,
-  addressUserCoordinateUpdate,
+  addressUserCoordinate,
   AddressController.changeAddress
 );
 
@@ -186,6 +195,28 @@ router.post(
   "/warehouse-closest",
   Verify.verifyAccessTokenUser,
   OrderController.findClosestWarehouseByAddressId
+);
+
+/* WISHLIST */
+router.post(
+  "/wishlist/:product",
+  Verify.verifyAccessTokenUser,
+  WishlistController.addWishlist
+);
+router.delete(
+  "/wishlist/:product",
+  Verify.verifyAccessTokenUser,
+  WishlistController.cancelWishlist
+);
+router.get(
+  "/wishlist",
+  Verify.verifyAccessTokenUser,
+  WishlistController.getAllWishlist
+);
+router.get(
+  "/wishlist/:product",
+  Verify.verifyAccessTokenUser,
+  WishlistController.getUserWishlistSpecificProduct
 );
 
 module.exports = router;

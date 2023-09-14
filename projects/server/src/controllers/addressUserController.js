@@ -88,46 +88,64 @@ module.exports = {
   changeAddress: async (req, res) => {
     const userData = req.user;
     const { address_id } = req.params;
-    let data;
-    if (req.body.data) {
-      data = JSON.parse(req.body.data);
-    }
+    const {
+      city_id,
+      longitude,
+      latitude,
+      address_details,
+      postal_code,
+      address_title,
+    } = req.body;
+
     const transaction = await db.sequelize.transaction();
 
     try {
-      if (data.city_id) {
+      const isAddressExist = await db.Address_user.findOne({
+        where: { id: address_id },
+        attributes: { exclude: ["address_user_id"] },
+      });
+
+      if (!isAddressExist) {
+        await transaction.rollback();
+        return res.status(401).json({
+          ok: false,
+          message: "address not found",
+        });
+      }
+
+      if (city_id) {
         await db.Address_user.update(
           {
-            city_id: data.city_id,
+            city_id,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }
         );
       }
 
-      if (data.address_details) {
+      if (address_details) {
         await db.Address_user.update(
           {
-            address_details: data.address_details,
-            longitude: data.longitude,
-            latitude: data.latitude,
+            address_details,
+            longitude: longitude,
+            latitude: latitude,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }
         );
       }
 
-      if (data.postal_code) {
+      if (postal_code) {
         await db.Address_user.update(
           {
-            postal_code: data.postal_code,
+            postal_code,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }
         );
       }
 
-      if (data.address_title) {
+      if (address_title) {
         await db.Address_user.update(
           {
-            address_title: data.address_title,
+            address_title,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }
         );

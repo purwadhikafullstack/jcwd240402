@@ -15,7 +15,7 @@ const CardProfile = ({ inputPhotoRef }) => {
           <div className="relative w-16 h-16  flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
             <img
               className="w-full h-full object-cover rounded-full "
-              src={`${process.env.REACT_APP_API_BASE_URL}/${userData.User_detail?.img_profile}`}
+              src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
               alt=""
             />
           </div>

@@ -43,6 +43,11 @@ app.use(
 );
 
 app.use(
+  "/api/photo-warehouse",
+  express.static(path.join(__dirname, "public", "imgWarehouse"))
+);
+
+app.use(
   "/api/src/public/imgCategory",
   express.static(path.join(__dirname, "public", "imgCategory"))
 );

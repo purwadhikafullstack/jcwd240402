@@ -24,7 +24,7 @@ const SignUp = () => {
 
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
-  const { googleSignIn, user } = UserAuth();
+  const { googleSignIn, user, logOutAuth } = UserAuth();
 
   const handleGoogleSign = async () => {
     try {
@@ -33,9 +33,9 @@ const SignUp = () => {
       console.log(error);
     }
   };
-
+  console.log(user);
   useEffect(() => {
-    if (user != null) {
+    if (user != null && Object.keys(user).length !== 0) {
       axios
         .post("user/auth/register/oAuth", {
           email: user.email,
@@ -44,7 +44,6 @@ const SignUp = () => {
           phone: user.phoneNumber,
         })
         .then((res) => {
-          console.log(res.data);
           setLocalStorage("refresh_token", res.data?.refreshToken);
           setCookie("access_token", res.data?.accessToken);
           setErrMsg("");
@@ -53,13 +52,18 @@ const SignUp = () => {
         .catch((error) => {
           if (!error.response) {
             setErrMsg("No Server Response");
+            logOutAuth();
           } else {
-            setErrMsg(error.response?.data?.message);
+            setErrMsg(`${error.response?.data?.message}, instead please login`);
+            setTimeout(() => {
+              setErrMsg("");
+            }, 4000);
+            logOutAuth();
           }
         });
     }
   }, [navigate, user]);
-  console.log(errMsg);
+
   return (
     <div className="bg-white h-screen lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />

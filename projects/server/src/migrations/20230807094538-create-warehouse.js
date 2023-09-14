@@ -38,6 +38,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      warehouse_img: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

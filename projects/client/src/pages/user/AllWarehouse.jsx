@@ -76,6 +76,8 @@ const AllWarehouse = () => {
       </div>
     );
   }
+  console.log(warehouseList);
+  console.log(closestWarehouse);
 
   return (
     <div>
@@ -90,9 +92,9 @@ const AllWarehouse = () => {
                 Closest Warehouse From Your Address
               </h1>
               <div className="grid md:grid-cols-12 lg:grid-cols-12">
-                <div className="md:col-span-8 lg:col-span-8 w-full">
+                <div className="md:col-span-8 lg:col-span-8 h-80 w-full">
                   <img
-                    src={img}
+                    src={`${process.env.REACT_APP_API_BASE_URL}${closestWarehouse.warehouse_img}`}
                     alt=""
                     className="object-cover h-full w-full"
                   />
@@ -165,7 +167,7 @@ const AllWarehouse = () => {
                   <div className="h-40">
                     <Link to={``}>
                       <img
-                        src={`${img}`}
+                        src={`${process.env.REACT_APP_API_BASE_URL}${warehouse.warehouse_img}`}
                         alt=""
                         className="w-full h-full object-cover"
                       />

@@ -18,6 +18,8 @@ import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
 import { cartsUser } from "../../../features/cartSlice";
 import { useDispatch } from "react-redux";
+import ShareButton from "../ShareButton";
+import Wishlist from "../Wishlist";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
@@ -230,6 +232,7 @@ export default function SlideOverProduct({ name }) {
                             </button>
                           )}
                         </div>
+
                         <div className="flex justify-start items-center mt-2">
                           {stock === 0 ? (
                             <>
@@ -247,6 +250,15 @@ export default function SlideOverProduct({ name }) {
                               </h1>
                             </>
                           )}
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                          <ShareButton />
+                          <Wishlist
+                            product={name}
+                            setErrMsg={setErrMsg}
+                            setOpenAlert={setOpenAlert}
+                            setSuccessMsg={setSuccessMsg}
+                          />
                         </div>
                         <div className="mt-4">
                           <AccordionProduct

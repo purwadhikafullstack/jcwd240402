@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
-import { BiPurchaseTag, BiSolidPurchaseTag } from "react-icons/bi";
 import { BsCart, BsCartFill } from "react-icons/bs";
-import { FaRegUser, FaUser } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa";
+import { RiBookmark3Fill, RiBookmark3Line } from "react-icons/ri";
 
 import {
   getCookie,
@@ -13,7 +13,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../api/axios";
 import { profileUser } from "../../../features/userDataSlice";
-import { cartsUser } from "../../../features/cartSlice";
 
 const NavigatorMobile = () => {
   const location = useLocation();
@@ -22,8 +21,6 @@ const NavigatorMobile = () => {
   const refresh_token = getLocalStorage("refresh_token");
 
   const userData = useSelector((state) => state.profiler.value);
-
-  console.log(userData);
 
   const [newAccessToken, setNewAccessToken] = useState("");
 
@@ -108,24 +105,26 @@ const NavigatorMobile = () => {
         {/* ORDER */}
         <div
           className={`bg-inherit ${
-            location.pathname === "/order" ? "text-yellow2" : "text-white"
+            location.pathname === "/all-wishlist"
+              ? "text-yellow2"
+              : "text-white"
           } col-span-1`}
         >
-          {location.pathname === "/order" ? (
+          {location.pathname === "/all-wishlist" ? (
             <Link
-              to={`${access_token ? "/order" : "/redirect-login"}`}
+              to={`${access_token ? "/all-wishlist" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
-              <BiSolidPurchaseTag />
-              <h1 className="bg-inherit text-xs ">My Order</h1>
+              <RiBookmark3Fill />
+              <h1 className="bg-inherit text-xs ">My Wishlist</h1>
             </Link>
           ) : (
             <Link
-              to={`${access_token ? "/order" : "/redirect-login"}`}
+              to={`${access_token ? "/all-wishlist" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
-              <BiPurchaseTag />
-              <h1 className="bg-inherit text-xs ">My Order</h1>
+              <RiBookmark3Line />
+              <h1 className="bg-inherit text-xs ">My Wishlist</h1>
             </Link>
           )}
         </div>
@@ -146,7 +145,7 @@ const NavigatorMobile = () => {
               <div className="relative w-8 h-8  flex flex-col max-w-xs items-center rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                 <img
                   className="w-full h-full object-cover rounded-full "
-                  src={`${process.env.REACT_APP_API_BASE_URL}/${userData.User_detail?.img_profile}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
                   alt=""
                 />
               </div>

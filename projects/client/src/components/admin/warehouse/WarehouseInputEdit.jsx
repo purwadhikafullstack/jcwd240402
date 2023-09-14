@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import InputForm from "../../InputForm";
 import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
@@ -9,37 +9,74 @@ import Sidebar from "../../SidebarAdminDesktop";
 import withAuthAdmin from "../withAuthAdmin";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../Button";
+import AlertWithIcon from "../../AlertWithIcon";
 
 const WarehouseInputsEdit = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [successMsg, setSuccessMsg] = useState("");
   const [initialWarehouseData, setInitialWarehouseData] = useState(null);
+
+  const [currentImage, setCurrentImage] = useState(null);
+  const [showImage, setShowImage] = useState(false);
+  const [image, setImage] = useState(null);
+  const [errMsg, setErrMsg] = useState("");
+
   const { warehouseName } = useParams();
   const navigate = useNavigate();
 
+  const handleUpdateImage = async (e) => {
+    e.preventDefault();
+
+    if (!image) {
+      setErrMsg("you have to upload an image to submit");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", image);
+    try {
+      const response = await axios.patch(
+        `/warehouse/image/${warehouseName}`,
+        formData
+      );
+      if (response.data.ok) {
+        setSuccessMsg("image update successful");
+        setTimeout(() => {
+          setSuccessMsg("");
+        }, 3000);
+      }
+    } catch (error) {
+      if (!error.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(error.response?.data?.error);
+      }
+    }
+  };
+
   const validationSchema = Yup.object().shape({
-    warehouse_name: Yup.string().required('Required'),
-    address_warehouse: Yup.string().required('Required'),
-    warehouse_contact: Yup.string().required('Required'),
-    city_id: Yup.number().required('Required')
+    warehouse_name: Yup.string().required("Required"),
+    address_warehouse: Yup.string().required("Required"),
+    warehouse_contact: Yup.string().required("Required"),
+    city_id: Yup.number().required("Required"),
   });
 
   const formik = useFormik({
     initialValues: {
-      id: '',
-      warehouse_name: '',
-      address_warehouse: '',
-      warehouse_contact: '',
-      city_id: ''
+      id: "",
+      warehouse_name: "",
+      address_warehouse: "",
+      warehouse_contact: "",
+      city_id: "",
     },
     validationSchema,
     onSubmit: async (values) => {
       const changes = {};
 
       if (initialWarehouseData) {
-        Object.keys(values).forEach(key => {
-          if (key !== 'id' && values[key] !== initialWarehouseData[key]) {
+        Object.keys(values).forEach((key) => {
+          if (key !== "id" && values[key] !== initialWarehouseData[key]) {
             changes[key] = values[key];
           }
         });
@@ -53,28 +90,34 @@ const WarehouseInputsEdit = () => {
       try {
         const response = await axios.patch(`/warehouse/${values.id}`, changes);
         if (response.status === 200) {
-          setSuccessMsg('Updated successfully!');
+          setSuccessMsg("Updated successfully!");
           formik.setErrors({});
-          if (changes.warehouse_name && changes.warehouse_name !== formik.initialValues.warehouse_name) {
+          if (
+            changes.warehouse_name &&
+            changes.warehouse_name !== formik.initialValues.warehouse_name
+          ) {
             setTimeout(() => {
-              navigate('/warehouse');
+              navigate("/warehouse");
             }, 5000);
           }
         } else {
-          throw new Error('Warehouse update failed');
+          throw new Error("Warehouse update failed");
         }
       } catch (error) {
         if (error.response && error.response.data.errors) {
-          const errorMessages = error.response.data.errors.reduce((acc, curr) => {
-            acc[curr.path] = curr.msg;
-            return acc;
-          }, {});
+          const errorMessages = error.response.data.errors.reduce(
+            (acc, curr) => {
+              acc[curr.path] = curr.msg;
+              return acc;
+            },
+            {}
+          );
           formik.setErrors(errorMessages);
         } else {
-          alert(error.message || 'Edit failed');
+          alert(error.message || "Edit failed");
         }
       }
-    }
+    },
   });
 
   useEffect(() => {
@@ -82,13 +125,14 @@ const WarehouseInputsEdit = () => {
       try {
         const response = await axios.get(`/warehouse/${warehouseName}`);
         if (response.data && response.data.warehouse) {
+          setCurrentImage(response.data?.warehouse?.warehouse_img);
           const { warehouse } = response.data;
           const initialData = {
             id: warehouse.id,
             warehouse_name: warehouse.warehouse_name,
             address_warehouse: warehouse.address_warehouse,
             warehouse_contact: warehouse.warehouse_contact,
-            city_id: warehouse.city_id
+            city_id: warehouse.city_id,
           };
           formik.setValues(initialData);
           setInitialWarehouseData(initialData);
@@ -108,7 +152,13 @@ const WarehouseInputsEdit = () => {
   }, [warehouseName]);
 
   const handleCancel = () => {
-    navigate('/warehouse');
+    navigate("/warehouse");
+  };
+
+  const handleFile = (e) => {
+    const selectedImage = e.target.files[0];
+    setShowImage(URL.createObjectURL(selectedImage));
+    setImage(selectedImage);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -125,65 +175,103 @@ const WarehouseInputsEdit = () => {
             <p>{successMsg}</p>
           </div>
         )}
-        <form onSubmit={formik.handleSubmit}>
-          <InputForm
-            label="Warehouse Name"
-            name="warehouse_name"
-            value={formik.values.warehouse_name}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            errorMessage={formik.errors.warehouse_name}
-            width="w-full"
-          />
-          <TextAreaForm
-            label="Address"
-            name="address_warehouse"
-            value={formik.values.address_warehouse}
-            rows={3}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            errorMessage={formik.errors.address_warehouse}
-            width="w-full"
-          />
-          <InputForm
-            label="Contact Number"
-            name="warehouse_contact"
-            value={formik.values.warehouse_contact}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            errorMessage={formik.errors.warehouse_contact}
-            width="w-full"
-          />
-          <label className="block font-poppins mb-1 text-gray-700">City</label>
-          <AsyncSelect
-            cacheOptions
-            value={selectedCity}
-            onChange={(selectedOption) => {
-              setSelectedCity(selectedOption);
-              formik.setFieldValue('city_id', selectedOption.value);
-            }}
-            placeholder="Select a city"
-          />
-          <div className="flex mt-4 justify-center gap-2">
-            <Button
-              type="button"
-              buttonText="Cancel"
-              bgColor="bg-gray-300"
-              colorText="text-black"
-              fontWeight="font-bold"
-              buttonSize="medium"
-              onClick={handleCancel}
-            />
-          <Button
-              type="submit"
-              buttonText="Save"
-              bgColor="bg-blue3"
-              colorText="text-white"
-              fontWeight="font-bold"
-              buttonSize="medium"
-            />
+        <div className="md:grid lg:grid md:grid-cols-2 lg:grid-cols-2 w-full">
+          <div className="md:col-span-1 lg:col-span-1">
+            <form onSubmit={formik.handleSubmit}>
+              <InputForm
+                label="Warehouse Name"
+                name="warehouse_name"
+                value={formik.values.warehouse_name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                errorMessage={formik.errors.warehouse_name}
+                width="w-full"
+              />
+              <TextAreaForm
+                label="Address"
+                name="address_warehouse"
+                value={formik.values.address_warehouse}
+                rows={3}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                errorMessage={formik.errors.address_warehouse}
+                width="w-full"
+              />
+              <InputForm
+                label="Contact Number"
+                name="warehouse_contact"
+                value={formik.values.warehouse_contact}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                errorMessage={formik.errors.warehouse_contact}
+                width="w-full"
+              />
+              <label className="block font-poppins mb-1 text-gray-700">
+                City
+              </label>
+              <AsyncSelect
+                cacheOptions
+                value={selectedCity}
+                onChange={(selectedOption) => {
+                  setSelectedCity(selectedOption);
+                  formik.setFieldValue("city_id", selectedOption.value);
+                }}
+                placeholder="Select a city"
+              />
+              <div className="flex mt-4 justify-center gap-2">
+                <Button
+                  type="button"
+                  buttonText="Cancel"
+                  bgColor="bg-gray-300"
+                  colorText="text-black"
+                  fontWeight="font-bold"
+                  buttonSize="medium"
+                  onClick={handleCancel}
+                />
+                <Button
+                  type="submit"
+                  buttonText="Save"
+                  bgColor="bg-blue3"
+                  colorText="text-white"
+                  fontWeight="font-bold"
+                  buttonSize="medium"
+                />
+              </div>
+            </form>
           </div>
-        </form>
+          <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center">
+            <img
+              src={
+                showImage
+                  ? showImage
+                  : `${process.env.REACT_APP_API_BASE_URL}${currentImage}`
+              }
+              alt=""
+              className="w-1/2"
+            />
+            <div className="flex flex-col items-center">
+              {successMsg ? (
+                <AlertWithIcon errMsg={errMsg} color="success" />
+              ) : null}
+              <input
+                type="file"
+                onChange={handleFile}
+                name="image"
+                accept="image/png, image/jpg, image/jpeg"
+                className="rounded-full m-4 border-2"
+              />
+              <Button
+                type="submit"
+                buttonText="change image"
+                bgColor="bg-blue3"
+                colorText="text-white"
+                fontWeight="font-bold"
+                buttonSize="medium"
+                onClick={handleUpdateImage}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

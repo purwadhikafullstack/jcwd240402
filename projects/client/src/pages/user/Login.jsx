@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,12 +19,15 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import withOutAuthUser from "../../components/user/withoutAuthUser";
+import { UserAuth } from "../../context/AuthContext";
+import google from "../../assets/icons/google.png";
 
 const Login = () => {
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const { googleSignIn, user, logOutAuth } = UserAuth();
 
   const loginUser = async (values, { setStatus, setValues }) => {
     try {
@@ -54,6 +57,32 @@ const Login = () => {
     }
   };
 
+  useEffect(() => {
+    if (user != null && Object.keys(user).length !== 0) {
+      axios
+        .post("user/auth/login/oAuth", {
+          email: user.email,
+        })
+        .then((res) => {
+          setLocalStorage("refresh_token", res.data?.refreshToken);
+          setCookie("access_token", res.data?.accessToken);
+          setErrMsg("");
+          navigate("/");
+        })
+        .catch((error) => {
+          if (!error.response) {
+            setErrMsg("No Server Response");
+          } else {
+            setErrMsg(error.response?.data?.message);
+            logOutAuth();
+            setTimeout(() => {
+              setErrMsg("");
+            }, 4000);
+          }
+        });
+    }
+  }, [navigate, user]);
+
   const formik = useFormik({
     initialValues: {
       user_identification: "",
@@ -80,6 +109,14 @@ const Login = () => {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
+  };
+
+  const handleGoogleSign = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -118,6 +155,24 @@ const Login = () => {
                     errorMessage={formik.errors.password}
                     placeholder="password"
                   />
+
+                  <div className="flex justify-center items-center w-full">
+                    <hr className="border-2 border-gray-200 rounded-full w-full" />
+                    <h1 className="text-gray-300">OR</h1>
+                    <hr className="border-2 border-gray-200 rounded-full w-full" />
+                  </div>
+
+                  <button
+                    className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center"
+                    onClick={handleGoogleSign}
+                    type="button"
+                  >
+                    <div className="flex justify-center items-center w-full">
+                      <img src={google} alt="" className="w-10 " />
+
+                      <h1 className="text-sm">Login with Google </h1>
+                    </div>
+                  </button>
 
                   <ModalForgotPassword />
 

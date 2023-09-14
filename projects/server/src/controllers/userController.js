@@ -27,6 +27,7 @@ module.exports = {
         last_name,
         img_profile = "photo-profile/imgprofiledefault.png",
         phone,
+        by_form = true,
       } = req.body;
 
       if (password !== confirm_password) {
@@ -79,6 +80,7 @@ module.exports = {
           password: hashPassword,
           verify_token: verifyToken,
           is_verify,
+          by_form,
         },
         { transaction }
       );
@@ -132,15 +134,18 @@ module.exports = {
     const {
       role_id = 3,
       email,
+      password = "1234-Purwadhika",
       fullname,
       is_verify,
       phone,
-      img_profile = "photo-profile/imgprofiledefault.png",
+      img_profile = "/photo-profile/imgprofiledefault.png",
+      by_form = false,
     } = req.body;
     const transaction = await db.sequelize.transaction();
     try {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(password, salt);
       const isEmailExist = await db.User.findOne({ where: { email } });
-
       const isPhoneExist = await db.User_detail.findOne({ where: { phone } });
 
       if (isEmailExist) {
@@ -179,7 +184,9 @@ module.exports = {
           role_id,
           username: newUsername,
           email,
+          password: hashPassword,
           is_verify,
+          by_form,
         },
         { transaction }
       );
@@ -197,23 +204,24 @@ module.exports = {
 
       const accessToken = Generate.token(
         {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role_id: user.role_id,
-          is_verify: user.is_verify,
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          role_id: newUser.role_id,
+          is_verify: newUser.is_verify,
         },
         process.env.ACCESS_TOKEN_SECRET,
         "1h"
       );
       const refreshToken = Generate.token(
         {
-          id: user.id,
+          id: newUser.id,
         },
         process.env.REFRESH_TOKEN_SECRET,
         "24h"
       );
 
+      await transaction.commit();
       res.status(201).json({
         ok: true,
         message: "register successful",
@@ -324,6 +332,51 @@ module.exports = {
         "24h"
       );
 
+      res.json({
+        ok: true,
+        message: "Log in successful",
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  loginByEmail: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const isUserExist = await db.User.findOne({
+        where: { email, by_form: false },
+      });
+      if (!isUserExist) {
+        return res.status(403).json({
+          ok: false,
+          message: "user not found",
+        });
+      }
+      const accessToken = Generate.token(
+        {
+          id: isUserExist.id,
+          username: isUserExist.username,
+          email: isUserExist.email,
+          role_id: isUserExist.role_id,
+          is_verify: isUserExist.is_verify,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        "1h"
+      );
+      const refreshToken = Generate.token(
+        {
+          id: isUserExist.id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        "24h"
+      );
       res.json({
         ok: true,
         message: "Log in successful",
@@ -753,12 +806,12 @@ module.exports = {
 
         const previousImageName = userDetail
           .getDataValue("img_profile")
-          ?.split("/")[1];
+          ?.split("/")[2];
 
         if (!previousImageName) {
           await db.User_detail.update(
             {
-              img_profile: `photo-profile/${image}`,
+              img_profile: `/photo-profile/${image}`,
             },
             { where: { user_id: user.id }, transaction }
           );
@@ -768,7 +821,7 @@ module.exports = {
           if (previousImageName === "imgprofiledefault.png") {
             await db.User_detail.update(
               {
-                img_profile: `photo-profile/${image}`,
+                img_profile: `/photo-profile/${image}`,
               },
               { where: { user_id: user.id }, transaction }
             );
@@ -788,14 +841,14 @@ module.exports = {
             fs.unlinkSync(imagePath);
             await db.User_detail.update(
               {
-                img_profile: `photo-profile/${image}`,
+                img_profile: `/photo-profile/${image}`,
               },
               { where: { user_id: user.id }, transaction }
             );
           }
           await db.User_detail.update(
             {
-              img_profile: `photo-profile/${image}`,
+              img_profile: `/photo-profile/${image}`,
             },
             { where: { user_id: user.id }, transaction }
           );

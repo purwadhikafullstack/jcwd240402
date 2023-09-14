@@ -79,7 +79,7 @@ const SettingProfile = () => {
               {/* CARD PHOTO */}
               <div className=" rounded-lg shadow-card-1 p-2 m-4 w-fit">
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}/${userData?.User_detail?.img_profile}`}
+                  src={`${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`}
                   alt=""
                   className="p-2 w-72"
                 />
@@ -138,9 +138,17 @@ const SettingProfile = () => {
 
                       <tr className="h-10">
                         <td>phone</td>
-                        <td>
-                          {userData.User_detail?.phone} <ModalEditPhone />
-                        </td>
+
+                        {userData.User_detail?.phone ? (
+                          <td>
+                            <ModalEditPhone />
+                          </td>
+                        ) : (
+                          <td>
+                            unregistered
+                            <ModalEditPhone />
+                          </td>
+                        )}
                       </tr>
                       <tr className="h-10">
                         <td>address</td>
@@ -159,18 +167,23 @@ const SettingProfile = () => {
                           </button>
                         </td>
                       </tr>
-                      <tr>
-                        <td className="font-semibold text-gray-500 text-sm ">
-                          Change Password
-                        </td>
-                      </tr>
-                      <tr className="h-10">
-                        <td>password</td>
-                        <td>
-                          •••••••••
-                          <ModalEditPasswordUser />
-                        </td>
-                      </tr>
+                      {userData.by_form ? (
+                        <>
+                          <tr>
+                            <td className="font-semibold text-gray-500 text-sm ">
+                              Change Password
+                            </td>
+                          </tr>
+                          <tr className="h-10">
+                            <td>password</td>
+
+                            <td>
+                              •••••••••
+                              <ModalEditPasswordUser />
+                            </td>
+                          </tr>
+                        </>
+                      ) : null}
                     </tbody>
                   </table>
                 </div>

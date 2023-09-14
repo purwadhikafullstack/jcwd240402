@@ -35,7 +35,9 @@ const SearchBar = ({
           setSearchProduct("");
           navigate("/all-product");
         })
-        .catch((error) => navigate(`/product/not-found`));
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+        });
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");

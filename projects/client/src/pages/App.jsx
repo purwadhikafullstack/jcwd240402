@@ -42,6 +42,7 @@ import AllProducts from "./user/AllProducts";
 import AllWarehouse from "./user/AllWarehouse";
 import NotFoundProduct from "./user/NotFoundProduct";
 import { AuthContextProvider } from "../context/AuthContext";
+import AllWishlist from "./user/AllWishlist";
 
 function App() {
   return (
@@ -144,6 +145,7 @@ function App() {
               path="/product/not-found/:name"
               element={<NotFoundProduct />}
             />
+            <Route path="/all-wishlist" element={<AllWishlist />} />
           </Routes>
         </AuthContextProvider>
       </Router>

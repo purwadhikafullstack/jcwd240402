@@ -1,48 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch,useSelector } from 'react-redux';
-import Tabs from '../../components/Tab/TabContainer';
-import { Outlet } from 'react-router-dom';
-import SidebarAdminDesktop from '../../components/SidebarAdminDesktop';
-import withAuthAdmin from '../../components/admin/withAuthAdmin';
-import axios from '../../api/axios';
-import { getCookie } from '../../utils/tokenSetterGetter';
-import { profileAdmin } from '../../features/adminDataSlice';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Tabs from "../../components/Tab/TabContainer";
+import { Outlet } from "react-router-dom";
+import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
+import withAuthAdmin from "../../components/admin/withAuthAdmin";
+import axios from "../../api/axios";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import { profileAdmin } from "../../features/adminDataSlice";
 
 const AdminProductPage = () => {
-  const access_token = getCookie('access_token');
+  const access_token = getCookie("access_token");
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const dispatch = useDispatch();
 
   const tabData = [
     {
-      label: 'Product List',
-      isActive: window.location.pathname === '/admin/products',
-      to: '/admin/products',
+      label: "Product List",
+      isActive: window.location.pathname === "/admin/products",
+      to: "/admin/products",
     },
     {
-      label: 'Create Product',
-      isActive: window.location.pathname === '/admin/products/create',
-      to: '/admin/products/create',
+      label: "Create Product",
+      isActive: window.location.pathname === "/admin/products/create",
+      to: "/admin/products/create",
     },
   ];
 
   useEffect(() => {
     axios
-      .get('/admin/profile', {
+      .get("/admin/profile", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
         dispatch(profileAdmin(res.data?.result));
       })
       .catch((error) => {
-        console.error('Error fetching profile:', error);
+        console.error("Error fetching profile:", error);
       });
   }, [access_token, dispatch]);
 
   return (
     <div className="h-screen lg:grid lg:grid-cols-[auto,1fr]">
-      <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen">
-      <SidebarAdminDesktop adminData={adminData} />
+      <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen ">
+        <SidebarAdminDesktop adminData={adminData} />
       </div>
       <div className="flex flex-col h-full">
         <div className="border-b p-4">
@@ -57,5 +57,3 @@ const AdminProductPage = () => {
 };
 
 export default withAuthAdmin(AdminProductPage);
-
-

@@ -65,6 +65,20 @@ module.exports = {
       .custom((value, { req }) => value === req.body.password)
       .withMessage("The passwords do not match"),
   ]),
+  registrationByOAuth: validate([
+    body("fullname")
+      .notEmpty()
+      .withMessage("fullname is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("email", "email cannot be empty")
+      .notEmpty()
+      .withMessage("email is required")
+      .isEmail()
+      .withMessage("must to in valid email"),
+    body("phone").optional(),
+    body("img_profile").optional(),
+  ]),
 
   login: validate([
     body("user_identification")
@@ -85,6 +99,13 @@ module.exports = {
       .withMessage(
         "password have to contains 8 character with lowercase, uppercase, number, dan special character"
       ),
+  ]),
+  loginByOAuth: validate([
+    body("email")
+      .notEmpty()
+      .withMessage("Username or email is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
   ]),
 
   emailInput: validate([

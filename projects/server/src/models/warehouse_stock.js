@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       Warehouse_stock.hasMany(models.Cart, {
         foreignKey: "warehouse_stock_id",
       });
-      Warehouse_stock.hasMany(models.Bookmark, {
+      Warehouse_stock.hasMany(models.Wishlist, {
         foreignKey: "warehouse_stock_id",
       });
       Warehouse_stock.hasMany(models.History_stock, {

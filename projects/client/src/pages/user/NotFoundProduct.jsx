@@ -34,7 +34,6 @@ const NotFoundProduct = () => {
 
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
             <hr />
-
             <div className="flex justify-between mt-4">
               <p>Amount:</p>
               <div className="flex justify-between items-center w-24  rounded-full px-1">

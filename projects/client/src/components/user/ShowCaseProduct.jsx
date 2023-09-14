@@ -53,6 +53,7 @@ const ShowCaseProduct = ({ perPage }) => {
           setSearchParams({});
         }, 4000);
       });
+    setLoading(false);
   }, [
     currentPage,
     currentPagination,

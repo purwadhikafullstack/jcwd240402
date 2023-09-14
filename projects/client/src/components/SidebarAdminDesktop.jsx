@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
 import login from "../assets/images/furnifor.png";
@@ -14,8 +14,10 @@ import {
   AiFillDatabase,
 } from "react-icons/ai";
 import { FaUserAlt, FaWarehouse } from "react-icons/fa";
+import { logout } from "../utils/tokenSetterGetter";
 
 function SidebarAdminDesktop() {
+  const navigate = useNavigate();
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
@@ -45,7 +47,7 @@ function SidebarAdminDesktop() {
   ];
 
   return (
-    <Sidebar className="text-black font-poppins">
+    <Sidebar className="text-black font-poppins ">
       <Sidebar.Logo
         href="#"
         img={login}
@@ -63,7 +65,9 @@ function SidebarAdminDesktop() {
         <div className="flex items-center">
           <FaWarehouse className="mr-2 text-blue1" />
           <span className="text-sm font-semibold">Warehouse:</span>
-          <span className="ml-2 text-sm">{adminData.warehouse.warehouse_name}</span>
+          <span className="ml-2 text-sm">
+            {adminData.warehouse.warehouse_name}
+          </span>
         </div>
       </div>
       <Sidebar.Items>
@@ -113,7 +117,14 @@ function SidebarAdminDesktop() {
             icon={AiOutlineLogout}
             className=" hover:border hover:border-black "
           >
-            <p>Logout</p>
+            <button
+              onClick={() => {
+                logout();
+                navigate("/admin/login");
+              }}
+            >
+              Logout
+            </button>
           </Sidebar.Item>
         </Sidebar.ItemGroup>
       </Sidebar.Items>

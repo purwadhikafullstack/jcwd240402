@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BsFillCartFill } from "react-icons/bs";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BiSolidPurchaseTag } from "react-icons/bi";
+import { RiBookmark3Fill } from "react-icons/ri";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,19 +18,15 @@ import {
 } from "../../../utils/tokenSetterGetter";
 import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
-
-const userNavigation = [
-  { name: "Profile", to: "/user/setting", onClick: {} },
-  { name: "Cart", to: "/cart", onClick: {} },
-  { name: "Order", to: "/", onClick: {} },
-  { name: "Sign out", to: "/log-in", onClick: () => logout() },
-];
+import { UserAuth } from "../../../context/AuthContext";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const NavbarDesktop = () => {
+  const { logOutAuth } = UserAuth();
+
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
 
@@ -68,6 +64,20 @@ const NavbarDesktop = () => {
         });
     }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
+
+  const userNavigation = [
+    { name: "Profile", to: "/user/setting", onClick: {} },
+    { name: "Cart", to: "/cart", onClick: {} },
+    { name: "Order", to: "/", onClick: {} },
+    {
+      name: "Sign out",
+      to: "/log-in",
+      onClick: () => {
+        logOutAuth();
+        logout();
+      },
+    },
+  ];
 
   return (
     <div
@@ -111,8 +121,8 @@ const NavbarDesktop = () => {
             </Link>
           )}
 
-          <Link to="">
-            <BiSolidPurchaseTag className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+          <Link to="/all-wishlist">
+            <RiBookmark3Fill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
           </Link>
         </div>
         <div className="flex gap-4">
@@ -125,7 +135,7 @@ const NavbarDesktop = () => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${userData.User_detail?.img_profile}`}
+                      src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
                       alt=""
                     />
                   </Menu.Button>

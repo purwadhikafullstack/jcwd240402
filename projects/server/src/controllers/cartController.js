@@ -105,6 +105,7 @@ module.exports = {
 
   getUserCart: async (req, res) => {
     const userData = req.user;
+
     try {
       const result = await db.Cart.findAll({
         where: { user_id: userData.id },

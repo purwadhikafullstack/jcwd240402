@@ -2,10 +2,11 @@ const db = require("../models");
 
 const {
   getAllWarehouseStocks,
-  newStockHistory,
   getAllStockHistory,
 } = require("../service/warehouse_stock");
 const { Sequelize } = require("sequelize");
+const { autoStockTransfer } = require("../utils");
+
 
 module.exports = {
   async createStockForWarehouse(req, res) {
@@ -49,6 +50,27 @@ module.exports = {
         message: "An error occurred while creating stock.",
         error: error.message,
       });
+    }
+  },
+
+  async test(req, res) {
+    try {
+      const warehouse_id = req.query.warehouseId;
+      const product_id = req.query.productId;
+      const requiredStock = req.query.requiredStock;
+
+      const result = await autoStockTransfer(
+        warehouse_id,
+        product_id,
+        requiredStock
+      );
+
+      // Respond with a success message or the result
+      res.status(200).json(result);
+    } catch (error) {
+      // Handle errors and respond with an error message
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 
@@ -105,64 +127,29 @@ module.exports = {
   },
 
   async getWarehouseStocks(req, res) {
-    const page = Number(req.query.page) || 1;
-    const pageSize = Number(req.query.pageSize) || 20;
-    const searchWarehouseName = req.query.warehouseName;
-
-    const options = {
-      where: {},
-      include: [
-        {
-          model: db.Product,
-          as: "Product",
-          attributes: ["name", "description"],
-        },
-        {
-          model: db.Warehouse,
-          as: "Warehouse",
-          attributes: ["id", "warehouse_name"],
-          ...(searchWarehouseName && {
-            where: {
-              warehouse_name: {
-                [db.Sequelize.Op.like]: `%${searchWarehouseName}%`,
-              },
-            },
-          }),
-        },
-      ],
-    };
-
     try {
-      const stockResponse = await getAllWarehouseStocks(
-        options,
-        page,
-        pageSize
-      );
-      const stocks = stockResponse.data;
+      const options = {
+        page: Number(req.query.page) || 1,
+        pageSize: Number(req.query.pageSize) || 20,
+        categoryId: req.query.categoryId,
+        productName: req.query.productName,
+      };
+
+      if (req.user.role_id == 2) {
+        options.warehouseId = req.user.warehouse_id;
+      } else {
+        options.warehouseId = req.query.warehouseId;
+      }
+
+      const stockResponse = await getAllWarehouseStocks(options);
 
       if (!stockResponse.success) {
         throw new Error(stockResponse.error);
       }
 
-      const groupedStocks = stocks.reduce((acc, stock) => {
-        const warehouseName = stock.Warehouse.warehouse_name;
-        const warehouseId = stock.Warehouse.id;
-        if (!acc[warehouseName]) {
-          acc[warehouseName] = [];
-        }
-        acc[warehouseName].push({
-          warehouse_id: warehouseId,
-          product_stock: stock.product_stock,
-          createdAt: stock.createdAt,
-          updatedAt: stock.updatedAt,
-          Product: stock.Product,
-        });
-        return acc;
-      }, {});
-
       res.status(200).send({
         message: "Warehouse stocks fetched successfully",
-        stocks: groupedStocks,
+        stocks: stockResponse.data,
         pagination: stockResponse.pagination,
       });
     } catch (error) {
@@ -250,7 +237,7 @@ module.exports = {
 
     const pagination = {
       page: Number(req.query.page) || 1,
-      perPage: Number(req.query.perPage) || 9,
+      perPage: 9,
       searchWarehouseName: req.query.warehouseName,
 
       searchCategory: req.query.category || undefined,

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
 import login from "../assets/images/furnifor.png";
+import { logout } from "../utils/tokenSetterGetter";
 import {
   AiOutlineUser,
   AiOutlineLogout,
@@ -14,6 +15,10 @@ import {
   AiFillDatabase,
 } from "react-icons/ai";
 import { FaUserAlt, FaWarehouse } from "react-icons/fa";
+
+function handleLogout() {
+  logout();
+}
 
 function SidebarAdminDesktop() {
   const adminData = useSelector((state) => state.profilerAdmin.value);
@@ -63,7 +68,9 @@ function SidebarAdminDesktop() {
         <div className="flex items-center">
           <FaWarehouse className="mr-2 text-blue1" />
           <span className="text-sm font-semibold">Warehouse:</span>
-          <span className="ml-2 text-sm">{adminData.warehouse.warehouse_name}</span>
+          <span className="ml-2 text-sm">
+            {adminData.warehouse.warehouse_name}
+          </span>
         </div>
       </div>
       <Sidebar.Items>
@@ -109,12 +116,19 @@ function SidebarAdminDesktop() {
               </div>
             );
           })}
-          <Sidebar.Item
-            icon={AiOutlineLogout}
-            className=" hover:border hover:border-black "
+
+          <Link
+            to="/admin/login"
+            className="flowbite-sidebar-link text-base_grey hover:border hover:border-black   hover:text-black"
           >
-            <p>Logout</p>
-          </Sidebar.Item>
+            <Sidebar.Item
+              icon={AiOutlineLogout}
+              className=" hover:border hover:border-black "
+              onClick={handleLogout}
+            >
+              <p>Logout</p>
+            </Sidebar.Item>
+          </Link>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

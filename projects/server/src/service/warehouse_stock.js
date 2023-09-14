@@ -33,18 +33,52 @@ module.exports = {
     }
   },
 
-  getAllWarehouseStocks: async (options = {}, page = 1, pageSize = 20) => {
-    const filter = options.where || {};
+  getAllWarehouseStocks: async (options) => {
+    const { page, pageSize, warehouseId, categoryId, productName } = options;
 
-    const defaultInclude = [
+    const filter = {};
+
+    const productCondition = {};
+    if (productName) {
+      productCondition.name = {
+        [db.Sequelize.Op.like]: `%${productName}%`,
+      };
+    } else {
+      productCondition.id = {
+        [db.Sequelize.Op.not]: null,
+      };
+    }
+
+    const categoryCondition = {};
+    if (categoryId) {
+      categoryCondition.id = categoryId;
+    }
+
+    const warehouseCondition = {};
+    if (warehouseId) {
+      warehouseCondition.id = warehouseId;
+    }
+
+    const includeOptions = [
       {
         model: db.Product,
         as: "Product",
-        attributes: ["id", "name", "description"],
+        required: true,
+        where: Object.keys(productCondition).length
+          ? productCondition
+          : undefined,
         include: [
           {
+            model: db.Category,
+            as: "category",
+            where: Object.keys(categoryCondition).length
+              ? categoryCondition
+              : undefined,
+            paranoid: false,
+          },
+          {
             model: db.Image_product,
-            attributes: ['img_product'],
+            attributes: ["img_product"],
           },
         ],
       },
@@ -52,12 +86,11 @@ module.exports = {
         model: db.Warehouse,
         as: "Warehouse",
         attributes: ["id", "warehouse_name"],
+        where: Object.keys(warehouseCondition).length
+          ? warehouseCondition
+          : undefined,
       },
     ];
-
-    const includeOptions = options.include
-      ? [...defaultInclude, ...options.include]
-      : defaultInclude;
 
     const queryOptions = {
       where: filter,

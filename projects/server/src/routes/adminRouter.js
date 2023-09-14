@@ -8,6 +8,7 @@ const productController = require("../controllers/productController");
 const inventoryController = require("../controllers/inventoryTransferController")
 const multerCategory = require("../middleware/multer/category/category");
 const multerProduct = require("../middleware/multer/product/product");
+const stockController = require("../controllers/warehouseStockController")
 const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
@@ -18,7 +19,7 @@ router.post("/login",validatorMiddlewareAdmin.validateLogin,adminController.logi
 router.patch("/change-pass/:id",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareAdmin.validatePassword,adminController.changeAdminPassword);
 router.patch("/assign-warehouse/:id",authMiddleware.verifyAccessTokenSuperAdmin, adminController.assignWarehouse);
 
-router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin,adminController.getRole);
+router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin);
 router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
@@ -50,12 +51,16 @@ router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 
 // Inventory Transfer Routes
 
-router.get('/transfers', inventoryController.getInventoryTransferList);
+router.get('/transfers',authMiddleware.verifyAccessTokenAdmin ,inventoryController.getInventoryTransferList);
 
-router.post("/stock-transfer", inventoryController.stockTransfer);
+router.post("/stock-transfer",authMiddleware.verifyAccessTokenAdmin , inventoryController.stockTransfer);
 
-router.patch("/stock-transfers/:transferid/approve", inventoryController.approveStockTransfer);
-router.patch("/stock-transfers/:transferid/reject", inventoryController.rejectStockTransfer);
+router.patch("/stock-transfers/:transferid/approve",authMiddleware.verifyAccessTokenAdmin , inventoryController.approveStockTransfer);
+router.patch("/stock-transfers/:transferid/reject",authMiddleware.verifyAccessTokenAdmin , inventoryController.rejectStockTransfer);
+
+
+//
+router.patch("/auto-transfer",stockController.test)
 
 // List Routes
 

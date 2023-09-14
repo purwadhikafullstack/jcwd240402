@@ -52,7 +52,9 @@ const ProductEdit = () => {
       return;
     }
     try {
-      await axios.patch(`/admin/product/${product.id}`, changedFields);
+      await axios.patch(`/admin/product/${product.id}`, changedFields,{
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       setSuccessMessage("Product updated successfully");
       setServerErrors([]);
       setChangedFields({});

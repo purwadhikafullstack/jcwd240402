@@ -54,17 +54,12 @@ function App() {
           <Route path="/admin" element={<AdminList />} />
           <Route path="/stock-history" element={<StockHistory />} />
           <Route path="/warehouse" element={<WarehouseList />} />
-
-          <Route
-            path="/edit/:warehouseName"
-            element={<WarehouseInputsEdit />}
-          />
+          <Route path="/edit/:warehouseName" element={<WarehouseInputsEdit/>} />
           <Route path="/register" element={<Register />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/log-in" element={<Login />} />
           <Route path="/verify" element={<NotifVerify />} />
           <Route path="/verify/:verify_token" element={<NotifVerified />} />
-
           <Route
             path="/edit/:warehouseName"
             element={<WarehouseInputsEdit />}
@@ -79,7 +74,6 @@ function App() {
             <Route index element={<StockList />} />
             <Route path="management" element={<CreateStock />} />
             <Route path="edit/:productName" element={<ProductEdit />} />
-
             <Route
               path="inventory-transfers"
               element={<InventoryTransferList />}

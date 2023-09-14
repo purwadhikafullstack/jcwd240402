@@ -9,6 +9,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      order_id: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Orders',
+          key: 'id',
+        },
+        allowNull: false,
+        onDelete: 'NO ACTION',
+      },
       warehouse_stock_id: {
         type: Sequelize.INTEGER,
         references: {

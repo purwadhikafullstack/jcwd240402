@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       Warehouse_stock.hasMany(models.History_stock, {
         foreignKey: "warehouse_stock_id",
       });
+      Warehouse_stock.hasMany(models.Reserved_stock, {
+        foreignKey: "warehouse_stock_id",
+        as: "Reservations",
+      });
     }
   }
   Warehouse_stock.init(

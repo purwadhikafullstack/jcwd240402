@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import tiki from "../../assets/icons/tiki.png";
 import jne from "../../assets/icons/jne.png";
 import pos from "../../assets/icons/pos.png";
@@ -28,17 +28,19 @@ const CheckOut = () => {
   const [closestWarehouse, setClosestWarehouse] = useState({});
   const [rajaOngkir, setRajaOngkir] = useState({});
   const [serviceOptions, setServiceOptions] = useState({});
+  const [checkoutDetails, SetCheckoutDetails] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [originId, setOriginId] = useState("");
   const [totalWeight, setTotalWeight] = useState("");
   const [chosenCourier, setChosenCourier] = useState("");
+  const [chosenCourierEnum, setChosenCourierEnum] = useState("");
   const [chosenCourierService, setChosenCourierService] = useState("");
   const [chosenCourierPrice, setChosenCourierPrice] = useState("");
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -58,7 +60,9 @@ const CheckOut = () => {
       .get("/user/profile", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => dispatch(profileUser(res.data?.result)));
+      .then((res) => {
+        dispatch(profileUser(res.data?.result))
+      });
   }, [access_token, dispatch]);
 
   useEffect(() => {
@@ -85,22 +89,23 @@ const CheckOut = () => {
 
   useEffect(() => {
     axios
-      .get("/user/closest", {
+      .post("/user/closest",{
+        primary_address_id: userData.User_detail?.Address_user?.id
+      }, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
         setClosestWarehouse(res.data?.closest_warehouse);
-        setOriginId(res.data?.closest_warehouse?.city_id);
       })
       .catch((error) => console.log(error));
-  }, [access_token, dispatch]);
+  }, [access_token, dispatch, userData]);
 
   const handleCourier = (courier) => {
     axios
       .post(
         "/user/rajaongkir/cost",
         {
-          origin: originId,
+          origin: closestWarehouse.city_id,
           destination: userData.User_detail?.Address_user?.city_id,
           weight: totalWeight,
           courier: courier.value,
@@ -112,13 +117,50 @@ const CheckOut = () => {
       .then((res) => {
         setRajaOngkir(res.data.result);
         setChosenCourier(res.data?.result?.rajaongkir?.results[0]?.name);
+        setChosenCourierEnum(courier.value)
         setServiceOptions(
           res.data?.result?.rajaongkir?.results[0]?.costs.map((service) => ({
             value: service.cost[0].value,
-            label: service.description + " (" + service.service + ")",
+            label: service.description + ` (${service.service})` + `(${service.cost[0].etd} Hari)`,
           }))
         );
       });
+  };
+
+  const handlePaymentClick = () => {
+    axios
+      .post(
+        "/user/check-out",
+        {
+          user_id: userData.id,
+          total_price: totalPrice,
+          delivery_price: chosenCourierPrice,
+          delivery_courier: chosenCourierEnum,
+          address_user_id: userData.User_detail?.Address_user?.id,
+          warehouse_id: closestWarehouse.id
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      )
+      .then((res) => {
+          axios
+          .post(
+            "/user/check-out-details",
+            {
+              order_id: res.data?.order?.id,
+              warehouse_id: closestWarehouse.id,
+              cart_data: cartData
+            },
+            {
+              headers: { Authorization: `Bearer ${access_token}` },
+            }
+          )
+          .then((res) => {
+          });
+          navigate("/payment")
+        }
+      );
   };
 
   const handleCourierService = (courier) => {
@@ -172,10 +214,10 @@ const CheckOut = () => {
                         />
                       </div>
                       <div>
-                        <h1>{item.Warehouse_stock.Product.name}</h1>
-                        <h1>{item.Warehouse_stock.Product.category.name}</h1>
+                        <h1 className="py-1">{item.Warehouse_stock.Product.name}</h1>
+                        <h1 className="py-1">{item.Warehouse_stock.Product.category.name}</h1>
                         {item.Warehouse_stock.Product.description > 25 ? (
-                          <h1>
+                          <h1 className="py-1">
                             {item.Warehouse_stock.Product.description.slice(
                               0,
                               25
@@ -183,14 +225,14 @@ const CheckOut = () => {
                             ...
                           </h1>
                         ) : (
-                          <h1>{item.Warehouse_stock.Product.description}</h1>
+                          <h1 className="py-1">{item.Warehouse_stock.Product.description}</h1>
                         )}
 
-                        <h1>
+                        <h1 className="py-1">
                           {toRupiah(item.Warehouse_stock.Product.price)} x{" "}
                           {item.quantity} {item.quantity > 1 ? "units" : "unit"}
                         </h1>
-                        <h1>
+                        <h1 className="py-1">
                           total:{" "}
                           {toRupiah(
                             item.Warehouse_stock.Product.price * item.quantity
@@ -219,14 +261,14 @@ const CheckOut = () => {
             </div>
             <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
               <h1 className="font-bold">purchase summary</h1>
-              <h1>Subtotal price: {toRupiah(totalCart)} </h1>
-              <h1>Shipping price: {toRupiah(chosenCourierPrice)}</h1>
-              <h1>Courier : {chosenCourier}</h1>
-              <h1>Service : {chosenCourierService}</h1>
+              <h1 className="py-1">Subtotal price: {toRupiah(totalCart)} </h1>
+              <h1 className="py-1">Shipping price: {toRupiah(chosenCourierPrice)}</h1>
+              <h1 className="py-1">Courier : {chosenCourier}</h1>
+              <h1 className="py-1">Service : {chosenCourierService}</h1>
               <hr className="border-2 " />
-              <h1>Total Payment: {toRupiah(totalPrice)}</h1>
-              <h1>delivering from: {closestWarehouse.warehouse_name}</h1>
-              <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
+              <h1 className="py-1">Total Payment: {toRupiah(totalPrice)}</h1>
+              <h1 className="py-1">delivering from: {closestWarehouse.warehouse_name}</h1>
+              <button onClick={handlePaymentClick} className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
                 Proceed to Payment
               </button>
             </div>

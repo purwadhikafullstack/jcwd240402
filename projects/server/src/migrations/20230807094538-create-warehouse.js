@@ -16,7 +16,7 @@ module.exports = {
       warehouse_name: {
         allowNull: false,
         type: Sequelize.STRING,
-        unique: true,
+        // unique: true,
       },
       city_id: {
         type: Sequelize.INTEGER,
@@ -50,6 +50,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {

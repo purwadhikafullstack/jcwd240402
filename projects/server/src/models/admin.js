@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Admin',
-    timestamps: true
+    timestamps: true,
+    paranoid: true, 
   });
   return Admin;
 };

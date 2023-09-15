@@ -10,6 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
+const { autoStockTransfer } = require("../utils");
 
 module.exports = {
   /* AUTH */

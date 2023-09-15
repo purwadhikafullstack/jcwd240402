@@ -4,6 +4,7 @@ const product = require("./productController")
 const user = require("./userController")
 const warehouse_stock = require("./warehouse_stockController")
 const inventory_transfer=require("./inventoryTransferController")
+const order_detail=require("./orderDetail")
 
 module.exports = {
   admin,
@@ -11,5 +12,6 @@ module.exports = {
   product,
   user,
   warehouse_stock,
-  inventory_transfer
+  inventory_transfer,
+  order_detail,
 };

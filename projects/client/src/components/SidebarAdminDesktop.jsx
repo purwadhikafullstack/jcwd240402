@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
 import login from "../assets/images/furnifor.png";
+import { logout } from "../utils/tokenSetterGetter";
 import {
   AiOutlineUser,
   AiOutlineLogout,
@@ -14,7 +15,10 @@ import {
   AiFillDatabase,
 } from "react-icons/ai";
 import { FaUserAlt, FaWarehouse } from "react-icons/fa";
-import { logout } from "../utils/tokenSetterGetter";
+
+function handleLogout() {
+  logout();
+}
 
 function SidebarAdminDesktop() {
   const navigate = useNavigate();
@@ -113,19 +117,19 @@ function SidebarAdminDesktop() {
               </div>
             );
           })}
-          <Sidebar.Item
-            icon={AiOutlineLogout}
-            className=" hover:border hover:border-black "
+
+          <Link
+            to="/admin/login"
+            className="flowbite-sidebar-link text-base_grey hover:border hover:border-black   hover:text-black"
           >
-            <button
-              onClick={() => {
-                logout();
-                navigate("/admin/login");
-              }}
+            <Sidebar.Item
+              icon={AiOutlineLogout}
+              className=" hover:border hover:border-black "
+              onClick={handleLogout}
             >
-              Logout
-            </button>
-          </Sidebar.Item>
+              <p>Logout</p>
+            </Sidebar.Item>
+          </Link>
         </Sidebar.ItemGroup>
       </Sidebar.Items>
     </Sidebar>

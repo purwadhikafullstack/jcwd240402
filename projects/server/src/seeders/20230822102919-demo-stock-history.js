@@ -163,6 +163,7 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    await queryInterface.bulkDelete("carts", null, {});
     return queryInterface.bulkDelete("History_stocks", null, {});
   },
 };

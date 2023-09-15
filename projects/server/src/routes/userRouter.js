@@ -9,6 +9,7 @@ const validatorMiddleware = require("../middleware/validator/user");
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
+const handlePaymentProofUpload = require("../middleware/multer/user/paymentProof");
 const WarehouseController = require("../controllers/warehouseController");
 const CartController = require("../controllers/cartController");
 const OrderController = require("../controllers/orderController");
@@ -175,6 +176,18 @@ router.get(
   OrderController.getOrderList
 );
 
+router.get(
+  "/current-order",
+  Verify.verifyAccessTokenUser,
+  OrderController.getCurrentOrderList
+);
+
+router.post(
+  "/order-status",
+  Verify.verifyAccessTokenUser,
+  OrderController.changeOrderStatus
+);
+
 router.get("/city", Verify.verifyAccessTokenUser, OrderController.getCity);
 
 router.post(
@@ -183,10 +196,29 @@ router.post(
   OrderController.getCost
 );
 
-router.get(
+router.post(
   "/closest",
   Verify.verifyAccessTokenUser,
-  OrderController.findClosestWarehouse
+  OrderController.findClosestWarehouseByAddressId
+);
+
+router.post(
+  "/check-out",
+  Verify.verifyAccessTokenUser,
+  OrderController.createNewOrder
+);
+
+router.post(
+  "/check-out-details",
+  Verify.verifyAccessTokenUser,
+  OrderController.createNewOrderDetails
+);
+
+router.patch(
+  "/payment-proof",
+  Verify.verifyAccessTokenUser,
+  handlePaymentProofUpload,
+  OrderController.uploadPaymentProof
 );
 
 /* WAREHOUSE */

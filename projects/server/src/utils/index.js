@@ -153,6 +153,7 @@ module.exports = {
         remainingDeficit -= stockToTransfer;
   
         // "inventory transferlist catat",
+        //
         await sourceWarehouseStock.save({ transaction: t });
       }
   

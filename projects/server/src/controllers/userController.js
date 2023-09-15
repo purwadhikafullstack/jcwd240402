@@ -10,6 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
+const { autoStockTransfer } = require("../utils");
 
 module.exports = {
   /* AUTH */
@@ -1496,10 +1497,13 @@ module.exports = {
 
     const {
       order_id,
+      warehouse_id,
       ...cart_data
     } = req.body;
 
     const newOrderDetails = []
+    const newReservedStock = []
+    const newAutoStockTransfer = []
 
     try {
 
@@ -1513,12 +1517,27 @@ module.exports = {
           })
         );
 
+        newReservedStock.push(await db.Reserved_stock.create({
+          order_id,
+          warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
+          reserve_quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
+
+        newAutoStockTransfer.push(await autoStockTransfer(
+          warehouse_id,
+          cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+          cart_data.cart_data[i]?.quantity
+        ));
+
       }
 
 
       res.status(200).json({
         ok: true,
         order: newOrderDetails,
+        reserved_stock: newReservedStock,
+        transfered_stock: newAutoStockTransfer
       });
     } catch (error) {
       res.status(500).json({
@@ -1683,7 +1702,6 @@ module.exports = {
   },
 
   
-
   uploadPaymentProof: async (req, res) => {
 
     const userId = req.user.id;

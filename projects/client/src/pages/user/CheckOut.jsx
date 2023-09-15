@@ -149,6 +149,7 @@ const CheckOut = () => {
             "/user/check-out-details",
             {
               order_id: res.data?.order?.id,
+              warehouse_id: closestWarehouse.id,
               cart_data: cartData
             },
             {

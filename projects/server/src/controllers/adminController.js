@@ -396,5 +396,136 @@ module.exports = {
     }
   },
 
+  async deleteAdmin(req, res) {
+    try {
+      const adminId = req.params.adminId;
+
+      const admin = await db.Admin.findOne({
+        where: { id: adminId },
+      });
+
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+
+      await admin.destroy();
+
+      res.status(200).json({ message: 'Admin deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while deleting admin', error: error.message });
+    }
+  },
+
+  async updateOrderStatus(orderId, newStatusId) {
+    const updatedOrder = await Order.update(
+      { order_status_id: newStatusId },
+      { where: { id: orderId } }
+    );
+    
+    if (updatedOrder[0] === 0) {
+      throw new Error("Order not found");
+    }
+  },
+  
+  async acceptPayment(req, res) {
+    const orderId = req.params.orderId;
+    
+    const t = await db.sequelize.transaction();
+  
+    try {
+      await updateOrderStatus(orderId, 3);
+  
+      const reservedStock = await db.Reserved_stock.findOne({
+        where: { order_id: orderId },
+        transaction: t,
+      });
+  
+      if (!reservedStock) {
+        throw new Error("Reserved stock not found");
+      }
+  
+      const warehouseStock = await db.Warehouse_stock.findOne({
+        where: {
+          warehouse_id: reservedStock.warehouse_id,
+          product_id: reservedStock.product_id,
+        },
+        transaction: t,
+      });
+  
+      if (!warehouseStock) {
+        throw new Error("Warehouse stock not found");
+      }
+  
+      if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
+        throw new Error("Not enough stock in the warehouse");
+      }
+  
+      warehouseStock.product_stock -= reservedStock.reserve_quantity;
+  
+      await reservedStock.destroy({ transaction: t });
+
+      await warehouseStock.save({ transaction: t });
+  
+      await t.commit();
+  
+      res.status(200).json({ message: "Payment accepted, order is in process" });
+    } catch (error) {
+      if (t && !t.finished) {
+        await t.rollback();
+      }
+      console.error(error);
+      res.status(500).json({ message: "An error occurred while accepting payment", error: error.message });
+    }
+  },
+  
+  
+  async rejectPayment(req, res) {
+    const orderId = req.params.orderId;
+    
+    const t = await db.sequelize.transaction();
+  
+    try {
+      await updateOrderStatus(orderId, 6);
+  
+      const reservedStock = await db.Reserved_stock.findOne({
+        where: { order_id: orderId },
+        transaction: t,
+      });
+  
+      if (!reservedStock) {
+        throw new Error("Reserved stock not found");
+      }
+  
+      const warehouseStock = await db.Warehouse_stock.findOne({
+        where: {
+          warehouse_id: reservedStock.warehouse_id,
+          product_id: reservedStock.product_id,
+        },
+        transaction: t,
+      });
+  
+      if (!warehouseStock) {
+        throw new Error("Warehouse stock not found");
+      }
+  
+      warehouseStock.product_stock += reservedStock.reserve_quantity;
+  
+      await reservedStock.destroy({ transaction: t });
+  
+      await warehouseStock.save({ transaction: t });
+  
+      await t.commit();
+  
+      res.status(200).json({ message: "Payment rejected, order is cancelled" });
+    } catch (error) {
+      if (t && !t.finished) {
+        await t.rollback();
+      }
+      console.error(error);
+      res.status(500).json({ message: "An error occurred while rejecting payment", error: error.message });
+    }
+  }
+  
 
 };

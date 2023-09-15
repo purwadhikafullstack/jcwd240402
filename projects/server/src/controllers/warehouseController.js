@@ -151,4 +151,25 @@ module.exports = {
       });
     }
   },
+
+  async deleteWarehouse(req, res) {
+    try {
+      const warehouseId = req.params.warehouseId;
+
+      const warehouse = await db.Warehouse.findOne({
+        where: { id: warehouseId },
+      });
+
+      if (!warehouse) {
+        return res.status(404).json({ message: 'Warehouse not found' });
+      }
+
+      await warehouse.destroy();
+
+      res.status(200).json({ message: 'Warehouse deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'An error occurred while deleting warehouse', error: error.message });
+    }
+  },
 };

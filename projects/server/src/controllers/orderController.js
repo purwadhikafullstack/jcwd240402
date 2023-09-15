@@ -117,70 +117,50 @@ module.exports = {
     }
   },
 
-  findClosestWarehouse: async (req, res) => {
-    const userData = req.user;
-    const address_title = req.body.address_title || "ehehe";
+  createNewOrderDetails: async (req, res) => {
+    const { order_id, warehouse_id, ...cart_data } = req.body;
+
+    const newOrderDetails = [];
+    const newReservedStock = [];
+    const newAutoStockTransfer = [];
 
     try {
-      const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, address_title },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
+      for (const i in cart_data.cart_data) {
+        newOrderDetails.push(
+          await db.Order_detail.create({
+            order_id,
+            warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
+            quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
 
-      const allWarehouseData = await getAllWarehouses();
+        newReservedStock.push(
+          await db.Reserved_stock.create({
+            order_id,
+            warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
+            reserve_quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
 
-      const distanceKm = (lat1, lon1, lat2, lon2) => {
-        const r = 6371; // km
-        const p = Math.PI / 180;
-        console.log(lat1);
-        const a =
-          0.5 -
-          Math.cos((lat2 - lat1) * p) / 2 +
-          (Math.cos(lat1 * p) *
-            Math.cos(lat2 * p) *
-            (1 - Math.cos((lon2 - lon1) * p))) /
-            2;
-
-        return 2 * r * Math.asin(Math.sqrt(a));
-      };
-
-      let closestWarehouse = {
-        latitude: allWarehouseData.data[0].latitude,
-        longitude: allWarehouseData.data[0].longitude,
-      };
-
-      for (let i = 0; i < allWarehouseData.data.length; i++) {
-        if (
-          distanceKm(
-            allWarehouseData.data[i].latitude,
-            allWarehouseData.data[i].longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
-          ) <=
-          distanceKm(
-            closestWarehouse.latitude,
-            closestWarehouse.longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
+        newAutoStockTransfer.push(
+          await autoStockTransfer(
+            warehouse_id,
+            cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+            cart_data.cart_data[i]?.quantity
           )
-        ) {
-          closestWarehouse = allWarehouseData.data[i];
-        }
+        );
       }
 
       res.status(200).json({
         ok: true,
-        address: userAddressData,
-        warehouse: allWarehouseData,
-        closest_warehouse: closestWarehouse,
+        order: newOrderDetails,
+        reserved_stock: newReservedStock,
+        transfered_stock: newAutoStockTransfer,
       });
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "something bad happened 1",
         error: error.message,
       });
     }
@@ -264,6 +244,107 @@ module.exports = {
       res.status(500).json({
         ok: false,
         message: "Something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  uploadPaymentProof: async (req, res) => {
+    const userId = req.user.id;
+    const paymentImage = req.file?.filename;
+
+    try {
+      const orderData = await db.Order.findOne({
+        where: { user_id: userId, order_status_id: 1 },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "user_id"],
+        },
+      });
+      if (!orderData) {
+        return res.status(404).json({
+          ok: false,
+          message: "order not found",
+        });
+      }
+
+      const orderDataWithPaymentProof = await db.Order.update(
+        {
+          img_payment: `payment-proof/${paymentImage}`,
+          order_status_id: 2,
+        },
+        { where: { user_id: userId, order_status_id: 1 } }
+      );
+
+      res.status(200).json({
+        ok: true,
+        order: orderDataWithPaymentProof,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  getCurrentOrderList: async (req, res) => {
+    const userId = req.user.id;
+    try {
+      const orderList = await db.Order.findOne({
+        where: { user_id: userId },
+        include: [
+          {
+            model: db.Order_status,
+            where: { id: 1 },
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+          {
+            model: db.Order_detail,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: {
+              model: db.Warehouse_stock,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Product,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+            },
+          },
+        ],
+      });
+
+      res.json({
+        ok: true,
+        order: orderList,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
+        error: error.message,
+      });
+    }
+  },
+
+  changeOrderStatus: async (req, res) => {
+    const { id, statusId } = req.body;
+
+    try {
+      const orderStatusChanged = await db.Order.update(
+        {
+          order_status_id: statusId,
+        },
+        { where: { id } }
+      );
+
+      res.status(200).json({
+        ok: true,
+        order: orderStatusChanged,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "something bad happened",
         error: error.message,
       });
     }

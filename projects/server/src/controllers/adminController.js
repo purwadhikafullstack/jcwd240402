@@ -7,6 +7,7 @@ const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
 // const { generateAccessToken, generateRefreshToken } = require("../utils/index")
+const {autoStockTransfer} = require("../utils/index")
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -430,42 +431,53 @@ module.exports = {
   
   async acceptPayment(req, res) {
     const orderId = req.params.orderId;
-    
+  
     const t = await db.sequelize.transaction();
   
     try {
       await updateOrderStatus(orderId, 3);
   
-      const reservedStock = await db.Reserved_stock.findOne({
+      const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
         transaction: t,
       });
   
-      if (!reservedStock) {
-        throw new Error("Reserved stock not found");
+      if (!reservedStocks || reservedStocks.length === 0) {
+        throw new Error("Reserved stocks not found");
       }
   
-      const warehouseStock = await db.Warehouse_stock.findOne({
-        where: {
-          warehouse_id: reservedStock.warehouse_id,
-          product_id: reservedStock.product_id,
-        },
-        transaction: t,
-      });
+      for (let reservedStock of reservedStocks) {
+        const warehouseStock = await db.Warehouse_stock.findOne({
+          where: {
+            warehouse_id: reservedStock.warehouse_id,
+            product_id: reservedStock.product_id,
+          },
+          transaction: t,
+        });
   
-      if (!warehouseStock) {
-        throw new Error("Warehouse stock not found");
-      }
-  
-      if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
-        throw new Error("Not enough stock in the warehouse");
-      }
-  
-      warehouseStock.product_stock -= reservedStock.reserve_quantity;
-  
-      await reservedStock.destroy({ transaction: t });
+        if (!warehouseStock) {
+          throw new Error("Warehouse stock not found for product: " + reservedStock.product_id);
+        }
 
-      await warehouseStock.save({ transaction: t });
+        if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
+          const stockTransferResult = await autoStockTransfer(
+            reservedStock.warehouse_id,
+            reservedStock.product_id,
+            reservedStock.reserve_quantity
+          );
+  
+          if (stockTransferResult.status !== "success") {
+            throw new Error("Failed to transfer stock for product " + reservedStock.product_id + ": " + stockTransferResult.message);
+          }
+
+          await warehouseStock.reload();
+        }
+  
+        warehouseStock.product_stock -= reservedStock.reserve_quantity;
+  
+        await reservedStock.destroy({ transaction: t });
+        await warehouseStock.save({ transaction: t });
+      }
   
       await t.commit();
   

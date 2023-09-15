@@ -81,7 +81,7 @@ const Login = () => {
           }
         });
     }
-  }, [navigate, user]);
+  }, [logOutAuth, navigate, user]);
 
   const formik = useFormik({
     initialValues: {

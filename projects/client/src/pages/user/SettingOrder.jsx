@@ -19,7 +19,6 @@ import withAuthUser from "../../components/user/withAuthUser";
 import toRupiah from "@develoka/angka-rupiah-js";
 import { Badge } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
-import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -28,6 +27,7 @@ const SettingOrder = () => {
   const access_token = getCookie("access_token");
   const [userOrder, setUserOrder] = useState([]);
   const [orderStatus, setOrderStatus] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -45,14 +45,24 @@ const SettingOrder = () => {
   }, [access_token, newAccessToken, refresh_token]);
 
   useEffect(() => {
+    console.log("ini use efffect get order user");
     axios
       .get("/user/order", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => setUserOrder(res.data.order));
-  }, []);
+      .then((res) => {
+        setLoading(false);
+        setUserOrder(res.data?.order);
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
+  }, [access_token]);
+
+  console.log(userOrder);
 
   const handleClickStatus = (id, status) => {
+    console.log(id);
     axios
       .post(
         "/user/order-status",
@@ -65,9 +75,20 @@ const SettingOrder = () => {
         }
       )
       .then((res) => {
-        setOrderStatus(res.data.order);
+        setLoading(false);
+        setOrderStatus(res.data?.order);
         navigate(0);
+        axios
+          .get("/user/order", {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((res) => setUserOrder(res.data?.order));
+      })
+      .catch((error) => {
+        setLoading(false);
       });
+    console.log("id", id);
+    console.log("status", status);
   };
 
   const OrderButton = ({ statusBefore, orderId }) => {
@@ -101,16 +122,21 @@ const SettingOrder = () => {
     }
   };
 
+  if (loading) {
+    return <p></p>;
+  }
+
+  console.log("user order", userOrder);
+  const orderMap = userOrder.map((item) => {
+    return item.Order_details;
+  });
+
+  console.log("map", orderMap);
+
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
-      <BreadCrumb
-        crumbs={[
-          { title: ["Profile"], link: "/user/setting" },
-          { title: ["Order"], link: "/user/setting/order" },
-        ]}
-      />
       <div className="min-h-screen mt-4 mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 ">
         <div className="lg:grid lg:grid-cols-5 gap-4 mb-4 md:mb-0 lg:mb-0 ">
           <CardProfile />
@@ -124,11 +150,11 @@ const SettingOrder = () => {
                   </div>
                 </div>
               ) : (
-                userOrder.map((order) => (
-                  <div className="grid grid-cols-2 p-4">
+                userOrder?.map((order) => (
+                  <div className="grid grid-cols-2 p-4" key={order.id}>
                     <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
                       <h1>{order.delivery_time}</h1>
-                      {order.Order_details.map((details) => (
+                      {order.Order_details?.map((details) => (
                         <div className="p-1">
                           <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
                             <h1 className="font-bold">
@@ -150,7 +176,9 @@ const SettingOrder = () => {
                         >
                           Finish Payment
                         </button>
-                      ) : null}
+                      ) : (
+                        <h1></h1>
+                      )}
                     </div>
 
                     <OrderButton

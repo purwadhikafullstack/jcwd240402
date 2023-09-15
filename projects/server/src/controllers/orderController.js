@@ -10,6 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
+const autoStockTransfer = require("../utils/index");
 
 module.exports = {
   /* ORDER */
@@ -19,6 +20,24 @@ module.exports = {
     try {
       const orderList = await db.Order.findAll({
         where: { user_id: userId },
+        include: [
+          {
+            model: db.Order_status,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+          },
+          {
+            model: db.Order_detail,
+            attributes: { exclude: ["createdAt", "updatedAt"] },
+            include: {
+              model: db.Warehouse_stock,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Product,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+              },
+            },
+          },
+        ],
       });
 
       res.json({
@@ -79,13 +98,9 @@ module.exports = {
   createNewOrder: async (req, res) => {
     const {
       user_id,
-      order_status_id,
       total_price,
       delivery_price,
       delivery_courier,
-      delivery_time,
-      tracking_code,
-      no_invoice,
       address_user_id,
       warehouse_id,
     } = req.body;
@@ -93,13 +108,10 @@ module.exports = {
     try {
       const newOrder = await db.Order.create({
         user_id,
-        order_status_id,
+        order_status_id: 1,
         total_price,
         delivery_price,
         delivery_courier,
-        delivery_time,
-        tracking_code,
-        no_invoice,
         address_user_id,
         warehouse_id,
       });

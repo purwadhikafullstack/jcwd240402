@@ -63,12 +63,12 @@ const AllCategories = () => {
               </Link>
               <ul>
                 {categoryProduct.products ? (
-                  <>
+                  <div>
                     {categoryProduct.products
                       .slice(0, 8)
                       .map((product, idx) => (
-                        <>
-                          <li key={idx} className="text-xs mb-1 text-grayText">
+                        <div key={idx}>
+                          <li className="text-xs mb-1 text-grayText">
                             <Link
                               to={`/product/${product.name}`}
                               className="underline hover:no-underline"
@@ -76,7 +76,7 @@ const AllCategories = () => {
                               {product.name}
                             </Link>
                           </li>
-                        </>
+                        </div>
                       ))}
                     <li className="text-xs mb-1 text-grayText">
                       <Link
@@ -86,7 +86,7 @@ const AllCategories = () => {
                         see all products
                       </Link>
                     </li>
-                  </>
+                  </div>
                 ) : (
                   <p className="underline hover:no-underline">
                     this category do not have any products yet

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -16,6 +16,11 @@ import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
 import toRupiah from "@develoka/angka-rupiah-js";
 import { Badge } from "flowbite-react";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import emptyImage from "../../assets/images/emptyImage.jpg";
+import Button from "../../components/Button";
+import Loading from "../../components/Loading";
+import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
@@ -28,29 +33,40 @@ const PaymentFinalizing = () => {
   const navigate = useNavigate();
   const [file, setFile] = useState({});
   const [isFilePicked, setIsFilePicked] = useState(false);
+  const [showImage, setShowImage] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [productReview, setProductReview] = useState([]);
+
+  const inputPhotoRef = useRef();
 
   function handleChange(event) {
+    const selectedImage = event.target.files[0];
+    setShowImage(URL.createObjectURL(selectedImage));
     setFile(event.target.files[0]);
     setIsFilePicked(true);
   }
 
   const formData = new FormData();
-  formData.append('file', file);
-  formData.append('fileName', file.name);
+  formData.append("file", file);
+  formData.append("fileName", file.name);
 
   const handleSubmit = (event) => {
-    event.preventDefault()
-      axios
-        .patch("/user/payment-proof", formData, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          setPaymentProofData(res.data?.order)
-          setTimeout(() => {
-            navigate(`/user/setting/order`);
-          }, 3000);
-        });
-    };
+    event.preventDefault();
+    axios
+      .patch("/user/payment-proof", formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        setPaymentProofData(res.data?.order);
+        setLoading(false);
+        setTimeout(() => {
+          navigate(`/user/setting/order`);
+        }, 3000);
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -61,6 +77,10 @@ const PaymentFinalizing = () => {
         .then((res) => {
           setNewAccessToken(res.data?.accessToken);
           setCookie("access_token", newAccessToken, 1);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
         });
     }
   }, [access_token, newAccessToken, refresh_token]);
@@ -71,7 +91,11 @@ const PaymentFinalizing = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        dispatch(profileUser(res.data?.result))
+        dispatch(profileUser(res.data?.result));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
       });
   }, [access_token, dispatch]);
 
@@ -82,6 +106,10 @@ const PaymentFinalizing = () => {
       })
       .then((res) => {
         dispatch(addressUser(res.data?.result));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
       });
   }, [access_token, dispatch]);
 
@@ -93,6 +121,10 @@ const PaymentFinalizing = () => {
       .then((res) => {
         dispatch(cartsUser(res.data?.result));
         setTotalCart(res.data?.total);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
       });
   }, [access_token, dispatch]);
 
@@ -103,58 +135,142 @@ const PaymentFinalizing = () => {
       })
       .then((res) => {
         setYourOrder(res.data?.order);
+        setProductReview(
+          res.data?.order?.Order_details[0]?.Warehouse_stock?.Product
+            ?.Image_products
+        );
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
       });
   }, [access_token, dispatch]);
 
+  const product = productReview.map((item) => {
+    let image;
+    image = {
+      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
+    };
+    return image;
+  });
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
+
+  // console.log(product);
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
-      <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        <h1 className="text-xl font-bold">Payment</h1>
-        <div className="p-4">
-              <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
-                  <div className="grid grid-cols-2 p-4">
-                      <div className="">
-                      <h1>{yourOrder?.delivery_time}</h1>
-                      {yourOrder?.Order_details?.map((details) => (
-                    <div className="p-1">
-                      <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">        
-                          <h1 className=" font-bold">{details?.Warehouse_stock?.Product?.name}</h1>
-                          <h1> {details?.quantity} unit</h1>
-                      </div>               
-                    </div>
-                  ))}
-                  <h1 className="py-1">Order Total: {yourOrder?.total_price}</h1>
-                  <h1 className="py-1">Courier Used: {yourOrder?.delivery_courier}</h1>
-                  <h1 className="py-1 font-bold">Upload Payment Proof</h1>
-                  <form className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
-                    
-                    <input type="file" name="file" onChange={handleChange}/>
-                    {isFilePicked ? (
-                      <div>
-                        <p>Filename: {file.name}</p>
-                        <p>Filetype: {file.type}</p>
-                        <p>Size in bytes: {file.size}</p>
-                        <p>
-                          lastModifiedDate:{' '}
-                          {file.lastModifiedDate.toLocaleDateString()}
-                        </p>
+      <BreadCrumb
+        crumbs={[
+          { title: ["Profile"], link: "/user/setting" },
+          { title: ["Order"], link: "/user/setting/order" },
+          { title: ["Payment"], link: "/payment" },
+        ]}
+      />
+      <div className="min-h-screen mx-6 space-y-4 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
+        {/* decor aka */}
+        <h1 className="font-bold text-xl">Payment</h1>
+        <div className=" grid gap-4 grid-rows-2 md:grid lg:grid md:grid-cols-2 md:grid-rows-none lg:grid-cols-2 lg:grid-rows-none ">
+          <div className="row-span-2 md:col-span-1 lg:col-span-1 grid justify-center items-center w-full h-full">
+            <h1>{yourOrder?.delivery_time}</h1>
+            {yourOrder?.Order_details?.map((details) => (
+              <div className="p-1" key={details.id}>
+                <div className="md:flex shadow-card-1 w-fit rounded-lg md:flex-col md:justify-center md:items-center ">
+                  <div className="flex  w-full justify-evenly items-center font-bold text-sm text-grayText">
+                    <h1 className="py-1">
+                      Order Total: {toRupiah(yourOrder?.total_price)}
+                    </h1>
+                    <h1>|</h1>
+                    <h1 className="py-1">
+                      Courier Used: {yourOrder?.delivery_courier}
+                    </h1>
+                  </div>
+                  <div className="text-xs shadow-card-1 p-4 h-fit rounded-lg  md:w-96 lg:w-96">
+                    <div>
+                      <div className="flex flex-col justify-center items-center">
+                        <CarouselProductDetail
+                          data={product}
+                          width="300px"
+                          height="300px"
+                        />
                       </div>
-                    ) : (
-                      <p>Select a file to show details</p>
-                    )}
-                    <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md" onClick={handleSubmit} type="submit">Upload</button>
-                  </form>
-                    </div>
-                    <div className="">
-                      <Badge color="green" className="w-fit">
-                          {yourOrder?.Order_status?.name}
+
+                      <div className="flex items-center gap-4 mb-2">
+                        <h1 className=" font-bold text-base">
+                          {details?.Warehouse_stock?.Product?.name}
+                        </h1>
+                        <Badge color="purple" className="w-fit">
+                          {details?.Warehouse_stock?.Product?.category?.name}
                         </Badge>
                       </div>
+                      <h1>
+                        {toRupiah(details?.Warehouse_stock?.Product?.price)} x{" "}
+                        {details?.quantity} unit
+                      </h1>
+                      <h1 className="">
+                        {details?.Warehouse_stock?.Product?.weight} gr
+                      </h1>
+                      <h1 className="">
+                        {details?.Warehouse_stock?.Product?.description}
+                      </h1>
+                    </div>
                   </div>
+                </div>
               </div>
+            ))}
           </div>
+          <div className="md:col-span-1 lg:col-span-1">
+            <div className=" flex flex-col justify-start items-center ">
+              <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">
+                <h1 className="text-sm font-semibold">upload payment proof</h1>
+                <div className="md:w-96 lg:w-96">
+                  <img
+                    src={showImage ? showImage : `${emptyImage}`}
+                    alt=""
+                    className="object-cover w-full"
+                  />
+                </div>
+
+                <input
+                  type="file"
+                  name="file"
+                  onChange={handleChange}
+                  className="border-2 w-40 hidden"
+                  ref={inputPhotoRef}
+                />
+                <div className="flex gap-4">
+                  <Button
+                    onClick={() => inputPhotoRef.current.click()}
+                    buttonSize="small"
+                    buttonText="Choose"
+                    type="button"
+                    bgColor="bg-green-400"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                  <Button
+                    onClick={() => {
+                      setShowImage(false);
+                    }}
+                    buttonSize="small"
+                    buttonText="Cancel"
+                    type="button"
+                    bgColor="bg-red-400"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <FooterDesktop />
       <NavigatorMobile />

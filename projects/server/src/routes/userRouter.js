@@ -251,4 +251,10 @@ router.get(
   WishlistController.getUserWishlistSpecificProduct
 );
 
+/* RESERVED STOCK */
+router.get(
+  "/reserved-stock/:name",
+  OrderController.reservedStockProductForReduceRealStockUser
+);
+
 module.exports = router;

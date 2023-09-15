@@ -141,6 +141,7 @@ const SettingProfile = () => {
 
                         {userData.User_detail?.phone ? (
                           <td>
+                            {userData.User_detail?.phone}
                             <ModalEditPhone />
                           </td>
                         ) : (

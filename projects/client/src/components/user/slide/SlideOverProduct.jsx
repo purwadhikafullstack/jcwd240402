@@ -17,13 +17,16 @@ import { getCookie, getLocalStorage } from "../../../utils/tokenSetterGetter";
 import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
 import { cartsUser } from "../../../features/cartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ShareButton from "../ShareButton";
 import Wishlist from "../Wishlist";
+import Loading from "../../Loading";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
+
+  // const stock = useSelector((state) => state.stocker.value);
 
   const [open, setOpen] = useState(false);
   const [stock, setStock] = useState(0);
@@ -33,6 +36,8 @@ export default function SlideOverProduct({ name }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
+  const [reservedStock, setReservedStock] = useState(0);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
   const handleAddProductToCart = async (name, qty) => {
@@ -47,17 +52,20 @@ export default function SlideOverProduct({ name }) {
           }
         )
         .then((res) => {
+          setLoading(false);
           axios
             .get("/user/cart", {
               headers: { Authorization: `Bearer ${access_token}` },
             })
             .then((res) => {
               dispatch(cartsUser(res.data?.result));
+              setLoading(false);
             });
           setQty(0);
           setSuccessMsg(res.data?.message);
           setOpenAlert(true);
-        });
+        })
+        .catch((error) => setLoading(false));
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -69,16 +77,41 @@ export default function SlideOverProduct({ name }) {
     }
   };
 
+  console.log(stock);
+
+  // useEffect(() => {
+  //   axios
+  //     .get(`/user/reserved-stock/${name}`)
+  //     .then((res) => {
+  //       setReservedStock(res.data?.result);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       setLoading(false);
+  //     });
+  // }, [name]);
+
   useEffect(() => {
-    axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result.Product);
-      setDataImage(res.data?.result.Product.Image_products);
-      setStock(res.data?.result?.product_stock);
-    });
+    axios
+      .get(`/user/warehouse-stock/product/${name}`)
+      .then((res) => {
+        setDetailProduct(res.data?.result.Product);
+        setDataImage(res.data?.result.Product.Image_products);
+        setStock(res.data?.result?.product_stock);
+        setLoading(false);
+      })
+      .then((error) => {
+        setLoading(false);
+      });
   }, [name]);
 
-  if (detailProduct?.length === 0 && dataImage?.length === 0) {
-    return <p></p>;
+  if (loading) {
+    return (
+      <div className="border-2 w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   }
 
   const product = dataImage?.map((item) => {
@@ -204,8 +237,13 @@ export default function SlideOverProduct({ name }) {
                             <button
                               onClick={() => setQty(qty + 1)}
                               className="px-1"
+                              disabled={qty === stock}
                             >
-                              <AiFillPlusSquare className="text-blue3 text-2xl" />
+                              <AiFillPlusSquare
+                                className={` ${
+                                  qty === stock ? "text-gray-400" : "text-blue3"
+                                } text-2xl`}
+                              />
                             </button>
                           </div>
                         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import tiki from "../../assets/icons/tiki.png";
 import jne from "../../assets/icons/jne.png";
 import pos from "../../assets/icons/pos.png";
@@ -20,6 +21,8 @@ import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
 import Select from "react-select";
 import toRupiah from "@develoka/angka-rupiah-js";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import { Badge } from "flowbite-react";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -61,7 +64,7 @@ const CheckOut = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        dispatch(profileUser(res.data?.result))
+        dispatch(profileUser(res.data?.result));
       });
   }, [access_token, dispatch]);
 
@@ -89,11 +92,15 @@ const CheckOut = () => {
 
   useEffect(() => {
     axios
-      .post("/user/closest",{
-        primary_address_id: userData.User_detail?.Address_user?.id
-      }, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
+      .post(
+        "/user/closest",
+        {
+          primary_address_id: userData.User_detail?.Address_user?.id,
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      )
       .then((res) => {
         setClosestWarehouse(res.data?.closest_warehouse);
       })
@@ -117,11 +124,14 @@ const CheckOut = () => {
       .then((res) => {
         setRajaOngkir(res.data.result);
         setChosenCourier(res.data?.result?.rajaongkir?.results[0]?.name);
-        setChosenCourierEnum(courier.value)
+        setChosenCourierEnum(courier.value);
         setServiceOptions(
           res.data?.result?.rajaongkir?.results[0]?.costs.map((service) => ({
             value: service.cost[0].value,
-            label: service.description + ` (${service.service})` + `(${service.cost[0].etd} Hari)`,
+            label:
+              service.description +
+              ` (${service.service})` +
+              `(${service.cost[0].etd} Hari)`,
           }))
         );
       });
@@ -137,30 +147,28 @@ const CheckOut = () => {
           delivery_price: chosenCourierPrice,
           delivery_courier: chosenCourierEnum,
           address_user_id: userData.User_detail?.Address_user?.id,
-          warehouse_id: closestWarehouse.id
+          warehouse_id: closestWarehouse.id,
         },
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
       )
       .then((res) => {
-          axios
+        axios
           .post(
             "/user/check-out-details",
             {
               order_id: res.data?.order?.id,
               warehouse_id: closestWarehouse.id,
-              cart_data: cartData
+              cart_data: cartData,
             },
             {
               headers: { Authorization: `Bearer ${access_token}` },
             }
           )
-          .then((res) => {
-          });
-          navigate("/payment")
-        }
-      );
+          .then((res) => {});
+        navigate("/payment");
+      });
   };
 
   const handleCourierService = (courier) => {
@@ -179,6 +187,12 @@ const CheckOut = () => {
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Cart"], link: "/cart" },
+          { title: ["Checkout"], link: "/checkout" },
+        ]}
+      />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <h1 className="text-xl font-bold">CheckOut</h1>
         <div>
@@ -202,47 +216,60 @@ const CheckOut = () => {
                 </h3>
                 <ModalSetPrimaryAddress />
               </div>
-              <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-4  text-xs border-2 p-4 rounded-lg">
-                <div className=" flex col-span-3 ">
+              <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-4 text-xs border-2 p-4 rounded-lg">
+                <div className="col-span-3 grid gap-4 mb-4 lg:mb-0 md:mb-0 lg:mr-4 md:mr-4">
                   {cartData.map((item) => (
-                    <>
-                      <div className="w-20">
+                    <div
+                      key={item.id}
+                      className=" grid grid-cols-12 rounded-lg shadow-card-1"
+                    >
+                      <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
                         <img
-                          src={item.Warehouse_stock.Product.Image_Products}
+                          src={`${process.env.REACT_APP_API_BASE_URL}${item.Warehouse_stock?.Product?.Image_products[0].img_product}`}
                           alt=""
-                          className="w-20"
+                          className="w-full"
                         />
                       </div>
-                      <div>
-                        <h1 className="py-1">{item.Warehouse_stock.Product.name}</h1>
-                        <h1 className="py-1">{item.Warehouse_stock.Product.category.name}</h1>
-                        {item.Warehouse_stock.Product.description > 25 ? (
-                          <h1 className="py-1">
-                            {item.Warehouse_stock.Product.description.slice(
+                      <div className="col-span-8 md:col-span-10 lg:col-span-10 w-full  p-4">
+                        <div className="flex gap-2 justify-start items-center">
+                          <h1 className="font-bold">
+                            {item.Warehouse_stock?.Product?.name}
+                          </h1>
+                          <Badge color="purple" className="w-fit">
+                            {item.Warehouse_stock?.Product?.category?.name}
+                          </Badge>
+                        </div>
+
+                        {item.Warehouse_stock?.Product?.description?.length >
+                        100 ? (
+                          <h1 className="">
+                            {item.Warehouse_stock?.Product?.description.slice(
                               0,
-                              25
+                              100
                             )}
                             ...
                           </h1>
                         ) : (
-                          <h1 className="py-1">{item.Warehouse_stock.Product.description}</h1>
+                          <h1 className="">
+                            {item.Warehouse_stock?.Product?.description}
+                          </h1>
                         )}
 
-                        <h1 className="py-1">
-                          {toRupiah(item.Warehouse_stock.Product.price)} x{" "}
+                        <h1 className="">
+                          {toRupiah(item.Warehouse_stock?.Product?.price)} x{" "}
                           {item.quantity} {item.quantity > 1 ? "units" : "unit"}
                         </h1>
-                        <h1 className="py-1">
+                        <h1 className="font-bold text-right">
                           total:{" "}
                           {toRupiah(
-                            item.Warehouse_stock.Product.price * item.quantity
+                            item.Warehouse_stock?.Product?.price * item.quantity
                           )}
                         </h1>
                       </div>
-                    </>
+                    </div>
                   ))}
                 </div>
-                <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+                <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 flex flex-col gap-4">
                   <h1>Choose Courier</h1>
                   <Select
                     options={courierOptions}
@@ -259,16 +286,25 @@ const CheckOut = () => {
                 </div>
               </div>
             </div>
-            <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16">
+            <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 space-y-2">
               <h1 className="font-bold">purchase summary</h1>
-              <h1 className="py-1">Subtotal price: {toRupiah(totalCart)} </h1>
-              <h1 className="py-1">Shipping price: {toRupiah(chosenCourierPrice)}</h1>
-              <h1 className="py-1">Courier : {chosenCourier}</h1>
-              <h1 className="py-1">Service : {chosenCourierService}</h1>
+              <h1 className="">Subtotal price: {toRupiah(totalCart)} </h1>
+              <h1 className="">
+                Shipping price: {toRupiah(chosenCourierPrice)}
+              </h1>
+              <h1 className="">Courier : {chosenCourier}</h1>
+              <h1 className="">Service : {chosenCourierService}</h1>
               <hr className="border-2 " />
-              <h1 className="py-1">Total Payment: {toRupiah(totalPrice)}</h1>
-              <h1 className="py-1">delivering from: {closestWarehouse.warehouse_name}</h1>
-              <button onClick={handlePaymentClick} className="w-full bg-blue3 p-2 font-semibold text-white rounded-md">
+              <h1 className="">
+                delivering from: {closestWarehouse.warehouse_name}
+              </h1>
+              <h1 className="font-bold text-base">
+                Total Payment: {toRupiah(totalPrice)}
+              </h1>
+              <button
+                onClick={handlePaymentClick}
+                className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+              >
                 Proceed to Payment
               </button>
             </div>

@@ -76,7 +76,7 @@ const Category = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 relative z-0 mb-4">
-              {categoryList.slice(0, 7).map((list) => (
+              {categoryList.slice(0, 8).map((list) => (
                 <div
                   key={list.id}
                   className="w-full h-32 relative overflow-hidden"

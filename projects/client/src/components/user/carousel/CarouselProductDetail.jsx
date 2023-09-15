@@ -1,7 +1,7 @@
 import React from "react";
 import { Carousel } from "react-carousel-minimal";
 
-const CarouselProductDetail = ({ data }) => {
+const CarouselProductDetail = ({ data, width = "400px", height = "400px" }) => {
   const captionStyle = {
     fontSize: "2em",
     fontWeight: "bold",
@@ -15,8 +15,8 @@ const CarouselProductDetail = ({ data }) => {
     <Carousel
       data={data}
       time={1000}
-      width="400px"
-      height="400px"
+      width={width}
+      height={height}
       captionStyle={captionStyle}
       radius="10px"
       slideNumber={true}

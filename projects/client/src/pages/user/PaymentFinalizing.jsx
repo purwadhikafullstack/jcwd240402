@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -38,6 +38,7 @@ const PaymentFinalizing = () => {
   const [productReview, setProductReview] = useState([]);
 
   const inputPhotoRef = useRef();
+  const location = useLocation();
 
   function handleChange(event) {
     const selectedImage = event.target.files[0];
@@ -53,7 +54,7 @@ const PaymentFinalizing = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .patch("/user/payment-proof", formData, {
+      .patch(`/user/payment-proof/${location.pathname.split("/").pop()}`, formData, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -130,7 +131,7 @@ const PaymentFinalizing = () => {
 
   useEffect(() => {
     axios
-      .get("/user/current-order", {
+      .get(`/user/order/${location.pathname.split("/").pop()}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
@@ -194,11 +195,11 @@ const PaymentFinalizing = () => {
                   <div className="text-xs shadow-card-1 p-4 h-fit rounded-lg  md:w-96 lg:w-96">
                     <div>
                       <div className="flex flex-col justify-center items-center">
-                        <CarouselProductDetail
+                        {/* <CarouselProductDetail
                           data={product}
                           width="300px"
                           height="300px"
-                        />
+                        /> */}
                       </div>
 
                       <div className="flex items-center gap-4 mb-2">

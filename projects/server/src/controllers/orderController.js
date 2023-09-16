@@ -10,7 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
-const autoStockTransfer = require("../utils/index");
+const { autoStockTransfer } = require("../utils/index");
 
 module.exports = {
   /* ORDER */
@@ -124,18 +124,18 @@ module.exports = {
     const transaction = await db.sequelize.transaction();
 
     try {
-      const newOrder = await db.Order.create(
-        {
-          user_id,
-          order_status_id: 1,
-          total_price,
-          delivery_price,
-          delivery_courier,
-          address_user_id,
-          warehouse_id,
-        },
-        { transaction }
-      );
+      const newOrder = await db.Order.create({
+        user_id,
+        order_status_id: 1,
+        total_price,
+        delivery_price,
+        delivery_courier,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+        address_user_id,
+        warehouse_id,
+      });
 
       await transaction.commit();
       res.status(200).json({
@@ -286,11 +286,16 @@ module.exports = {
 
   uploadPaymentProof: async (req, res) => {
     const userId = req.user.id;
+    const id = req.params.id;
     const paymentImage = req.file?.filename;
 
     try {
       const orderData = await db.Order.findOne({
-        where: { user_id: userId, order_status_id: 1 },
+        where: {
+          user_id: userId,
+          order_status_id: 1,
+          no_invoice: { [Op.endsWith]: id },
+        },
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
         },
@@ -324,10 +329,12 @@ module.exports = {
   },
 
   getCurrentOrderList: async (req, res) => {
+    const id = req.params.id;
     const userId = req.user.id;
+
     try {
       const orderList = await db.Order.findOne({
-        where: { user_id: userId },
+        where: { user_id: userId, no_invoice: { [Op.endsWith]: id } },
         include: [
           {
             model: db.Order_status,

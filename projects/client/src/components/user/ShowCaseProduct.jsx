@@ -29,7 +29,7 @@ const ShowCaseProduct = ({ perPage }) => {
   const currentPriceMin = searchParams.get("priceMin") || 0;
   const currentWeightMax = searchParams.get("weightMax") || limitWeight;
   const currentWeightMin = searchParams.get("weightMin") || 0;
-
+  console.log(perPage);
   useEffect(() => {
     axios
       .get(
@@ -49,11 +49,11 @@ const ShowCaseProduct = ({ perPage }) => {
       })
       .catch((error) => {
         setErrMsg("product not found");
+        setLoading(false);
         setTimeout(() => {
           setSearchParams({});
         }, 4000);
       });
-    setLoading(false);
   }, [
     currentPage,
     currentPagination,

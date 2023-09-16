@@ -324,4 +324,37 @@ module.exports = {
       });
     }
   },
+
+  cancelCartListWhenOrder: async (req, res) => {
+    const userData = req.user;
+    const { cart_data } = req.body;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const result = cart_data.map((item) => {
+        return item.Warehouse_stock?.id;
+      });
+
+      for (let i = 0; i < result.length; i++) {
+        await db.Cart.destroy(
+          {
+            where: { warehouse_stock_id: result[i], user_id: userData.id },
+          },
+          transaction
+        );
+      }
+
+      await transaction.commit();
+      return res.status(201).json({
+        ok: true,
+        message: "delete cart successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      return res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
 };

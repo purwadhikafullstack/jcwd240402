@@ -17,9 +17,6 @@ const AccordionFilter = ({
   const [price, setPrice] = useState([rangePriceMin, limitPrice]);
   const [weight, setWeight] = useState([rangeWeightMin, limitWeight]);
 
-  const currentPage = searchParams.get("page");
-  console.log(currentPage);
-
   const handleChangeRangePrice = (event, newPrice) => {
     setPrice(newPrice);
   };
@@ -106,14 +103,6 @@ const AccordionFilter = ({
             >
               apply
             </button>
-          </Accordion.Content>
-        </Accordion.Panel>
-        <Accordion.Panel>
-          <Accordion.Title className="hover:bg-blue2 bg-blue3 text-white">
-            STOCK
-          </Accordion.Title>
-          <Accordion.Content>
-            <p className="mb-2 text-gray-500 dark:text-gray-400">STOCK</p>
           </Accordion.Content>
         </Accordion.Panel>
       </Accordion>

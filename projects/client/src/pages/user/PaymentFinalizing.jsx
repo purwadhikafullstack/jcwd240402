@@ -162,7 +162,6 @@ const PaymentFinalizing = () => {
     );
   }
 
-  // console.log(product);
   return (
     <div>
       <NavbarDesktop />
@@ -267,6 +266,13 @@ const PaymentFinalizing = () => {
                     fontWeight="font-semibold"
                   />
                 </div>
+                <button
+                  className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+                  onClick={handleSubmit}
+                  type="submit"
+                >
+                  Upload
+                </button>
               </div>
             </div>
           </div>

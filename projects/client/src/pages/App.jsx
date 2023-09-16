@@ -117,7 +117,7 @@ function App() {
             <Route path="/product/:name" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckOut />} />
-            <Route path="/payment" element={<PaymentFinalizing />} />
+            <Route path="/payment/:id" element={<PaymentFinalizing />} />
             <Route
               path="/product/product-category/:categoryName"
               element={<ProductPerCategory />}

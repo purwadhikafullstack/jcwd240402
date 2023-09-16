@@ -180,7 +180,7 @@ const SettingOrder = () => {
                     ))}
 
                     {order.Order_status?.id == 1 ? (
-                      <Link to="/payment">
+                      <Link to={"/payment/" + order?.no_invoice?.substr(-8)}>
                         <button className="w-full bg-blue3 p-2 mt-2 font-semibold text-white rounded-md">
                           Finish Payment
                         </button>

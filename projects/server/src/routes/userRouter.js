@@ -177,7 +177,7 @@ router.get(
 );
 
 router.get(
-  "/current-order",
+  "/order/:id",
   Verify.verifyAccessTokenUser,
   OrderController.getCurrentOrderList
 );
@@ -215,7 +215,7 @@ router.post(
 );
 
 router.patch(
-  "/payment-proof",
+  "/payment-proof/:id",
   Verify.verifyAccessTokenUser,
   handlePaymentProofUpload,
   OrderController.uploadPaymentProof

@@ -12,7 +12,7 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    return queryInterface.bulkInsert("Order-details", [
+    return queryInterface.bulkInsert("Order_details", [
       {
         id: 1,
         order_id: 1,

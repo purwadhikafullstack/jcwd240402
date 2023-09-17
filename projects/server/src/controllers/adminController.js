@@ -595,34 +595,59 @@ module.exports = {
     }
   },
 
-  async sendUserOrder(req, res) {
-    const orderId = req.params.orderId;
-    
-    const t = await db.sequelize.transaction();
-  
+  async grossIncome(req, res) {
+    const userId = req.user.id;
+
+    const startDate = req.body.startDate
+    const endDate = req.body.endDate
+
     try {
-      await updateOrderStatus(orderId, 6);
-  
-      if (!warehouseStock) {
-        throw new Error("Warehouse stock not found");
-      }
-  
-      warehouseStock.product_stock += reservedStock.reserve_quantity;
-  
-      await reservedStock.destroy({ transaction: t });
-  
-      await warehouseStock.save({ transaction: t });
-  
-      await t.commit();
-  
-      res.status(200).json({ message: "Payment rejected, order is cancelled" });
-    } catch (error) {
-      if (t && !t.finished) {
-        await t.rollback();
-      }
-      console.error(error);
-      res.status(500).json({ message: "An error occurred while rejecting payment", error: error.message });
+
+    const grossIncomeDay = await db.Order.findAll({
+      where: {sellerId: userId},
+      include: [
+        { model: db.Order_items, attributes: ["quantity", "createdAt"], as: "Order_item",
+        where: {quantity: {[Sequelize.Op.not]: null},
+        createdAt: {
+          [db.Sequelize.Op.between]: [startDate, endDate],
+          }
+        }
+      },
+      ],
+      order: [['createdAt', 'ASC']],
+    });
+
+    const totalOnly = grossIncomeDay.map(
+      (m) => m.price * m.Order_item.quantity)
+
+    const quantityTotal = grossIncomeDay.map(
+      (q) => q.Order_item.quantity)
+
+    const totalPrice = totalOnly.reduce((total, n) => total + n, 0)
+
+    const totalQuantity = quantityTotal.reduce((total, n) => total + n, 0)
+
+    function removeDuplicates(array, property) {
+      return array.filter((item, index, self) => {
+        const value = item[property];
+        return index === self.findIndex((obj) => obj[property] === value);
+      });
     }
+  
+    const uniqueGrossIncome = removeDuplicates(grossIncomeDay, "id");
+
+    const uniqueItemsSold = uniqueGrossIncome.length
+
+  res.status(201).send({
+      message: "successfully get gross income by day",
+      data: totalPrice, totalQuantity, uniqueItemsSold, grossIncomeDay
+  });
+  } catch (error) {
+    res.status(500).send({
+      message: "fatal error on server",
+      error: error.message,
+    });
+  }
   },
 
 };

@@ -87,18 +87,7 @@ const UserOrder = () => {
   };
 
   const handleApprove = () => {
-    axios
-      .post(`http://localhost:8000/api/admin/checkrole`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setRoleId(response.data.role);
-      })
-      .catch((err) => {
-        setError(err.response.message);
-      });
+    
   };
 
   return (

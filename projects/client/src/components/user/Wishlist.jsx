@@ -10,6 +10,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
   const access_token = getCookie("access_token");
   const refresh_token = getCookie("refresh_token");
   const userData = useSelector((state) => state.profiler.value);
+
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
@@ -21,7 +22,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        setIsAdded(true);
+        setIsAdded(false);
         setLoading(false);
       })
       .catch((error) => {
@@ -29,8 +30,10 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
         setLoading(false);
         if (!error.response) {
           setErrMsg("No Server Response");
+          setIsAdded(false);
         } else {
           setErrMsg(error.response?.data?.message);
+          setIsAdded(false);
         }
       });
   }, [access_token, product, setErrMsg]);
@@ -46,7 +49,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       );
 
       if (response.data.ok) {
-        setIsAdded(response.data?.ok);
+        setIsAdded(true);
         setSuccessMsg(response.data?.message);
         setOpenAlert(true);
         setLoading(false);
@@ -57,15 +60,17 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
           })
           .then((res) => {
             dispatch(wishlistUser(res.data?.result));
+            setLoading(false);
           })
           .catch((error) => {
             setErrMsg(error.response?.data?.message);
+            setLoading(false);
           });
       }
     } catch (error) {
-      setIsAdded(error.response?.data?.ok);
       setOpenAlert(true);
       setLoading(false);
+      setIsAdded(false);
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
@@ -94,6 +99,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
           })
           .catch((error) => {
             setErrMsg(error.response?.data?.message);
+            console.log(error.response?.data?.message);
           });
       }
     } catch (error) {
@@ -115,6 +121,8 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       </div>
     );
   }
+
+  console.log(isAdded);
   return (
     <>
       {isAdded ? (

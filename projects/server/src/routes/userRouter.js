@@ -9,7 +9,7 @@ const validatorMiddleware = require("../middleware/validator/user");
 const addressUserCoordinate = require("../middleware/openCage/addressUserCoordinate");
 const Warehouse_stockController = require("../controllers/warehouseStockController");
 const handleImageProfileUpload = require("../middleware/multer/user/imgProfile");
-const handlePaymentProofUpload = require("../middleware/multer/user/paymentProof");
+const handlePaymentProofUpload = require("../middleware/multer/user/imgPayment");
 const WarehouseController = require("../controllers/warehouseController");
 const CartController = require("../controllers/cartController");
 const OrderController = require("../controllers/orderController");
@@ -168,6 +168,12 @@ router.patch(
   CartController.updateCart
 );
 
+router.delete(
+  "/cart-order",
+  Verify.verifyAccessTokenUser,
+  CartController.cancelCartListWhenOrder
+);
+
 /* ORDER */
 
 router.get(
@@ -221,6 +227,12 @@ router.patch(
   OrderController.uploadPaymentProof
 );
 
+router.delete(
+  "/reserved-order/:orderId",
+  Verify.verifyAccessTokenUser,
+  OrderController.cancelOrderToDeleteReservedStock
+);
+
 /* WAREHOUSE */
 router.get("/all-warehouse", WarehouseController.getAllWarehousesForUser);
 router.post(
@@ -249,12 +261,6 @@ router.get(
   "/wishlist/:product",
   Verify.verifyAccessTokenUser,
   WishlistController.getUserWishlistSpecificProduct
-);
-
-/* RESERVED STOCK */
-router.get(
-  "/reserved-stock/:name",
-  OrderController.reservedStockProductForReduceRealStockUser
 );
 
 module.exports = router;

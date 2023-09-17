@@ -35,6 +35,7 @@ const NavbarDesktop = () => {
   const userData = useSelector((state) => state.profiler.value);
 
   const [newAccessToken, setNewAccessToken] = useState("");
+  const [errMsg, setErrMsg] = useState("");
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -77,14 +78,14 @@ const NavbarDesktop = () => {
         dispatch(wishlistUser(res.data?.result));
       })
       .catch((error) => {
-        console.log(error.response?.data?.message);
+        setErrMsg(error.response?.data?.message);
       });
   }, [access_token, dispatch]);
 
   const userNavigation = [
     { name: "Profile", to: "/user/setting", onClick: {} },
     { name: "Cart", to: "/cart", onClick: {} },
-    { name: "Order", to: "/", onClick: {} },
+    { name: "Order", to: "/user/setting/order", onClick: {} },
     {
       name: "Sign out",
       to: "/log-in",

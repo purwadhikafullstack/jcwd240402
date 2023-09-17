@@ -8,8 +8,6 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import CardProduct from "../../components/user/card/CardProduct";
-import { Pagination } from "flowbite-react";
-import SlideOverFilter from "../../components/user/slide/SlideOverFilter";
 import productNotFound from "../../assets/images/productNotFound.png";
 import { useDispatch } from "react-redux";
 import {

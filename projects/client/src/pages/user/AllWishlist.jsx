@@ -14,6 +14,7 @@ import wishlistempty from "../../assets/images/wishlistempty.png";
 import { Link } from "react-router-dom";
 import CardWishlist from "../../components/user/card/CardWishlist";
 import Alert from "../../components/user/Alert";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const AllWishlist = () => {
   const [errMsg, setErrMsg] = useState("");
@@ -29,7 +30,6 @@ const AllWishlist = () => {
       })
       .then((res) => {
         dispatch(wishlistUser(res.data?.result));
-
         setLoading(false);
       })
       .catch((error) => {
@@ -57,8 +57,6 @@ const AllWishlist = () => {
       id: item.Warehouse_stock?.id,
     };
   });
-
-  console.log(wishlistMap);
 
   return (
     <div>
@@ -115,4 +113,4 @@ const AllWishlist = () => {
   );
 };
 
-export default AllWishlist;
+export default withAuthUser(AllWishlist);

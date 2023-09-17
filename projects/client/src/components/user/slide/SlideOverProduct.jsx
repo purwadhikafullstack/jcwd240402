@@ -41,7 +41,6 @@ export default function SlideOverProduct({ name }) {
   const dispatch = useDispatch();
 
   const handleAddProductToCart = async (name, qty) => {
-    console.log(qty);
     try {
       await axios
         .post(
@@ -77,28 +76,14 @@ export default function SlideOverProduct({ name }) {
     }
   };
 
-  console.log(stock);
-
-  // useEffect(() => {
-  //   axios
-  //     .get(`/user/reserved-stock/${name}`)
-  //     .then((res) => {
-  //       setReservedStock(res.data?.result);
-  //       setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       setLoading(false);
-  //     });
-  // }, [name]);
-
   useEffect(() => {
     axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
         setDetailProduct(res.data?.result.Product);
         setDataImage(res.data?.result.Product.Image_products);
-        setStock(res.data?.result?.product_stock);
+
+        setStock(res.data?.remainingStock);
         setLoading(false);
       })
       .then((error) => {
@@ -107,11 +92,7 @@ export default function SlideOverProduct({ name }) {
   }, [name]);
 
   if (loading) {
-    return (
-      <div className="border-2 w-full h-screen flex justify-center items-center">
-        <Loading />
-      </div>
-    );
+    return <p></p>;
   }
 
   const product = dataImage?.map((item) => {

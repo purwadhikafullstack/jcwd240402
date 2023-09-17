@@ -7,7 +7,6 @@ const {
 const { Sequelize } = require("sequelize");
 const { autoStockTransfer } = require("../utils");
 
-
 module.exports = {
   async createStockForWarehouse(req, res) {
     const { warehouseId, productId, productStock } = req.body;
@@ -237,7 +236,7 @@ module.exports = {
 
     const pagination = {
       page: Number(req.query.page) || 1,
-      perPage: 9,
+      perPage: Number(req.query.perPage) || 9,
       searchWarehouseName: req.query.warehouseName,
 
       searchCategory: req.query.category || undefined,
@@ -246,8 +245,6 @@ module.exports = {
       rangeWeightMax: Number(req.query.weightMax) || maxWeight,
       rangePriceMin: Number(req.query.priceMin) || 0,
       rangePriceMax: Number(req.query.priceMax) || maxPrice,
-      // rangeStockMin: req.query.stockMin || 0,
-      // rangeStockMax: req.query.stockMax || maxStock,
     };
 
     try {
@@ -442,9 +439,63 @@ module.exports = {
           .json({ ok: false, message: "Product not found" });
       }
 
+      const productData = await db.Product.findOne({
+        where: { name },
+      });
+
+      if (!productData) {
+        res.status(404).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      const warehouseStockData = await db.Warehouse_stock.findOne({
+        where: { id: productData.id },
+      });
+
+      if (!warehouseStockData) {
+        res.status(404).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      const reservedStock = await db.Reserved_stock.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: {
+          model: db.Warehouse_stock,
+          as: "WarehouseProductReservation",
+          where: { id: warehouseStockData.id },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      });
+
+      if (!reservedStock) {
+        return res.status(400).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      const getReservedStockValue = reservedStock.map((item) => {
+        return item.reserve_quantity;
+      });
+      let reservedStockTotal;
+      if (reservedStock.length !== 0) {
+        reservedStockTotal = getReservedStockValue.reduce((acc, cv) => {
+          return acc + cv;
+        });
+      }
+
+      if (!reservedStockTotal) {
+        reservedStockTotal = 0;
+      }
+
       res.json({
         ok: true,
         result,
+        remainingStock: result.product_stock - reservedStockTotal,
       });
     } catch (error) {
       res.status(500).json({

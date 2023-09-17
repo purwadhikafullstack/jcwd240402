@@ -52,6 +52,8 @@ const StockHistory = () => {
     { value: "", label: "any warehouse" },
     { value: 1, label: "Furnifor BSD" },
     { value: 2, label: "Furnifor Surabaya" },
+    { value: 3, label: "Furnifor Jakarta" },
+    { value: 4, label: "Furnifor Malang" },
   ];
 
   useEffect(() => {

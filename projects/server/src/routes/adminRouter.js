@@ -24,8 +24,20 @@ router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
 router.get("/order-list",Verify.verifyAccessTokenAdmin,adminController.getUserOrder);
+router.get("/order-detail-list",Verify.verifyAccessTokenAdmin,adminController.getUserOrderDetails);
 router.post("/accept-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.acceptPayment);
 router.post("/reject-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.rejectPayment);
+router.get(
+    "/sales-report",
+    authMiddleware.verifyAccessTokenAdmin,
+    adminController.salesReport
+  );
+router.get(
+    "/sales-report-details",
+    authMiddleware.verifyAccessTokenAdmin,
+    adminController.salesReportCategory
+);
+
 
 router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
 

@@ -431,22 +431,34 @@ module.exports = {
   },
   
   async acceptPayment(req, res) {
-    const orderId = req.params.orderId;
+    const orderId = req.params.id;
   
     const t = await db.sequelize.transaction();
-  
+
     try {
-      await updateOrderStatus(orderId, 3);
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 3 },
+        { where: { id: orderId } }
+      );
+      
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
   
       const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
+        include : [
+        {
+          model: db.Warehouse_stock, as: "WarehouseProductReservation",
+        }
+        ],
         transaction: t,
       });
   
       if (!reservedStocks || reservedStocks.length === 0) {
         throw new Error("Reserved stocks not found");
       }
-  
+
       for (let reservedStock of reservedStocks) {
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {

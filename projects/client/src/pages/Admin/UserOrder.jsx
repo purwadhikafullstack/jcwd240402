@@ -86,6 +86,21 @@ const UserOrder = () => {
     setWarehouseId(warehouseId.value);
   };
 
+  const handleApprove = () => {
+    axios
+      .post(`http://localhost:8000/api/admin/checkrole`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setRoleId(response.data.role);
+      })
+      .catch((err) => {
+        setError(err.response.message);
+      });
+  };
+
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -122,7 +137,12 @@ const UserOrder = () => {
             "Delivery Time": order?.delivery_time || "not yet delivered",
           }))}
           showIcon = {false}
-          showApproveReject = {true}
+          showApprove = {true}
+          showReject = {true}
+          showSend = {true}
+          showCancel = {true}
+          // onApprove={}
+          // onReject={}
         />
       </div>
       <div className="flex justify-center items-center mt-4">

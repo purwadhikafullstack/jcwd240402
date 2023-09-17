@@ -432,6 +432,7 @@ module.exports = {
   
   async acceptPayment(req, res) {
     const orderId = req.params.id;
+    console.log('Extracted Order ID:', orderId);
   
     const t = await db.sequelize.transaction();
 
@@ -462,12 +463,11 @@ module.exports = {
       for (let reservedStock of reservedStocks) {
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
-            warehouse_id: reservedStock.warehouse_id,
-            product_id: reservedStock.product_id,
+              warehouse_id: reservedStock.WarehouseProductReservation.warehouse_id,
+              product_id: reservedStock.WarehouseProductReservation.product_id,
           },
           transaction: t,
-        });
-  
+      });
         if (!warehouseStock) {
           throw new Error("Warehouse stock not found for product: " + reservedStock.product_id);
         }
@@ -485,10 +485,6 @@ module.exports = {
 
           await warehouseStock.reload();
         }
-  
-        warehouseStock.product_stock -= reservedStock.reserve_quantity;
-  
-        await reservedStock.destroy({ transaction: t });
         await warehouseStock.save({ transaction: t });
       }
   
@@ -515,20 +511,20 @@ module.exports = {
   
       const reservedStock = await db.Reserved_stock.findOne({
         where: { order_id: orderId },
+        include: [{
+            model: db.Warehouse_stock, 
+            as: "WarehouseProductReservation",
+        }],
         transaction: t,
-      });
-  
-      if (!reservedStock) {
-        throw new Error("Reserved stock not found");
-      }
+    });
   
       const warehouseStock = await db.Warehouse_stock.findOne({
         where: {
-          warehouse_id: reservedStock.warehouse_id,
-          product_id: reservedStock.product_id,
+            warehouse_id: reservedStock.WarehouseProductReservation.warehouse_id,
+            product_id: reservedStock.WarehouseProductReservation.product_id,
         },
         transaction: t,
-      });
+    });
   
       if (!warehouseStock) {
         throw new Error("Warehouse stock not found");

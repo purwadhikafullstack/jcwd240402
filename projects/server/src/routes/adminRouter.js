@@ -69,6 +69,8 @@ router.patch("/stock-transfers/:transferid/reject",authMiddleware.verifyAccessTo
 //
 router.patch("/auto-transfer",stockController.test)
 
+router.patch("/approve/:id",adminController.acceptPayment)
+
 // List Routes
 
 router.get("/city", adminController.getCitiesList);

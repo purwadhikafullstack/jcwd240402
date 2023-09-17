@@ -23,6 +23,7 @@ router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin);
 router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
+router.get("/order-list",Verify.verifyAccessTokenAdmin,adminController.getUserOrder);
 
 // Category Routes
 

@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Address_user.belongsTo(models.City, { foreignKey: "city_id" });
       // Address_user.belongsTo(models.Province, { foreignKey: "province_id" });
-      Address_user.hasOne(models.Order, { foreignKey: "address_user_id" });
+      Address_user.hasMany(models.Order, { foreignKey: "address_user_id" });
     }
   }
   Address_user.init(

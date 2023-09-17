@@ -121,6 +121,7 @@ module.exports = {
       address_user_id,
       warehouse_id,
     } = req.body;
+    const transaction = await db.sequelize.transaction();
 
     try {
       const newOrder = await db.Order.create({
@@ -134,11 +135,13 @@ module.exports = {
         warehouse_id,
       });
 
+      await transaction.commit();
       res.status(200).json({
         ok: true,
         order: newOrder,
       });
     } catch (error) {
+      await transaction.rollback();
       res.status(500).json({
         ok: false,
         message: "something bad happened",
@@ -401,72 +404,52 @@ module.exports = {
     }
   },
 
-  reservedStockProductForReduceRealStockUser: async (req, res) => {
-    const { name } = req.params;
+  cancelOrderToDeleteReservedStock: async (req, res) => {
+    const userData = req.user;
+    const { orderId } = req.params;
+    const transaction = await db.sequelize.transaction();
     try {
-      const productData = await db.Product.findOne({
-        where: { name },
+      const isUserOrdered = await db.Order.findOne({
+        where: { id: orderId, user_id: userData.id },
       });
 
-      if (!productData) {
-        res.status(404).json({
+      if (!isUserOrdered) {
+        await transaction.rollback();
+        return res.status(404).json({
           ok: false,
-          message: "product not found",
+          message: "user have not ordered this product yet",
         });
       }
 
-      const warehouseStockData = await db.Warehouse_stock.findOne({
-        where: { id: productData.id },
+      const isReserveAvailable = await db.Reserved_stock.findOne({
+        where: { order_id: isUserOrdered.id },
       });
 
-      if (!warehouseStockData) {
-        res.status(404).json({
+      if (!isReserveAvailable) {
+        await transaction.rollback();
+        return res.status(404).json({
           ok: false,
-          message: "product not found",
+          message: "reserved stock not found",
         });
       }
 
-      const reservedStock = await db.Reserved_stock.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: {
-          model: db.Warehouse_stock,
-          as: "WarehouseProductReservation",
-          where: { id: warehouseStockData.id },
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-        },
+      await db.Reserved_stock.destroy({
+        where: { order_id: isUserOrdered.id },
       });
 
-      if (!reservedStock) {
-        return res.status(400).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-
-      if (reservedStock.length === 0) {
-        return;
-      }
-      const getReservedStock = reservedStock.map((item) => {
-        return item.reserve_quantity;
-      });
-
-      const result = getReservedStock.reduce((acc, cv) => {
-        return acc + cv;
-      });
-
-      return res.json({
+      await transaction.commit();
+      res.status(201).json({
         ok: true,
-        result,
-        reservedStock,
+        isUserOrdered,
+        isReserveAvailable,
       });
     } catch (error) {
-      return res.status(500).json({
+      await transaction.rollback();
+      res.status(500).json({
         ok: false,
         message: "something bad happened",
         error: error.message,
       });
     }
   },
-
-  cancelOrderToDeleteReservedStock: async (req, res) => {},
 };

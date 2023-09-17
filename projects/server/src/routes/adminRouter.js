@@ -27,6 +27,8 @@ router.get("/order-list",Verify.verifyAccessTokenAdmin,adminController.getUserOr
 router.post("/accept-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.acceptPayment);
 router.post("/reject-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.rejectPayment);
 
+router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
+
 // Category Routes
 
 router.get("/categories", adminController.getCategories);
@@ -51,6 +53,8 @@ router.patch("/product/delete/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 router.patch("/product/status/:name",authMiddleware.verifyAccessTokenSuperAdmin, productController.toggleProductStatus);
 
 router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProductImage);
+router.delete("/products/:id", authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProduct);
+
 
 // Inventory Transfer Routes
 
@@ -64,6 +68,8 @@ router.patch("/stock-transfers/:transferid/reject",authMiddleware.verifyAccessTo
 
 //
 router.patch("/auto-transfer",stockController.test)
+
+router.patch("/approve/:id",adminController.acceptPayment)
 
 // List Routes
 

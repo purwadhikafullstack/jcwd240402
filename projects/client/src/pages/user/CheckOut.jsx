@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Badge } from "flowbite-react";
+import Select from "react-select";
+import toRupiah from "@develoka/angka-rupiah-js";
+import { useDispatch, useSelector } from "react-redux";
 
-import tiki from "../../assets/icons/tiki.png";
-import jne from "../../assets/icons/jne.png";
-import pos from "../../assets/icons/pos.png";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
-import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
-import { useDispatch, useSelector } from "react-redux";
+import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import ModalSetPrimaryAddress from "../../components/user/modal/ModalSetPrimaryAddress";
 import axios from "../../api/axios";
 import {
@@ -19,10 +19,8 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
-import Select from "react-select";
-import toRupiah from "@develoka/angka-rupiah-js";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
-import { Badge } from "flowbite-react";
+import emptycheckout from "../../assets/images/emptycheckout.png";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -44,6 +42,7 @@ const CheckOut = () => {
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -104,7 +103,7 @@ const CheckOut = () => {
       .then((res) => {
         setClosestWarehouse(res.data?.closest_warehouse);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => setErrMsg(error));
   }, [access_token, dispatch, userData]);
 
   const handleCourier = (courier) => {
@@ -166,10 +165,31 @@ const CheckOut = () => {
               headers: { Authorization: `Bearer ${access_token}` },
             }
           )
-          .then((res) => {});
-        navigate(`/payment/${res.data?.order?.no_invoice.substr(-8)}`);
+          .then((res) => {
+            console.log(res);
+          })
+          .catch(() => {});
+        axios
+          .delete("/user/cart-order", {
+            headers: {
+              Authorization: `Bearer ${access_token}`,
+            },
+            data: {
+              cart_data: cartData,
+            },
+          })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((error) => {
+            console.log(error.response?.data?.message);
+          });
+
+        navigate("/payment");
       });
   };
+
+  console.log(cartData);
 
   const handleCourierService = (courier) => {
     setChosenCourierService(courier.label);
@@ -194,121 +214,146 @@ const CheckOut = () => {
         ]}
       />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        <h1 className="text-xl font-bold">CheckOut</h1>
         <div>
-          <h1 className="mb-4 font-bold">Shipping Address</h1>
-          <div className="md:grid lg:grid md:grid-cols-3 lg:grid-cols-3 gap-4">
-            <div className="md:col-span-2 lg:col-span-2 ">
-              <div className="text-xs border-2 p-4 rounded-lg ">
-                <h3 className="text-base font-bold ">
-                  {userData.User_detail?.Address_user?.address_title}
-                </h3>
-                <h3>
-                  <span className="font-semibold">{userData.username}</span> (
-                  {userData.User_detail?.phone})
-                </h3>
-                <h3 className="text-justify">
-                  {userData.User_detail?.Address_user?.address_details ? (
-                    userData.User_detail?.Address_user?.address_details
-                  ) : (
-                    <h1>empty</h1>
-                  )}
-                </h3>
-                <ModalSetPrimaryAddress />
-              </div>
-              <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-4 text-xs border-2 p-4 rounded-lg">
-                <div className="col-span-3 grid gap-4 mb-4 lg:mb-0 md:mb-0 lg:mr-4 md:mr-4">
-                  {cartData.map((item) => (
-                    <div
-                      key={item.id}
-                      className=" grid grid-cols-12 rounded-lg shadow-card-1"
-                    >
-                      <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
-                        <img
-                          src={`${process.env.REACT_APP_API_BASE_URL}${item.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                          alt=""
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="col-span-8 md:col-span-10 lg:col-span-10 w-full  p-4">
-                        <div className="flex gap-2 justify-start items-center">
-                          <h1 className="font-bold">
-                            {item.Warehouse_stock?.Product?.name}
-                          </h1>
-                          <Badge color="purple" className="w-fit">
-                            {item.Warehouse_stock?.Product?.category?.name}
-                          </Badge>
-                        </div>
-
-                        {item.Warehouse_stock?.Product?.description?.length >
-                        100 ? (
-                          <h1 className="">
-                            {item.Warehouse_stock?.Product?.description.slice(
-                              0,
-                              100
-                            )}
-                            ...
-                          </h1>
-                        ) : (
-                          <h1 className="">
-                            {item.Warehouse_stock?.Product?.description}
-                          </h1>
-                        )}
-
-                        <h1 className="">
-                          {toRupiah(item.Warehouse_stock?.Product?.price)} x{" "}
-                          {item.quantity} {item.quantity > 1 ? "units" : "unit"}
-                        </h1>
-                        <h1 className="font-bold text-right">
-                          total:{" "}
-                          {toRupiah(
-                            item.Warehouse_stock?.Product?.price * item.quantity
-                          )}
-                        </h1>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 flex flex-col gap-4">
-                  <h1>Choose Courier</h1>
-                  <Select
-                    options={courierOptions}
-                    placeholder={<div>courier</div>}
-                    onChange={handleCourier}
-                  />
-                  {chosenCourier && (
-                    <Select
-                      options={serviceOptions}
-                      placeholder={<div>courier service</div>}
-                      onChange={handleCourierService}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 space-y-2">
-              <h1 className="font-bold">purchase summary</h1>
-              <h1 className="">Subtotal price: {toRupiah(totalCart)} </h1>
-              <h1 className="">
-                Shipping price: {toRupiah(chosenCourierPrice)}
-              </h1>
-              <h1 className="">Courier : {chosenCourier}</h1>
-              <h1 className="">Service : {chosenCourierService}</h1>
-              <hr className="border-2 " />
-              <h1 className="">
-                delivering from: {closestWarehouse.warehouse_name}
-              </h1>
-              <h1 className="font-bold text-base">
-                Total Payment: {toRupiah(totalPrice)}
-              </h1>
-              <button
-                onClick={handlePaymentClick}
-                className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+          {cartData.length === 0 ? (
+            <div className="w-full h-screen text-xs text-grayText space-y-2 flex flex-col justify-center items-center">
+              <img
+                src={emptycheckout}
+                alt=""
+                className="w-1/2 md:w-1/2 lg:w-1/3"
+              />
+              <p className="font-semibold">
+                You have not added any products to your cart
+              </p>
+              <p>Please add some product to the cart to checkout</p>
+              <Link
+                to="/all-products"
+                className="py-1 text-base font-semibold text-white px-4 bg-blue3 rounded-md"
               >
-                Proceed to Payment
-              </button>
+                see all our products
+              </Link>
             </div>
-          </div>
+          ) : (
+            <>
+              <h1 className="mb-2 text-xl font-bold">CheckOut</h1>
+              <h1 className="mb-2 font-bold">Shipping Address</h1>
+              <div className="md:grid lg:grid md:grid-cols-3 lg:grid-cols-3 gap-4">
+                <div className="md:col-span-2 lg:col-span-2 ">
+                  <div className="text-xs border-2 p-4 rounded-lg ">
+                    <h3 className="text-base font-bold ">
+                      {userData.User_detail?.Address_user?.address_title}
+                    </h3>
+                    <h3>
+                      <span className="font-semibold">{userData.username}</span>{" "}
+                      ({userData.User_detail?.phone})
+                    </h3>
+                    <h3 className="text-justify">
+                      {userData.User_detail?.Address_user?.address_details ? (
+                        userData.User_detail?.Address_user?.address_details
+                      ) : (
+                        <h1>empty</h1>
+                      )}
+                    </h3>
+                    <ModalSetPrimaryAddress />
+                  </div>
+                  <h1 className="mt-4 font-bold">Product Checkout List</h1>
+                  <div className="md:grid md:grid-cols-4 lg:grid lg:grid-cols-4  my-1 text-xs border-2 p-4 rounded-lg">
+                    <div className="col-span-3 grid gap-4 mb-4 lg:mb-0 md:mb-0 lg:mr-4 md:mr-4">
+                      {cartData.map((item) => (
+                        <div
+                          key={item.id}
+                          className=" grid grid-cols-12 rounded-lg shadow-card-1"
+                        >
+                          <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
+                            <img
+                              src={`${process.env.REACT_APP_API_BASE_URL}${item.Warehouse_stock?.Product?.Image_products[0].img_product}`}
+                              alt=""
+                              className="w-full"
+                            />
+                          </div>
+                          <div className="col-span-8 md:col-span-10 lg:col-span-10 w-full  p-4">
+                            <div className="flex gap-2 justify-start items-center">
+                              <h1 className="font-bold">
+                                {item.Warehouse_stock?.Product?.name}
+                              </h1>
+                              <Badge color="purple" className="w-fit">
+                                {item.Warehouse_stock?.Product?.category?.name}
+                              </Badge>
+                            </div>
+
+                            {item.Warehouse_stock?.Product?.description
+                              ?.length > 100 ? (
+                              <h1 className="">
+                                {item.Warehouse_stock?.Product?.description.slice(
+                                  0,
+                                  100
+                                )}
+                                ...
+                              </h1>
+                            ) : (
+                              <h1 className="">
+                                {item.Warehouse_stock?.Product?.description}
+                              </h1>
+                            )}
+
+                            <h1 className="">
+                              {toRupiah(item.Warehouse_stock?.Product?.price)} x{" "}
+                              {item.quantity}{" "}
+                              {item.quantity > 1 ? "units" : "unit"}
+                            </h1>
+                            <h1 className="font-bold text-right">
+                              total:{" "}
+                              {toRupiah(
+                                item.Warehouse_stock?.Product?.price *
+                                  item.quantity
+                              )}
+                            </h1>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 flex flex-col gap-4">
+                      <h1>Choose Courier</h1>
+                      <Select
+                        options={courierOptions}
+                        placeholder={<div>courier</div>}
+                        onChange={handleCourier}
+                      />
+                      {chosenCourier && (
+                        <Select
+                          options={serviceOptions}
+                          placeholder={<div>courier service</div>}
+                          onChange={handleCourierService}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 space-y-2">
+                  <h1 className="font-bold">purchase summary</h1>
+                  <h1 className="">Subtotal price: {toRupiah(totalCart)} </h1>
+                  <h1 className="">
+                    Shipping price: {toRupiah(chosenCourierPrice)}
+                  </h1>
+                  <h1 className="">Courier : {chosenCourier}</h1>
+                  <h1 className="">Service : {chosenCourierService}</h1>
+                  <hr className="border-2 " />
+                  <h1 className="">
+                    delivering from: {closestWarehouse.warehouse_name}
+                  </h1>
+                  <h1 className="font-bold text-base">
+                    Total Payment: {toRupiah(totalPrice)}
+                  </h1>
+                  <button
+                    onClick={handlePaymentClick}
+                    className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+                  >
+                    Proceed to Payment
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
       <FooterDesktop />

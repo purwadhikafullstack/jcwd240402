@@ -29,10 +29,13 @@ const SettingOrder = () => {
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const [userOrder, setUserOrder] = useState([]);
+
   const [orderStatus, setOrderStatus] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -58,10 +61,12 @@ const SettingOrder = () => {
       })
       .catch((error) => {
         setLoading(false);
+        setErrMsg(error.response?.data?.message);
       });
   }, [access_token]);
 
   const handleClickStatus = (id, status) => {
+    console.log(id);
     axios
       .post(
         "/user/order-status",
@@ -85,7 +90,18 @@ const SettingOrder = () => {
       })
       .catch((error) => {
         setLoading(false);
+        setErrMsg(error.response?.data?.message);
       });
+  };
+
+  const handleDeleteReserved = (orderId) => {
+    console.log(orderId);
+    axios
+      .delete(`/user/reserved-order/${orderId}`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => setSuccessMsg(res.data?.message))
+      .catch((error) => setErrMsg(error.response?.data?.message));
   };
 
   const OrderButton = ({ statusBefore, orderId }) => {
@@ -111,7 +127,10 @@ const SettingOrder = () => {
       return (
         <button
           className="w-full bg-danger1 p-2 font-semibold text-white rounded-md text-xs"
-          onClick={() => handleClickStatus(orderId, 5)}
+          onClick={() => {
+            handleDeleteReserved(orderId);
+            handleClickStatus(orderId, 5);
+          }}
         >
           Cancel
         </button>

@@ -22,8 +22,6 @@ import SelectionCategory from "../../components/user/SelectionCategory";
 import {
   getCookie,
   getLocalStorage,
-  removeCookie,
-  removeLocalStorage,
   setCookie,
 } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
@@ -33,7 +31,6 @@ import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
-import { UserAuth } from "../../context/AuthContext";
 
 const Home = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -51,10 +48,13 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    axios.get(`/user/products-per-category`).then((res) => {
-      setProductData(res.data?.result);
-      setLoading(false);
-    });
+    axios
+      .get(`/user/products-per-category`)
+      .then((res) => {
+        setProductData(res.data?.result);
+        setLoading(false);
+      })
+      .catch((error) => setLoading(false));
   }, []);
 
   useEffect(() => {

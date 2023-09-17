@@ -82,31 +82,18 @@ const ProductDetail = () => {
 
   useEffect(() => {
     axios
-      .get(`/user/reserved-stock/${name}`)
-      .then((res) => setReservedStock(res.data?.result));
-  }, [name]);
-
-  useEffect(() => {
-    axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
         setDetailProduct(res.data?.result?.Product);
         setDataImage(res.data?.result?.Product?.Image_products);
-        setStock(
-          res.data?.result?.product_stock - reservedStock <= 0
-            ? 0
-            : res.data?.result?.product_stock - reservedStock
-        );
-        // dispatch(stockProduct( res.data?.result?.product_stock - reservedStock <= 0
-        //     ? 0
-        //     : res.data?.result?.product_stock - reservedStock))
+        setStock(res.data?.remainingStock);
         setLoading(false);
       })
       .catch((error) => {
         setErrMsg(error.response?.data?.message);
         setLoading(false);
       });
-  }, [name, reservedStock]);
+  }, [name]);
 
   const handleAddProductToCart = async (name, qty) => {
     try {

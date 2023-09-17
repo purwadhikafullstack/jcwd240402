@@ -227,13 +227,6 @@ module.exports = {
         },
       });
 
-      if (!userWishlist) {
-        return res.status(404).json({
-          ok: false,
-          message: "this product has not been added yet",
-        });
-      }
-
       return res.status(200).json({
         ok: true,
         result: userWishlist,

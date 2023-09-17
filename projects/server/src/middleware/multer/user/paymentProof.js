@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
       "..",
       "..",
       "public",
-      "paymentProof"
+      "imgPayment"
     );
 
     cb(null, static);

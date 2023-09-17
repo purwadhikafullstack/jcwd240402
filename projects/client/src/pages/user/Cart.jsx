@@ -18,6 +18,7 @@ import { cartsUser } from "../../features/cartSlice";
 import withAuthUser from "../../components/user/withAuthUser";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const access_token = getCookie("access_token");
@@ -144,9 +145,11 @@ const Cart = () => {
               Total Amount :{" "}
               <span className="font-bold">{toRupiah(total)}</span>
             </h1>
-            <button className="bg-blue3 text-white w-96 h-10 rounded-full">
-              check out
-            </button>
+            <Link to="/checkout">
+              <button className="bg-blue3 font-bold text-white w-96 h-10 rounded-full">
+                check out
+              </button>
+            </Link>
           </div>
         </div>
       </div>

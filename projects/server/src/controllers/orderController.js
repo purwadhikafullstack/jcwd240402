@@ -10,7 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
-const autoStockTransfer = require("../utils/index");
+const { autoStockTransfer } = require("../utils/index");
 
 module.exports = {
   /* ORDER */
@@ -33,7 +33,24 @@ module.exports = {
               attributes: { exclude: ["createdAt", "updatedAt"] },
               include: {
                 model: db.Product,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
+                attributes: {
+                  exclude: ["createdAt", "updatedAt"],
+                },
+                include: [
+                  {
+                    model: db.Image_product,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
+                    },
+                  },
+                  {
+                    model: db.Category,
+                    as: "category",
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt", "deletedAt"],
+                    },
+                  },
+                ],
               },
             },
           },
@@ -112,6 +129,7 @@ module.exports = {
         total_price,
         delivery_price,
         delivery_courier,
+        no_invoice: `FF${new Date().toLocaleString().replace(/\W/g,'')}` + `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id,
         warehouse_id,
       });
@@ -180,7 +198,7 @@ module.exports = {
 
   findClosestWarehouseByAddressId: async (req, res) => {
     const userData = req.user;
-    console.log(userData);
+
     const primary_address = req.body.primary_address_id || "ehehe";
 
     try {
@@ -210,7 +228,7 @@ module.exports = {
       const distanceKm = (lat1, lon1, lat2, lon2) => {
         const r = 6371; // km
         const p = Math.PI / 180;
-        console.log(lat1);
+
         const a =
           0.5 -
           Math.cos((lat2 - lat1) * p) / 2 +
@@ -263,11 +281,12 @@ module.exports = {
 
   uploadPaymentProof: async (req, res) => {
     const userId = req.user.id;
+    const id = req.params.id;
     const paymentImage = req.file?.filename;
 
     try {
       const orderData = await db.Order.findOne({
-        where: { user_id: userId, order_status_id: 1 },
+        where: { user_id: userId, order_status_id: 1, no_invoice: { [Op.endsWith]: id}},
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
         },
@@ -281,7 +300,7 @@ module.exports = {
 
       const orderDataWithPaymentProof = await db.Order.update(
         {
-          img_payment: `payment-proof/${paymentImage}`,
+          img_payment: `/payment-proof/${paymentImage}`,
           order_status_id: 2,
         },
         { where: { user_id: userId, order_status_id: 1 } }
@@ -301,10 +320,13 @@ module.exports = {
   },
 
   getCurrentOrderList: async (req, res) => {
+
+    const id = req.params.id
     const userId = req.user.id;
+    
     try {
       const orderList = await db.Order.findOne({
-        where: { user_id: userId },
+        where: { user_id: userId, no_invoice: { [Op.endsWith]: id} },
         include: [
           {
             model: db.Order_status,
@@ -319,7 +341,24 @@ module.exports = {
               attributes: { exclude: ["createdAt", "updatedAt"] },
               include: {
                 model: db.Product,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
+                attributes: {
+                  exclude: ["createdAt", "updatedAt", "deletedAt"],
+                },
+                include: [
+                  {
+                    model: db.Image_product,
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt"],
+                    },
+                  },
+                  {
+                    model: db.Category,
+                    as: "category",
+                    attributes: {
+                      exclude: ["createdAt", "updatedAt", "deletedAt"],
+                    },
+                  },
+                ],
               },
             },
           },
@@ -361,4 +400,73 @@ module.exports = {
       });
     }
   },
+
+  reservedStockProductForReduceRealStockUser: async (req, res) => {
+    const { name } = req.params;
+    try {
+      const productData = await db.Product.findOne({
+        where: { name },
+      });
+
+      if (!productData) {
+        res.status(404).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      const warehouseStockData = await db.Warehouse_stock.findOne({
+        where: { id: productData.id },
+      });
+
+      if (!warehouseStockData) {
+        res.status(404).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      const reservedStock = await db.Reserved_stock.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: {
+          model: db.Warehouse_stock,
+          as: "WarehouseProductReservation",
+          where: { id: warehouseStockData.id },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      });
+
+      if (!reservedStock) {
+        return res.status(400).json({
+          ok: false,
+          message: "product not found",
+        });
+      }
+
+      if (reservedStock.length === 0) {
+        return;
+      }
+      const getReservedStock = reservedStock.map((item) => {
+        return item.reserve_quantity;
+      });
+
+      const result = getReservedStock.reduce((acc, cv) => {
+        return acc + cv;
+      });
+
+      return res.json({
+        ok: true,
+        result,
+        reservedStock,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  cancelOrderToDeleteReservedStock: async (req, res) => {},
 };

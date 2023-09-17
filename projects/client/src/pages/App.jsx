@@ -44,6 +44,7 @@ import NotFoundProduct from "./user/NotFoundProduct";
 import { AuthContextProvider } from "../context/AuthContext";
 import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
+import UserOrder from "./admin/UserOrder";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminList />} />
             <Route path="/stock-history" element={<StockHistory />} />
+            <Route path="/order" element={<UserOrder />} />
             <Route path="/warehouse" element={<WarehouseList />} />
 
             <Route
@@ -117,7 +119,7 @@ function App() {
             <Route path="/product/:name" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckOut />} />
-            <Route path="/payment" element={<PaymentFinalizing />} />
+            <Route path="/payment/:id" element={<PaymentFinalizing />} />
             <Route
               path="/product/product-category/:categoryName"
               element={<ProductPerCategory />}
@@ -140,8 +142,8 @@ function App() {
             <Route path="/verify" element={<NotifVerify />} />
             <Route path="/verify/:verify_token" element={<NotifVerified />} />
             <Route path="/forgot-password" element={<NotifForgotPassword />} />
-            <Route path="/all-category" element={<AllCategories />} />
-            <Route path="/all-product" element={<AllProducts />} />
+            <Route path="/all-categories" element={<AllCategories />} />
+            <Route path="/all-products" element={<AllProducts />} />
             <Route path="/all-warehouse" element={<AllWarehouse />} />
             <Route
               path="/product/not-found/:name"

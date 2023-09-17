@@ -42,6 +42,10 @@ app.use(
   "/api/photo-profile",
   express.static(path.join(__dirname, "public", "imgProfile"))
 );
+app.use(
+  "/api/payment-proof",
+  express.static(path.join(__dirname, "public", "imgPayment"))
+);
 
 app.use(
   "/api/photo-warehouse",

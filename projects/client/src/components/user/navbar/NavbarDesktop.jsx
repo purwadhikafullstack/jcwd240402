@@ -19,6 +19,7 @@ import {
 import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
 import { UserAuth } from "../../../context/AuthContext";
+import { wishlistUser } from "../../../features/wishlistDataSlice";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -37,6 +38,8 @@ const NavbarDesktop = () => {
 
   const dispatch = useDispatch();
   const location = useLocation();
+
+  const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {
     if (access_token && refresh_token) {
@@ -64,6 +67,19 @@ const NavbarDesktop = () => {
         });
     }
   }, [access_token, dispatch, newAccessToken, refresh_token]);
+
+  useEffect(() => {
+    axios
+      .get("/user/wishlist", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(wishlistUser(res.data?.result));
+      })
+      .catch((error) => {
+        console.log(error.response?.data?.message);
+      });
+  }, [access_token, dispatch]);
 
   const userNavigation = [
     { name: "Profile", to: "/user/setting", onClick: {} },
@@ -121,9 +137,18 @@ const NavbarDesktop = () => {
             </Link>
           )}
 
-          <Link to="/all-wishlist">
-            <RiBookmark3Fill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
-          </Link>
+          {wishlistData && access_token && refresh_token ? (
+            <Link to="/all-wishlist" className="relative">
+              <RiBookmark3Fill className="w-7 h-7 hover:text-blue3 text-base_grey transition-all" />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {wishlistData.length === 0 ? null : wishlistData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/all-wishlist">
+              <RiBookmark3Fill className="w-7 h-7 hover:text-blue3 text-base_grey transition-all" />
+            </Link>
+          )}
         </div>
         <div className="flex gap-4">
           {access_token && userData.role_id === 3 ? (

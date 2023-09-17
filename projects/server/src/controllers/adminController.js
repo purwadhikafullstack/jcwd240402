@@ -7,7 +7,8 @@ const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
 
-const {autoStockTransfer} = require("../utils/index")
+const {autoStockTransfer} = require("../utils/index");
+const { getAllUserOrder } = require("../service/order");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -419,7 +420,7 @@ module.exports = {
   },
 
   async updateOrderStatus(orderId, newStatusId) {
-    const updatedOrder = await db.Order.update(
+    const updatedOrder = await db.db.Order.update(
       { order_status_id: newStatusId },
       { where: { id: orderId } }
     );
@@ -430,22 +431,34 @@ module.exports = {
   },
   
   async acceptPayment(req, res) {
-    const orderId = req.params.orderId;
+    const orderId = req.params.id;
   
     const t = await db.sequelize.transaction();
-  
+
     try {
-      await updateOrderStatus(orderId, 3);
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 3 },
+        { where: { id: orderId } }
+      );
+      
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
   
       const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
+        include : [
+        {
+          model: db.Warehouse_stock, as: "WarehouseProductReservation",
+        }
+        ],
         transaction: t,
       });
   
       if (!reservedStocks || reservedStocks.length === 0) {
         throw new Error("Reserved stocks not found");
       }
-  
+
       for (let reservedStock of reservedStocks) {
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
@@ -498,7 +511,7 @@ module.exports = {
     const t = await db.sequelize.transaction();
   
     try {
-      await updateOrderStatus(orderId, 6);
+      await updateOrderStatus(orderId, 2);
   
       const reservedStock = await db.Reserved_stock.findOne({
         where: { order_id: orderId },
@@ -537,7 +550,49 @@ module.exports = {
       console.error(error);
       res.status(500).json({ message: "An error occurred while rejecting payment", error: error.message });
     }
-  }
+  },
   
+  async getUserOrder(req, res){
+
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.size) || 10;
+    const order_status_id = req.query.orderStatusId;
+    const warehouse_id = req.query.warehouseId;
+    const searchName = req.query.searchName;
+
+    const filter = {};
+
+    if (order_status_id) {
+      filter.order_status_id = order_status_id;
+    }
+
+    if (warehouse_id) {
+      filter.warehouse_id = warehouse_id;
+    }
+
+    if (searchName) {
+      filter.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
+    }
+
+    try {
+      const response = await getAllUserOrder(filter, page, pageSize);
+
+      if (response.success) {
+        res.status(200).send({
+          message: "Order list retrieved successfully",
+          orders: response.data,
+          pagination: response.pagination,
+        });
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
 
 };

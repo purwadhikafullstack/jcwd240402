@@ -177,7 +177,7 @@ router.get(
 );
 
 router.get(
-  "/current-order",
+  "/order/:id",
   Verify.verifyAccessTokenUser,
   OrderController.getCurrentOrderList
 );
@@ -215,7 +215,7 @@ router.post(
 );
 
 router.patch(
-  "/payment-proof",
+  "/payment-proof/:id",
   Verify.verifyAccessTokenUser,
   handlePaymentProofUpload,
   OrderController.uploadPaymentProof
@@ -249,6 +249,12 @@ router.get(
   "/wishlist/:product",
   Verify.verifyAccessTokenUser,
   WishlistController.getUserWishlistSpecificProduct
+);
+
+/* RESERVED STOCK */
+router.get(
+  "/reserved-stock/:name",
+  OrderController.reservedStockProductForReduceRealStockUser
 );
 
 module.exports = router;

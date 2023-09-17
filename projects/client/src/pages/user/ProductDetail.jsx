@@ -32,9 +32,11 @@ import AlertWithIcon from "../../components/AlertWithIcon";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import ShareButton from "../../components/user/ShareButton";
 import Wishlist from "../../components/user/Wishlist";
+import { stockProduct } from "../../features/stockProductSlice";
 
 const ProductDetail = () => {
   const { name } = useParams();
+
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
 
@@ -49,6 +51,7 @@ const ProductDetail = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const [newAccessToken, setNewAccessToken] = useState("");
   const [loading, setLoading] = useState(true);
+  const [reservedStock, setReservedStock] = useState(0);
 
   const dispatch = useDispatch();
 
@@ -79,18 +82,31 @@ const ProductDetail = () => {
 
   useEffect(() => {
     axios
+      .get(`/user/reserved-stock/${name}`)
+      .then((res) => setReservedStock(res.data?.result));
+  }, [name]);
+
+  useEffect(() => {
+    axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
         setDetailProduct(res.data?.result?.Product);
         setDataImage(res.data?.result?.Product?.Image_products);
-        setStock(res.data?.result?.product_stock);
+        setStock(
+          res.data?.result?.product_stock - reservedStock <= 0
+            ? 0
+            : res.data?.result?.product_stock - reservedStock
+        );
+        // dispatch(stockProduct( res.data?.result?.product_stock - reservedStock <= 0
+        //     ? 0
+        //     : res.data?.result?.product_stock - reservedStock))
         setLoading(false);
       })
       .catch((error) => {
         setErrMsg(error.response?.data?.message);
         setLoading(false);
       });
-  }, [name]);
+  }, [name, reservedStock]);
 
   const handleAddProductToCart = async (name, qty) => {
     try {
@@ -211,8 +227,16 @@ const ProductDetail = () => {
                   />
                 </button>
                 <p>{qty}</p>
-                <button onClick={() => setQty(qty + 1)} className="px-1">
-                  <AiFillPlusSquare className="text-blue3 text-2xl" />
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  className="px-1"
+                  disabled={qty === stock}
+                >
+                  <AiFillPlusSquare
+                    className={` ${
+                      qty === stock ? "text-gray-400" : "text-blue3"
+                    } text-2xl`}
+                  />
                 </button>
               </div>
             </div>

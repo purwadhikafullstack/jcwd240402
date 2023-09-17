@@ -10,10 +10,18 @@ const TableComponent = ({
   onDelete,
   onTransfer,
   onApproveReject,
+  onApprove,
+  onReject,
+  onSend,
+  onCancel,
   onDetails,
   showIcon = true,
   showTransfer = false,
   showApproveReject = false,
+  showApprove = false,
+  showReject = false,
+  showSend = false,
+  showCancel = false,
   showDetails = false,
 }) => {
   const [showDropdownIndex, setShowDropdownIndex] = useState(-1);
@@ -30,7 +38,7 @@ const TableComponent = ({
             {header}
           </Table.HeadCell>
         ))}
-        {(showTransfer || showApproveReject || showIcon) && (
+        {(showTransfer || showApproveReject || showIcon || showApprove || showReject || showSend || showCancel) && (
           <Table.HeadCell className="bg-blue5">
             <span className="sr-only">Actions</span>
           </Table.HeadCell>
@@ -54,7 +62,7 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
-            {(showTransfer || showIcon || showApproveReject) && (
+            {(showTransfer || showIcon || showApproveReject || showApprove || showReject || showSend || showCancel) && (
               <Table.Cell>
                 {showApproveReject && (
                   <Button
@@ -62,6 +70,46 @@ const TableComponent = ({
                     buttonText="Manage"
                     onClick={() => onApproveReject(row)}
                     bgColor="bg-blue3"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                )}
+                {showApprove && (
+                  <Button
+                    buttonSize="small"
+                    buttonText="Approve"
+                    onClick={() => onApprove(row)}
+                    bgColor="bg-blue3"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                )}
+                {showReject && (
+                  <Button
+                    buttonSize="small"
+                    buttonText="Reject"
+                    onClick={() => onReject(row)}
+                    bgColor="bg-danger1"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                )}
+                {showSend && (
+                  <Button
+                    buttonSize="small"
+                    buttonText="Send"
+                    onClick={() => onSend(row)}
+                    bgColor="bg-blue3"
+                    colorText="text-white"
+                    fontWeight="font-semibold"
+                  />
+                )}
+                {showCancel && (
+                  <Button
+                    buttonSize="small"
+                    buttonText="Cancel"
+                    onClick={() => onCancel(row)}
+                    bgColor="bg-danger1"
                     colorText="text-white"
                     fontWeight="font-semibold"
                   />

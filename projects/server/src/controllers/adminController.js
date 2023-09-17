@@ -595,34 +595,4 @@ module.exports = {
     }
   },
 
-  async sendUserOrder(req, res) {
-    const orderId = req.params.orderId;
-    
-    const t = await db.sequelize.transaction();
-  
-    try {
-      await updateOrderStatus(orderId, 6);
-  
-      if (!warehouseStock) {
-        throw new Error("Warehouse stock not found");
-      }
-  
-      warehouseStock.product_stock += reservedStock.reserve_quantity;
-  
-      await reservedStock.destroy({ transaction: t });
-  
-      await warehouseStock.save({ transaction: t });
-  
-      await t.commit();
-  
-      res.status(200).json({ message: "Payment rejected, order is cancelled" });
-    } catch (error) {
-      if (t && !t.finished) {
-        await t.rollback();
-      }
-      console.error(error);
-      res.status(500).json({ message: "An error occurred while rejecting payment", error: error.message });
-    }
-  },
-
 };

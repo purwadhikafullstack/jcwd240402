@@ -6,7 +6,7 @@ const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
-// const { generateAccessToken, generateRefreshToken } = require("../utils/index")
+
 const {autoStockTransfer} = require("../utils/index")
 
 // move to utility later
@@ -419,7 +419,7 @@ module.exports = {
   },
 
   async updateOrderStatus(orderId, newStatusId) {
-    const updatedOrder = await Order.update(
+    const updatedOrder = await db.Order.update(
       { order_status_id: newStatusId },
       { where: { id: orderId } }
     );

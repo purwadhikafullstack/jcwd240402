@@ -24,6 +24,8 @@ router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
 
+router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
+
 // Category Routes
 
 router.get("/categories", adminController.getCategories);
@@ -48,6 +50,8 @@ router.patch("/product/delete/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 router.patch("/product/status/:name",authMiddleware.verifyAccessTokenSuperAdmin, productController.toggleProductStatus);
 
 router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProductImage);
+router.delete("/products/:id", authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProduct);
+
 
 // Inventory Transfer Routes
 

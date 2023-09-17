@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -21,11 +21,15 @@ import emptyImage from "../../assets/images/emptyImage.jpg";
 import Button from "../../components/Button";
 import Loading from "../../components/Loading";
 import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
+import CarouselBanner from "../../components/user/carousel/CarouselBanner";
 
 const PaymentFinalizing = () => {
+  const location = useLocation();
+
   const [totalCart, setTotalCart] = useState(0);
   const [paymentProofData, setPaymentProofData] = useState("");
-  const [yourOrder, setYourOrder] = useState({});
+  const [yourOrder, setYourOrder] = useState([]);
+  const [orderProduct, setOrderProduct] = useState([]);
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
@@ -37,37 +41,26 @@ const PaymentFinalizing = () => {
   const [loading, setLoading] = useState(true);
   const [productReview, setProductReview] = useState([]);
 
+  const { id } = useParams();
+  console.log(id);
   const inputPhotoRef = useRef();
-  const location = useLocation();
 
-  function handleChange(event) {
-    const selectedImage = event.target.files[0];
-    setShowImage(URL.createObjectURL(selectedImage));
-    setFile(event.target.files[0]);
-    setIsFilePicked(true);
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("fileName", file.name);
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  useEffect(() => {
     axios
-      .patch(`/user/payment-proof/${location.pathname.split("/").pop()}`, formData, {
+      .get(`/user/order/${id}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        setPaymentProofData(res.data?.order);
+        setYourOrder(res.data?.order);
+        setOrderProduct(res.data?.order?.Order_details);
         setLoading(false);
-        setTimeout(() => {
-          navigate(`/user/setting/order`);
-        }, 3000);
       })
       .catch((error) => {
         setLoading(false);
       });
-  };
+  }, [access_token, dispatch, id]);
+  console.log("first", orderProduct.length);
+  console.log("first yourOrder", yourOrder);
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -129,31 +122,66 @@ const PaymentFinalizing = () => {
       });
   }, [access_token, dispatch]);
 
-  useEffect(() => {
+  function handleChange(event) {
+    const selectedImage = event.target.files[0];
+    setShowImage(URL.createObjectURL(selectedImage));
+    setFile(event.target.files[0]);
+    setIsFilePicked(true);
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("fileName", file.name);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
     axios
-      .get(`/user/order/${location.pathname.split("/").pop()}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
+      .patch(
+        `/user/payment-proof/${location.pathname.split("/").pop()}`,
+        formData,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      )
       .then((res) => {
-        setYourOrder(res.data?.order);
-        setProductReview(
-          res.data?.order?.Order_details[0]?.Warehouse_stock?.Product
-            ?.Image_products
-        );
+        setPaymentProofData(res.data?.order);
         setLoading(false);
+        setTimeout(() => {
+          navigate(`/user/setting/order`);
+        }, 3000);
       })
       .catch((error) => {
         setLoading(false);
       });
-  }, [access_token, dispatch]);
+  };
 
-  const product = productReview.map((item) => {
-    let image;
-    image = {
-      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
-    };
-    return image;
-  });
+  // const product = productReview.map((item) => {
+  //   let image;
+  //   image = {
+  //     image: `${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products.img_product}`,
+  //     item: item?.Warehouse_stock?.Product?.Image_products?.img_product,
+  //   };
+  //   return image;
+  // });
+  // console.log(productReview?.Warehouse_stock?.Product?.Image_products);
+  // console.log(yourOrder);
+  // console.log(product);
+  // const product = yourOrder?.Order_details?.map((item) =>
+  //   item?.Warehouse_stock?.Product?.Image_products?.map((item) => {
+  //     let image;
+  //     image = {
+  //       image: `${process.env.REACT_APP_API_BASE_URL}${item.img_product}`,
+  //     };
+  //     return image;
+  //   })
+  // );
+  // const img = yourOrder?.Order_details?.map((item) =>
+  //   item?.Warehouse_stock?.Product?.Image_products?.map(
+  //     (item) => item.img_product
+  //   )
+  // );
+
+  // console.log(img);
 
   if (loading) {
     return (
@@ -174,32 +202,34 @@ const PaymentFinalizing = () => {
           { title: ["Payment"], link: "/payment" },
         ]}
       />
-      <div className="min-h-screen mx-6 space-y-4 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
+      <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
         {/* decor aka */}
         <h1 className="font-bold text-xl">Payment</h1>
-        <div className=" grid gap-4 grid-rows-2 md:grid lg:grid md:grid-cols-2 md:grid-rows-none lg:grid-cols-2 lg:grid-rows-none ">
-          <div className="row-span-2 md:col-span-1 lg:col-span-1 grid justify-center items-center w-full h-full">
+        <div className="grid gap-4 grid-rows-2 md:grid lg:grid md:grid-cols-2 md:grid-rows-none lg:grid-cols-2 lg:grid-rows-none ">
+          <div className=" md:col-span-1 lg:col-span-1 grid justify-center items-center w-full h-full">
             <h1>{yourOrder?.delivery_time}</h1>
-            {yourOrder?.Order_details?.map((details) => (
+            <div className="flex  w-full justify-evenly items-center font-bold text-sm text-grayText">
+              <h1 className="py-1">Order Total: {yourOrder?.total_price}</h1>
+              <h1>|</h1>
+              <h1 className="py-1">
+                Courier Used: {yourOrder?.delivery_courier}
+              </h1>
+            </div>
+            {orderProduct.map((details) => (
               <div className="p-1" key={details.id}>
                 <div className="md:flex shadow-card-1 w-fit rounded-lg md:flex-col md:justify-center md:items-center ">
-                  <div className="flex  w-full justify-evenly items-center font-bold text-sm text-grayText">
-                    <h1 className="py-1">
-                      Order Total: {toRupiah(yourOrder?.total_price)}
-                    </h1>
-                    <h1>|</h1>
-                    <h1 className="py-1">
-                      Courier Used: {yourOrder?.delivery_courier}
-                    </h1>
-                  </div>
                   <div className="text-xs shadow-card-1 p-4 h-fit rounded-lg  md:w-96 lg:w-96">
                     <div>
                       <div className="flex flex-col justify-center items-center">
-                        {/* <CarouselProductDetail
-                          data={product}
-                          width="300px"
-                          height="300px"
+                        {/* <CarouselBanner
+                          imageUrls={imageUrls}
+                          carouselSize="products"
                         /> */}
+                        {/* <CarouselProductDetail
+                                data={product}
+                                width="300px"
+                                height="300px"
+                              /> */}
                       </div>
 
                       <div className="flex items-center gap-4 mb-2">

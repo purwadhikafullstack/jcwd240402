@@ -183,6 +183,12 @@ router.get(
 );
 
 router.get(
+  "/order-scroll",
+  Verify.verifyAccessTokenUser,
+  OrderController.getOrderListInfiniteScroll
+);
+
+router.get(
   "/order/:id",
   Verify.verifyAccessTokenUser,
   OrderController.getCurrentOrderList
@@ -256,6 +262,12 @@ router.get(
   "/wishlist",
   Verify.verifyAccessTokenUser,
   WishlistController.getAllWishlist
+);
+
+router.get(
+  "/show-wishlist",
+  Verify.verifyAccessTokenUser,
+  WishlistController.getAllWishlistInfiniteScroll
 );
 router.get(
   "/wishlist/:product",

@@ -69,6 +69,113 @@ module.exports = {
     }
   },
 
+  getOrderListInfiniteScroll: async (req, res) => {
+    const userId = req.user.id;
+    const last_id = Number(req.query.lastId) || 0;
+    const limit = Number(req.query.limit) || 3;
+
+    try {
+      let result = [];
+      if (last_id < 1) {
+        const orderList = await db.Order.findAll({
+          where: { user_id: userId },
+          include: [
+            {
+              model: db.Order_status,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+              model: db.Order_detail,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Warehouse_stock,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: {
+                  model: db.Product,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                  include: [
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt", "deletedAt"],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = orderList;
+      } else {
+        const orderList = await db.Order.findAll({
+          where: { id: { [Op.lt]: last_id }, user_id: userId },
+          include: [
+            {
+              model: db.Order_status,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+              model: db.Order_detail,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Warehouse_stock,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: {
+                  model: db.Product,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                  include: [
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt", "deletedAt"],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = orderList;
+      }
+
+      res.json({
+        ok: true,
+        order: result,
+        lastId: result.length ? result[result.length - 1].id : 0,
+        hasMore: result.length >= limit ? true : false,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
+        error: error.message,
+      });
+    }
+  },
+
   getCity: async (req, res) => {
     const cityId = req.query.id;
     const provinceId = req.query.province;
@@ -89,10 +196,18 @@ module.exports = {
   getCost: async (req, res) => {
     const { origin, destination, weight, courier } = req.body;
 
+    const weightlimit = (weight) => {
+      if (weight > 30000) {
+        return 30000;
+      } else {
+        return weight;
+      }
+    };
+
     const data = {
       origin: origin,
       destination: destination,
-      weight: weight,
+      weight: weightlimit(weight),
       courier: courier,
     };
 

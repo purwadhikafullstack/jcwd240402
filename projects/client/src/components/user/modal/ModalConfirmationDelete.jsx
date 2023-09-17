@@ -10,6 +10,7 @@ export default function ModalConfirmationDelete({
   errMsg,
   topic,
   deleteFor,
+  purpose = "delete",
 }) {
   const [openModal, setOpenModal] = useState();
 
@@ -32,7 +33,8 @@ export default function ModalConfirmationDelete({
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">
-              remember, you can't undo delete. Are you sure you want to delete
+              remember, you can't undo {purpose}. Are you sure you want to{" "}
+              {purpose}
               this {topic}?
             </h3>
             <div className="flex justify-center gap-4">

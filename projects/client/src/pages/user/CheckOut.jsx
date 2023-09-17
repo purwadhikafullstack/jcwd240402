@@ -43,6 +43,7 @@ const CheckOut = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [invoiceUniqCode, setInvoiceUniqCode] = useState("");
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -153,6 +154,11 @@ const CheckOut = () => {
         }
       )
       .then((res) => {
+        setInvoiceUniqCode(
+          (res.data?.order?.no_invoice).slice(
+            res.data?.order?.no_invoice.length - 8
+          )
+        );
         axios
           .post(
             "/user/check-out-details",
@@ -166,7 +172,7 @@ const CheckOut = () => {
             }
           )
           .then((res) => {
-            console.log(res);
+            console.log(res?.data);
           })
           .catch(() => {});
         axios
@@ -185,11 +191,9 @@ const CheckOut = () => {
             console.log(error.response?.data?.message);
           });
 
-        navigate("/payment");
+        navigate(`/payment/${res.data?.order?.no_invoice.substr(-8)}`);
       });
   };
-
-  console.log(cartData);
 
   const handleCourierService = (courier) => {
     setChosenCourierService(courier.label);

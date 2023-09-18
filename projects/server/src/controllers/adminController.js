@@ -521,14 +521,105 @@ module.exports = {
         });
     }
   },
+  //   const orderId = req.params.id;
+  //   console.log("Extracted Order ID:", orderId);
+
+  //   const t = await db.sequelize.transaction();
+
+  //   try {
+  //     const updatedOrder = await db.Order.update(
+  //       { order_status_id: 3 },
+  //       { where: { id: orderId } }
+  //     );
+
+  //     if (updatedOrder[0] === 0) {
+  //       throw new Error("Order not found");
+  //     }
+
+  //     const reservedStocks = await db.Reserved_stock.findAll({
+  //       where: { order_id: orderId },
+  //       include: [
+  //         {
+  //           model: db.Warehouse_stock,
+  //           as: "WarehouseProductReservation",
+  //         },
+  //       ],
+  //       transaction: t,
+  //     });
+
+  //     if (!reservedStocks || reservedStocks.length === 0) {
+  //       throw new Error("Reserved stocks not found");
+  //     }
+
+  //     for (let reservedStock of reservedStocks) {
+  //       const warehouseStock = await db.Warehouse_stock.findOne({
+  //         where: {
+  //           warehouse_id:
+  //             reservedStock.WarehouseProductReservation.warehouse_id,
+  //           product_id: reservedStock.WarehouseProductReservation.product_id,
+  //         },
+  //         transaction: t,
+  //       });
+  //       if (!warehouseStock) {
+  //         throw new Error(
+  //           "Warehouse stock not found for product: " + reservedStock.product_id
+  //         );
+  //       }
+
+  //       if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
+  //         const stockTransferResult = await autoStockTransfer(
+  //           reservedStock.warehouse_id,
+  //           reservedStock.product_id,
+  //           reservedStock.reserve_quantity
+  //         );
+
+  //         if (stockTransferResult.status !== "success") {
+  //           throw new Error(
+  //             "Failed to transfer stock for product " +
+  //               reservedStock.product_id +
+  //               ": " +
+  //               stockTransferResult.message
+  //           );
+  //         }
+
+  //         await warehouseStock.reload();
+  //       }
+  //       await warehouseStock.save({ transaction: t });
+  //     }
+
+  //     await t.commit();
+
+  //     res
+  //       .status(200)
+  //       .json({ message: "Payment accepted, order is in process" });
+  //   } catch (error) {
+  //     if (t && !t.finished) {
+  //       await t.rollback();
+  //     }
+  //     console.error(error);
+  //     res
+  //       .status(500)
+  //       .json({
+  //         message: "An error occurred while accepting payment",
+  //         error: error.message,
+  //       });
+  //   }
+  // },
 
   async rejectPayment(req, res) {
-    const orderId = req.params.orderId;
+    const orderId = req.params.id;
 
     const t = await db.sequelize.transaction();
 
     try {
-      await updateOrderStatus(orderId, 2);
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 1 },
+        { where: { id: orderId } }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
 
       const reservedStock = await db.Reserved_stock.findOne({
         where: { order_id: orderId },
@@ -541,27 +632,7 @@ module.exports = {
         transaction: t,
       });
 
-      const warehouseStock = await db.Warehouse_stock.findOne({
-        where: {
-          warehouse_id: reservedStock.WarehouseProductReservation.warehouse_id,
-          product_id: reservedStock.WarehouseProductReservation.product_id,
-        },
-        transaction: t,
-      });
-
-      if (!warehouseStock) {
-        throw new Error("Warehouse stock not found");
-      }
-
-      warehouseStock.product_stock += reservedStock.reserve_quantity;
-
-      await reservedStock.destroy({ transaction: t });
-
-      await warehouseStock.save({ transaction: t });
-
-      await t.commit();
-
-      res.status(200).json({ message: "Payment rejected, order is cancelled" });
+      res.status(200).json({ message: "Payment rejected, user needs to go back to payment" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -575,6 +646,182 @@ module.exports = {
         });
     }
   },
+  //   const orderId = req.params.orderId;
+
+  //   const t = await db.sequelize.transaction();
+
+  //   try {
+  //     await updateOrderStatus(orderId, 2);
+
+  //     const reservedStock = await db.Reserved_stock.findOne({
+  //       where: { order_id: orderId },
+  //       include: [
+  //         {
+  //           model: db.Warehouse_stock,
+  //           as: "WarehouseProductReservation",
+  //         },
+  //       ],
+  //       transaction: t,
+  //     });
+
+  //     const warehouseStock = await db.Warehouse_stock.findOne({
+  //       where: {
+  //         warehouse_id: reservedStock.WarehouseProductReservation.warehouse_id,
+  //         product_id: reservedStock.WarehouseProductReservation.product_id,
+  //       },
+  //       transaction: t,
+  //     });
+
+  //     if (!warehouseStock) {
+  //       throw new Error("Warehouse stock not found");
+  //     }
+
+  //     warehouseStock.product_stock += reservedStock.reserve_quantity;
+
+  //     await reservedStock.destroy({ transaction: t });
+
+  //     await warehouseStock.save({ transaction: t });
+
+  //     await t.commit();
+
+  //     res.status(200).json({ message: "Payment rejected, order is cancelled" });
+  //   } catch (error) {
+  //     if (t && !t.finished) {
+  //       await t.rollback();
+  //     }
+  //     console.error(error);
+  //     res
+  //       .status(500)
+  //       .json({
+  //         message: "An error occurred while rejecting payment",
+  //         error: error.message,
+  //       });
+  //   }
+  // },
+
+  async sendUserOrder(req, res) {
+    const orderId = req.params.id;
+    console.log("Extracted Order ID:", orderId);
+
+    const t = await db.sequelize.transaction();
+
+    try {
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 6,
+          tracking_code: Math.floor(Math.random() * 1000000000000000),
+          delivery_time: new Date().toString(),
+          transaction: t},
+        { where: { id: orderId } }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
+
+      const reservedStocks = await db.Reserved_stock.findAll({
+        where: { order_id: orderId },
+        include: [
+          {
+            model: db.Order,
+          },
+          {
+            model: db.Warehouse_stock,
+            as: "WarehouseProductReservation"
+          },
+        ],
+      })
+
+      for (let reservedStock of reservedStocks) {
+
+        const warehouseStockUpdate = await db.Warehouse_stock.update(
+          { product_stock: reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity  },
+          { where: { id: reservedStock.WarehouseProductReservation.id },
+          transaction: t,
+         }
+          
+        )
+
+        const reservedStockDestroy = await db.Reserved_stock.destroy({
+          where: { order_id: orderId, warehouse_stock_id: reservedStock.WarehouseProductReservation.id},
+          include: [
+            {
+              model: db.Warehouse_stock,
+              as: "WarehouseProductReservation",
+            },
+          ],
+          transaction: t,
+        });
+
+      }
+
+      await t.commit();
+
+      res
+        .status(200)
+        .json({ message: "item(s) are sent, order shipped",
+                test: reservedStocks });
+    } catch (error) {
+      if (t && !t.finished) {
+        await t.rollback();
+      }
+      console.error(error);
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while accepting payment",
+          error: error.message,
+        });
+    }
+  },
+
+  async CancelUserOrder(req, res) {
+    const orderId = req.params.id;
+    console.log("Extracted Order ID:", orderId);
+
+    const t = await db.sequelize.transaction();
+
+    try {
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 5,
+          transaction: t},
+        { where: { id: orderId } }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
+
+      const reservedStockDestroy = await db.Reserved_stock.destroy({
+        where: { order_id: orderId },
+        include: [
+          {
+            model: db.Warehouse_stock,
+            as: "WarehouseProductReservation",
+          },
+        ],
+        transaction: t,
+      });
+
+
+      await t.commit();
+
+      res
+        .status(200)
+        .json({ message: "order canceled",
+                test: updatedOrder });
+    } catch (error) {
+      if (t && !t.finished) {
+        await t.rollback();
+      }
+      console.error(error);
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while accepting payment",
+          error: error.message,
+        });
+    }
+  },
 
   async getUserOrder(req, res) {
     const page = Number(req.query.page) || 1;
@@ -583,22 +830,26 @@ module.exports = {
     const warehouse_id = req.query.warehouseId;
     const searchName = req.query.searchName;
 
-    const filter = {};
+    const options = {
+      where: {},
+    };
+
+    const filter3 = {};
 
     if (order_status_id) {
-      filter.order_status_id = order_status_id;
+      options.where.order_status_id = order_status_id;
     }
 
     if (warehouse_id) {
-      filter.warehouse_id = warehouse_id;
+      options.where.warehouse_id = warehouse_id;
     }
 
     if (searchName) {
-      filter.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
+      options.where.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
     }
 
     try {
-      const response = await getAllUserOrder(filter, page, pageSize);
+      const response = await getAllUserOrder(options, filter3, page, pageSize);
 
       if (response.success) {
         res.status(200).send({

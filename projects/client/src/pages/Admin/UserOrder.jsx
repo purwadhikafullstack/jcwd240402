@@ -72,7 +72,7 @@ const UserOrder = () => {
         setTotalPages(response.pagination.totalPages);
       })
       .catch((err) => {
-        setError(err.response.message);
+        setError(err.response);
       });
   }, [warehouseId, orderStatusId, currentPage]);
 

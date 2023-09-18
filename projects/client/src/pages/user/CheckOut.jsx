@@ -270,7 +270,7 @@ const CheckOut = () => {
                         >
                           <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
                             <img
-                              src={`${process.env.REACT_APP_API_BASE_URL}${item.Warehouse_stock?.Product?.Image_products[0].img_product}`}
+                              src={`${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
                               alt=""
                               className="w-full"
                             />

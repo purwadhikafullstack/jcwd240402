@@ -1,4 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import InfiniteScroll from "react-infinite-scroll-component";
+
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
@@ -6,57 +11,65 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
-import CardProduct from "../../components/user/card/CardProduct";
 import Loading from "../../components/Loading";
-import { useDispatch, useSelector } from "react-redux";
 import { wishlistUser } from "../../features/wishlistDataSlice";
 import wishlistempty from "../../assets/images/wishlistempty.png";
-import { Link } from "react-router-dom";
 import CardWishlist from "../../components/user/card/CardWishlist";
-import Alert from "../../components/user/Alert";
 import withAuthUser from "../../components/user/withAuthUser";
+import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
 
 const AllWishlist = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loading, setLoading] = useState(true);
   const access_token = getCookie("access_token");
+  const [list, setList] = useState([]);
+  const [lastId, setLastId] = useState(0);
+  const [tempId, setTempId] = useState(0);
+  const [limit, setLimit] = useState(3);
+  const [hasMore, setHasMore] = useState(true);
+
   const dispatch = useDispatch();
   const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {
-    axios
-      .get("/user/wishlist", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(wishlistUser(res.data?.result));
-        setLoading(false);
-      })
-      .catch((error) => {
-        setErrMsg(error.response?.data?.message);
-      });
-  }, [access_token, dispatch]);
+    getList();
+  }, [lastId, limit]);
 
-  if (loading) {
-    return (
-      <div className=" w-full h-screen flex justify-center items-center">
-        <Loading />
-      </div>
-    );
-  }
+  const getList = async () => {
+    try {
+      const response = await axios.get(
+        `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
-  const wishlistMap = wishlistData.map((item) => {
-    return {
-      src: item.Warehouse_stock?.Product?.Image_products[0].img_product,
-      category: item.Warehouse_stock?.Product?.category?.name,
-      name: item.Warehouse_stock?.Product?.name,
-      desc: item.Warehouse_stock?.Product?.description,
-      price: item.Warehouse_stock?.Product?.price,
-      stock: item.Warehouse_stock?.product_stock,
-      weight: item.Warehouse_stock?.Product?.weight,
-      id: item.Warehouse_stock?.id,
-    };
-  });
+      const newList = response.data.result;
+      setList([...list, ...newList]);
+      setTempId(response.data.lastId);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      setErrMsg(error.response.data.message);
+    }
+  };
+
+  const fetchMore = () => {
+    setTimeout(() => {
+      setLastId(tempId);
+    }, 1000);
+  };
+
+  const wishlistMap = list.map((item) => ({
+    src: item.Warehouse_stock?.Product?.Image_products[0].img_product,
+    category: item.Warehouse_stock?.Product?.category?.name,
+    name: item.Warehouse_stock?.Product?.name,
+    desc: item.Warehouse_stock?.Product?.description,
+    price: item.Warehouse_stock?.Product?.price,
+    stock: item.Warehouse_stock?.product_stock,
+    weight: item.Warehouse_stock?.Product?.weight,
+    id: item.Warehouse_stock?.id,
+    date: item.createdAt,
+  }));
 
   return (
     <div>
@@ -77,7 +90,7 @@ const AllWishlist = () => {
                 </p>
                 <p className="text-xs text-grayText">
                   Fill in your Wishlist by clicking the heart icon when you find
-                  an product you like.
+                  a product you like.
                 </p>
                 <Link
                   to="/all-products"
@@ -88,21 +101,32 @@ const AllWishlist = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-2">
-              {/* {wishlistMap.map((productItem) => (
-                <CardProduct
-                  src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.src}`}
-                  category={productItem.category}
-                  name={productItem?.name}
-                  desc={productItem?.desc}
-                  price={productItem?.price}
-                  key={productItem.id}
-                />
-              ))} */}
+            <div className="space-y-2 ">
+              <h1 className="font-bold text-xl">Wishlist</h1>
 
-              {wishlistMap.map((item) => (
-                <CardWishlist key={item.id} item={item} />
-              ))}
+              <InfiniteScroll
+                dataLength={list.length}
+                next={fetchMore}
+                hasMore={hasMore}
+                loader={
+                  <div className="animate-bounce flex gap-4 mb-4 justify-center items-center">
+                    <img src={loadingfurnifor} alt="" />
+                  </div>
+                }
+                endMessage={
+                  <div className="flex flex-col gap-4 mb-4 justify-center items-center">
+                    <img src={loadingfurnifor} alt="" className="w-8" />
+                  </div>
+                }
+              >
+                {wishlistMap.map((item) => (
+                  <div key={item.id} className="lg:mx-20 md:mx-20">
+                    <Link to={`/product/${item.name}`}>
+                      <CardWishlist item={item} />
+                    </Link>
+                  </div>
+                ))}
+              </InfiniteScroll>
             </div>
           )}
         </div>

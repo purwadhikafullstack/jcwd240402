@@ -22,7 +22,12 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        setIsAdded(false);
+        console.log(res.data?.result);
+        if (res.data?.result === null) {
+          setIsAdded(false);
+        } else {
+          setIsAdded(true);
+        }
         setLoading(false);
       })
       .catch((error) => {
@@ -49,7 +54,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       );
 
       if (response.data.ok) {
-        setIsAdded(true);
         setSuccessMsg(response.data?.message);
         setOpenAlert(true);
         setLoading(false);
@@ -86,7 +90,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       });
 
       if (response.data.ok) {
-        setIsAdded(false);
         setSuccessMsg(response.data?.message);
         setOpenAlert(true);
         setLoading(false);
@@ -103,7 +106,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
           });
       }
     } catch (error) {
-      setIsAdded(true);
       setOpenAlert(true);
       setLoading(false);
       if (!error.response) {
@@ -128,7 +130,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       {isAdded ? (
         <button
           onClick={() => {
-            setIsAdded(!isAdded);
+            setIsAdded(false);
             handleDeleteWishlist();
           }}
           disabled={!access_token && !refresh_token && userData.role_id !== 3}
@@ -143,7 +145,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       ) : (
         <button
           onClick={() => {
-            setIsAdded(!isAdded);
+            setIsAdded(true);
             handleAddWishlist();
           }}
           disabled={!access_token && !refresh_token && userData.role_id !== 3}

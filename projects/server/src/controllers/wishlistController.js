@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Op } = require("sequelize");
 
 module.exports = {
   addWishlist: async (req, res) => {
@@ -153,6 +154,7 @@ module.exports = {
 
   getAllWishlist: async (req, res) => {
     const userData = req.user;
+
     try {
       const userWishlist = await db.Wishlist.findAll({
         where: { user_id: userData.id },
@@ -193,6 +195,118 @@ module.exports = {
       res.status(200).json({
         ok: true,
         result: userWishlist,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        ok: false,
+        message: "something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  getAllWishlistInfiniteScroll: async (req, res) => {
+    const userData = req.user;
+    const last_id = Number(req.query.lastId) || 0;
+    const limit = Number(req.query.limit) || 3;
+
+    try {
+      let result = [];
+      if (last_id < 1) {
+        const results = await db.Wishlist.findAll({
+          where: { user_id: userData.id },
+          attributes: {
+            exclude: ["updatedAt", "user_id", "warehouse_stock_id"],
+          },
+          include: [
+            {
+              model: db.Warehouse_stock,
+              attributes: {
+                exclude: [
+                  "updatedAt",
+                  "createdAt",
+                  "warehouse_id",
+                  "product_id",
+                ],
+              },
+              include: [
+                {
+                  model: db.Product,
+                  attributes: { exclude: ["updatedAt", "createdAt"] },
+                  include: [
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["updatedAt", "createdAt", "deletedAt"],
+                      },
+                    },
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["updatedAt", "createdAt", "id", "product_id"],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = results;
+      } else {
+        const results = await db.Wishlist.findAll({
+          where: { id: { [Op.lt]: last_id }, user_id: userData.id },
+          attributes: {
+            exclude: ["updatedAt", "user_id", "warehouse_stock_id"],
+          },
+          include: [
+            {
+              model: db.Warehouse_stock,
+              attributes: {
+                exclude: [
+                  "updatedAt",
+                  "createdAt",
+                  "warehouse_id",
+                  "product_id",
+                ],
+              },
+              include: [
+                {
+                  model: db.Product,
+                  attributes: { exclude: ["updatedAt", "createdAt"] },
+                  include: [
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["updatedAt", "createdAt", "deletedAt"],
+                      },
+                    },
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["updatedAt", "createdAt", "id", "product_id"],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = results;
+      }
+
+      res.status(200).json({
+        ok: true,
+        result: result,
+        lastId: result.length ? result[result.length - 1].id : 0,
+        hasMore: result.length >= limit ? true : false,
       });
     } catch (error) {
       return res.status(500).json({

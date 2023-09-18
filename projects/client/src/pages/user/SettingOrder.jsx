@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -22,6 +23,9 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import orderempty from "../../assets/images/emptyorder.png";
+import InfiniteScroll from "react-infinite-scroll-component";
+import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -36,6 +40,45 @@ const SettingOrder = () => {
   const dispatch = useDispatch();
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+
+  const [list, setList] = useState([]);
+  const [lastId, setLastId] = useState(0);
+  const [tempId, setTempId] = useState(0);
+  const [limit, setLimit] = useState(3);
+  const [keyword, setKeyword] = useState("");
+  const [query, setQuery] = useState("");
+
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    getList();
+  }, [lastId, limit, keyword]);
+
+  const getList = async () => {
+    try {
+      const response = await axios.get(
+        `/user/order-scroll?search=${keyword}&lastId=${lastId}&limit=${limit}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+
+      const newList = response.data.order;
+
+      setList([...list, ...newList]);
+      setTempId(response.data.lastId);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      setErrMsg(error.response.data.message);
+      console.log(error.response.data);
+    }
+  };
+
+  const fetchMore = () => {
+    setTimeout(() => {
+      setLastId(tempId);
+    }, 1000);
+  };
 
   useEffect(() => {
     if (!access_token && refresh_token) {
@@ -65,10 +108,10 @@ const SettingOrder = () => {
       });
   }, [access_token]);
 
-  const handleClickStatus = (id, status) => {
+  const handleClickStatus = async (id, status) => {
     console.log(id);
-    axios
-      .post(
+    try {
+      const res = await axios.post(
         "/user/order-status",
         {
           id: id,
@@ -77,21 +120,14 @@ const SettingOrder = () => {
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
-      )
-      .then((res) => {
-        setLoading(false);
-        setOrderStatus(res.data?.order);
-
-        axios
-          .get("/user/order", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => setUserOrder(res.data?.order));
-      })
-      .catch((error) => {
-        setLoading(false);
-        setErrMsg(error.response?.data?.message);
-      });
+      );
+      setLoading(false);
+      setOrderStatus(res.data?.order);
+      // updateOrderList();
+    } catch (error) {
+      setLoading(false);
+      setErrMsg(error.response?.data?.message);
+    }
   };
 
   const handleDeleteReserved = (orderId) => {
@@ -100,10 +136,21 @@ const SettingOrder = () => {
       .delete(`/user/reserved-order/${orderId}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => setSuccessMsg(res.data?.message))
+      .then((res) => {
+        setSuccessMsg(res.data?.message);
+        getList();
+      })
       .catch((error) => setErrMsg(error.response?.data?.message));
   };
 
+  const searchData = (e) => {
+    e.preventDefault();
+    setLastId(0);
+    setList([]);
+    setKeyword(query);
+  };
+
+  /* CANCEL SETELAH CONFIRM DI DISABLE DAN GANTI WARNA */
   const OrderButton = ({ statusBefore, orderId }) => {
     if (statusBefore === 6) {
       return (
@@ -146,6 +193,9 @@ const SettingOrder = () => {
     );
   }
 
+  console.log(userOrder);
+  console.log(keyword);
+
   return (
     <div>
       <NavbarDesktop />
@@ -161,6 +211,7 @@ const SettingOrder = () => {
           <CardProfile />
           <div className="lg:col-span-4 w-full mt-4 md:mt-0 lg:mt-0 rounded-lg shadow-card-1 ">
             <NavigatorSetting />
+
             {userOrder.length === 0 ? (
               <div className="p-4 w-full flex flex-col justify-center items-center">
                 <img src={orderempty} alt="" className="w-72" />
@@ -169,52 +220,96 @@ const SettingOrder = () => {
                 </h4>
               </div>
             ) : (
-              userOrder?.map((order) => (
-                <div
-                  key={order.id}
-                  className="grid grid-cols-12 my-4 mx-10 rounded-lg p-2 shadow-card-1 border-2"
-                >
-                  <div className="text-xs h-fit rounded-lg col-span-9 md:col-span-9 lg:col-span-9 ">
-                    <h1>{order.delivery_time}</h1>
-                    {order.Order_details?.map((details) => (
-                      <div className="flex ml-4 text-xs gap-2 h-fit rounded-lg">
-                        <img
-                          src={`${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                          alt=""
-                          className="w-20"
-                        />
-                        <div>
-                          <h1 className="font-bold">
-                            {details.Warehouse_stock?.Product?.name}
-                          </h1>
-                          <h1> {details.quantity} unit</h1>
-
-                          <h1>Order Total: {toRupiah(order.total_price)}</h1>
-                          <h1>Courier Used: {order.delivery_courier}</h1>
-                          <Badge color="green" className="w-fit">
-                            {order.Order_status?.name}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-
-                    {order.Order_status?.id == 1 ? (
-                      <Link to={"/payment/" + order?.no_invoice?.substr(-8)}>
-                        <button className="w-full bg-blue3 p-2 mt-2 font-semibold text-white rounded-md">
-                          Finish Payment
-                        </button>
-                      </Link>
-                    ) : null}
+              <InfiniteScroll
+                dataLength={list.length}
+                next={fetchMore}
+                hasMore={hasMore}
+                loader={
+                  <div className="animate-bounce flex gap-4 my-4 justify-center items-center">
+                    <img src={loadingfurnifor} alt="" />
                   </div>
-
-                  <div className="col-span-3 grid justify-center items-center text-xs md:col-span-3 lg:col-span-3">
-                    <OrderButton
-                      statusBefore={order.Order_status?.id}
-                      orderId={order.id}
+                }
+                endMessage={
+                  <div className="flex flex-col gap-4 mb-4 justify-center items-center">
+                    <img src={loadingfurnifor} alt="" className="w-8" />
+                  </div>
+                }
+              >
+                <div className="mx-6 md:mx-10 lg:md-10 mt-4 rounded-lg">
+                  <form
+                    action=""
+                    onSubmit={searchData}
+                    className="flex  w-full justify-between"
+                  >
+                    <input
+                      type="text"
+                      placeholder="search invoice id"
+                      value={query}
+                      onChange={(e) => {
+                        setQuery(e.target.value);
+                      }}
+                      className=" border-gray-400 w-full rounded-l-lg text-inherit"
                     />
-                  </div>
+                    <button
+                      type="submit"
+                      className="bg-blue3 p-2 w-16 flex justify-center items-center  rounded-r-lg"
+                    >
+                      <AiOutlineSearch className="text-xl text-white font-bold" />
+                    </button>
+                  </form>
                 </div>
-              ))
+                {list?.map((order, idx) => (
+                  <div key={idx}>
+                    <div className="flex justify-between mt-4 mx-6 md:mx-10 lg:mx-10 px-4 py-1 rounded-t-md shadow-card-1 text-sm font-semibold">
+                      <h4>{dayjs(order.createdAt).format("D MMMM YYYY")}</h4>
+                      <h4>invoice id: {order?.no_invoice?.substr(-8)}</h4>
+                    </div>
+                    <div
+                      key={order.id}
+                      className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-  lg p-2 shadow-card-1 border-2"
+                    >
+                      <div className="text-xs h-fit rounded-lg col-span-12 md:col-span-12 lg:col-span-12 ">
+                        <h1>{order.delivery_time}</h1>
+                        {order.Order_details?.map((details) => (
+                          <div className="flex ml-4 mb-2 text-xs gap-2 h-fit rounded-lg">
+                            <img
+                              src={`${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
+                              alt=""
+                              className="w-20 object-cover"
+                            />
+                            <div>
+                              <h1 className="font-bold">
+                                {details.Warehouse_stock?.Product?.name}
+                              </h1>
+                              <h1> {details.quantity} unit</h1>
+
+                              <h1>
+                                Order Total: {toRupiah(order.total_price)}
+                              </h1>
+                              <h1>Courier Used: {order.delivery_courier}</h1>
+                              <Badge color="green" className="w-fit">
+                                {order.Order_status?.name}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+
+                        {order.Order_status?.id == 1 ? (
+                          <Link
+                            to={`/order-confirm/${order?.no_invoice?.substr(
+                              -8
+                            )}`}
+                          >
+                            <button className="w-full bg-blue3 p-2 mt-2 font-semibold text-white rounded-md">
+                              Order Confirmation
+                            </button>
+                          </Link>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </InfiniteScroll>
             )}
           </div>
         </div>

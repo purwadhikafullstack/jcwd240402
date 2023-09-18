@@ -133,7 +133,7 @@ const Home = () => {
 
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="flex justify-center">
-          <CarouselBanner imageUrls={imageUrls} />
+          <CarouselBanner imageUrls={imageUrls} carouselSize="home" />
         </div>
         <StaticBanner />
         <div className="">
@@ -159,7 +159,7 @@ const Home = () => {
           ))}
           <div className="flex justify-end">
             <Link
-              to=""
+              to="/all-products"
               className="text-sm hover:decoration-inherit hover:underline"
             >
               see more our products

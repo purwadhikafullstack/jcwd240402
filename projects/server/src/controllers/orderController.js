@@ -69,6 +69,125 @@ module.exports = {
     }
   },
 
+  getOrderListInfiniteScroll: async (req, res) => {
+    const userId = req.user.id;
+    const last_id = Number(req.query.lastId) || 0;
+    const limit = Number(req.query.limit) || 3;
+    const search = req.query.search || "";
+
+    try {
+      let result = [];
+      if (last_id < 1) {
+        const orderList = await db.Order.findAll({
+          where: {
+            no_invoice: {
+              [Op.like]: `%${search}%`,
+            },
+            user_id: userId,
+          },
+          include: [
+            {
+              model: db.Order_status,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+              model: db.Order_detail,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Warehouse_stock,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: {
+                  model: db.Product,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                  include: [
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt", "deletedAt"],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = orderList;
+      } else {
+        const orderList = await db.Order.findAll({
+          where: {
+            id: { [Op.lt]: last_id },
+            no_invoice: {
+              [Op.like]: `%${search}%`,
+            },
+            user_id: userId,
+          },
+          include: [
+            {
+              model: db.Order_status,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+            },
+            {
+              model: db.Order_detail,
+              attributes: { exclude: ["createdAt", "updatedAt"] },
+              include: {
+                model: db.Warehouse_stock,
+                attributes: { exclude: ["createdAt", "updatedAt"] },
+                include: {
+                  model: db.Product,
+                  attributes: {
+                    exclude: ["createdAt", "updatedAt"],
+                  },
+                  include: [
+                    {
+                      model: db.Image_product,
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt"],
+                      },
+                    },
+                    {
+                      model: db.Category,
+                      as: "category",
+                      attributes: {
+                        exclude: ["createdAt", "updatedAt", "deletedAt"],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          limit: limit,
+          order: [["id", "DESC"]],
+        });
+        result = orderList;
+      }
+
+      res.json({
+        ok: true,
+        order: result,
+        lastId: result.length ? result[result.length - 1].id : 0,
+        hasMore: result.length >= limit ? true : false,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "An error occurred while fetching order list",
+        error: error.message,
+      });
+    }
+  },
+
   getCity: async (req, res) => {
     const cityId = req.query.id;
     const provinceId = req.query.province;
@@ -89,10 +208,18 @@ module.exports = {
   getCost: async (req, res) => {
     const { origin, destination, weight, courier } = req.body;
 
+    const weightlimit = (weight) => {
+      if (weight > 30000) {
+        return 30000;
+      } else {
+        return weight;
+      }
+    };
+
     const data = {
       origin: origin,
       destination: destination,
-      weight: weight,
+      weight: weightlimit(weight),
       courier: courier,
     };
 
@@ -124,16 +251,21 @@ module.exports = {
     const transaction = await db.sequelize.transaction();
 
     try {
-      const newOrder = await db.Order.create({
-        user_id,
-        order_status_id: 1,
-        total_price,
-        delivery_price,
-        delivery_courier,
-        no_invoice: `FF${new Date().toLocaleString().replace(/\W/g,'')}` + `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
-        address_user_id,
-        warehouse_id,
-      });
+      const newOrder = await db.Order.create(
+        {
+          user_id,
+          order_status_id: 1,
+          total_price,
+          delivery_price,
+          delivery_courier,
+          no_invoice:
+            `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+            `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          address_user_id,
+          warehouse_id,
+        },
+        { transaction }
+      );
 
       await transaction.commit();
       res.status(200).json({
@@ -289,7 +421,11 @@ module.exports = {
 
     try {
       const orderData = await db.Order.findOne({
-        where: { user_id: userId, order_status_id: 1, no_invoice: { [Op.endsWith]: id}},
+        where: {
+          user_id: userId,
+          order_status_id: 1,
+          no_invoice: { [Op.endsWith]: id },
+        },
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
         },
@@ -306,7 +442,13 @@ module.exports = {
           img_payment: `/payment-proof/${paymentImage}`,
           order_status_id: 2,
         },
-        { where: { user_id: userId, order_status_id: 1 } }
+        {
+          where: {
+            user_id: userId,
+            order_status_id: 1,
+            no_invoice: { [Op.endsWith]: id },
+          },
+        }
       );
 
       res.status(200).json({
@@ -323,17 +465,15 @@ module.exports = {
   },
 
   getCurrentOrderList: async (req, res) => {
-
-    const id = req.params.id
+    const invoiceId = req.params.invoiceId;
     const userId = req.user.id;
-    
+
     try {
       const orderList = await db.Order.findOne({
-        where: { user_id: userId, no_invoice: { [Op.endsWith]: id} },
+        where: { user_id: userId, no_invoice: { [Op.endsWith]: invoiceId } },
         include: [
           {
             model: db.Order_status,
-            where: { id: 1 },
             attributes: { exclude: ["createdAt", "updatedAt"] },
           },
           {

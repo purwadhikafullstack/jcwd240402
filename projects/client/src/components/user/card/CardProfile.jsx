@@ -10,7 +10,7 @@ const CardProfile = ({ inputPhotoRef }) => {
   const userData = useSelector((state) => state.profiler.value);
   return (
     <div className="md:col-span-1 lg:col-span-1 rounded-xl h-56 md:h-52 md:mb-4 items-center lg:h-fit shadow-card-1 ">
-      <div className="flex items-center p-2 gap-5 border-b-2 border-gray-300  ">
+      <div className="flex flex-wrap items-center p-2 gap-5 border-b-2 border-gray-300  ">
         <div className="relative ">
           <div className="relative w-16 h-16  flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
             <img

@@ -47,6 +47,7 @@ import PaymentFinalizing from "./user/PaymentFinalizing";
 import UserOrder from "./admin/UserOrder";
 import SalesReport from "./admin/SalesReport";
 import UserList from "./admin/UserList";
+import OrderConfirmReview from "./user/OrderConfirmReview";
 
 function App() {
   return (
@@ -123,7 +124,11 @@ function App() {
             <Route path="/product/:name" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckOut />} />
-            <Route path="/payment/:id" element={<PaymentFinalizing />} />
+            <Route path="/payment/:invoiceId" element={<PaymentFinalizing />} />
+            <Route
+              path="/order-confirm/:invoiceId"
+              element={<OrderConfirmReview />}
+            />
             <Route
               path="/product/product-category/:categoryName"
               element={<ProductPerCategory />}

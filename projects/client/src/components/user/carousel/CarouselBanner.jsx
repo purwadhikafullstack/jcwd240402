@@ -7,7 +7,7 @@ const CarouselBanner = ({ imageUrls, carouselSize }) => {
   switch (carouselSize) {
     case "home":
       sizeClasses =
-        "w-[24rem] h-32 md:w-[49rem] md:h-[15rem] lg:w-[79rem] lg:h-[20rem]";
+        "w-[21.5rem] h-32 md:w-[49rem] md:h-[15rem] lg:w-[79rem] lg:h-[20rem]";
       break;
     case "products":
       sizeClasses =

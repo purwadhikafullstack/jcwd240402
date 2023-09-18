@@ -77,7 +77,7 @@ const NavbarMobile = () => {
     { name: "HOME", to: "/" },
     { name: "PROFILE", to: "/user/setting" },
     { name: "CART", to: "/cart" },
-    { name: "ORDER", to: "/checkout" },
+    { name: "ORDER", to: "/user/setting/order" },
   ];
 
   const handleLogOut = () => {

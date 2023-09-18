@@ -259,14 +259,14 @@ const SettingOrder = () => {
                   </form>
                 </div>
                 {list?.map((order, idx) => (
-                  <>
+                  <div key={idx}>
                     <div className="flex justify-between mt-4 mx-6 md:mx-10 lg:mx-10 px-4 py-1 rounded-t-md shadow-card-1 text-sm font-semibold">
                       <h4>{dayjs(order.createdAt).format("D MMMM YYYY")}</h4>
                       <h4>invoice id: {order?.no_invoice?.substr(-8)}</h4>
                     </div>
                     <div
                       key={order.id}
-                      className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-lg p-2 shadow-card-1 border-2"
+                      className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-  lg p-2 shadow-card-1 border-2"
                     >
                       <div className="text-xs h-fit rounded-lg col-span-12 md:col-span-12 lg:col-span-12 ">
                         <h1>{order.delivery_time}</h1>
@@ -307,7 +307,7 @@ const SettingOrder = () => {
                         ) : null}
                       </div>
                     </div>
-                  </>
+                  </div>
                 ))}
               </InfiniteScroll>
             )}

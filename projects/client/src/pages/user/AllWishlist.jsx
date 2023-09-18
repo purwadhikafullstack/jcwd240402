@@ -56,7 +56,7 @@ const AllWishlist = () => {
   const fetchMore = () => {
     setTimeout(() => {
       setLastId(tempId);
-    }, 3000);
+    }, 1000);
   };
 
   const wishlistMap = list.map((item) => ({
@@ -127,8 +127,6 @@ const AllWishlist = () => {
                   </div>
                 ))}
               </InfiniteScroll>
-
-              {/* {loadingScroll && <p>loading</p>} */}
             </div>
           )}
         </div>

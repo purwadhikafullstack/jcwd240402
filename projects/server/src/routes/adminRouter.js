@@ -12,6 +12,10 @@ const stockController = require("../controllers/warehouseStockController")
 const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
+
+// User Routes
+router.get("/user-list",authMiddleware.verifyAccessTokenAdmin,adminController.getUsersList)
+
 // Admin Routes
 
 router.post("/register",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin); 
@@ -23,6 +27,11 @@ router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin);
 router.get("/", adminController.getAdminList);
 router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
 router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
+router.get("/order-list",Verify.verifyAccessTokenAdmin,adminController.getUserOrder);
+router.post("/accept-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.acceptPayment);
+router.post("/reject-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.rejectPayment);
+
+router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
 
 // Category Routes
 
@@ -48,6 +57,8 @@ router.patch("/product/delete/:id",authMiddleware.verifyAccessTokenSuperAdmin, p
 router.patch("/product/status/:name",authMiddleware.verifyAccessTokenSuperAdmin, productController.toggleProductStatus);
 
 router.delete("/product/image/:id",authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProductImage);
+router.delete("/products/:id", authMiddleware.verifyAccessTokenSuperAdmin, productController.deleteProduct);
+
 
 // Inventory Transfer Routes
 
@@ -61,6 +72,8 @@ router.patch("/stock-transfers/:transferid/reject",authMiddleware.verifyAccessTo
 
 //
 router.patch("/auto-transfer",stockController.test)
+
+router.patch("/approve/:id",adminController.acceptPayment)
 
 // List Routes
 

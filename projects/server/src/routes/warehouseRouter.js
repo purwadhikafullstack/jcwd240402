@@ -38,4 +38,6 @@ router.get(
 );
 router.get("/:name", warehouseController.getWarehouseByName);
 
+router.delete("/:warehouseId", warehouseController.deleteWarehouse);
+
 module.exports = router;

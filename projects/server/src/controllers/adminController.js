@@ -6,8 +6,9 @@ const { getAllAdmins, getOneAdmin } = require("../service/admin");
 const { getAllCities } = require("../service/city");
 const { getAllProvinces } = require("../service/province");
 const { getAllCategories } = require("../service/category");
-// const { generateAccessToken, generateRefreshToken } = require("../utils/index")
-const {autoStockTransfer} = require("../utils/index")
+const { getAllUsers } = require("../service/user");
+const { autoStockTransfer } = require("../utils/index");
+const { getAllUserOrder } = require("../service/order");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -76,13 +77,13 @@ module.exports = {
         attributes: {
           exclude: ["password", "createdAt", "updatedAt"],
         },
-        include:[
+        include: [
           {
-            model:db.Warehouse,
-            as: 'warehouse',
-            attributes: ["warehouse_name"]
-          }
-        ]
+            model: db.Warehouse,
+            as: "warehouse",
+            attributes: ["warehouse_name"],
+          },
+        ],
       });
 
       if (!admin) {
@@ -406,57 +407,78 @@ module.exports = {
       });
 
       if (!admin) {
-        return res.status(404).json({ message: 'Admin not found' });
+        return res.status(404).json({ message: "Admin not found" });
       }
 
       await admin.destroy();
 
-      res.status(200).json({ message: 'Admin deleted successfully' });
+      res.status(200).json({ message: "Admin deleted successfully" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'An error occurred while deleting admin', error: error.message });
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while deleting admin",
+          error: error.message,
+        });
     }
   },
 
   async updateOrderStatus(orderId, newStatusId) {
-    const updatedOrder = await Order.update(
+    const updatedOrder = await db.db.Order.update(
       { order_status_id: newStatusId },
       { where: { id: orderId } }
     );
-    
+
     if (updatedOrder[0] === 0) {
       throw new Error("Order not found");
     }
   },
-  
+
   async acceptPayment(req, res) {
-    const orderId = req.params.orderId;
-  
+    const orderId = req.params.id;
+    console.log("Extracted Order ID:", orderId);
+
     const t = await db.sequelize.transaction();
-  
+
     try {
-      await updateOrderStatus(orderId, 3);
-  
+      const updatedOrder = await db.Order.update(
+        { order_status_id: 3 },
+        { where: { id: orderId } }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
+      }
+
       const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
+        include: [
+          {
+            model: db.Warehouse_stock,
+            as: "WarehouseProductReservation",
+          },
+        ],
         transaction: t,
       });
-  
+
       if (!reservedStocks || reservedStocks.length === 0) {
         throw new Error("Reserved stocks not found");
       }
-  
+
       for (let reservedStock of reservedStocks) {
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
-            warehouse_id: reservedStock.warehouse_id,
-            product_id: reservedStock.product_id,
+            warehouse_id:
+              reservedStock.WarehouseProductReservation.warehouse_id,
+            product_id: reservedStock.WarehouseProductReservation.product_id,
           },
           transaction: t,
         });
-  
         if (!warehouseStock) {
-          throw new Error("Warehouse stock not found for product: " + reservedStock.product_id);
+          throw new Error(
+            "Warehouse stock not found for product: " + reservedStock.product_id
+          );
         }
 
         if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
@@ -465,79 +487,171 @@ module.exports = {
             reservedStock.product_id,
             reservedStock.reserve_quantity
           );
-  
+
           if (stockTransferResult.status !== "success") {
-            throw new Error("Failed to transfer stock for product " + reservedStock.product_id + ": " + stockTransferResult.message);
+            throw new Error(
+              "Failed to transfer stock for product " +
+                reservedStock.product_id +
+                ": " +
+                stockTransferResult.message
+            );
           }
 
           await warehouseStock.reload();
         }
-  
-        warehouseStock.product_stock -= reservedStock.reserve_quantity;
-  
-        await reservedStock.destroy({ transaction: t });
         await warehouseStock.save({ transaction: t });
       }
-  
+
       await t.commit();
-  
-      res.status(200).json({ message: "Payment accepted, order is in process" });
+
+      res
+        .status(200)
+        .json({ message: "Payment accepted, order is in process" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
-      res.status(500).json({ message: "An error occurred while accepting payment", error: error.message });
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while accepting payment",
+          error: error.message,
+        });
     }
   },
-  
-  
+
   async rejectPayment(req, res) {
     const orderId = req.params.orderId;
-    
+
     const t = await db.sequelize.transaction();
-  
+
     try {
-      await updateOrderStatus(orderId, 6);
-  
+      await updateOrderStatus(orderId, 2);
+
       const reservedStock = await db.Reserved_stock.findOne({
         where: { order_id: orderId },
+        include: [
+          {
+            model: db.Warehouse_stock,
+            as: "WarehouseProductReservation",
+          },
+        ],
         transaction: t,
       });
-  
-      if (!reservedStock) {
-        throw new Error("Reserved stock not found");
-      }
-  
+
       const warehouseStock = await db.Warehouse_stock.findOne({
         where: {
-          warehouse_id: reservedStock.warehouse_id,
-          product_id: reservedStock.product_id,
+          warehouse_id: reservedStock.WarehouseProductReservation.warehouse_id,
+          product_id: reservedStock.WarehouseProductReservation.product_id,
         },
         transaction: t,
       });
-  
+
       if (!warehouseStock) {
         throw new Error("Warehouse stock not found");
       }
-  
+
       warehouseStock.product_stock += reservedStock.reserve_quantity;
-  
+
       await reservedStock.destroy({ transaction: t });
-  
+
       await warehouseStock.save({ transaction: t });
-  
+
       await t.commit();
-  
+
       res.status(200).json({ message: "Payment rejected, order is cancelled" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
-      res.status(500).json({ message: "An error occurred while rejecting payment", error: error.message });
+      res
+        .status(500)
+        .json({
+          message: "An error occurred while rejecting payment",
+          error: error.message,
+        });
     }
-  }
-  
+  },
 
+  async getUserOrder(req, res) {
+    const page = Number(req.query.page) || 1;
+    const pageSize = Number(req.query.size) || 10;
+    const order_status_id = req.query.orderStatusId;
+    const warehouse_id = req.query.warehouseId;
+    const searchName = req.query.searchName;
+
+    const filter = {};
+
+    if (order_status_id) {
+      filter.order_status_id = order_status_id;
+    }
+
+    if (warehouse_id) {
+      filter.warehouse_id = warehouse_id;
+    }
+
+    if (searchName) {
+      filter.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
+    }
+
+    try {
+      const response = await getAllUserOrder(filter, page, pageSize);
+
+      if (response.success) {
+        res.status(200).send({
+          message: "Order list retrieved successfully",
+          orders: response.data,
+          pagination: response.pagination,
+        });
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  async getUsersList(req, res) {
+    const page = Number(req.query.page) || 1;
+    const perPage = Number(req.query.size) || 10;
+    const searchName = req.query.searchName;
+
+    const options = {
+      where: {},
+    };
+
+    if (searchName) {
+      options.where[db.Sequelize.Op.or] = [
+        {
+          username: { [db.Sequelize.Op.like]: `%${searchName}%` },
+        },
+      ];
+    }
+
+    try {
+      const response = await getAllUsers(options, page, perPage);
+
+      if (response.success) {
+        res.status(200).send({
+          message: "User list retrieved successfully",
+          users: response.data,
+          pagination: response.pagination,
+        });
+      } else {
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
 };

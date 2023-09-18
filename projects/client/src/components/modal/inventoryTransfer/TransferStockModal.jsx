@@ -3,6 +3,8 @@ import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 import Button from "../../Button";
+import { getCookie } from "../../../utils/tokenSetterGetter";
+
 
 const TransferStockModal = ({
   show,
@@ -13,6 +15,7 @@ const TransferStockModal = ({
 }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [quantity, setQuantity] = useState("");
+  const access_token = getCookie("access_token");
 
   const loadWarehouses = async (inputValue) => {
     try {
@@ -39,7 +42,9 @@ const TransferStockModal = ({
     };
 
     axios
-      .post("http://localhost:8000/api/admin/stock-transfer", payload)
+      .post("http://localhost:8000/api/admin/stock-transfer", payload,{
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
       .then(() => {
         onClose();
         fetchStocks();

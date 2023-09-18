@@ -40,6 +40,7 @@ module.exports = {
         references: {
           model: "Warehouses",
           key: "id",
+          onDelete: 'CASCADE' 
         },
       },
       createdAt: {

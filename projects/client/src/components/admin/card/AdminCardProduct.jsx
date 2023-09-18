@@ -41,14 +41,12 @@ const AdminCardProduct = ({
         alt={`${name} product`}
         className="w-full h-24 object-cover mb-2"
       />
-
       <button
         className="absolute top-2 right-2 z-10"
         onClick={handleMenuToggle}
       >
         <IoEllipsisHorizontalCircle />
       </button>
-
       {showMenu && (
         <div
           className="absolute top-6 right-0 bg-white rounded-lg shadow-card-1 border border-gray-200 z-20"
@@ -85,7 +83,6 @@ const AdminCardProduct = ({
           </ul>
         </div>
       )}
-
       <div className="flex flex-col justify-start items-start">
         <div className="py-1">
           <Badge color="purple" className="w-fit">

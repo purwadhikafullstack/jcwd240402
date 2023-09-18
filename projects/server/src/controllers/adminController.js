@@ -684,16 +684,6 @@ module.exports = {
       }
     }
 
-    if (loggedAdmin) {
-      options.where.admin_id = loggedAdmin;
-    }
-
-    if (adminWarehouseId) {
-      if (adminRoleId != 1) {
-        options.where.warehouse_id = adminWarehouseId;
-      }
-    }
-
     if (month && year) {
       options.where[db.Sequelize.Op.and] = [
         Sequelize.where(
@@ -717,34 +707,34 @@ module.exports = {
 
     try {
 
-      const response = await getAllUserOrder(options, page, perPage);
+      const response = await getAllUserOrder(options, filter2, filter3, page, perPage);
 
       const userOrder = response.data
 
-    const totalOnly = userOrder.map(
-      (m) => m.total_price - m.delivery_price)
+      const totalOnly = [];
+      const totalOnly2 = [];
+
+      const orderMap = userOrder.map((m) => { 
+        totalOnly.push(m.total_price - m.delivery_price)
+        {
+          m.Order_details.map((n) => {
+            if(n.Warehouse_stock){
+              totalOnly2.push(n.Warehouse_stock.Product.price * n.quantity)
+            }     
+          })
+        }
+    }
+  )
 
     const totalPrice = totalOnly.reduce((total, n) => total + n, 0)
-
-    //   const totalOnly = userOrder.map((m) => {
-    //     if(m.Warehouse_stock){
-    //       return m.Warehouse_stock.Product.price * m.quantity
-    //     }
-    //   })
-
-    //   const quickSum = (arr) => {
-    //     const sum = arr.reduce((acc, val) => {
-    //        return acc + (val || 0);
-    //     }, 0);
-    //     return sum;
-    //  };
-
-    //   const totalPrice = quickSum(totalOnly)
+    const totalPrice2 = totalOnly2.reduce((total, n) => total + n, 0)
 
   res.status(201).send({
       message: "successfully get sales report",
       sales_report: totalPrice,
-      sales_report2: userOrder
+      sales_report2: totalPrice2,
+      orders: userOrder,
+      test: month
   });
   } catch (error) {
     res.status(500).send({

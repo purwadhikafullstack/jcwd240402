@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Table } from "flowbite-react";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
+import Select from "react-select";
 import Button from "./Button";
 
 const TableComponent = ({
@@ -22,12 +23,52 @@ const TableComponent = ({
   showReject = false,
   showSend = false,
   showCancel = false,
+  showAsyncAction = false,
   showDetails = false,
 }) => {
   const [showDropdownIndex, setShowDropdownIndex] = useState(-1);
+  const [selectedActions, setSelectedActions] = useState(
+    Array(data.length).fill(null)
+  );
 
   const handleDropdownToggle = (index) => {
     setShowDropdownIndex(showDropdownIndex === index ? -1 : index);
+  };
+
+  const actionOptions = [
+    { value: "approve", label: "Approve" },
+    { value: "reject", label: "Reject" },
+    { value: "cancel", label: "Cancel" },
+    { value: "send", label: "Send" },
+  ];
+
+  const handleConfirmAction = (row, rowIndex) => {
+    const selectedActionForRow = selectedActions[rowIndex];
+    if (!selectedActionForRow) return;
+    switch (selectedActionForRow.value) {
+      case "approve":
+        onApprove(row);
+        break;
+      case "reject":
+        onReject(row);
+        break;
+      case "cancel":
+        onCancel(row);
+        break;
+      case "send":
+        onSend(row);
+        break;
+      default:
+        break;
+    }
+
+    const newActions = [...selectedActions];
+    newActions[rowIndex] = null;
+    setSelectedActions(newActions);
+  };
+
+  const shouldShowActions = () => {
+    return showTransfer || showApproveReject || showIcon || showApprove || showReject || showSend || showCancel || showAsyncAction;
   };
 
   return (
@@ -38,7 +79,7 @@ const TableComponent = ({
             {header}
           </Table.HeadCell>
         ))}
-        {(showTransfer || showApproveReject || showIcon || showApprove || showReject || showSend || showCancel) && (
+        {shouldShowActions() && (
           <Table.HeadCell className="bg-blue5">
             <span className="sr-only">Actions</span>
           </Table.HeadCell>
@@ -62,58 +103,34 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
-            {(showTransfer || showIcon || showApproveReject || showApprove || showReject || showSend || showCancel) && (
-              <Table.Cell>
-                {showApproveReject && (
-                  <Button
-                    buttonSize="small"
-                    buttonText="Manage"
-                    onClick={() => onApproveReject(row)}
-                    bgColor="bg-blue3"
-                    colorText="text-white"
-                    fontWeight="font-semibold"
-                  />
-                )}
-                {showApprove && (
-                  <Button
-                    buttonSize="small"
-                    buttonText="Approve"
-                    onClick={() => onApprove(row)}
-                    bgColor="bg-blue3"
-                    colorText="text-white"
-                    fontWeight="font-semibold"
-                  />
-                )}
-                {showReject && (
-                  <Button
-                    buttonSize="small"
-                    buttonText="Reject"
-                    onClick={() => onReject(row)}
-                    bgColor="bg-danger1"
-                    colorText="text-white"
-                    fontWeight="font-semibold"
-                  />
-                )}
-                {showSend && (
-                  <Button
-                    buttonSize="small"
-                    buttonText="Send"
-                    onClick={() => onSend(row)}
-                    bgColor="bg-blue3"
-                    colorText="text-white"
-                    fontWeight="font-semibold"
-                  />
-                )}
-                {showCancel && (
-                  <Button
-                    buttonSize="small"
-                    buttonText="Cancel"
-                    onClick={() => onCancel(row)}
-                    bgColor="bg-danger1"
-                    colorText="text-white"
-                    fontWeight="font-semibold"
-                  />
-                )}
+            {shouldShowActions() && (
+              <Table.Cell className="overflow-visible">
+                <div className="flex items-center space-x-2">
+                  {showAsyncAction && (
+                    <>
+                      <Select
+                        options={actionOptions}
+                        placeholder="Options"
+                        value={selectedActions[rowIndex]}
+                        onChange={(value) => {
+                          const newActions = [...selectedActions];
+                          newActions[rowIndex] = value;
+                          setSelectedActions(newActions);
+                        }}
+                        className="w-36 flex-shrink-0"
+                      />
+                      <Button
+                        buttonSize="small"
+                        buttonText="Confirm"
+                        onClick={() => handleConfirmAction(row, rowIndex)}
+                        bgColor="bg-blue3"
+                        colorText="text-white"
+                        fontWeight="font-semibold"
+                        className="flex-shrink-0 p-1 text-sm"
+                      />
+                    </>
+                  )}
+                </div>
                 <div className="relative inline-block ml-2">
                   {(showTransfer || showIcon) && (
                     <IoEllipsisHorizontalCircle
@@ -140,15 +157,13 @@ const TableComponent = ({
                           </li>
                         )}
                         {showIcon && (
-                          <li className="py-2 px-4 cursor-pointer hover-bg-gray-100">
+                          <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
                             <button onClick={() => onEdit(row)}>Edit</button>
                           </li>
                         )}
                         {showIcon && (
                           <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                            <button onClick={() => onDelete(row)}>
-                              Delete
-                            </button>
+                            <button onClick={() => onDelete(row)}>Delete</button>
                           </li>
                         )}
                       </ul>

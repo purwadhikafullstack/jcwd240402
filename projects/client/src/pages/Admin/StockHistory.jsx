@@ -5,6 +5,7 @@ import Select from "react-select";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 
 const StockHistory = () => {
   const [month, setMonth] = useState("");
@@ -173,4 +174,4 @@ const StockHistory = () => {
   );
 };
 
-export default StockHistory;
+export default withAuthAdminWarehouse(StockHistory);

@@ -12,6 +12,10 @@ const stockController = require("../controllers/warehouseStockController")
 const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
+
+// User Routes
+router.get("/user-list",authMiddleware.verifyAccessTokenAdmin,adminController.getUsersList)
+
 // Admin Routes
 
 router.post("/register",authMiddleware.verifyAccessTokenSuperAdmin,validatorMiddlewareAdmin.validateRegistration,adminController.registerAdmin); 

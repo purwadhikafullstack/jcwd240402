@@ -6,24 +6,21 @@ import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
-import { useSelector } from "react-redux";
 import toRupiah from "@develoka/angka-rupiah-js";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 
 const UserOrder = () => {
-
   const [userOrderList, setUserOrderList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [warehouseId, setWarehouseId] = useState("");
   const [orderStatusId, setOrderStatusId] = useState("");
   const [error, setError] = useState("");
-  const [roleId, setRoleId] = useState("");
-  
-
-  const getCookieValue = (name) =>
-    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
-
-  const token = getCookieValue("access_token");
+  const adminData = useSelector((state) => state.profilerAdmin.value);
+  const access_token = getCookie("access_token");
+  const [selectedActions, setSelectedActions] = useState([]);
 
   const orderStatusOptions = [
     { value: "", label: "all status" },
@@ -36,28 +33,29 @@ const UserOrder = () => {
     { value: 7, label: "Order Confirmed" },
   ];
 
-  const warehouseOptions = [
-    { value: "", label: "any warehouse" },
-    { value: 1, label: "Furnifor BSD" },
-    { value: 2, label: "Furnifor Surabaya" },
-    { value: 3, label: "Furnifor Jakarta" },
-    { value: 4, label: "Furnifor Malang" },
-  ];
-  
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/admin/checkrole`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setRoleId(response.data.role);
-      })
-      .catch((err) => {
-        setError(err.response.message);
-      });
-  }, []);
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     axios
@@ -65,7 +63,7 @@ const UserOrder = () => {
         `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${access_token}`,
           },
         }
       )
@@ -82,67 +80,86 @@ const UserOrder = () => {
     setOrderStatusId(status.value);
   };
 
-  const handleChangeWarehouseId = (warehouseId) => {
-    setWarehouseId(warehouseId.value);
+  const handleChangeWarehouseId = (selectedWarehouse) => {
+    setWarehouseId(selectedWarehouse.value);
   };
 
-  const handleApprove = () => {
-    
-  };
+  // const handleApproveOrder = async (order) => {
+  //   try {
+  //     const response = await axios.patch(
+        
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  
+  //     if (response.data.success) {
+  //     } else {
+  //       setError("Failed to approve the order.");
+  //     }
+  //   } catch (error) {
+  //     setError(error.response?.message || "An error occurred.");
+  //   }
+  // };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="container mx-auto pt-1">
-      <div className="flex items-center">
+      <div className="container mx-auto p-4">
+        <div className="flex items-center">
+          {adminData.role_id == 1 && (
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              loadOptions={loadWarehouseOptions}
+              onChange={handleChangeWarehouseId}
+              placeholder="All Warehouses"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+            />
+          )}
         <Select
             options={orderStatusOptions}
-            placeholder={<div>Order Status</div>}
+            placeholder="Order Status"
             onChange={handleChangeStatus}
+            className="flex-1 rounded text-base bg-white  shadow-sm"
           />
-        {roleId == 1 ? (
-            <Select
-              options={warehouseOptions}
-              placeholder={<div>Warehouse</div>}
-              onChange={handleChangeWarehouseId}
-            />
-          ) : (
-            <div></div>
-          )}
+        </div>
+        <div className="pt-4">
+          <TableComponent
+            headers={["Username", "Total Transaction", "Delivery Cost", "Image", "Status", "Delivering to", "Delivering From", "Delivery Time"]}
+            data={userOrderList.map((order) => ({
+              "Username": order?.User?.username || "",
+              "Total Transaction": toRupiah(order?.total_price) || "",
+              "Delivery Cost": toRupiah(order?.delivery_price) || "0",
+              "Image": order?.img_payment || "",
+              "Status": order?.Order_status?.name || "",
+              "Delivering From": order?.Warehouse?.address_warehouse || "",
+              "Delivering to": order?.Address_user?.address_details || "",
+              "Delivery Time": order?.delivery_time || "not yet delivered",
+            }))}
+            showIcon={false}
+            showApprove={true}
+            showReject={true}
+            showSend={true}
+            showCancel={true}
+            showAsyncAction={true}
+            // onApprove={handleApproveOrder}
+          />
+        </div>
+        <div className="flex justify-center items-center mt-4">
+          <DefaultPagination
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
       </div>
-      <div className="py-4">
-        <TableComponent
-          headers={["Username", "Total Transaction", "Delivery Cost", "Payment Proof", "Status", "Delivering to", "Delivering From", "Delivery Time"]}
-          data={userOrderList.map((order) => ({
-            "Username": order?.User?.username || "",
-            "Total Transaction": toRupiah(order?.total_price) || "",
-            "Delivery Cost": toRupiah(order?.delivery_price) || "0",
-            "Payment Proof": order?.img_payment || "",
-            "Status": order?.Order_status?.name || "",
-            "Delivering to": order?.Address_user?.address_details || "",
-            "Delivering From": order?.Warehouse?.address_warehouse || "",
-            "Delivery Time": order?.delivery_time || "not yet delivered",
-          }))}
-          showIcon = {false}
-          showApprove = {true}
-          showReject = {true}
-          showSend = {true}
-          showCancel = {true}
-          // onApprove={}
-          // onReject={}
-        />
-      </div>
-      <div className="flex justify-center items-center mt-4">
-        <DefaultPagination
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      </div>
-    </div>
     </div>
   );
 };
 
-export default UserOrder;
+export default withAuthAdminWarehouse(UserOrder);

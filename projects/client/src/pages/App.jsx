@@ -46,6 +46,7 @@ import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
 import UserOrder from "./admin/UserOrder";
 import SalesReport from "./admin/SalesReport";
+import UserList from "./admin/UserList";
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
             <Route path="/sales-report" element={<SalesReport />} />
             <Route path="/order" element={<UserOrder />} />
             <Route path="/warehouse" element={<WarehouseList />} />
+            <Route path="/users" element={<UserList />} />
 
             <Route
               path="/edit/:warehouseName"

@@ -23,6 +23,8 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptyImage from "../../assets/images/emptyImage.jpg";
 import Button from "../../components/Button";
 import Loading from "../../components/Loading";
+import Alert from "../../components/user/Alert";
+import AlertWithIcon from "../../components/AlertWithIcon";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
@@ -40,6 +42,9 @@ const PaymentFinalizing = () => {
   const [loading, setLoading] = useState(true);
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [productReview, setProductReview] = useState([]);
+  const [errMsg, setErrMsg] = useState("");
+  const [openAlert, setOpenAlert] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const { invoiceId } = useParams();
   console.log(invoiceId);
@@ -144,6 +149,9 @@ const PaymentFinalizing = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
+        setErrMsg("");
+        setSuccessMsg(res.data?.message);
+        console.log(res.data?.message);
         setPaymentProofData(res.data?.order);
         setLoading(false);
         setTimeout(() => {
@@ -151,6 +159,8 @@ const PaymentFinalizing = () => {
         }, 3000);
       })
       .catch((error) => {
+        setSuccessMsg("");
+        setErrMsg(error.response.data.message);
         setLoading(false);
       });
   };
@@ -179,7 +189,6 @@ const PaymentFinalizing = () => {
         ]}
       />
       <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
-        {/* decor aka */}
         <h1 className="font-bold text-xl">Payment</h1>
         {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 2 ? (
           <div className="grid gap-4  ">
@@ -246,6 +255,12 @@ const PaymentFinalizing = () => {
               </div>
             </div>
             <div className=" flex flex-col justify-start items-center ">
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon color="success" errMsg={successMsg} />
+              ) : null}
+
               <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">
                 <h1 className="text-sm font-semibold">upload payment proof</h1>
                 <div className="md:w-96 lg:w-96">

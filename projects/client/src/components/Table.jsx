@@ -3,6 +3,7 @@ import { Table } from "flowbite-react";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import Select from "react-select";
 import Button from "./Button";
+import OrderModal from "./modal/orderList/OrderModal";
 
 const TableComponent = ({
   headers,
@@ -68,8 +69,20 @@ const TableComponent = ({
   };
 
   const shouldShowActions = () => {
-    return showTransfer || showApproveReject || showIcon || showApprove || showReject || showSend || showCancel || showAsyncAction;
+    return (
+      showTransfer ||
+      showApproveReject ||
+      showIcon ||
+      showApprove ||
+      showReject ||
+      showSend ||
+      showCancel ||
+      showAsyncAction
+    );
   };
+
+  console.log(headers);
+  console.log(data);
 
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
@@ -103,7 +116,11 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
-            {shouldShowActions() && (
+
+            <Table.Cell className="overflow-visible">
+              <OrderModal row={row} />
+            </Table.Cell>
+            {/* {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 <div className="flex items-center space-x-2">
                   {showAsyncAction && (
@@ -163,7 +180,9 @@ const TableComponent = ({
                         )}
                         {showIcon && (
                           <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                            <button onClick={() => onDelete(row)}>Delete</button>
+                            <button onClick={() => onDelete(row)}>
+                              Delete
+                            </button>
                           </li>
                         )}
                       </ul>
@@ -171,7 +190,7 @@ const TableComponent = ({
                   )}
                 </div>
               </Table.Cell>
-            )}
+            )} */}
           </Table.Row>
         ))}
       </Table.Body>

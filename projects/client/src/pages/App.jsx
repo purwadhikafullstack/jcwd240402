@@ -44,6 +44,7 @@ import NotFoundProduct from "./user/NotFoundProduct";
 import { AuthContextProvider } from "../context/AuthContext";
 import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
+import OrderConfirmReview from "./user/OrderConfirmReview";
 
 function App() {
   return (
@@ -117,7 +118,11 @@ function App() {
             <Route path="/product/:name" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<CheckOut />} />
-            <Route path="/payment/:id" element={<PaymentFinalizing />} />
+            <Route path="/payment/:invoiceId" element={<PaymentFinalizing />} />
+            <Route
+              path="/order-confirm/:invoiceId"
+              element={<OrderConfirmReview />}
+            />
             <Route
               path="/product/product-category/:categoryName"
               element={<ProductPerCategory />}

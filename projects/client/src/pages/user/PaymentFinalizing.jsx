@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
@@ -20,12 +23,8 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptyImage from "../../assets/images/emptyImage.jpg";
 import Button from "../../components/Button";
 import Loading from "../../components/Loading";
-import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
-import CarouselBanner from "../../components/user/carousel/CarouselBanner";
 
 const PaymentFinalizing = () => {
-  const location = useLocation();
-
   const [totalCart, setTotalCart] = useState(0);
   const [paymentProofData, setPaymentProofData] = useState("");
   const [yourOrder, setYourOrder] = useState([]);
@@ -39,27 +38,32 @@ const PaymentFinalizing = () => {
   const [isFilePicked, setIsFilePicked] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingOrder, setLoadingOrder] = useState(true);
   const [productReview, setProductReview] = useState([]);
 
-  const { id } = useParams();
-  console.log(id);
+  const { invoiceId } = useParams();
+  console.log(invoiceId);
   const inputPhotoRef = useRef();
 
   useEffect(() => {
-    axios
-      .get(`/user/order/${id}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        setYourOrder(res.data?.order);
-        setOrderProduct(res.data?.order?.Order_details);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-      });
-  }, [access_token, dispatch, id]);
-  console.log("first", orderProduct.length);
+    setLoadingOrder(true);
+    setTimeout(() => {
+      axios
+        .get(`/user/order/${invoiceId}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setYourOrder(res.data?.order);
+          setLoadingOrder(false);
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          setLoadingOrder(false);
+        });
+    }, 2000);
+  }, [access_token, invoiceId]);
+
   console.log("first yourOrder", yourOrder);
 
   useEffect(() => {
@@ -136,13 +140,9 @@ const PaymentFinalizing = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     axios
-      .patch(
-        `/user/payment-proof/${location.pathname.split("/").pop()}`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      )
+      .patch(`/user/payment-proof/${invoiceId}`, formData, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
       .then((res) => {
         setPaymentProofData(res.data?.order);
         setLoading(false);
@@ -155,35 +155,7 @@ const PaymentFinalizing = () => {
       });
   };
 
-  // const product = productReview.map((item) => {
-  //   let image;
-  //   image = {
-  //     image: `${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products.img_product}`,
-  //     item: item?.Warehouse_stock?.Product?.Image_products?.img_product,
-  //   };
-  //   return image;
-  // });
-  // console.log(productReview?.Warehouse_stock?.Product?.Image_products);
-  // console.log(yourOrder);
-  // console.log(product);
-  // const product = yourOrder?.Order_details?.map((item) =>
-  //   item?.Warehouse_stock?.Product?.Image_products?.map((item) => {
-  //     let image;
-  //     image = {
-  //       image: `${process.env.REACT_APP_API_BASE_URL}${item.img_product}`,
-  //     };
-  //     return image;
-  //   })
-  // );
-  // const img = yourOrder?.Order_details?.map((item) =>
-  //   item?.Warehouse_stock?.Product?.Image_products?.map(
-  //     (item) => item.img_product
-  //   )
-  // );
-
-  // console.log(img);
-
-  if (loading) {
+  if (loading || loadingOrder) {
     return (
       <div className="w-full h-screen flex justify-center items-center">
         <Loading />
@@ -199,64 +171,80 @@ const PaymentFinalizing = () => {
         crumbs={[
           { title: ["Profile"], link: "/user/setting" },
           { title: ["Order"], link: "/user/setting/order" },
-          { title: ["Payment"], link: "/payment" },
+          {
+            title: ["Order Confirmation"],
+            link: `/order-confirm/${invoiceId}`,
+          },
+          { title: ["Payment"], link: `/payment/${invoiceId}` },
         ]}
       />
       <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
         {/* decor aka */}
         <h1 className="font-bold text-xl">Payment</h1>
-        <div className="grid gap-4 grid-rows-2 md:grid lg:grid md:grid-cols-2 md:grid-rows-none lg:grid-cols-2 lg:grid-rows-none ">
-          <div className=" md:col-span-1 lg:col-span-1 grid justify-center items-center w-full h-full">
-            <h1>{yourOrder?.delivery_time}</h1>
-            <div className="flex  w-full justify-evenly items-center font-bold text-sm text-grayText">
-              <h1 className="py-1">Order Total: {yourOrder?.total_price}</h1>
-              <h1>|</h1>
-              <h1 className="py-1">
-                Courier Used: {yourOrder?.delivery_courier}
-              </h1>
-            </div>
-            {orderProduct.map((details) => (
-              <div className="p-1" key={details.id}>
-                <div className="md:flex shadow-card-1 w-fit rounded-lg md:flex-col md:justify-center md:items-center ">
-                  <div className="text-xs shadow-card-1 p-4 h-fit rounded-lg  md:w-96 lg:w-96">
-                    <div>
-                      <div className="flex flex-col justify-center items-center">
-                        {/* <CarouselBanner
-                          imageUrls={imageUrls}
-                          carouselSize="products"
-                        /> */}
-                        {/* <CarouselProductDetail
-                                data={product}
-                                width="300px"
-                                height="300px"
-                              /> */}
-                      </div>
+        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 2 ? (
+          <div className="grid gap-4  ">
+            <div className="  justify-center items-center w-full h-full">
+              <h1>{yourOrder?.delivery_time}</h1>
+              <div className="flex  w-full justify-between items-center font-bold text-sm text-grayText">
+                <h1 className="py-1">
+                  Order Total: Rp. {yourOrder?.total_price}
+                </h1>
 
-                      <div className="flex items-center gap-4 mb-2">
-                        <h1 className=" font-bold text-base">
-                          {details?.Warehouse_stock?.Product?.name}
+                <h1 className="py-1">invoice id: {invoiceId}</h1>
+              </div>
+
+              <div className="md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
+                {yourOrder.Order_details?.map((item) => (
+                  <div
+                    key={item.id}
+                    className="shadow-card-1 rounded-lg md:col-span-1 lg:col-span-1 "
+                  >
+                    <div className=" flex flex-col justify-center items-center">
+                      <div className="w-52 md:w-80 lg:w-80">
+                        <Carousel>
+                          {item.Warehouse_stock?.Product?.Image_products?.map(
+                            (image, idx) => (
+                              <div key={idx} className=" ">
+                                <img
+                                  src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
+                                  alt=""
+                                  className=""
+                                />
+                              </div>
+                            )
+                          )}
+                        </Carousel>
+                      </div>
+                    </div>
+                    <div className="p-4 text-xs ">
+                      <div className="flex gap-4 items-center">
+                        <h1 className="font-bold md:text-base lg:text-base">
+                          {item.Warehouse_stock?.Product?.name}
                         </h1>
                         <Badge color="purple" className="w-fit">
-                          {details?.Warehouse_stock?.Product?.category?.name}
+                          {item.Warehouse_stock?.Product?.category?.name}
                         </Badge>
                       </div>
-                      <h1>
-                        {toRupiah(details?.Warehouse_stock?.Product?.price)} x{" "}
-                        {details?.quantity} unit
-                      </h1>
-                      <h1 className="">
-                        {details?.Warehouse_stock?.Product?.weight} gr
-                      </h1>
-                      <h1 className="">
-                        {details?.Warehouse_stock?.Product?.description}
-                      </h1>
+                      <div className="mt-2">
+                        <h1>
+                          Rp. {item.Warehouse_stock?.Product?.price} x{" "}
+                          {item.quantity} unit
+                        </h1>
+                        <h1>
+                          {item.Warehouse_stock?.Product?.weight *
+                            item.quantity}{" "}
+                          gr
+                        </h1>
+                        <h1 className="font-semibold text-right">
+                          subtotal: Rp.{" "}
+                          {item.Warehouse_stock?.Product?.price * item.quantity}
+                        </h1>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="md:col-span-1 lg:col-span-1">
+            </div>
             <div className=" flex flex-col justify-start items-center ">
               <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">
                 <h1 className="text-sm font-semibold">upload payment proof</h1>
@@ -307,7 +295,62 @@ const PaymentFinalizing = () => {
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <h1>Order Status : {yourOrder.Order_status?.name}</h1>
+            <h1>Invoice id : {invoiceId}</h1>
+            <div className=" md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
+              {yourOrder.Order_details?.map((item) => (
+                <div
+                  key={item.id}
+                  className="shadow-card-1 rounded-lg md:col-span-1 lg:col-span-1 "
+                >
+                  <div className=" flex flex-col justify-center items-center">
+                    <div className="w-52 md:w-80 lg:w-80">
+                      <Carousel>
+                        {item.Warehouse_stock?.Product?.Image_products?.map(
+                          (image, idx) => (
+                            <div key={idx} className=" ">
+                              <img
+                                src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
+                                alt=""
+                                className=""
+                              />
+                            </div>
+                          )
+                        )}
+                      </Carousel>
+                    </div>
+                  </div>
+                  <div className="p-4 text-xs ">
+                    <div className="flex gap-4 items-center">
+                      <h1 className="font-bold md:text-base lg:text-base">
+                        {item.Warehouse_stock?.Product?.name}
+                      </h1>
+                      <Badge color="purple" className="w-fit">
+                        {item.Warehouse_stock?.Product?.category?.name}
+                      </Badge>
+                    </div>
+                    <div className="mt-2">
+                      <h1>
+                        Rp. {item.Warehouse_stock?.Product?.price} x{" "}
+                        {item.quantity} unit
+                      </h1>
+                      <h1>
+                        {item.Warehouse_stock?.Product?.weight * item.quantity}{" "}
+                        gr
+                      </h1>
+                      <h1 className="font-semibold text-right">
+                        subtotal: Rp.{" "}
+                        {item.Warehouse_stock?.Product?.price * item.quantity}
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
       <FooterDesktop />
       <NavigatorMobile />

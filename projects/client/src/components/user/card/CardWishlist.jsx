@@ -11,7 +11,7 @@ const CardWishlist = ({ item }) => {
           {dayjs(item.date).format("D MMMM YYYY")}
         </h1>
       </div>
-      <div className="shadow-card-1 rounded-md  md:justify-between lg:justify-between hover:bg-gray-200 transition-all duration-200">
+      <div className="shadow-card-1 rounded-b-md rounded-r-md  md:justify-between lg:justify-between hover:bg-gray-200 transition-all duration-200">
         <div className="md:grid lg:grid md:grid-cols-4 lg:grid-cols-4  ">
           <div className="flex p-2 justify-center md:justify-center lg:justify-center md:items-center lg:items-center">
             <img

@@ -120,7 +120,7 @@ const AllWishlist = () => {
                 }
               >
                 {wishlistMap.map((item) => (
-                  <div key={item.id} className="mx-20 ">
+                  <div key={item.id} className="lg:mx-20 md:mx-20">
                     <Link to={`/product/${item.name}`}>
                       <CardWishlist item={item} />
                     </Link>

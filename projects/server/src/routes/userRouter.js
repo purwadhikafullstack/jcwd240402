@@ -189,7 +189,7 @@ router.get(
 );
 
 router.get(
-  "/order/:id",
+  "/order/:invoiceId",
   Verify.verifyAccessTokenUser,
   OrderController.getCurrentOrderList
 );

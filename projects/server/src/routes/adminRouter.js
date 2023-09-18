@@ -32,12 +32,6 @@ router.get(
     authMiddleware.verifyAccessTokenAdmin,
     adminController.salesReport
   );
-router.get(
-    "/sales-report-details",
-    authMiddleware.verifyAccessTokenAdmin,
-    adminController.salesReportCategory
-);
-
 
 router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
 

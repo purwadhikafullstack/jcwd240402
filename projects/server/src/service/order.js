@@ -2,15 +2,12 @@ const db = require("../models");
 
 module.exports = {
 
-  getAllUserOrder: async (options = {}, options2 = {}, options3 = {}, page = 1, pageSize = 10) => {
+  getAllUserOrder: async (options = {}, options3 = {}, page = 1, pageSize = 10) => {
     const filter = options.where || {};
-    const filter2 = options2 || {};
     const filter3 = options3 || {};
 
     const queryOptions = {
       where: filter,
-      where: filter2,
-      where: { order_status_id: 3 },
       include: [
         {
           model: db.Order_status,

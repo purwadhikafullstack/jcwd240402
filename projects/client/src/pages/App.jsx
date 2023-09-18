@@ -45,6 +45,7 @@ import { AuthContextProvider } from "../context/AuthContext";
 import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
 import UserOrder from "./admin/UserOrder";
+import SalesReport from "./admin/SalesReport";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminList />} />
             <Route path="/stock-history" element={<StockHistory />} />
+            <Route path="/sales-report" element={<SalesReport />} />
             <Route path="/order" element={<UserOrder />} />
             <Route path="/warehouse" element={<WarehouseList />} />
 

@@ -36,7 +36,8 @@ module.exports = {
     return token;
   },
   
-  autoStockTransfer: async (warehouse_id, product_id, requiredStock) => {
+  autoStockTransfer: async (warehouse_id, product_id, requiredStock,orderId) => {
+    console.log(warehouse_id,product_id,requiredStock,orderId)
     const t = await db.sequelize.transaction();
   
     try {
@@ -57,7 +58,10 @@ module.exports = {
       const totalReservedInCurrentWarehouse = await db.Reserved_stock.sum(
         "reserve_quantity",
         {
-          where: { warehouse_stock_id: currentWarehouseStock.id },
+          where: { 
+            warehouse_stock_id: currentWarehouseStock.id,
+            order_id: { [db.Sequelize.Op.ne]: orderId } 
+        },
           transaction: t,
         }
       );

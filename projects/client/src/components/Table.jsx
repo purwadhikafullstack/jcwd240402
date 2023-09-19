@@ -68,7 +68,16 @@ const TableComponent = ({
   };
 
   const shouldShowActions = () => {
-    return showTransfer || showApproveReject || showIcon || showApprove || showReject || showSend || showCancel || showAsyncAction;
+    return (
+      showTransfer ||
+      showApproveReject ||
+      showIcon ||
+      showApprove ||
+      showReject ||
+      showSend ||
+      showCancel ||
+      showAsyncAction
+    );
   };
 
   return (
@@ -139,6 +148,18 @@ const TableComponent = ({
                       onClick={() => handleDropdownToggle(rowIndex)}
                     />
                   )}
+                  {showApproveReject && (
+                    <Table.Cell>
+                      <Button
+                        buttonSize="small"
+                        buttonText="Manage"
+                        onClick={() => onApproveReject(row)}
+                        bgColor="bg-blue3"
+                        colorText="text-white"
+                        fontWeight="font-semibold"
+                      />
+                    </Table.Cell>
+                  )}
                   {showDropdownIndex === rowIndex && (
                     <div className="absolute right-0 bg-white rounded-lg shadow-card-1 border border-gray-200 z-20">
                       <ul className="list-none">
@@ -163,7 +184,9 @@ const TableComponent = ({
                         )}
                         {showIcon && (
                           <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                            <button onClick={() => onDelete(row)}>Delete</button>
+                            <button onClick={() => onDelete(row)}>
+                              Delete
+                            </button>
                           </li>
                         )}
                       </ul>

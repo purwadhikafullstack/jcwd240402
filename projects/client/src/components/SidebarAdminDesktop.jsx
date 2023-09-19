@@ -26,19 +26,17 @@ function SidebarAdminDesktop() {
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
-    { to: "/users", label: "Users", icon: AiOutlineTeam , roles: [1] },
-    { to: "/warehouse", label: "Warehouse", icon: AiOutlineShop, roles: [1] },
+    { to: "/admin/users", label: "Users", icon: AiOutlineTeam , roles: [1] },
+    { to: "/admin/warehouses", label: "Warehouse", icon: AiOutlineShop, roles: [1] },
     {
       to: "/admin/products",
       label: "Product",
       icon: AiOutlineShopping,
-      roles: [1],
     },
     {
-      to: "/category",
+      to: "/admin/categories",
       label: "Category",
       icon: AiOutlineAppstoreAdd,
-      roles: [1],
     },
     { to: "/order", label: "Order", icon: AiOutlineOrderedList },
     { to: "/admin/stock", label: "Stock Management", icon: AiFillDatabase },

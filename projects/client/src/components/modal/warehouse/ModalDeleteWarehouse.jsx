@@ -14,7 +14,6 @@ const ConfirmDeleteWarehouse = ({ show, onClose, handleSuccessfulDelete, warehou
       });
 
       if (response.status === 200) {
-        alert('Warehouse deleted successfully!');
         onClose();
         handleSuccessfulDelete();
       } else {

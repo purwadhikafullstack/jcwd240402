@@ -64,10 +64,15 @@ const ReassignWarehouseModal = ({
           <div className="flex-1">
             <AsyncSelect
               classNamePrefix="react-select"
+              defaultOptions
               loadOptions={loadWarehouses}
               value={selectedWarehouse}
               onChange={setSelectedWarehouse}
               placeholder="Search for Warehouse by Name"
+              menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: base => ({ ...base, zIndex: 9999, position: 'fixed' })
+               }}
             />
           </div>
           <div className="flex flex-col justify-center items-center mt-3">

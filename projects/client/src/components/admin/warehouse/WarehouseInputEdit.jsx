@@ -10,19 +10,19 @@ import withAuthAdmin from "../withAuthAdmin";
 import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../Button";
 import AlertWithIcon from "../../AlertWithIcon";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const WarehouseInputsEdit = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [successMsg, setSuccessMsg] = useState("");
   const [initialWarehouseData, setInitialWarehouseData] = useState(null);
-
   const [currentImage, setCurrentImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [image, setImage] = useState(null);
   const [errMsg, setErrMsg] = useState("");
-
   const { warehouseName } = useParams();
+  const access_token = getCookie("access_token");
   const navigate = useNavigate();
 
   const handleUpdateImage = async (e) => {
@@ -38,7 +38,10 @@ const WarehouseInputsEdit = () => {
     try {
       const response = await axios.patch(
         `/warehouse/image/${warehouseName}`,
-        formData
+        formData,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
       );
       if (response.data.ok) {
         setSuccessMsg("image update successful");
@@ -88,7 +91,9 @@ const WarehouseInputsEdit = () => {
       }
 
       try {
-        const response = await axios.patch(`/warehouse/${values.id}`, changes);
+        const response = await axios.patch(`/warehouse/${values.id}`, changes,{
+          headers: { Authorization: `Bearer ${access_token}` },
+        });
         if (response.status === 200) {
           setSuccessMsg("Updated successfully!");
           formik.setErrors({});
@@ -152,7 +157,22 @@ const WarehouseInputsEdit = () => {
   }, [warehouseName]);
 
   const handleCancel = () => {
-    navigate("/warehouse");
+    navigate("/admin/warehouses");
+  };
+
+  const loadCities = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `/admin/city/?searchName=${inputValue}&page=1`
+      );
+      return response.data.cities.map((city) => ({
+        value: city.id,
+        label: city.name,
+      }));
+    } catch (error) {
+      console.error("Error loading cities:", error);
+      return [];
+    }
   };
 
   const handleFile = (e) => {
@@ -212,6 +232,8 @@ const WarehouseInputsEdit = () => {
               <AsyncSelect
                 cacheOptions
                 value={selectedCity}
+                defaultOptions
+                loadOptions={loadCities}
                 onChange={(selectedOption) => {
                   setSelectedCity(selectedOption);
                   formik.setFieldValue("city_id", selectedOption.value);

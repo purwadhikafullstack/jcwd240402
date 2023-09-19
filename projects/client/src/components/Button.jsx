@@ -8,6 +8,7 @@ const Button = ({
   colorText,
   fontWeight,
   type = "button",
+  isVisible = false,
 }) => {
   let sizeClasses;
 
@@ -29,7 +30,7 @@ const Button = ({
     <button
       type={type}
       onClick={onClick}
-      className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
+      className={`${bgColor} ${fontWeight} text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}  ${isVisible ? "hidden" : ""}`}
     >
       {buttonText}
     </button>

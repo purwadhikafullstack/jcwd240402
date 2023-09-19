@@ -3,12 +3,14 @@ import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import RegisterAdminModal from "../../components/modal/admin/ModalRegisterAdmin";
+import ConfirmDeleteAdmin from "../../components/modal/admin/ModalDeleteAdmin";
 import Button from "../../components/Button";
 import AdminProfileModal from "../../components/modal/admin/ModalAdminEdit";
 import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import axios from "../../api/axios";
+import { getCookie } from "../../utils/tokenSetterGetter";
 
 const AdminList = () => {
   const [admins, setAdmins] = useState([]);
@@ -19,9 +21,11 @@ const AdminList = () => {
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedAdminId, setSelectedAdminId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
+  const access_token = getCookie("access_token");
 
   useEffect(() => {
     refreshAdminList();
@@ -54,7 +58,10 @@ const AdminList = () => {
     try {
       const warehouseId = selectedWarehouse || "";
       const response = await axios.get(
-        `/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`
+        `/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
       );
       setAdmins(response.data.admins);
       if (response.data.pagination) {
@@ -127,6 +134,10 @@ const AdminList = () => {
               setSelectedAdmin(admin);
               setProfileModalOpen(true);
             }}
+            onDelete={(admin) => {
+              setSelectedAdminId(admin.id);
+              setShowDeleteModal(true);
+            }}
           />
         </div>
         <RegisterAdminModal
@@ -148,6 +159,15 @@ const AdminList = () => {
           isPasswordModalOpen={isPasswordModalOpen}
           isWarehouseModalOpen={isWarehouseModalOpen}
           refreshAdminList={refreshAdminList}
+        />
+        <ConfirmDeleteAdmin
+          show={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+          handleSuccessfulDelete={() => {
+            refreshAdminList();
+            setShowDeleteModal(false);
+          }}
+          adminId={selectedAdminId}
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination

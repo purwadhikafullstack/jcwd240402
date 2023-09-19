@@ -168,6 +168,15 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                   value={selectedCity}
                   onChange={setSelectedCity}
                   placeholder="Select City"
+                  defaultOptions
+                  menuPortalTarget={document.body}
+                  styles={{
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999,
+                      position: "fixed",
+                    }),
+                  }}
                 />
               </form>
               <div className="flex flex-col flex-wrap justify-center items-center mt-2 w-fit">

@@ -1,5 +1,4 @@
 const adminController = require("../controllers/adminController");
-const Verify = require("../middleware/auth");
 const validatorMiddlewareAdmin = require("../middleware/validator/admin");
 const validatorMiddlewareCategory = require("../middleware/validator/category");
 const validatorMiddlewareProduct = require("../middleware/validator/product");

@@ -424,7 +424,7 @@ module.exports = {
     const userId = req.user.id;
     const id = req.params.id;
     const paymentImage = req.file?.filename;
-
+    const transaction = await db.sequelize.transaction();
     try {
       const orderData = await db.Order.findOne({
         where: {
@@ -443,6 +443,14 @@ module.exports = {
         });
       }
 
+      if (!paymentImage) {
+        await transaction.rollback();
+        return res.status(404).json({
+          ok: false,
+          message: "payment image required",
+        });
+      }
+
       const orderDataWithPaymentProof = await db.Order.update(
         {
           img_payment: `/payment-proof/${paymentImage}`,
@@ -454,14 +462,18 @@ module.exports = {
             order_status_id: 1,
             no_invoice: { [Op.endsWith]: id },
           },
-        }
+        },
+        transaction
       );
 
+      await transaction.commit();
       res.status(200).json({
         ok: true,
+        message: "payment image uploaded",
         order: orderDataWithPaymentProof,
       });
     } catch (error) {
+      await transaction.rollback();
       res.status(500).json({
         ok: false,
         message: "something bad happened",

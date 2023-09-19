@@ -44,10 +44,10 @@ import NotFoundProduct from "./user/NotFoundProduct";
 import { AuthContextProvider } from "../context/AuthContext";
 import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
+import OrderConfirmReview from "./user/OrderConfirmReview";
 import UserOrder from "./admin/UserOrder";
 import SalesReport from "./admin/SalesReport";
 import UserList from "./admin/UserList";
-import OrderConfirmReview from "./user/OrderConfirmReview";
 
 function App() {
   return (

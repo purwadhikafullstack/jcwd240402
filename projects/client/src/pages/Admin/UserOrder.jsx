@@ -84,18 +84,39 @@ const UserOrder = () => {
     setWarehouseId(selectedWarehouse.value);
   };
 
+  const refetch = async () => {
+    await axios
+      .get(
+        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setUserOrderList(response.data.orders);
+        setTotalPages(response.pagination.totalPages);
+      })
+      .catch((err) => {
+        setError(err.response);
+      });
+  };
+
   const handleCancelOrder = async (id) => {
     try {
       const response = await axios.patch(
-      `http://localhost:8000/api/admin/cancel-order/${id}`,{},
+        `http://localhost:8000/api/admin/cancel-order/${id}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
-  
-      if (response.data.success) {
+      console.log(response.data);
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to cancel the order.");
       }
@@ -107,15 +128,17 @@ const UserOrder = () => {
   const handleAcceptPayment = async (id) => {
     try {
       const response = await axios.patch(
-      `http://localhost:8000/api/admin/accept-user-payment/${id}`,{},
+        `http://localhost:8000/api/admin/accept-user-payment/${id}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
-  
-      if (response.data.success) {
+      console.log(response.data);
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to accept payment.");
       }
@@ -127,15 +150,17 @@ const UserOrder = () => {
   const handleRejectPayment = async (id) => {
     try {
       const response = await axios.patch(
-      `http://localhost:8000/api/admin/reject-user-payment/${id}`,{},
+        `http://localhost:8000/api/admin/reject-user-payment/${id}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
-  
-      if (response.data.success) {
+
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to reject payment.");
       }
@@ -147,15 +172,17 @@ const UserOrder = () => {
   const handleSendOrder = async (id) => {
     try {
       const response = await axios.patch(
-      `http://localhost:8000/api/admin/send-order/${id}`,{},
+        `http://localhost:8000/api/admin/send-order/${id}`,
+        {},
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
           },
         }
       );
-  
-      if (response.data.success) {
+
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to send the order.");
       }
@@ -163,7 +190,7 @@ const UserOrder = () => {
       setError(error.response?.message || "An error occurred.");
     }
   };
-
+  console.log(userOrderList);
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -181,7 +208,7 @@ const UserOrder = () => {
               className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
           )}
-        <Select
+          <Select
             options={orderStatusOptions}
             placeholder="Order Status"
             onChange={handleChangeStatus}
@@ -190,17 +217,29 @@ const UserOrder = () => {
         </div>
         <div className="pt-4">
           <TableComponent
-            headers={["Username", "Total Transaction", "Delivery Cost", "Image", "Status", "Delivering to", "Delivering From", "Delivery Time"]}
+            headers={[
+              "Username",
+              "Total Transaction",
+              "Delivery Cost",
+
+              "Status",
+              "Delivering to",
+              "Delivering From",
+              "Delivery Time",
+            ]}
             data={userOrderList.map((order) => ({
               id: order?.id || "",
-              "Username": order?.User?.username || "",
+              Username: order?.User?.username || "",
               "Total Transaction": toRupiah(order?.total_price) || "",
               "Delivery Cost": toRupiah(order?.delivery_price) || "0",
-              "Image": order?.img_payment || "",
-              "Status": order?.Order_status?.name || "",
+              Image: order?.img_payment || "",
+              Status: order?.Order_status?.name || "",
+              invoiceId: order?.no_invoice,
               "Delivering From": order?.Warehouse?.address_warehouse || "",
               "Delivering to": order?.Address_user?.address_details || "",
               "Delivery Time": order?.delivery_time || "not yet delivered",
+              order_status_id: order.order_status_id,
+              Order_details: order?.Order_details,
             }))}
             showIcon={false}
             showApprove={true}
@@ -208,10 +247,10 @@ const UserOrder = () => {
             showSend={true}
             showCancel={true}
             showAsyncAction={true}
-            onCancel={(row) => handleCancelOrder(row.id)}
-            onApprove={(row) => handleAcceptPayment(row.id)}
-            onReject={(row) => handleRejectPayment(row.id)}
-            onSend={(row) => handleSendOrder(row.id)}
+            onCancel={(row) => handleCancelOrder(row)}
+            onApprove={(row) => handleAcceptPayment(row)}
+            onReject={(row) => handleRejectPayment(row)}
+            onSend={(row) => handleSendOrder(row)}
           />
         </div>
         <div className="flex justify-center items-center mt-4">

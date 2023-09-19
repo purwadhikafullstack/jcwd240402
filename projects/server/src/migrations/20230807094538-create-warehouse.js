@@ -26,6 +26,14 @@ module.exports = {
           key: "id",
         },
       },
+      province_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Provinces",
+          key: "id",
+        },
+      },
       latitude: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -52,8 +60,8 @@ module.exports = {
       },
       deletedAt: {
         allowNull: true,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {

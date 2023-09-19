@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
@@ -26,6 +26,7 @@ import orderempty from "../../assets/images/emptyorder.png";
 import InfiniteScroll from "react-infinite-scroll-component";
 import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
 import { AiOutlineSearch } from "react-icons/ai";
+import { TbTruckDelivery } from "react-icons/tb";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -47,12 +48,15 @@ const SettingOrder = () => {
   const [limit, setLimit] = useState(3);
   const [keyword, setKeyword] = useState("");
   const [query, setQuery] = useState("");
-
   const [hasMore, setHasMore] = useState(true);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const searchQuery = searchParams.get("search");
 
   useEffect(() => {
     getList();
-  }, [lastId, limit, keyword]);
+  }, [lastId, limit, keyword, searchQuery]);
 
   const getList = async () => {
     try {
@@ -108,81 +112,12 @@ const SettingOrder = () => {
       });
   }, [access_token]);
 
-  const handleClickStatus = async (id, status) => {
-    console.log(id);
-    try {
-      const res = await axios.post(
-        "/user/order-status",
-        {
-          id: id,
-          statusId: status,
-        },
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      setLoading(false);
-      setOrderStatus(res.data?.order);
-      // updateOrderList();
-    } catch (error) {
-      setLoading(false);
-      setErrMsg(error.response?.data?.message);
-    }
-  };
-
-  const handleDeleteReserved = (orderId) => {
-    console.log(orderId);
-    axios
-      .delete(`/user/reserved-order/${orderId}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        setSuccessMsg(res.data?.message);
-        getList();
-      })
-      .catch((error) => setErrMsg(error.response?.data?.message));
-  };
-
   const searchData = (e) => {
     e.preventDefault();
     setLastId(0);
     setList([]);
     setKeyword(query);
-  };
-
-  /* CANCEL SETELAH CONFIRM DI DISABLE DAN GANTI WARNA */
-  const OrderButton = ({ statusBefore, orderId }) => {
-    if (statusBefore === 6) {
-      return (
-        <button
-          className="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs"
-          onClick={() => handleClickStatus(orderId, 3)}
-        >
-          Confirm
-        </button>
-      );
-    } else if (statusBefore === 5) {
-      return (
-        <button
-          className="w-full bg-danger3 p-2 font-semibold text-white rounded-md text-xs"
-          disabled={true}
-        >
-          Order Canceled
-        </button>
-      );
-    } else {
-      return (
-        <button
-          className="w-full bg-danger1 p-2 font-semibold text-white rounded-md text-xs"
-          onClick={() => {
-            handleDeleteReserved(orderId);
-            handleClickStatus(orderId, 5);
-          }}
-        >
-          Cancel
-        </button>
-      );
-    }
+    setSearchParams({ search: query });
   };
 
   if (loading) {
@@ -193,8 +128,19 @@ const SettingOrder = () => {
     );
   }
 
+  /* 
+1 = payment pending
+2 = awaiting payment confirmation
+3 = completed   
+4 = In Process
+5 = cancelled
+6 = shipped
+7 = order confirmed
+*/
+
   console.log(userOrder);
   console.log(keyword);
+  console.log(list);
 
   return (
     <div>
@@ -269,7 +215,6 @@ const SettingOrder = () => {
                       className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-  lg p-2 shadow-card-1 border-2"
                     >
                       <div className="text-xs h-fit rounded-lg col-span-12 md:col-span-12 lg:col-span-12 ">
-                        <h1>{order.delivery_time}</h1>
                         {order.Order_details?.map((details) => (
                           <div className="flex ml-4 mb-2 text-xs gap-2 h-fit rounded-lg">
                             <img
@@ -287,14 +232,35 @@ const SettingOrder = () => {
                                 Order Total: {toRupiah(order.total_price)}
                               </h1>
                               <h1>Courier Used: {order.delivery_courier}</h1>
-                              <Badge color="green" className="w-fit">
+                              <Badge
+                                color={
+                                  order.Order_status?.id === 1
+                                    ? "indigo"
+                                    : order.Order_status?.id === 2
+                                    ? "purple"
+                                    : order.Order_status?.id === 3
+                                    ? "warning"
+                                    : order.Order_status?.id === 4
+                                    ? "success"
+                                    : order.Order_status?.id === 5
+                                    ? "gray"
+                                    : order.Order_status?.id === 6
+                                    ? "info"
+                                    : order.Order_status?.id === 7
+                                    ? "failure"
+                                    : "pink"
+                                }
+                                className="w-fit"
+                              >
                                 {order.Order_status?.name}
                               </Badge>
                             </div>
                           </div>
                         ))}
 
-                        {order.Order_status?.id == 1 ? (
+                        {order.Order_status?.id === 1 ||
+                        order.Order_status?.id === 2 ||
+                        order.Order_status?.id === 7 ? (
                           <Link
                             to={`/order-confirm/${order?.no_invoice?.substr(
                               -8
@@ -305,6 +271,29 @@ const SettingOrder = () => {
                             </button>
                           </Link>
                         ) : null}
+                        {order.Order_status?.id === 6 ? (
+                          <Link
+                            to={`/order-confirm/${order?.no_invoice?.substr(
+                              -8
+                            )}`}
+                          >
+                            <button className="w-full bg-green-400 p-2 mt-2 font-semibold text-white rounded-md">
+                              Order Completed
+                            </button>
+                          </Link>
+                        ) : null}
+
+                        {order.order_status_id === 6 && (
+                          <div className="flex justify-end items-center">
+                            <TbTruckDelivery className="text-xl " />
+
+                            <h1 className="font-semibold">
+                              {dayjs(order.delivery_time).format(
+                                "D MMMM YYYY HH:mm:ss"
+                              )}
+                            </h1>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

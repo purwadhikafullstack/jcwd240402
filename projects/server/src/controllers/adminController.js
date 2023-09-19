@@ -423,6 +423,17 @@ module.exports = {
     }
   },
 
+  async updateOrderStatus(orderId, newStatusId) {
+    const updatedOrder = await db.db.Order.update(
+      { order_status_id: newStatusId },
+      { where: { id: orderId } }
+    );
+
+    if (updatedOrder[0] === 0) {
+      throw new Error("Order not found");
+    }
+  },
+
   async acceptPayment(req, res) {
     const orderId = req.params.id;
     console.log("Extracted Order ID:", orderId);
@@ -455,12 +466,18 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
-        console.log("test",reservedStock.WarehouseProductReservation.warehouse_id)
-        console.log("test",reservedStock.WarehouseProductReservation.product_id)
+        console.log(
+          "test",
+          reservedStock.WarehouseProductReservation.warehouse_id
+        );
+        console.log(
+          "test",
+          reservedStock.WarehouseProductReservation.product_id
+        );
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
-            reservedStock.WarehouseProductReservation.warehouse_id,
+              reservedStock.WarehouseProductReservation.warehouse_id,
             product_id: reservedStock.WarehouseProductReservation.product_id,
           },
           transaction: t,
@@ -476,7 +493,7 @@ module.exports = {
             reservedStock.WarehouseProductReservation.warehouse_id,
             reservedStock.WarehouseProductReservation.product_id,
             reservedStock.reserve_quantity,
-            reservedStock.order_id,
+            reservedStock.order_id
           );
 
           if (stockTransferResult.status !== "success") {
@@ -497,18 +514,17 @@ module.exports = {
 
       res
         .status(200)
-        .json({ message: "Payment accepted, order is in process" });
+        .json({ ok: true, message: "Payment accepted, order is in process" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while accepting payment",
-          error: error.message,
-        });
+      res.status(500).json({
+        ok: false,
+        message: "An error occurred while accepting payment",
+        error: error.message,
+      });
     }
   },
 
@@ -519,7 +535,7 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 1 },
+        { order_status_id: 7 },
         { where: { id: orderId } }
       );
 
@@ -527,19 +543,24 @@ module.exports = {
         throw new Error("Order not found");
       }
 
-      res.status(200).json({ message: "Payment rejected, user needs to go back to payment" });
+      await t.commit();
+
+      res
+        .status(200)
+        .json({ ok: true, message: "Payment rejected, order is cancelled" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
       res.status(500).json({
+        ok: false,
         message: "An error occurred while rejecting payment",
         error: error.message,
       });
     }
   },
-  
+
   async sendUserOrder(req, res) {
     const orderId = req.params.id;
     console.log("Extracted Order ID:", orderId);
@@ -548,11 +569,12 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 6,
+        {
+          order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
           delivery_time: new Date().toString(),
-          transaction: t},
-        { where: { id: orderId } }
+        },
+        { where: { id: orderId }, transaction: t }
       );
 
       if (updatedOrder[0] === 0) {
@@ -567,23 +589,29 @@ module.exports = {
           },
           {
             model: db.Warehouse_stock,
-            as: "WarehouseProductReservation"
+            as: "WarehouseProductReservation",
           },
         ],
-      })
+      });
 
       for (let reservedStock of reservedStocks) {
-
         const warehouseStockUpdate = await db.Warehouse_stock.update(
-          { product_stock: reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity  },
-          { where: { id: reservedStock.WarehouseProductReservation.id },
-          transaction: t,
-         }
-          
-        )
+          {
+            product_stock:
+              reservedStock.WarehouseProductReservation.product_stock -
+              reservedStock.reserve_quantity,
+          },
+          {
+            where: { id: reservedStock.WarehouseProductReservation.id },
+            transaction: t,
+          }
+        );
 
         const reservedStockDestroy = await db.Reserved_stock.destroy({
-          where: { order_id: orderId, warehouse_stock_id: reservedStock.WarehouseProductReservation.id},
+          where: {
+            order_id: orderId,
+            warehouse_stock_id: reservedStock.WarehouseProductReservation.id,
+          },
           include: [
             {
               model: db.Warehouse_stock,
@@ -592,26 +620,25 @@ module.exports = {
           ],
           transaction: t,
         });
-
       }
 
       await t.commit();
 
-      res
-        .status(200)
-        .json({ message: "item(s) are sent, order shipped",
-                test: reservedStocks });
+      res.status(200).json({
+        ok: true,
+        message: "order has been shipped",
+        test: reservedStocks,
+      });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while accepting payment",
-          error: error.message,
-        });
+      res.status(500).json({
+        ok: false,
+        message: "An error occurred while accepting payment",
+        error: error.message,
+      });
     }
   },
 
@@ -623,8 +650,7 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 5,
-          transaction: t},
+        { order_status_id: 5, transaction: t },
         { where: { id: orderId } }
       );
 
@@ -643,24 +669,21 @@ module.exports = {
         transaction: t,
       });
 
-
       await t.commit();
 
       res
         .status(200)
-        .json({ message: "order canceled",
-                test: updatedOrder });
+        .json({ ok: true, message: "order canceled", test: updatedOrder });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while accepting payment",
-          error: error.message,
-        });
+      res.status(500).json({
+        ok: false,
+        message: "An error occurred while accepting payment",
+        error: error.message,
+      });
     }
   },
 
@@ -747,8 +770,7 @@ module.exports = {
       });
     }
   },
-  async getUserOrderDetails(req, res){
-
+  async getUserOrderDetails(req, res) {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.size) || 10;
     const warehouse_id = req.query.warehouseId;
@@ -777,7 +799,13 @@ module.exports = {
     }
 
     try {
-      const response = await getAllUserOrderDetails(filter, filter2, filter3, page, pageSize);
+      const response = await getAllUserOrderDetails(
+        filter,
+        filter2,
+        filter3,
+        page,
+        pageSize
+      );
 
       if (response.success) {
         res.status(200).send({
@@ -844,11 +872,17 @@ module.exports = {
           Sequelize.fn("MONTH", Sequelize.col("delivery_time")),
           month
         ),
-        Sequelize.where(Sequelize.fn("YEAR", Sequelize.col("delivery_time")), year),
+        Sequelize.where(
+          Sequelize.fn("YEAR", Sequelize.col("delivery_time")),
+          year
+        ),
       ];
     } else if (year) {
       options.where[db.Sequelize.Op.and] = [
-        Sequelize.where(Sequelize.fn("YEAR", Sequelize.col("delivery_time")), year),
+        Sequelize.where(
+          Sequelize.fn("YEAR", Sequelize.col("delivery_time")),
+          year
+        ),
       ];
     } else if (month) {
       options.where[db.Sequelize.Op.and] = [
@@ -860,42 +894,38 @@ module.exports = {
     }
 
     try {
-
       const response = await getAllUserOrder(options, filter3, page, perPage);
 
-      const userOrder = response.data
+      const userOrder = response.data;
 
       const totalOnly = [];
       const totalOnly2 = [];
 
-      const orderMap = userOrder.map((m) => { 
-        totalOnly.push(m.total_price - m.delivery_price)
+      const orderMap = userOrder.map((m) => {
+        totalOnly.push(m.total_price - m.delivery_price);
         {
           m.Order_details.map((n) => {
-            if(n.Warehouse_stock){
-              totalOnly2.push(n.Warehouse_stock.Product.price * n.quantity)
-            }     
-          })
+            if (n.Warehouse_stock) {
+              totalOnly2.push(n.Warehouse_stock.Product.price * n.quantity);
+            }
+          });
         }
+      });
+
+      const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
+      const totalPrice2 = totalOnly2.reduce((total, n) => total + n, 0);
+
+      res.status(201).send({
+        message: "successfully get sales report",
+        sales_report: totalPrice,
+        sales_report2: totalPrice2,
+        orders: userOrder,
+      });
+    } catch (error) {
+      res.status(500).send({
+        message: "fatal error on server",
+        error: error.message,
+      });
     }
-  )
-
-    const totalPrice = totalOnly.reduce((total, n) => total + n, 0)
-    const totalPrice2 = totalOnly2.reduce((total, n) => total + n, 0)
-
-  res.status(201).send({
-      message: "successfully get sales report",
-      sales_report: totalPrice,
-      sales_report2: totalPrice2,
-      orders: userOrder,
-  });
-  } catch (error) {
-    res.status(500).send({
-      message: "fatal error on server",
-      error: error.message,
-    });
-   }
   },
-
-
 };

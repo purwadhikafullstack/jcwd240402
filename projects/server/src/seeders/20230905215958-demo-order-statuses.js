@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,7 +11,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("Order_statuses", [
       {
         id: 1,
@@ -51,7 +51,7 @@ module.exports = {
       },
       {
         id: 7,
-        name: "Order Confirmed",
+        name: "Rejected",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

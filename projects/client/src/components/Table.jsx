@@ -3,6 +3,7 @@ import { Table } from "flowbite-react";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import Select from "react-select";
 import Button from "./Button";
+import OrderModal from "./modal/orderList/OrderModal";
 
 const TableComponent = ({
   headers,
@@ -80,6 +81,10 @@ const TableComponent = ({
     );
   };
 
+  console.log(headers);
+  console.log(data);
+  console.log(data);
+
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
       <Table.Head>
@@ -113,6 +118,19 @@ const TableComponent = ({
               </Table.Cell>
             ))}
             {shouldShowActions() && (
+              <Table.Cell className="overflow-visible">
+                {showAsyncAction && (
+                  <OrderModal
+                    row={row}
+                    onApprove={onApprove}
+                    onReject={onReject}
+                    onSend={onSend}
+                    onCancel={onCancel}
+                  />
+                )}
+              </Table.Cell>
+            )}
+            {/* {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 <div className="flex items-center space-x-2">
                   {showAsyncAction && (
@@ -194,7 +212,7 @@ const TableComponent = ({
                   )}
                 </div>
               </Table.Cell>
-            )}
+            )} */}
           </Table.Row>
         ))}
       </Table.Body>

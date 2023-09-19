@@ -58,7 +58,7 @@ export const OrderButton = ({ statusBefore, orderId }) => {
   if (statusBefore === 6) {
     return (
       <button
-        className="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs"
+        className=""
         onClick={() => {
           handleClickStatus(orderId, 3);
           navigate("/user/setting/order");

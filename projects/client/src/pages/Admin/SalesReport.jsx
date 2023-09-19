@@ -5,6 +5,8 @@ import Select from "react-select";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
@@ -15,9 +17,12 @@ const SalesReport = () => {
   const [categoryId, setCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [orderSalesList, setOrderSalesList] = useState([]);
   const [salesReport, setSalesReport] = useState("");
   const [salesReport2, setSalesReport2] = useState("");
   const [error, setError] = useState("");
+  const access_token = getCookie("access_token");
+  const adminData = useSelector((state) => state.profilerAdmin.value);
 
   const getCookieValue = (name) =>
     document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
@@ -80,21 +85,6 @@ const SalesReport = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/api/admin/checkrole`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setRoleId(response.data.role);
-      })
-      .catch((err) => {
-        setError(err.response.message);
-      });
-  }, []);
-
-  useEffect(() => {
-    axios
       .get(
         `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${categoryId}&productId=${productId}`,
         {
@@ -104,8 +94,9 @@ const SalesReport = () => {
         }
       )
       .then((response) => {
-        setSalesReport(response.data.sales_report);
-        setSalesReport2(response.data.sales_report2);
+        setSalesReport(response?.data?.sales_report);
+        setSalesReport2(response?.data?.sales_report2);
+        setOrderSalesList(response?.data?.orders)
       })
       .catch((err) => {
         setError(err.response.message);
@@ -166,6 +157,30 @@ const SalesReport = () => {
           )}
           <div>Sales Report: {salesReport}</div>
           <div>Sales Report 2: {salesReport2}</div>
+        </div>
+        <div className="py-4">
+        {orderSalesList.map((order) => (            
+          <TableComponent
+            headers={[
+              "Month",
+              "Category",
+              "Product",
+              "Sub Total",
+            ]}
+            data={order?.Order_details.map((sales) => ({
+              "Month": order?.delivery_time.split(' ')[1] || "",
+              "Category": sales?.Warehouse_stock?.Product?.category?.name || "",
+              "Product": sales?.Warehouse_stock?.Product?.name || "",
+              "Sub Total": sales?.Warehouse_stock?.Product?.price * sales?.quantity|| 0,
+            }))}
+            showIcon={false}
+
+            // "Month": sales?.delivery_time.split(' ')[1] || "",
+              // "Category": sales?.Order_details?.Warehouse_stock?.Product?.category?.name || "",
+              // "Product": sales?.Order_details?.Warehouse_stock?.Product?.name || "",
+              // "Sub Total": sales?.Order_details?.Warehouse_stock?.Product?.price * sales?.Order_details?.quantity|| 0,
+          />
+          ))}
         </div>
       </div>
     </div>

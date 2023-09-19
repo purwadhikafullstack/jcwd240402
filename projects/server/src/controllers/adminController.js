@@ -444,7 +444,7 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 7 },
+        { order_status_id: 4 },
         { where: { id: orderId } }
       );
 
@@ -536,17 +536,6 @@ module.exports = {
       if (updatedOrder[0] === 0) {
         throw new Error("Order not found");
       }
-
-      const reservedStock = await db.Reserved_stock.findOne({
-        where: { order_id: orderId },
-        include: [
-          {
-            model: db.Warehouse_stock,
-            as: "WarehouseProductReservation",
-          },
-        ],
-        transaction: t,
-      });
 
       res.status(200).json({ message: "Payment rejected, user needs to go back to payment" });
     } catch (error) {

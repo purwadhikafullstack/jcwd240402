@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminCardProduct from "../card/AdminCardProduct";
 import DefaultPagination from "../../Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import axios from "../../../api/axios";
 
@@ -21,12 +22,29 @@ const ProductList = () => {
     }
     navigate({ search: searchParams.toString() });
   }, 150);
-  const fetchCategories = async () => {
+
+  const loadCategories = async (inputValue = "") => {
     try {
-      const response = await axios.get("/admin/categories");
-      setCategories(response.data.data);
+      const response = await axios.get("/admin/categories", {
+        params: {
+          name: inputValue,
+        },
+      });
+
+      if (response.data.success) {
+        return [
+          { value: "", label: "All Categories" },
+          ...response.data.data.map((cat) => ({
+            value: cat.id,
+            label: cat.name,
+          })),
+        ];
+      } else {
+        return [];
+      }
     } catch (error) {
-      console.error("Error fetching categories:", error);
+      console.error("Error fetching categories for select:", error);
+      return [];
     }
   };
 
@@ -66,7 +84,7 @@ const ProductList = () => {
   }, [searchParams.toString()]);
 
   useEffect(() => {
-    fetchCategories();
+    loadCategories();
   }, []);
 
   const handleSearchChange = (e) => {
@@ -74,15 +92,16 @@ const ProductList = () => {
     debouncedNavigate({ product_name: e.target.value });
   };
 
-  const handleCategoryChange = (newCategory) => {
-    setSelectedCategory(newCategory);
-    debouncedNavigate({ category_id: newCategory });
+  const handleCategoryChange = (selectedOption) => {
+    const selectedCategoryId = selectedOption ? selectedOption.value : "";
+    setSelectedCategory(selectedCategoryId);
+    debouncedNavigate({ category_id: selectedCategoryId });
   };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid">
       <div className="px-8 pt-1">
-        <div className="flex items-center mb-5">
+        <div className="flex  relative mb-5">
           <input
             type="text"
             placeholder="Search Product"
@@ -90,20 +109,16 @@ const ProductList = () => {
             value={search}
             onChange={handleSearchChange}
           />
-          <select
-            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
-            value={selectedCategory}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <AsyncSelect
+            className="flex-1 z-10"
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCategories}
+            onChange={handleCategoryChange}
+            placeholder="Select a category"
+          />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3 z-0">
           {products.map((product) => (
             <AdminCardProduct
               key={product.id}

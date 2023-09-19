@@ -8,6 +8,7 @@ import RegisterWarehouseModal from "../../components/modal/warehouse/ModalRegist
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
+import ConfirmDeleteWarehouse from "../../components/modal/warehouse/ModalDeleteWarehouse";
 
 const WarehouseList = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const WarehouseList = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -39,12 +42,13 @@ const WarehouseList = () => {
   const handleEdit = (warehouse) => {
     navigate(`/edit/${warehouse["Warehouse Name"]}`);
   };
-  
+
   useEffect(() => {
     fetchWarehouses();
   }, [selectedCity, selectedWarehouse, currentPage]);
 
   const formattedWarehouses = warehouses.map((warehouse) => ({
+    id: warehouse.id,
     city: warehouse.City?.name || "",
     "Warehouse Name": warehouse.warehouse_name || "",
     "Warehouse Address": warehouse.address_warehouse || "",
@@ -109,6 +113,10 @@ const WarehouseList = () => {
             ]}
             data={formattedWarehouses}
             onEdit={handleEdit}
+            onDelete={(warehouse) => {
+              setDeleteWarehouseId(warehouse.id);
+              setDeleteModalOpen(true);
+            }}
           />
         </div>
         <RegisterWarehouseModal
@@ -116,6 +124,15 @@ const WarehouseList = () => {
           onClose={() => {
             setRegisterModalOpen(false);
             fetchWarehouses();
+          }}
+        />
+        <ConfirmDeleteWarehouse
+          show={isDeleteModalOpen}
+          warehouseId={deleteWarehouseId}
+          onClose={() => setDeleteModalOpen(false)}
+          handleSuccessfulDelete={() => {
+            fetchWarehouses()
+            setDeleteModalOpen(false);
           }}
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute mb-4">

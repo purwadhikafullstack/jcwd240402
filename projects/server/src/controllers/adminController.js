@@ -443,7 +443,7 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 3 },
+        { order_status_id: 4 },
         { where: { id: orderId } }
       );
 
@@ -527,7 +527,7 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
-      await updateOrderStatus(orderId, 2);
+      await updateOrderStatus(orderId, 1);
 
       const reservedStock = await db.Reserved_stock.findOne({
         where: { order_id: orderId },

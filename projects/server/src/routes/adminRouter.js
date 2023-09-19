@@ -1,5 +1,4 @@
 const adminController = require("../controllers/adminController");
-const Verify = require("../middleware/auth");
 const validatorMiddlewareAdmin = require("../middleware/validator/admin");
 const validatorMiddlewareCategory = require("../middleware/validator/category");
 const validatorMiddlewareProduct = require("../middleware/validator/product");
@@ -25,11 +24,11 @@ router.patch("/assign-warehouse/:id",authMiddleware.verifyAccessTokenSuperAdmin,
 
 router.get("/checkrole",authMiddleware.verifyAccessTokenAdmin);
 router.get("/", adminController.getAdminList);
-router.get("/profile",Verify.verifyAccessTokenAdmin,adminController.adminInformation);
-router.get("/auth/keep-login",Verify.verifyRefreshToken,adminController.keepLogin);
-router.get("/order-list",Verify.verifyAccessTokenAdmin,adminController.getUserOrder);
-router.post("/accept-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.acceptPayment);
-router.post("/reject-user-payment/:id",Verify.verifyAccessTokenAdmin,adminController.rejectPayment);
+router.get("/profile",authMiddleware.verifyAccessTokenAdmin,adminController.adminInformation);
+router.get("/auth/keep-login",authMiddleware.verifyRefreshToken,adminController.keepLogin);
+router.get("/order-list",authMiddleware.verifyAccessTokenAdmin,adminController.getUserOrder);
+router.post("/accept-user-payment/:id",authMiddleware.verifyAccessTokenAdmin,adminController.acceptPayment);
+router.post("/reject-user-payment/:id",authMiddleware.verifyAccessTokenAdmin,adminController.rejectPayment);
 
 router.delete("/:adminId", authMiddleware.verifyAccessTokenSuperAdmin, adminController.deleteAdmin);
 

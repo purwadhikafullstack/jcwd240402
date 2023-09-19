@@ -6,67 +6,68 @@ import AsyncSelect from "react-select/async";
 import RegisterCategoryModal from "../../components/modal/category/ModalRegisterCategory";
 import Button from "../../components/Button";
 import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
+import { useSelector } from "react-redux";
 
 const CategoryList = () => {
-  const [categories, setCategories] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchName, setSearchName] = useState("");
-  const searchNameRef = useRef("");
-  const [showModal, setShowModal] = useState(false);
-
-  const fetchCategories = useCallback(async () => {
-    try {
-      const response = await axios.get(
-        `/admin/categories`,
-        {
+    const [categories, setCategories] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [searchName, setSearchName] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const adminData = useSelector((state) => state.profilerAdmin.value);
+  
+    useEffect(() => {
+      fetchCategories();
+    }, [currentPage, searchName]);
+  
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(`/admin/categories`, {
           params: {
             page: currentPage,
-            name: searchNameRef.current,
+            name: searchName,
           },
+        });
+  
+        if (response.data.success) {
+          setCategories(response.data.data);
+          const { totalPages } = response.data.pagination;
+          setTotalPages(totalPages);
+          if (currentPage > totalPages) {
+            setCurrentPage(totalPages);
+          }
         }
-      );
-
-      if (response.data.success) {
-        setCategories(response.data.data);
-        const { page, pageSize, totalItems, totalPages } =
-          response.data.pagination;
-        setTotalPages(totalPages);
-        if ((page - 1) * pageSize + response.data.data.length > totalItems) {
-          setCurrentPage(Math.max(1, totalPages));
-        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
       }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }, [currentPage, searchName]);
+    };
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
-  const loadCategories = async (inputValue, callback) => {
+
+  const loadCategories = async (inputValue = "") => {
     try {
-      const response = await axios.get(
-        `/admin/categories`,
-        {
-          params: {
-            name: inputValue,
-          },
-        }
-      );
+      const response = await axios.get(`/admin/categories`, {
+        params: {
+          name: inputValue,
+        },
+      });
+
       if (response.data.success) {
-        const formattedCategories = response.data.data.map((category) => ({
-          value: category.name,
-          label: category.name,
-        }));
-
-        formattedCategories.unshift({ value: "", label: "All Categories" });
-
-        callback(formattedCategories);
+        const formattedCategories = [
+          { value: "", label: "All Categories" },
+          ...response.data.data.map((category) => ({
+            value: category.name,
+            label: category.name,
+          })),
+        ];
+        return formattedCategories;
+      } else {
+        return [];
       }
     } catch (error) {
       console.error("Error fetching category names:", error);
+      return [];
     }
   };
 
@@ -76,6 +77,11 @@ const CategoryList = () => {
 
   const handleRegisterSuccess = () => {
     fetchCategories();
+  };
+
+  const handleCategoryChange = (selectedOption) => {
+    const selectedName = selectedOption ? selectedOption.value : "";
+    setSearchName(selectedName);
   };
 
   return (
@@ -91,11 +97,7 @@ const CategoryList = () => {
               cacheOptions
               defaultOptions
               loadOptions={loadCategories}
-              onChange={(selectedOption) => {
-                const selectedName = selectedOption ? selectedOption.value : "";
-                setSearchName(selectedName);
-                searchNameRef.current = selectedName;
-              }}
+              onChange={handleCategoryChange}
               placeholder="Category Name"
             />
           </div>
@@ -106,6 +108,7 @@ const CategoryList = () => {
             bgColor="bg-blue3"
             colorText="text-white"
             fontWeight="font-semibold"
+            isVisible={adminData.role_id !== 1}
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
@@ -136,4 +139,4 @@ const CategoryList = () => {
   );
 };
 
-export default CategoryList;
+export default withAuthAdminWarehouse(CategoryList);

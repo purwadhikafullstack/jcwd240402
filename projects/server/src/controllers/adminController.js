@@ -415,23 +415,10 @@ module.exports = {
       res.status(200).json({ message: "Admin deleted successfully" });
     } catch (error) {
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while deleting admin",
-          error: error.message,
-        });
-    }
-  },
-
-  async updateOrderStatus(orderId, newStatusId) {
-    const updatedOrder = await db.db.Order.update(
-      { order_status_id: newStatusId },
-      { where: { id: orderId } }
-    );
-
-    if (updatedOrder[0] === 0) {
-      throw new Error("Order not found");
+      res.status(500).json({
+        message: "An error occurred while deleting admin",
+        error: error.message,
+      });
     }
   },
 
@@ -467,10 +454,12 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
+        console.log("test",reservedStock.WarehouseProductReservation.warehouse_id)
+        console.log("test",reservedStock.WarehouseProductReservation.product_id)
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
-              reservedStock.WarehouseProductReservation.warehouse_id,
+            reservedStock.WarehouseProductReservation.warehouse_id,
             product_id: reservedStock.WarehouseProductReservation.product_id,
           },
           transaction: t,
@@ -483,9 +472,10 @@ module.exports = {
 
         if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
           const stockTransferResult = await autoStockTransfer(
-            reservedStock.warehouse_id,
-            reservedStock.product_id,
-            reservedStock.reserve_quantity
+            reservedStock.WarehouseProductReservation.warehouse_id,
+            reservedStock.WarehouseProductReservation.product_id,
+            reservedStock.reserve_quantity,
+            reservedStock.order_id,
           );
 
           if (stockTransferResult.status !== "success") {
@@ -566,12 +556,10 @@ module.exports = {
         await t.rollback();
       }
       console.error(error);
-      res
-        .status(500)
-        .json({
-          message: "An error occurred while rejecting payment",
-          error: error.message,
-        });
+      res.status(500).json({
+        message: "An error occurred while rejecting payment",
+        error: error.message,
+      });
     }
   },
 

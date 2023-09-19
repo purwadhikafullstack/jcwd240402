@@ -166,6 +166,18 @@ const TableComponent = ({
                       onClick={() => handleDropdownToggle(rowIndex)}
                     />
                   )}
+                  {showApproveReject && (
+                    <Table.Cell>
+                      <Button
+                        buttonSize="small"
+                        buttonText="Manage"
+                        onClick={() => onApproveReject(row)}
+                        bgColor="bg-blue3"
+                        colorText="text-white"
+                        fontWeight="font-semibold"
+                      />
+                    </Table.Cell>
+                  )}
                   {showDropdownIndex === rowIndex && (
                     <div className="absolute right-0 bg-white rounded-lg shadow-card-1 border border-gray-200 z-20">
                       <ul className="list-none">

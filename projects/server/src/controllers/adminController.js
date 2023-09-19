@@ -466,6 +466,14 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
+        console.log(
+          "test",
+          reservedStock.WarehouseProductReservation.warehouse_id
+        );
+        console.log(
+          "test",
+          reservedStock.WarehouseProductReservation.product_id
+        );
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
@@ -482,9 +490,10 @@ module.exports = {
 
         if (warehouseStock.product_stock < reservedStock.reserve_quantity) {
           const stockTransferResult = await autoStockTransfer(
-            reservedStock.warehouse_id,
-            reservedStock.product_id,
-            reservedStock.reserve_quantity
+            reservedStock.WarehouseProductReservation.warehouse_id,
+            reservedStock.WarehouseProductReservation.product_id,
+            reservedStock.reserve_quantity,
+            reservedStock.order_id
           );
 
           if (stockTransferResult.status !== "success") {

@@ -9,7 +9,6 @@ import InputForm from "../../InputForm";
 import PasswordInput from "../../PasswordInput";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 
-
 const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
   const access_token = getCookie("access_token");
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -62,12 +61,16 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
       try {
         if (!selectedWarehouse) throw new Error("Please select a warehouse.");
 
-        const response = await axios.post("/admin/register", {
-          ...values,
-          warehouse_id: selectedWarehouse?.value
-        }, {
-          headers: { Authorization: `Bearer ${access_token}` }
-        });
+        const response = await axios.post(
+          "/admin/register",
+          {
+            ...values,
+            warehouse_id: selectedWarehouse?.value,
+          },
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        );
 
         if (response.status === 201) {
           formik.resetForm();
@@ -139,7 +142,7 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
             <PasswordInput
               label="Password"
               name="password"
-              placeholder = "Password"
+              placeholder="Password"
               value={formik.values.password}
               onChange={formik.handleChange}
               isError={!!formik.errors.password}
@@ -158,6 +161,11 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
                 value={selectedWarehouse}
                 onChange={setSelectedWarehouse}
                 placeholder="Select Warehouse"
+                defaultOptions
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: base => ({ ...base, zIndex: 9999, position: 'fixed' })
+               }}
               />
             </div>
             <div className="flex flex-col justify-center items-center mt-3 ">

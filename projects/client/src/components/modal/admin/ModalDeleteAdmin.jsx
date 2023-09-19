@@ -15,14 +15,13 @@ const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId }) 
 
       if (response.status === 200) {
         alert('Admin deleted successfully!');
-        onClose();
         handleSuccessfulDelete();
-      } else {
-        alert(`Error deleting admin: ${response.data.message}`);
+        onClose();
       }
     } catch (error) {
       console.error("Failed to delete admin:", error);
-      alert("An error occurred. Please try again.");
+      const errorMessage = error.response?.data?.message || "An error occurred. Please try again.";
+      alert(errorMessage);
     }
   };
 
@@ -53,7 +52,6 @@ const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId }) 
             colorText="text-white"
             fontWeight="font-semibold"
             onClick={handleDelete}
-            className="ml-4"
           />
         </div>
       </Modal.Body>

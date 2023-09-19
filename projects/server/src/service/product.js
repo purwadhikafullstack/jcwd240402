@@ -54,7 +54,6 @@ module.exports = {
 
     const queryOptions = {
       where: filter,
-      paranoid:false,
       include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,

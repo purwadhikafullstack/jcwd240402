@@ -42,7 +42,7 @@ const AdminCardProduct = ({
         className="w-full h-24 object-cover mb-2"
       />
       <button
-        className="absolute top-2 right-2 z-10"
+        className="absolute top-2 right-2 z-20"
         onClick={handleMenuToggle}
       >
         <IoEllipsisHorizontalCircle />
@@ -54,7 +54,7 @@ const AdminCardProduct = ({
         >
           <ul className="list-none">
             <li
-              className="py-2 px-4 cursor-pointer hover:bg-gray-100"
+              className="py-2 px-4 cursor-pointer hover:bg-gray-100 z-20"
               onClick={onEdit}
             >
               <Link to={`/admin/products/edit/${encodeURIComponent(name)}`}>

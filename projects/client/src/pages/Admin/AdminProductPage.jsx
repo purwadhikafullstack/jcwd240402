@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Tabs from "../../components/Tab/TabContainer";
 import { Outlet } from "react-router-dom";
 import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
-import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { profileAdmin } from "../../features/adminDataSlice";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 
 const AdminProductPage = () => {
   const access_token = getCookie("access_token");
@@ -19,11 +19,11 @@ const AdminProductPage = () => {
       isActive: window.location.pathname === "/admin/products",
       to: "/admin/products",
     },
-    {
+    ...(adminData.role_id === 1 ? [{
       label: "Create Product",
       isActive: window.location.pathname === "/admin/products/create",
       to: "/admin/products/create",
-    },
+    }] : [])
   ];
 
   useEffect(() => {
@@ -56,4 +56,4 @@ const AdminProductPage = () => {
   );
 };
 
-export default withAuthAdmin(AdminProductPage);
+export default withAuthAdminWarehouse(AdminProductPage);

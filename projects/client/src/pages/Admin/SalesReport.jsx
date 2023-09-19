@@ -5,19 +5,18 @@ import Select from "react-select";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
-import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 
-const StockHistory = () => {
+const SalesReport = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
   const [roleId, setRoleId] = useState("");
+  const [productId, setProductId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [stockHistoryList, setStockHistoryList] = useState([]);
-  const [totalLastStock, setTotalLastStock] = useState("");
-  const [totalIncrement, setTotalIncrement] = useState("");
-  const [totalDecrement, setTotalDecrement] = useState("");
+  const [salesReport, setSalesReport] = useState("");
+  const [salesReport2, setSalesReport2] = useState("");
   const [error, setError] = useState("");
 
   const getCookieValue = (name) =>
@@ -57,6 +56,28 @@ const StockHistory = () => {
     { value: 4, label: "Furnifor Malang" },
   ];
 
+  const productOptions = [
+    { value: "", label: "any product" },
+    { value: 1, label: "ANTILOP" },
+    { value: 2, label: "BUSUNGE" },
+    { value: 3, label: "FLISAT" },
+    { value: 4, label: "INGOLF" },
+    { value: 4, label: "LATTJO" },
+  ];
+
+  const categoryOptions = [
+    { value: "", label: "any category" },
+    { value: 1, label: "Baby Room" },
+    { value: 2, label: "Bed Room" },
+    { value: 3, label: "Kitchen" },
+    { value: 4, label: "Lamp and Electronic" },
+    { value: 5, label: "Living Room" },
+    { value: 6, label: "Outdoor Space" },
+    { value: 7, label: "Toilet" },
+    { value: 8, label: "Working Room" },
+    { value: 9, label: "Uncategorized" },
+  ];
+
   useEffect(() => {
     axios
       .get(`http://localhost:8000/api/admin/checkrole`, {
@@ -75,7 +96,7 @@ const StockHistory = () => {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
+        `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${categoryId}&productId=${productId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -83,19 +104,22 @@ const StockHistory = () => {
         }
       )
       .then((response) => {
-        setStockHistoryList(response.data.history);
-        setTotalLastStock(response.data.total_last_stock);
-        setTotalIncrement(response.data.total_increment);
-        setTotalDecrement(response.data.total_decrement);
-        setTotalPages(response.pagination.totalPages);
+        setSalesReport(response.data.sales_report);
+        setSalesReport2(response.data.sales_report2);
       })
       .catch((err) => {
         setError(err.response.message);
       });
-  }, [month, year, warehouseId, currentPage]);
+  }, [month, year, warehouseId, productId, categoryId, currentPage]);
 
   const handleChangeMonth = (month) => {
     setMonth(month.value);
+  };
+  const handleChangeProduct = (product) => {
+    setProductId(product.value);
+  };
+  const handleChangeCategory = (category) => {
+    setCategoryId(category.value);
   };
   const handleChangeYear = (year) => {
     setYear(year.value);
@@ -121,6 +145,16 @@ const StockHistory = () => {
             placeholder={<div>year</div>}
             onChange={handleChangeYear}
           />
+          <Select
+            options={categoryOptions}
+            placeholder={<div>category</div>}
+            onChange={handleChangeCategory}
+          />
+          <Select
+            options={productOptions}
+            placeholder={<div>product</div>}
+            onChange={handleChangeProduct}
+          />
           {roleId == 1 ? (
             <Select
               options={warehouseOptions}
@@ -130,48 +164,12 @@ const StockHistory = () => {
           ) : (
             <div></div>
           )}
-          <div>Last Stock: {totalLastStock}</div>
-          <div>Total Increment: {totalIncrement}</div>
-          <div>Total Decrement: {totalDecrement}</div>
-        </div>
-        <div className="py-4">
-          <TableComponent
-            headers={[
-              "Product",
-              "Admin Username",
-              "Stock Before",
-              "Stock After",
-              "Increment/Decrement",
-              "Quantity",
-              "Journal",
-              "Timestamp",
-            ]}
-            data={stockHistoryList.map((history) => ({
-              Product: history.Warehouse_stock.Product.name || "",
-              "Admin Username": history.Admin.username || "",
-              "Stock Before": history.stock_before_transfer || "0",
-              "Stock After": history.stock_after_transfer || "",
-              "Increment/Decrement": history.increment_decrement || "",
-              Quantity: history.quantity || "",
-              Journal: history.journal || "",
-              Timestamp:
-                history.timestamp.slice(0, 10) +
-                  ", " +
-                  history.timestamp.slice(11, 19) || "",
-            }))}
-            showIcon={false}
-          />
-        </div>
-        {error && <div className="text-red-500">{error}</div>}
-        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+          <div>Sales Report: {salesReport}</div>
+          <div>Sales Report 2: {salesReport2}</div>
         </div>
       </div>
     </div>
   );
 };
 
-export default withAuthAdminWarehouse(StockHistory);
+export default SalesReport;

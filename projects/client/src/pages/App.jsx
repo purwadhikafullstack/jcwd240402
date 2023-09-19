@@ -46,6 +46,7 @@ import AllWishlist from "./user/AllWishlist";
 import PaymentFinalizing from "./user/PaymentFinalizing";
 import OrderConfirmReview from "./user/OrderConfirmReview";
 import UserOrder from "./admin/UserOrder";
+import SalesReport from "./admin/SalesReport";
 import UserList from "./admin/UserList";
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminList />} />
             <Route path="/stock-history" element={<StockHistory />} />
+            <Route path="/sales-report" element={<SalesReport />} />
             <Route path="/order" element={<UserOrder />} />
             <Route path="admin/warehouses" element={<WarehouseList />} />
             <Route path="admin/users" element={<UserList />} />

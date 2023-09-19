@@ -64,13 +64,13 @@ function SidebarAdminDesktop() {
         <div className="flex items-center mb-2">
           <FaUserAlt className="mr-2 text-blue1" />
           <span className="text-sm font-semibold">Username:</span>
-          <span className="ml-2 text-sm">{adminData.username}</span>
+          <span className="ml-2 text-sm">{adminData?.username}</span>
         </div>
         <div className="flex items-center">
           <FaWarehouse className="mr-2 text-blue1" />
           <span className="text-sm font-semibold">Warehouse:</span>
           <span className="ml-2 text-sm">
-            {adminData.warehouse.warehouse_name}
+            {adminData?.warehouse?.warehouse_name}
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@ function SidebarAdminDesktop() {
             </Sidebar.Item>
           </Link>
           {adminRoutes.map((route, idx) => {
-            if (route.roles && !route.roles.includes(adminData.role_id)) {
+            if (route.roles && !route.roles.includes(adminData?.role_id)) {
               return null;
             }
 

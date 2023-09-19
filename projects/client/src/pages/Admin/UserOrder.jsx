@@ -72,7 +72,7 @@ const UserOrder = () => {
         setTotalPages(response.pagination.totalPages);
       })
       .catch((err) => {
-        setError(err.response.message);
+        setError(err.response);
       });
   }, [warehouseId, orderStatusId, currentPage]);
 
@@ -84,26 +84,89 @@ const UserOrder = () => {
     setWarehouseId(selectedWarehouse.value);
   };
 
-  // const handleApproveOrder = async (order) => {
-  //   try {
-  //     const response = await axios.patch(
+  const handleCancelOrder = async (id) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/cancel-order/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
 
-  //       {},
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
+      if (response.data.success) {
+      } else {
+        setError("Failed to cancel the order.");
+      }
+    } catch (error) {
+      setError(error.response?.message || "An error occurred.");
+    }
+  };
 
-  //     if (response.data.success) {
-  //     } else {
-  //       setError("Failed to approve the order.");
-  //     }
-  //   } catch (error) {
-  //     setError(error.response?.message || "An error occurred.");
-  //   }
-  // };
+  const handleAcceptPayment = async (id) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/accept-user-payment/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+      } else {
+        setError("Failed to accept payment.");
+      }
+    } catch (error) {
+      setError(error.response?.message || "An error occurred.");
+    }
+  };
+
+  const handleRejectPayment = async (id) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/reject-user-payment/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+      } else {
+        setError("Failed to reject payment.");
+      }
+    } catch (error) {
+      setError(error.response?.message || "An error occurred.");
+    }
+  };
+
+  const handleSendOrder = async (id) => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/send-order/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+      } else {
+        setError("Failed to send the order.");
+      }
+    } catch (error) {
+      setError(error.response?.message || "An error occurred.");
+    }
+  };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
@@ -142,6 +205,7 @@ const UserOrder = () => {
               "Delivery Time",
             ]}
             data={userOrderList.map((order) => ({
+              id: order?.id || "",
               Username: order?.User?.username || "",
               "Total Transaction": toRupiah(order?.total_price) || "",
               "Delivery Cost": toRupiah(order?.delivery_price) || "0",
@@ -158,7 +222,10 @@ const UserOrder = () => {
             showSend={true}
             showCancel={true}
             showAsyncAction={true}
-            // onApprove={handleApproveOrder}
+            onCancel={(row) => handleCancelOrder(row.id)}
+            onApprove={(row) => handleAcceptPayment(row.id)}
+            onReject={(row) => handleRejectPayment(row.id)}
+            onSend={(row) => handleSendOrder(row.id)}
           />
         </div>
         <div className="flex justify-center items-center mt-4">

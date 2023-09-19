@@ -291,21 +291,6 @@ module.exports = {
 
     try {
       for (const i in cart_data.cart_data) {
-        newOrderDetails.push(
-          await db.Order_detail.create({
-            order_id,
-            warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
-            quantity: cart_data.cart_data[i]?.quantity,
-          })
-        );
-
-        newReservedStock.push(
-          await db.Reserved_stock.create({
-            order_id,
-            warehouse_stock_id: cart_data.cart_data[i]?.warehouse_stock_id,
-            reserve_quantity: cart_data.cart_data[i]?.quantity,
-          })
-        );
 
         newAutoStockTransfer.push(
           await autoStockTransfer(
@@ -314,6 +299,27 @@ module.exports = {
             cart_data.cart_data[i]?.quantity
           )
         );
+
+        let transferedWarehouseStock = await db.Warehouse_stock.findOne({
+          where: {warehouse_id: warehouse_id, product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id}
+        })
+
+        newOrderDetails.push(
+          await db.Order_detail.create({
+            order_id,
+            warehouse_stock_id: transferedWarehouseStock.id,
+            quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
+
+        newReservedStock.push(
+          await db.Reserved_stock.create({
+            order_id,
+            warehouse_stock_id: transferedWarehouseStock.id,
+            reserve_quantity: cart_data.cart_data[i]?.quantity,
+          })
+        );
+
       }
 
       res.status(200).json({

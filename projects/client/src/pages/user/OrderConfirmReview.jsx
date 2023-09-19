@@ -98,7 +98,9 @@ const OrderConfirmReview = () => {
       <div>
         <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 mb-10">
           {yourOrder.order_status_id === 1 ||
-          yourOrder.order_status_id === 2 ? (
+          yourOrder.order_status_id === 2 ||
+          yourOrder.order_status_id === 6 ||
+          yourOrder.order_status_id === 7 ? (
             <>
               <div className="flex justify-between font-semibold text-sm mt-4">
                 <h1>{yourOrder.Order_status?.name}</h1>

@@ -61,7 +61,7 @@ const SettingOrder = () => {
   const getList = async () => {
     try {
       const response = await axios.get(
-        `/user/order-scroll?search=${searchQuery}&lastId=${lastId}&limit=${limit}`,
+        `/user/order-scroll?search=${keyword}&lastId=${lastId}&limit=${limit}`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
@@ -271,6 +271,18 @@ const SettingOrder = () => {
                             </button>
                           </Link>
                         ) : null}
+                        {order.Order_status?.id === 6 ? (
+                          <Link
+                            to={`/order-confirm/${order?.no_invoice?.substr(
+                              -8
+                            )}`}
+                          >
+                            <button className="w-full bg-green-400 p-2 mt-2 font-semibold text-white rounded-md">
+                              Order Completed
+                            </button>
+                          </Link>
+                        ) : null}
+
                         {order.order_status_id === 6 && (
                           <div className="flex justify-end items-center">
                             <TbTruckDelivery className="text-xl " />

@@ -572,7 +572,7 @@ module.exports = {
         {
           order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date().toString(),
+          delivery_time: new Date(),
         },
         { where: { id: orderId }, transaction: t }
       );
@@ -826,12 +826,9 @@ module.exports = {
   },
 
   async salesReport(req, res) {
-    const adminWarehouseId = req.user.warehouse;
-    const adminRoleId = req.user.role;
 
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
-    const loggedAdmin = req.query.loggedAdmin;
     const warehouse_id = req.query.warehouseId;
     const category_id = req.query.categoryId;
     const product_id = req.query.productId;
@@ -854,16 +851,6 @@ module.exports = {
 
     if (warehouse_id) {
       options.where.warehouse_id = warehouse_id;
-    }
-
-    if (loggedAdmin) {
-      options.where.admin_id = loggedAdmin;
-    }
-
-    if (adminWarehouseId) {
-      if (adminRoleId != 1) {
-        options.where.warehouse_id = adminWarehouseId;
-      }
     }
 
     if (month && year) {
@@ -894,32 +881,25 @@ module.exports = {
     }
 
     try {
-      const response = await getAllUserOrder(options, filter3, page, perPage);
+      const response = await getAllUserOrderDetails(options, filter3, page, perPage);
 
       const userOrder = response.data;
 
       const totalOnly = [];
-      const totalOnly2 = [];
 
       const orderMap = userOrder.map((m) => {
-        totalOnly.push(m.total_price - m.delivery_price);
-        {
-          m.Order_details.map((n) => {
-            if (n.Warehouse_stock) {
-              totalOnly2.push(n.Warehouse_stock.Product.price * n.quantity);
+            if (m.Warehouse_stock) {
+              totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
             }
-          });
         }
-      });
+      );
 
       const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
-      const totalPrice2 = totalOnly2.reduce((total, n) => total + n, 0);
 
       res.status(201).send({
         message: "successfully get sales report",
         sales_report: totalPrice,
-        sales_report2: totalPrice2,
-        orders: userOrder,
+        order_details: userOrder,
       });
     } catch (error) {
       res.status(500).send({

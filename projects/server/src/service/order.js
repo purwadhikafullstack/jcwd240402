@@ -75,22 +75,31 @@ module.exports = {
 
   getAllUserOrderDetails: async (
     options = {},
-    options2 = {},
     options3 = {},
     page = 1,
     pageSize = 10
   ) => {
     const filter = options.where || {};
-    const filter2 = options2 || {};
     const filter3 = options3 || {};
 
     const queryOptions = {
       include: [
         {
           model: db.Order,
-          where: { order_status_id: 3 },
+          as: "Order",
           where: filter,
-          where: filter2,
+          include: [
+            {
+              model: db.User,
+            },
+            {
+              model: db.Address_user,
+              attributes: { exclude: ["address_user_id"] },
+            },
+            {
+              model: db.Warehouse,
+            },
+          ]
         },
         {
           model: db.Warehouse_stock,
@@ -115,7 +124,13 @@ module.exports = {
 
     try {
       const results = await db.Order_detail.findAll(queryOptions);
-      const totalOrders = await db.Order_detail.count({ where: filter });
+      const totalOrders = await db.Order_detail.count({ include: [
+        {
+          model: db.Order,
+          where: filter
+        },
+      ] 
+    });
 
       return {
         success: true,

@@ -47,42 +47,42 @@ router.get("/checkrole", authMiddleware.verifyAccessTokenAdmin);
 router.get("/", adminController.getAdminList);
 router.get(
   "/profile",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.adminInformation
 );
 router.get(
   "/auth/keep-login",
-  Verify.verifyRefreshToken,
+  authMiddleware.verifyRefreshToken,
   adminController.keepLogin
 );
 router.get(
   "/order-list",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.getUserOrder
 );
 router.get(
   "/order-detail-list",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.getUserOrderDetails
 );
 router.patch(
   "/accept-user-payment/:id",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.acceptPayment
 );
 router.patch(
   "/reject-user-payment/:id",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.rejectPayment
 );
 router.patch(
   "/send-order/:id",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.sendUserOrder
 );
 router.patch(
   "/cancel-order/:id",
-  Verify.verifyAccessTokenAdmin,
+  authMiddleware.verifyAccessTokenAdmin,
   adminController.CancelUserOrder
 );
 
@@ -209,8 +209,6 @@ router.patch(
 
 //
 router.patch("/auto-transfer", stockController.test);
-
-router.patch("/approve/:id", adminController.acceptPayment);
 
 // List Routes
 

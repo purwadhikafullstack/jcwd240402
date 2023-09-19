@@ -83,6 +83,7 @@ const TableComponent = ({
 
   console.log(headers);
   console.log(data);
+  console.log(data);
 
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
@@ -116,10 +117,19 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
-
-            <Table.Cell className="overflow-visible">
-              <OrderModal row={row} />
-            </Table.Cell>
+            {shouldShowActions() && (
+              <Table.Cell className="overflow-visible">
+                {showAsyncAction && (
+                  <OrderModal
+                    row={row}
+                    onApprove={onApprove}
+                    onReject={onReject}
+                    onSend={onSend}
+                    onCancel={onCancel}
+                  />
+                )}
+              </Table.Cell>
+            )}
             {/* {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 <div className="flex items-center space-x-2">

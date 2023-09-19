@@ -21,27 +21,9 @@ const DashboardAdmin = ({ adminData }) => {
       clearInterval(timer);
     };
   }, []);
-  console.log(adminData);
+
   return (
     <div className="text-black grid grid-cols-12 grid-rows-6 h-full w-full">
-      {/* <div className="border-2 col-span-4 row-span-1">
-        <h1>1.jumlah user</h1>
-      </div>
-      <div className="border-2 col-span-4 row-span-1">
-        <h1>2.jumlah product</h1>
-      </div>
-      <div className="border-2 col-span-4 row-span-1">
-        <h1>3.jumlah category</h1>
-      </div>
-      <div className="border-2 col-span-7 row-span-4">
-        <h1>4</h1>
-      </div>
-      <div className="border-2 col-span-5 row-span-2">
-        <h1>5</h1>
-      </div>
-      <div className="border-2 col-span-5 row-span-2">
-        <h1>6</h1>
-      </div> */}
       <div className="col-span-6 row-span-2 p-4">
         <div className="bg-white w-full h-full rounded-md grid grid-cols-12">
           <div className="col-span-7 p-4 flex flex-col justify-between">

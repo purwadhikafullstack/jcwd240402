@@ -84,6 +84,25 @@ const UserOrder = () => {
     setWarehouseId(selectedWarehouse.value);
   };
 
+  const refetch = async () => {
+    await axios
+      .get(
+        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setUserOrderList(response.data.orders);
+        setTotalPages(response.pagination.totalPages);
+      })
+      .catch((err) => {
+        setError(err.response);
+      });
+  };
+
   const handleCancelOrder = async (id) => {
     try {
       const response = await axios.patch(
@@ -95,8 +114,9 @@ const UserOrder = () => {
           },
         }
       );
-
-      if (response.data.success) {
+      console.log(response.data);
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to cancel the order.");
       }
@@ -116,8 +136,9 @@ const UserOrder = () => {
           },
         }
       );
-
-      if (response.data.success) {
+      console.log(response.data);
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to accept payment.");
       }
@@ -138,7 +159,8 @@ const UserOrder = () => {
         }
       );
 
-      if (response.data.success) {
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to reject payment.");
       }
@@ -159,7 +181,8 @@ const UserOrder = () => {
         }
       );
 
-      if (response.data.success) {
+      if (response.data.ok) {
+        refetch();
       } else {
         setError("Failed to send the order.");
       }
@@ -167,7 +190,7 @@ const UserOrder = () => {
       setError(error.response?.message || "An error occurred.");
     }
   };
-
+  console.log(userOrderList);
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -215,6 +238,8 @@ const UserOrder = () => {
               "Delivering From": order?.Warehouse?.address_warehouse || "",
               "Delivering to": order?.Address_user?.address_details || "",
               "Delivery Time": order?.delivery_time || "not yet delivered",
+              order_status_id: order.order_status_id,
+              Order_details: order?.Order_details,
             }))}
             showIcon={false}
             showApprove={true}
@@ -222,10 +247,10 @@ const UserOrder = () => {
             showSend={true}
             showCancel={true}
             showAsyncAction={true}
-            onCancel={(row) => handleCancelOrder(row.id)}
-            onApprove={(row) => handleAcceptPayment(row.id)}
-            onReject={(row) => handleRejectPayment(row.id)}
-            onSend={(row) => handleSendOrder(row.id)}
+            onCancel={(row) => handleCancelOrder(row)}
+            onApprove={(row) => handleAcceptPayment(row)}
+            onReject={(row) => handleRejectPayment(row)}
+            onSend={(row) => handleSendOrder(row)}
           />
         </div>
         <div className="flex justify-center items-center mt-4">

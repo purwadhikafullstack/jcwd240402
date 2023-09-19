@@ -7,15 +7,23 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 import AlertWithIcon from "../../AlertWithIcon";
 
 export default function ConfirmationPaymentModal({
-  handleConfirm,
   errMsg,
   buttonText,
   message,
   bgColor,
+  onActionConfirmation,
+  row,
 }) {
   const [openModal, setOpenModal] = useState();
 
   const props = { openModal, setOpenModal };
+
+  const handleAction = async (id) => {
+    await Promise.all([
+      onActionConfirmation(id),
+      props.setOpenModal(undefined),
+    ]);
+  };
 
   return (
     <>
@@ -46,7 +54,7 @@ export default function ConfirmationPaymentModal({
               <Button
                 color="failure"
                 onClick={() => {
-                  handleConfirm();
+                  handleAction(row.id);
                 }}
               >
                 Yes, I'm sure

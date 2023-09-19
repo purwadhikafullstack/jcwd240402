@@ -505,13 +505,14 @@ module.exports = {
 
       res
         .status(200)
-        .json({ message: "Payment accepted, order is in process" });
+        .json({ ok: true, message: "Payment accepted, order is in process" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
       res.status(500).json({
+        ok: false,
         message: "An error occurred while accepting payment",
         error: error.message,
       });
@@ -533,28 +534,18 @@ module.exports = {
         throw new Error("Order not found");
       }
 
-      const reservedStock = await db.Reserved_stock.findOne({
-        where: { order_id: orderId },
-        include: [
-          {
-            model: db.Warehouse_stock,
-            as: "WarehouseProductReservation",
-          },
-        ],
-        transaction: t,
-      });
+      await t.commit();
 
       res
         .status(200)
-        .json({
-          message: "Payment rejected, user needs to go back to payment",
-        });
+        .json({ ok: true, message: "Payment rejected, order is cancelled" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
       res.status(500).json({
+        ok: false,
         message: "An error occurred while rejecting payment",
         error: error.message,
       });
@@ -573,9 +564,8 @@ module.exports = {
           order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
           delivery_time: new Date().toString(),
-          transaction: t,
         },
-        { where: { id: orderId } }
+        { where: { id: orderId }, transaction: t }
       );
 
       if (updatedOrder[0] === 0) {
@@ -625,18 +615,18 @@ module.exports = {
 
       await t.commit();
 
-      res
-        .status(200)
-        .json({
-          message: "item(s) are sent, order shipped",
-          test: reservedStocks,
-        });
+      res.status(200).json({
+        ok: true,
+        message: "order has been shipped",
+        test: reservedStocks,
+      });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
       res.status(500).json({
+        ok: false,
         message: "An error occurred while accepting payment",
         error: error.message,
       });
@@ -672,13 +662,16 @@ module.exports = {
 
       await t.commit();
 
-      res.status(200).json({ message: "order canceled", test: updatedOrder });
+      res
+        .status(200)
+        .json({ ok: true, message: "order canceled", test: updatedOrder });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
       }
       console.error(error);
       res.status(500).json({
+        ok: false,
         message: "An error occurred while accepting payment",
         error: error.message,
       });

@@ -1,8 +1,12 @@
 const db = require("../models");
 
 module.exports = {
-
-  getAllUserOrder: async (options = {}, options3 = {}, page = 1, pageSize = 10) => {
+  getAllUserOrder: async (
+    options = {},
+    options3 = {},
+    page = 1,
+    pageSize = 10
+  ) => {
     const filter = options.where || {};
     const filter3 = options3 || {};
 
@@ -13,22 +17,22 @@ module.exports = {
           model: db.Order_status,
         },
         {
-            model: db.Order_detail,
-            include: {
-                model: db.Warehouse_stock,
+          model: db.Order_detail,
+          include: {
+            model: db.Warehouse_stock,
+            include: [
+              {
+                where: filter3,
+                model: db.Product,
                 include: [
                   {
-                      where: filter3,
-                      model: db.Product,
-                      include: [
-                          {
-                              model: db.Category,
-                              as: "category"
-                          },
-                        ],
+                    model: db.Category,
+                    as: "category",
                   },
                 ],
-             },
+              },
+            ],
+          },
         },
         {
           model: db.User,
@@ -43,7 +47,7 @@ module.exports = {
       ],
       offset: (page - 1) * pageSize,
       limit: pageSize,
-      order: [["updatedAt", "DESC"]],
+      order: [["createdAt", "DESC"]],
     };
 
     try {
@@ -69,7 +73,13 @@ module.exports = {
     }
   },
 
-  getAllUserOrderDetails: async (options = {}, options2 = {}, options3 = {}, page = 1, pageSize = 10) => {
+  getAllUserOrderDetails: async (
+    options = {},
+    options2 = {},
+    options3 = {},
+    page = 1,
+    pageSize = 10
+  ) => {
     const filter = options.where || {};
     const filter2 = options2 || {};
     const filter3 = options3 || {};
@@ -77,23 +87,23 @@ module.exports = {
     const queryOptions = {
       include: [
         {
-            model: db.Order,
-            where: { order_status_id: 3 },
-            where: filter,
-            where: filter2,
+          model: db.Order,
+          where: { order_status_id: 3 },
+          where: filter,
+          where: filter2,
         },
         {
           model: db.Warehouse_stock,
           include: [
             {
-                where: filter3,
-                model: db.Product,
-                include: [
-                    {
-                        model: db.Category,
-                        as: "category"
-                    },
-                  ],
+              where: filter3,
+              model: db.Product,
+              include: [
+                {
+                  model: db.Category,
+                  as: "category",
+                },
+              ],
             },
           ],
         },
@@ -125,5 +135,4 @@ module.exports = {
       };
     }
   },
-
 };

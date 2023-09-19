@@ -535,7 +535,7 @@ module.exports = {
 
     try {
       const updatedOrder = await db.Order.update(
-        { order_status_id: 1 },
+        { order_status_id: 7 },
         { where: { id: orderId } }
       );
 

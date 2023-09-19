@@ -87,7 +87,7 @@ const UserOrder = () => {
   // const handleApproveOrder = async (order) => {
   //   try {
   //     const response = await axios.patch(
-        
+
   //       {},
   //       {
   //         headers: {
@@ -95,7 +95,7 @@ const UserOrder = () => {
   //         },
   //       }
   //     );
-  
+
   //     if (response.data.success) {
   //     } else {
   //       setError("Failed to approve the order.");
@@ -122,7 +122,7 @@ const UserOrder = () => {
               className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
           )}
-        <Select
+          <Select
             options={orderStatusOptions}
             placeholder="Order Status"
             onChange={handleChangeStatus}
@@ -131,13 +131,23 @@ const UserOrder = () => {
         </div>
         <div className="pt-4">
           <TableComponent
-            headers={["Username", "Total Transaction", "Delivery Cost", "Image", "Status", "Delivering to", "Delivering From", "Delivery Time"]}
+            headers={[
+              "Username",
+              "Total Transaction",
+              "Delivery Cost",
+
+              "Status",
+              "Delivering to",
+              "Delivering From",
+              "Delivery Time",
+            ]}
             data={userOrderList.map((order) => ({
-              "Username": order?.User?.username || "",
+              Username: order?.User?.username || "",
               "Total Transaction": toRupiah(order?.total_price) || "",
               "Delivery Cost": toRupiah(order?.delivery_price) || "0",
-              "Image": order?.img_payment || "",
-              "Status": order?.Order_status?.name || "",
+              Image: order?.img_payment || "",
+              Status: order?.Order_status?.name || "",
+              invoiceId: order?.no_invoice,
               "Delivering From": order?.Warehouse?.address_warehouse || "",
               "Delivering to": order?.Address_user?.address_details || "",
               "Delivery Time": order?.delivery_time || "not yet delivered",

@@ -15,6 +15,7 @@ module.exports = {
     return queryInterface.bulkInsert("Address_users", [
       {
         id: 1,
+        province_id: 9,
         city_id: 23,
         user_id: 1,
         address_details:
@@ -28,6 +29,7 @@ module.exports = {
       },
       {
         id: 2,
+        province_id: 9,
         city_id: 78,
         user_id: 2,
         address_details:
@@ -41,6 +43,7 @@ module.exports = {
       },
       {
         id: 3,
+        province_id: 6,
         city_id: 153,
         user_id: 3,
         address_details:
@@ -54,6 +57,7 @@ module.exports = {
       },
       {
         id: 4,
+        province_id: 31,
         city_id: 267,
         user_id: 4,
         address_details: "Buha, Mapanget, Manado City, North Sulawesi",

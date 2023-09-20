@@ -30,6 +30,11 @@ const ModalChangeAddress = ({ idAddress }) => {
   const [selectedProvince, setSelectedProvince] = useState(0);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(0);
+  const [initialFormValues, setInitialFormValues] = useState({
+    address_details: "",
+    postal_code: "",
+    address_title: "",
+  });
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -40,6 +45,28 @@ const ModalChangeAddress = ({ idAddress }) => {
   }, []);
 
   useEffect(() => {
+    if (idAddress) {
+      axios
+        .get(`/user/profile/address/${idAddress}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          const addressData = res.data?.result;
+
+          const InitialFormValues = {
+            address_details: addressData.address_details,
+            postal_code: addressData.postal_code,
+            address_title: addressData.address_title,
+            city_id: addressData.city_id.toString(),
+            province_id: addressData.province_id.toString(),
+          };
+          formik.setValues(InitialFormValues);
+          setInitialFormValues(InitialFormValues);
+        });
+    }
+  }, [access_token, idAddress]);
+
+  useEffect(() => {
     axios
       .get(`/user/region-city?province_id=${selectedProvince}`)
       .then((res) => setCities(res.data?.result));
@@ -48,6 +75,7 @@ const ModalChangeAddress = ({ idAddress }) => {
   const addAddress = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     values.city_id = Number(selectedCity);
+    values.province_id = Number(selectedProvince);
     formData.append("address_details", values.address_details);
     formData.append("postal_code", values.postal_code);
     formData.append("address_title", values.address_title);
@@ -68,6 +96,7 @@ const ModalChangeAddress = ({ idAddress }) => {
             postal_code: "",
             address_title: "",
             city_id: "",
+            province_id: "",
           });
           axios
             .get("/user/profile/address", {
@@ -103,17 +132,17 @@ const ModalChangeAddress = ({ idAddress }) => {
     }
   };
 
+  console.log(initialFormValues);
+
   const formik = useFormik({
-    initialValues: {
-      address_details: "",
-      postal_code: "",
-      address_title: "",
-    },
+    initialValues: initialFormValues,
     onSubmit: addAddress,
     validationSchema: yup.object().shape({
       address_details: yup.string().optional(),
       postal_code: yup.string().optional(),
       address_title: yup.string().optional(),
+      city_id: yup.string().optional(),
+      province_id: yup.string().optional(),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -157,6 +186,11 @@ const ModalChangeAddress = ({ idAddress }) => {
                   value={selectedProvince}
                   onChange={(e) => {
                     setSelectedProvince(e.target.value);
+
+                    formik.setFieldValue(
+                      "province_id",
+                      e.target.value.toString()
+                    );
                   }}
                 >
                   <option value={0}>select a province</option>
@@ -179,6 +213,8 @@ const ModalChangeAddress = ({ idAddress }) => {
                   value={selectedCity}
                   onChange={(e) => {
                     setSelectedCity(e.target.value);
+
+                    formik.setFieldValue("city_id", e.target.value.toString());
                   }}
                 >
                   <option value={0}>select a city</option>

@@ -423,6 +423,26 @@ module.exports = {
     }
   },
 
+  /* 
+1 = payment pending
+2 = awaiting payment confirmation
+3 = completed   
+4 = In Process
+5 = cancelled
+6 = shipped
+7 = rejected
+*/
+
+  /* 
+  yang sudah awaiting payment confirmation (2) user tidak bisa cancel (5)
+  yang sudah awaiting payment confirmation (2) admin bisa bisa cancel (5)
+  yang rejected user boleh payment pending - awaiting payment confirmatoin 
+  yang shipped (6) admin tidak boleh cancel (5) dan reject (7)
+  yang in process (4) admin tidak boleh cancel (5) dan reject (7)
+  yang completed tidak boleh diapa apain
+
+  */
+
   async updateOrderStatus(orderId, newStatusId) {
     const updatedOrder = await db.db.Order.update(
       { order_status_id: newStatusId },
@@ -441,6 +461,38 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 4) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot accept the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1 || isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "user have to upload payment proof first",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 5 ||
+        isAllowed.order_status_id === 6
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot accept payment in this stage",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 4 },
         { where: { id: orderId } }
@@ -534,6 +586,47 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot reject the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "The user has not uploaded the payment proof yet",
+        });
+      }
+
+      if (isAllowed.order_status_id === 5) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "The order has been canceled, you cannot cancel the rejected order",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 4 ||
+        isAllowed.order_status_id === 6
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot reject the order in this stage",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 7 },
         { where: { id: orderId } }
@@ -568,6 +661,43 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 6) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot ship the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 3) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "this order already completed",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1 || isAllowed.order_status_id === 2) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you have to approve the payment first",
+        });
+      }
+
+      if (isAllowed.order_status_id === 5 || isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "the order has been canceled or rejected, you cannot ship the orderx",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         {
           order_status_id: 6,
@@ -649,6 +779,34 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      /* selama fase reject dari admin, kan nunggu pembayaran user, itu admin boleh cancel ga? */
+
+      if (isAllowed.order_status_id === 5) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot cancel twice",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 4 ||
+        isAllowed.order_status_id === 5 ||
+        isAllowed.order_status_id === 6 ||
+        isAllowed.order_status_id === 7
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot cancel the order",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 5, transaction: t },
         { where: { id: orderId } }
@@ -658,7 +816,7 @@ module.exports = {
         throw new Error("Order not found");
       }
 
-      const reservedStockDestroy = await db.Reserved_stock.destroy({
+      await db.Reserved_stock.destroy({
         where: { order_id: orderId },
         include: [
           {
@@ -671,9 +829,11 @@ module.exports = {
 
       await t.commit();
 
-      res
-        .status(200)
-        .json({ ok: true, message: "order canceled", test: updatedOrder });
+      res.status(200).json({
+        ok: true,
+        message: "order canceled successful",
+        test: updatedOrder,
+      });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();

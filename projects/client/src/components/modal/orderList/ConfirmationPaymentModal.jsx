@@ -13,6 +13,7 @@ export default function ConfirmationPaymentModal({
   bgColor,
   onActionConfirmation,
   row,
+  bgConfirmColor = "failure",
 }) {
   const [openModal, setOpenModal] = useState();
 
@@ -56,6 +57,7 @@ export default function ConfirmationPaymentModal({
                 onClick={() => {
                   handleAction(row.id);
                 }}
+                className={bgConfirmColor}
               >
                 Yes, I'm sure
               </Button>

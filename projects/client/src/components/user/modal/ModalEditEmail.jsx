@@ -3,7 +3,7 @@ import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
@@ -18,6 +18,7 @@ import { profileUser } from "../../../features/userDataSlice";
 
 const ModalEditEmail = () => {
   const access_token = getCookie("access_token");
+
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };

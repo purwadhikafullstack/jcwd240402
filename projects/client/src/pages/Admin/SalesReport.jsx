@@ -96,7 +96,7 @@ const SalesReport = () => {
       .then((response) => {
         setSalesReport(response?.data?.sales_report);
         setSalesReport2(response?.data?.sales_report2);
-        setOrderSalesList(response?.data?.orders)
+        setOrderSalesList(response?.data?.orders);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -159,27 +159,23 @@ const SalesReport = () => {
           <div>Sales Report 2: {salesReport2}</div>
         </div>
         <div className="py-4">
-        {orderSalesList.map((order) => (            
-          <TableComponent
-            headers={[
-              "Month",
-              "Category",
-              "Product",
-              "Sub Total",
-            ]}
-            data={order?.Order_details.map((sales) => ({
-              "Month": order?.delivery_time.split(' ')[1] || "",
-              "Category": sales?.Warehouse_stock?.Product?.category?.name || "",
-              "Product": sales?.Warehouse_stock?.Product?.name || "",
-              "Sub Total": sales?.Warehouse_stock?.Product?.price * sales?.quantity|| 0,
-            }))}
-            showIcon={false}
+          {orderSalesList.map((order) => (
+            <TableComponent
+              headers={["Month", "Category", "Product", "Sub Total"]}
+              data={order?.Order_details.map((sales) => ({
+                Month: order?.delivery_time?.split(" ")[1] || "",
+                Category: sales?.Warehouse_stock?.Product?.category?.name || "",
+                Product: sales?.Warehouse_stock?.Product?.name || "",
+                "Sub Total":
+                  sales?.Warehouse_stock?.Product?.price * sales?.quantity || 0,
+              }))}
+              showIcon={false}
 
-            // "Month": sales?.delivery_time.split(' ')[1] || "",
+              // "Month": sales?.delivery_time.split(' ')[1] || "",
               // "Category": sales?.Order_details?.Warehouse_stock?.Product?.category?.name || "",
               // "Product": sales?.Order_details?.Warehouse_stock?.Product?.name || "",
               // "Sub Total": sales?.Order_details?.Warehouse_stock?.Product?.price * sales?.Order_details?.quantity|| 0,
-          />
+            />
           ))}
         </div>
       </div>

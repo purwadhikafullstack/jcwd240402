@@ -47,6 +47,7 @@ const ModalAddAddress = () => {
 
   const addAddress = async (values, { setStatus, setValues }) => {
     values.city_id = Number(selectedCity);
+    values.province_id = Number(selectedProvince);
 
     try {
       await axios
@@ -72,6 +73,7 @@ const ModalAddAddress = () => {
             postal_code: "",
             address_title: "",
             city_id: "",
+            province_id: "",
           });
 
           setErrMsg(null);

@@ -117,43 +117,18 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
+
             {shouldShowActions() && (
-              <Table.Cell className="overflow-visible">
-                {showAsyncAction && (
-                  <OrderModal
-                    row={row}
-                    onApprove={onApprove}
-                    onReject={onReject}
-                    onSend={onSend}
-                    onCancel={onCancel}
-                  />
-                )}
-              </Table.Cell>
-            )}
-            {/* {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 <div className="flex items-center space-x-2">
                   {showAsyncAction && (
                     <>
-                      <Select
-                        options={actionOptions}
-                        placeholder="Options"
-                        value={selectedActions[rowIndex]}
-                        onChange={(value) => {
-                          const newActions = [...selectedActions];
-                          newActions[rowIndex] = value;
-                          setSelectedActions(newActions);
-                        }}
-                        className="w-36 flex-shrink-0"
-                      />
-                      <Button
-                        buttonSize="small"
-                        buttonText="Confirm"
-                        onClick={() => handleConfirmAction(row, rowIndex)}
-                        bgColor="bg-blue3"
-                        colorText="text-white"
-                        fontWeight="font-semibold"
-                        className="flex-shrink-0 p-1 text-sm"
+                      <OrderModal
+                        row={row}
+                        onApprove={onApprove}
+                        onReject={onReject}
+                        onSend={onSend}
+                        onCancel={onCancel}
                       />
                     </>
                   )}
@@ -165,18 +140,6 @@ const TableComponent = ({
                       className="cursor-pointer"
                       onClick={() => handleDropdownToggle(rowIndex)}
                     />
-                  )}
-                  {showApproveReject && (
-                    <Table.Cell>
-                      <Button
-                        buttonSize="small"
-                        buttonText="Manage"
-                        onClick={() => onApproveReject(row)}
-                        bgColor="bg-blue3"
-                        colorText="text-white"
-                        fontWeight="font-semibold"
-                      />
-                    </Table.Cell>
                   )}
                   {showDropdownIndex === rowIndex && (
                     <div className="absolute right-0 bg-white rounded-lg shadow-card-1 border border-gray-200 z-20">
@@ -212,7 +175,7 @@ const TableComponent = ({
                   )}
                 </div>
               </Table.Cell>
-            )} */}
+            )}
           </Table.Row>
         ))}
       </Table.Body>

@@ -80,10 +80,10 @@ module.exports = {
       if (last_id < 1) {
         const orderList = await db.Order.findAll({
           where: {
+            user_id: userId,
             no_invoice: {
               [Op.like]: `%${search}%`,
             },
-            user_id: userId,
           },
           include: [
             {
@@ -291,7 +291,6 @@ module.exports = {
 
     try {
       for (const i in cart_data.cart_data) {
-
         newAutoStockTransfer.push(
           await autoStockTransfer(
             warehouse_id,
@@ -301,8 +300,11 @@ module.exports = {
         );
 
         let transferedWarehouseStock = await db.Warehouse_stock.findOne({
-          where: {warehouse_id: warehouse_id, product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id}
-        })
+          where: {
+            warehouse_id: warehouse_id,
+            product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+          },
+        });
 
         newOrderDetails.push(
           await db.Order_detail.create({
@@ -319,7 +321,6 @@ module.exports = {
             reserve_quantity: cart_data.cart_data[i]?.quantity,
           })
         );
-
       }
 
       res.status(200).json({
@@ -538,22 +539,337 @@ module.exports = {
     }
   },
 
+  /* 
+  1 , 2 , 4 , 6 , 3
+
+*/
+
+  /* 
+1 = payment pending v
+2 = awaiting payment confirmation 
+3 = completed  v 
+4 = In Process 
+5 = cancelled v
+6 = shipped v
+7 = rejected v
+*/
+
+  /* 
+  yang sudah awaiting payment confirmation (2) user tidak bisa cancel (5)
+  yang sudah awaiting payment confirmation (2) admin bisa bisa cancel (5)
+  yang rejected user boleh payment pending - awaiting payment confirmatoin 
+  yang shipped (6) admin tidak boleh cancel (5) dan reject (7)
+  yang in process (4) admin tidak boleh cancel (5) dan reject (7)
+  yang completed tidak boleh diapa apain
+
+  */
+
   changeOrderStatus: async (req, res) => {
     const { id, statusId } = req.body;
+    const transaction = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: id },
+      });
+
+      console.log(isAllowed);
+
+      if (isAllowed.order_status_id === statusId) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot update order status twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1) {
+        if (
+          statusId === 3 ||
+          statusId === 4 ||
+          statusId === 6 ||
+          statusId === 7
+        ) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "you have to upload payment proof first",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 2) {
+        if (statusId === 1) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "you cannot go back to pending payment",
+          });
+        }
+        if (statusId === 6 || statusId === 3) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "you have to get payment approval from admin",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 3) {
+        if (
+          statusId === 1 ||
+          statusId === 2 ||
+          statusId === 4 ||
+          statusId === 5 ||
+          statusId === 6 ||
+          statusId === 7
+        ) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "your order has been completed, you cannot update any status order",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 4) {
+        if (statusId === 5) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "your order has been proceed, you cannot cancel the payment",
+          });
+        }
+        if (statusId === 1 || statusId === 2) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "your order has been proceed, you cannot go back to pending payment or awaiting payment confirmation",
+          });
+        }
+        if (statusId === 3) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "orders must pass the delivery stage",
+          });
+        }
+        if (statusId === 7) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "the payment has been approved by the admin, you cannot reject it on this stage",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 5) {
+        if (
+          statusId === 1 ||
+          statusId === 2 ||
+          statusId === 3 ||
+          statusId === 4 ||
+          statusId === 6 ||
+          statusId === 7
+        ) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "the order has been canceled, you cannot cancel it twice",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 6) {
+        if (statusId === 5 || statusId === 7) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "the order has been shipped, you cannot cancel or reject it",
+          });
+        }
+
+        if (statusId === 4 || statusId === 2 || statusId === 1) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message:
+              "the order has been shipped, you cannot go back to the last stage",
+          });
+        }
+      }
+
+      if (isAllowed.order_status_id === 7) {
+        if (statusId === 3 || statusId === 4 || statusId === 6) {
+          await transaction.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "you have to get payment approval from admin",
+          });
+        }
+      }
+
+      if (!isAllowed) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "order not found",
+        });
+      }
+
+      if (statusId > 7) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "status order not found",
+        });
+      }
+
+      /* 
+      if (isAllowed.order_status_id === statusId) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot update order status twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 2 && statusId === 1) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "your payment are uploaded, you cannot back to pending payment",
+        });
+      }
+
+      if (isAllowed.order_status_id === 2 && statusId === 5) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "your payment are uploaded, you cannot cancel the order",
+        });
+      }
+
+      if (isAllowed.order_status_id === 3 && statusId === 5) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "your order has been completed, you cannot cancel the order",
+        });
+      }
+
+      if (isAllowed.order_status_id === 4 && statusId === 5) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "your order has been proceed, you cannot cancel the order",
+        });
+      }
+
+      if (isAllowed.order_status_id === 6 && statusId === 5) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "your order has been shipped, you cannot cancel the order",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 1 &&
+        (statusId === 3 || statusId === 4 || statusId === 6 || statusId === 7)
+      ) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you have to upload payment proof",
+        });
+      }
+
+      if (isAllowed.order_status_id === 4 && statusId === 1) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "your order has been proceed, you cannot back to pending payment",
+        });
+      }
+
+      if (isAllowed.order_status_id === 6 && statusId === 1) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "your order has been shipped, you cannot back to pending payment",
+        });
+      }
+
+      if (isAllowed.order_status_id === 3) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "your order has been completed, you cannot update status order",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 4 &&
+        (statusId === 2 || statusId === 1)
+      ) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "your order has been proceed, you cannot back to pending payment or awaiting payment",
+        });
+      }
+
+      if (isAllowed.order_status_id === 4 && statusId === 3) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "the order must to shipped first",
+        });
+      }
+
+      if (isAllowed.order_status_id === 6 && statusId === 2) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "the order already shipped, you cannot go back to awaiting payment",
+        });
+      }
+
+      if (isAllowed.order_status_id === 2 && statusId === 6) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you have to get approval payment first",
+        });
+      } */
+
       const orderStatusChanged = await db.Order.update(
         {
           order_status_id: statusId,
         },
-        { where: { id } }
+        { where: { id } },
+        transaction
       );
 
+      await transaction.commit();
       res.status(200).json({
         ok: true,
         order: orderStatusChanged,
       });
     } catch (error) {
+      await transaction.rollback();
       res.status(500).json({
         ok: false,
         message: "something bad happened",

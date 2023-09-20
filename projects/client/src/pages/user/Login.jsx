@@ -49,10 +49,14 @@ const Login = () => {
         navigate("/");
       });
     } catch (err) {
+      console.log(err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(err.response?.data?.message);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 3000);
       }
     }
   };
@@ -99,7 +103,7 @@ const Login = () => {
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "password is required"
+          "password must to contain at least 8 character, 1 number and 1 symbol"
         ),
     }),
     validateOnChange: false,
@@ -135,7 +139,7 @@ const Login = () => {
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
                 {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
 
-                <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
+                <div className="mt-5 px-6 grid gap-y-2 lg:rounded-xl">
                   <InputForm
                     onChange={handleForm}
                     label="username/email"
@@ -156,27 +160,9 @@ const Login = () => {
                     placeholder="password"
                   />
 
-                  <div className="flex justify-center items-center w-full">
-                    <hr className="border-2 border-gray-200 rounded-full w-full" />
-                    <h1 className="text-gray-300">OR</h1>
-                    <hr className="border-2 border-gray-200 rounded-full w-full" />
-                  </div>
-
-                  <button
-                    className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center"
-                    onClick={handleGoogleSign}
-                    type="button"
-                  >
-                    <div className="flex justify-center items-center w-full">
-                      <img src={google} alt="" className="w-10 " />
-
-                      <h1 className="text-sm">Login with Google </h1>
-                    </div>
-                  </button>
-
                   <ModalForgotPassword />
 
-                  <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
+                  <div className="mb-4 flex justify-center">
                     <Button
                       buttonSize="medium"
                       buttonText="Log in"
@@ -185,15 +171,34 @@ const Login = () => {
                       colorText="text-white"
                       fontWeight="font-semibold"
                     />
-                    <h1 className="mt-2 text-xs lg:text-base my-4">
-                      Dont have an account yet?{" "}
-                      <Link to="/sign-up" className="font-semibold">
-                        Sign Up
-                      </Link>
-                    </h1>
                   </div>
                 </div>
               </form>
+              <div className="flex flex-col justify-center items-center mx-8 lg:rounded-lg ">
+                <div className="flex justify-center items-center w-full">
+                  <hr className="border-2 border-gray-200 rounded-full w-full" />
+                  <h1 className="text-gray-300">OR</h1>
+                  <hr className="border-2 border-gray-200 rounded-full w-full" />
+                </div>
+
+                <button
+                  className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center"
+                  onClick={handleGoogleSign}
+                  type="button"
+                >
+                  <div className="flex justify-center items-center w-full">
+                    <img src={google} alt="" className="w-10 " />
+                    <h1 className="text-sm">Login with Google </h1>
+                  </div>
+                </button>
+
+                <h1 className="mt-2 text-xs my-4 text-grayText">
+                  Dont have an account yet?{" "}
+                  <Link to="/sign-up" className="font-semibold">
+                    Sign Up
+                  </Link>
+                </h1>
+              </div>
             </div>
           </div>
         </div>

@@ -8,12 +8,12 @@ import DefaultPagination from "../../components/Pagination";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import toRupiah from "@develoka/angka-rupiah-js";
+import AsyncSelect from "react-select/async";
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-  const [roleId, setRoleId] = useState("");
   const [productId, setProductId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,6 +84,7 @@ const SalesReport = () => {
     { value: 9, label: "Uncategorized" },
   ];
 
+
   useEffect(() => {
     axios
       .get(
@@ -119,6 +120,30 @@ const SalesReport = () => {
     setWarehouseId(warehouseId.value);
   };
 
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
+  };
+
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -146,14 +171,15 @@ const SalesReport = () => {
             placeholder={<div>product</div>}
             onChange={handleChangeProduct}
           />
-          {roleId == 1 ? (
-            <Select
-              options={warehouseOptions}
-              placeholder={<div>Warehouse</div>}
+          {adminData.role_id == 1 && (
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              loadOptions={loadWarehouseOptions}
               onChange={handleChangeWarehouseId}
+              placeholder="All Warehouses"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
-          ) : (
-            <div></div>
           )}
         </div>
         <div className="py-4">

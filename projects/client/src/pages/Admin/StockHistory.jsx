@@ -6,6 +6,9 @@ import Sidebar from "../../components/SidebarAdminDesktop";
 import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
+import AsyncSelect from "react-select/async";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import { useSelector } from "react-redux";
 
 const StockHistory = () => {
   const [month, setMonth] = useState("");
@@ -19,6 +22,8 @@ const StockHistory = () => {
   const [totalIncrement, setTotalIncrement] = useState("");
   const [totalDecrement, setTotalDecrement] = useState("");
   const [error, setError] = useState("");
+  const access_token = getCookie("access_token");
+  const adminData = useSelector((state) => state.profilerAdmin.value);
 
   const getCookieValue = (name) =>
     document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
@@ -49,13 +54,29 @@ const StockHistory = () => {
     { value: 2023, label: "2023" },
   ];
 
-  const warehouseOptions = [
-    { value: "", label: "any warehouse" },
-    { value: 1, label: "Furnifor BSD" },
-    { value: 2, label: "Furnifor Surabaya" },
-    { value: 3, label: "Furnifor Jakarta" },
-    { value: 4, label: "Furnifor Malang" },
-  ];
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
     axios
@@ -121,14 +142,15 @@ const StockHistory = () => {
             placeholder={<div>year</div>}
             onChange={handleChangeYear}
           />
-          {roleId == 1 ? (
-            <Select
-              options={warehouseOptions}
-              placeholder={<div>Warehouse</div>}
+          {adminData.role_id == 1 && (
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              loadOptions={loadWarehouseOptions}
               onChange={handleChangeWarehouseId}
+              placeholder="All Warehouses"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
-          ) : (
-            <div></div>
           )}
           <div>Last Stock: {totalLastStock}</div>
           <div>Total Increment: {totalIncrement}</div>

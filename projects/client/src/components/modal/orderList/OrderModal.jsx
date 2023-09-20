@@ -23,9 +23,7 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
 
   console.log(row);
 
-  const product = row.Order_details.map((item) => {
-    return;
-  });
+  console.log(row);
 
   const downloadImage = () => {
     saveAs(imgPayment, `payment-proof/${row.invoiceId}-${row.Username}`);
@@ -64,27 +62,26 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
                     }
                     alt="Product"
                   />
-                  {/* <h1 className="font-inherit absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold text-white ">
-                    Waiting Payment
-                  </h1> */}
                 </div>
 
-                <div className="flex justify-around w-full items-center text-sm font-semibold mt-4 text-white">
-                  <a
-                    href={`${process.env.REACT_APP_API_BASE_URL}${row.Image}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bg-teal-400  px-4 py-1 rounded-lg"
-                  >
-                    See Detail Image
-                  </a>
-                  <button
-                    onClick={downloadImage}
-                    className="bg-green-700 flex gap-4 justify-center items-center px-4 py-1 rounded-lg"
-                  >
-                    <FaDownload /> download
-                  </button>{" "}
-                </div>
+                {row.Image ? (
+                  <div className="flex justify-around w-full items-center text-sm font-semibold mt-4 text-white">
+                    <a
+                      href={`${process.env.REACT_APP_API_BASE_URL}${row.Image}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-teal-400  px-4 py-1 rounded-lg"
+                    >
+                      See Detail Image
+                    </a>
+                    <button
+                      onClick={downloadImage}
+                      className="bg-green-700 flex gap-4 justify-center items-center px-4 py-1 rounded-lg"
+                    >
+                      <FaDownload /> download
+                    </button>{" "}
+                  </div>
+                ) : null}
               </div>
               {/* 
 1 = payment pending

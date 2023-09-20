@@ -573,7 +573,7 @@ module.exports = {
         {
           order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date(),
+          delivery_time: new Date().toLocaleString('id-ID', { month: "long" }),
         },
         { where: { id: orderId }, transaction: t }
       );

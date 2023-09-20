@@ -26,14 +26,14 @@ module.exports = {
           key: "id",
         },
       },
-      // province_id: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: true,
-      //   references: {
-      //     model: "Provinces",
-      //     key: "id",
-      //   },
-      // },
+      province_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Provinces",
+          key: "id",
+        },
+      },
       latitude: {
         type: Sequelize.STRING,
         allowNull: false,

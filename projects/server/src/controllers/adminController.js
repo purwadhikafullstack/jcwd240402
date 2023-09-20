@@ -1067,19 +1067,19 @@ module.exports = {
 
       const totalOnly = [];
 
-      const orderMap = userOrder.map((m) => {
-            if (m.Warehouse_stock) {
-              totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
-            }
-        }
-      );
+      // const orderMap = userOrder.map((m) => {
+      //       if (m.Warehouse_stock) {
+      //         totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
+      //       }
+      //   }
+      // );
 
       const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
 
       res.status(201).send({
         message: "successfully get sales report",
         sales_report: totalPrice,
-        order_details: userOrder,
+        order_details: response,
       });
     } catch (error) {
       res.status(500).send({

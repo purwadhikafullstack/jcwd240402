@@ -94,7 +94,7 @@ module.exports = {
             },
             {
               model: db.Address_user,
-              attributes: { exclude: ["address_user_id"] },
+              exclude: ["address_user_id"],
             },
             {
               model: db.Warehouse,

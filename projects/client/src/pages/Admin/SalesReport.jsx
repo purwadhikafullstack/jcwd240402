@@ -53,15 +53,7 @@ const SalesReport = () => {
     { value: 2022, label: "2022" },
     { value: 2023, label: "2023" },
   ];
-
-  const warehouseOptions = [
-    { value: "", label: "any warehouse" },
-    { value: 1, label: "Furnifor BSD" },
-    { value: 2, label: "Furnifor Surabaya" },
-    { value: 3, label: "Furnifor Jakarta" },
-    { value: 4, label: "Furnifor Malang" },
-  ];
-
+  
   const productOptions = [
     { value: "", label: "any product" },
     { value: 1, label: "ANTILOP" },

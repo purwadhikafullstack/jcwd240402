@@ -5,6 +5,7 @@ import { saveAs } from "file-saver";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaDownload } from "react-icons/fa";
+import { HiMiniClipboardDocumentCheck } from "react-icons/hi2";
 
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
@@ -29,20 +30,16 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
   const downloadImage = () => {
     saveAs(imgPayment, `payment-proof/${row.invoiceId}-${row.Username}`);
   };
-  console.log(row);
+  console.log(row.Image);
   return (
     <>
-      <Button
-        buttonSize="small"
-        buttonText="confirm"
+      <button
         onClick={() => {
           props.setOpenModal("form-elements");
         }}
-        type="button"
-        bgColor="bg-blue3"
-        colorText="text-white"
-        fontWeight="font-semibold"
-      />
+      >
+        <HiMiniClipboardDocumentCheck className="text-2xl hover:text-blue3 transition-all duration-300" />
+      </button>
       <Modal
         show={props.openModal === "form-elements"}
         size="4xl"
@@ -60,7 +57,11 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
                 <div className="w-72 h-72 md:w-96 md:h-96 lg:w-96 lg:h-96 mx-6 shadow-card-1 rounded-lg relative">
                   <img
                     className="h-full w-full object-cover"
-                    src={`${process.env.REACT_APP_API_BASE_URL}${row.Image}`}
+                    src={
+                      row.Image
+                        ? `${process.env.REACT_APP_API_BASE_URL}${row.Image}`
+                        : waitingpayment
+                    }
                     alt="Product"
                   />
                   {/* <h1 className="font-inherit absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 font-bold text-white ">
@@ -137,8 +138,10 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
                 </div>
                 <div className="w-full flex  justify-evenly items-end ">
                   {row.order_status_id === 1 ? (
-                    <>
-                      <p>still waiting payment</p>
+                    <div className="flex w-full items-center justify-around">
+                      <p className="text-center italic font-semibold text-xs">
+                        Still Waiting Payment
+                      </p>
                       <ConfirmationPaymentModal
                         buttonText="Cancel"
                         bgColor="bg-orange-500"
@@ -147,7 +150,7 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
                         row={row}
                         bgConfirmColor="bg-orange-500 hover"
                       />
-                    </>
+                    </div>
                   ) : row.order_status_id === 2 ? (
                     <>
                       <ConfirmationPaymentModal
@@ -187,18 +190,18 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
                       />
                     </>
                   ) : row.order_status_id === 6 ? (
-                    <h1 className="text-center font-semibold text-xs">
+                    <p className="text-center font-semibold text-xs italic">
                       order has been shipped, waiting confirmation order from
                       user
-                    </h1>
+                    </p>
                   ) : row.order_status_id === 5 ? (
-                    <h1 className="text-center font-semibold text-xs">
+                    <p className="text-center font-semibold text-xs italic">
                       order cancelled
-                    </h1>
+                    </p>
                   ) : row.order_status_id === 3 ? (
-                    <h1 className="text-center font-semibold text-xs">
+                    <p className="text-center font-semibold text-xs italic">
                       order completed
-                    </h1>
+                    </p>
                   ) : null}
                 </div>
               </div>

@@ -63,7 +63,7 @@ const ModalEditFirstName = () => {
 
   const formik = useFormik({
     initialValues: {
-      first_name: "", // You can set it to an empty string initially
+      first_name: "",
     },
     onSubmit: editFirstName,
     validationSchema: yup.object().shape({

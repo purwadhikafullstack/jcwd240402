@@ -19,7 +19,7 @@ const NotifVerifiedByPassword = () => {
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
-  const msg = "Congrats! your account verified";
+
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
 
@@ -29,8 +29,7 @@ const NotifVerifiedByPassword = () => {
         `user/auth/verify/${verify_token}`,
         values
       );
-      console.log(response.data);
-      console.log(!response.data.ok);
+
       if (response.data.ok) {
         setStatus({ success: true });
         setValues({

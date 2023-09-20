@@ -10,6 +10,7 @@ const { Sequelize } = require("sequelize");
 const { getAllUsers } = require("../service/user");
 const { autoStockTransfer } = require("../utils/index");
 const { getAllUserOrder, getAllUserOrderDetails } = require("../service/order");
+const { newStockHistory } = require("../service/warehouse_stock");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -586,6 +587,16 @@ module.exports = {
         include: [
           {
             model: db.Order,
+            include: [
+              {
+                model: db.Warehouse,
+                include: [
+                  {
+                    model: db.Admin,
+                  }
+                ]
+              }
+            ]
           },
           {
             model: db.Warehouse_stock,
@@ -606,6 +617,15 @@ module.exports = {
             transaction: t,
           }
         );
+
+        const stockHistory = newStockHistory(
+          reservedStock.WarehouseProductReservation.id,
+          reservedStock.Order.warehouse_id,
+          reservedStock.Order.Warehouse.Admins[0].id,
+          reservedStock.WarehouseProductReservation.product_stock,
+          reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
+          reservedStock.reserve_quantity,
+          "Transaction")
 
         const reservedStockDestroy = await db.Reserved_stock.destroy({
           where: {

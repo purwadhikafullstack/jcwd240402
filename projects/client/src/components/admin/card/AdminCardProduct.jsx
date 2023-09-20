@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaEdit, FaTrash, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -6,23 +6,26 @@ import { Badge } from "flowbite-react";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 
-// src={`${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`}
-//               category={product.category.name}
-//               name={product.name}
-//               price={product.price}
-//               isActive={product.is_active}
-
-const AdminCardProduct = ({
-  product,
-  onEdit,
-  onDelete,
-  setActive,
-}) => {
+const AdminCardProduct = ({ product, onEdit, onDelete, setActive }) => {
   const access_token = getCookie("access_token");
   const [showMenu, setShowMenu] = useState(false);
+  const dropdownRef = useRef(null);
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
 
   const toggleProductStatus = async () => {
     try {
@@ -47,14 +50,12 @@ const AdminCardProduct = ({
         alt={`${product.name} product`}
         className="w-full h-24 object-cover mb-2"
       />
-      <button
-        className="absolute top-2 right-2 z-0"
-        onClick={handleMenuToggle}
-      >
+      <button className="absolute top-2 right-2 z-0" onClick={handleMenuToggle}>
         <IoEllipsisHorizontalCircle />
       </button>
       {showMenu && (
         <div
+          ref={dropdownRef}
           className=" absolute top-6 right-0 bg-white rounded-lg shadow-card-1 border-gray-200 z-10"
           style={{ width: "150px" }}
         >
@@ -63,7 +64,9 @@ const AdminCardProduct = ({
               className="py-2 px-4 cursor-pointer hover:bg-gray-100 z-20"
               onClick={onEdit}
             >
-              <Link to={`/admin/products/edit/${encodeURIComponent(product.name)}`}>
+              <Link
+                to={`/admin/products/edit/${encodeURIComponent(product.name)}`}
+              >
                 <FaEdit className="mr-2" /> Edit
               </Link>
             </li>
@@ -106,7 +109,11 @@ const AdminCardProduct = ({
         </div>
         <div className="text-xs font-semibold py-1">
           Status:{" "}
-          <span className={`${product.is_active ? "text-green-500" : "text-red-500"}`}>
+          <span
+            className={`${
+              product.is_active ? "text-green-500" : "text-red-500"
+            }`}
+          >
             {product.is_active ? "Active" : "Inactive"}
           </span>
         </div>

@@ -1,15 +1,14 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import toRupiah from "@develoka/angka-rupiah-js";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
+import axios from "../../api/axios";
 
 const UserOrder = () => {
   const [userOrderList, setUserOrderList] = useState([]);
@@ -36,7 +35,7 @@ const UserOrder = () => {
   const loadWarehouseOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        `/warehouse/warehouse-list?searchName=${inputValue}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -60,7 +59,7 @@ const UserOrder = () => {
   useEffect(() => {
     axios
       .get(
-        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
+        `/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -106,7 +105,7 @@ const UserOrder = () => {
   const handleCancelOrder = async (id) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/cancel-order/${id}`,
+        `/admin/cancel-order/${id}`,
         {},
         {
           headers: {
@@ -128,7 +127,7 @@ const UserOrder = () => {
   const handleAcceptPayment = async (id) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/accept-user-payment/${id}`,
+        `/admin/accept-user-payment/${id}`,
         {},
         {
           headers: {
@@ -150,7 +149,7 @@ const UserOrder = () => {
   const handleRejectPayment = async (id) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/reject-user-payment/${id}`,
+        `/admin/reject-user-payment/${id}`,
         {},
         {
           headers: {
@@ -172,7 +171,7 @@ const UserOrder = () => {
   const handleSendOrder = async (id) => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/send-order/${id}`,
+        `/admin/send-order/${id}`,
         {},
         {
           headers: {

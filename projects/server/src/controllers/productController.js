@@ -22,15 +22,6 @@ async function moveUploadedFilesToDestination(images) {
   return filenames;
 }
 
-async function moveUploadedFileToDestination(image) {
-  const sourcePath = image.path;
-  const filename = `${new Date().getTime()}-${image.originalname}`;
-  const destinationPath = getAbsoluteProductImagePath(filename);
-
-  await fs.rename(sourcePath, destinationPath);
-
-  return filename;
-}
 
 module.exports = {
   async createProduct(req, res) {

@@ -89,6 +89,7 @@ module.exports = {
         where: Object.keys(warehouseCondition).length
           ? warehouseCondition
           : undefined,
+          paranoid: false,
       },
     ];
 

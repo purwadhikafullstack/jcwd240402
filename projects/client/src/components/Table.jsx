@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Table } from "flowbite-react";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
-import Select from "react-select";
 import Button from "./Button";
 import OrderModal from "./modal/orderList/OrderModal";
 
@@ -28,44 +27,9 @@ const TableComponent = ({
   showDetails = false,
 }) => {
   const [showDropdownIndex, setShowDropdownIndex] = useState(-1);
-  const [selectedActions, setSelectedActions] = useState(
-    Array(data.length).fill(null)
-  );
 
   const handleDropdownToggle = (index) => {
     setShowDropdownIndex(showDropdownIndex === index ? -1 : index);
-  };
-
-  const actionOptions = [
-    { value: "approve", label: "Approve" },
-    { value: "reject", label: "Reject" },
-    { value: "cancel", label: "Cancel" },
-    { value: "send", label: "Send" },
-  ];
-
-  const handleConfirmAction = (row, rowIndex) => {
-    const selectedActionForRow = selectedActions[rowIndex];
-    if (!selectedActionForRow) return;
-    switch (selectedActionForRow.value) {
-      case "approve":
-        onApprove(row);
-        break;
-      case "reject":
-        onReject(row);
-        break;
-      case "cancel":
-        onCancel(row);
-        break;
-      case "send":
-        onSend(row);
-        break;
-      default:
-        break;
-    }
-
-    const newActions = [...selectedActions];
-    newActions[rowIndex] = null;
-    setSelectedActions(newActions);
   };
 
   const shouldShowActions = () => {
@@ -77,13 +41,17 @@ const TableComponent = ({
       showReject ||
       showSend ||
       showCancel ||
-      showAsyncAction
+      showAsyncAction ||
+      showDetails
     );
   };
 
-  console.log(headers);
-  console.log(data);
-  console.log(data);
+  const handleDelete = (row) => {
+    if (onDelete) {
+      onDelete(row);
+    }
+    setShowDropdownIndex(-1);
+  };
 
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
@@ -94,16 +62,17 @@ const TableComponent = ({
           </Table.HeadCell>
         ))}
         {shouldShowActions() && (
-          <Table.HeadCell className="bg-blue5">
-            <span className="sr-only">Actions</span>
-          </Table.HeadCell>
+          <Table.HeadCell className="bg-blue5 text-center"></Table.HeadCell>
         )}
       </Table.Head>
       <Table.Body className="divide-y">
         {data.map((row, rowIndex) => (
           <Table.Row className="custom-row" key={rowIndex}>
             {headers.map((header) => (
-              <Table.Cell className={`custom-cell text-center`} key={header}>
+              <Table.Cell
+                className={`custom-cell text-center  max-w-md break-words whitespace-normal `}
+                key={header}
+              >
                 {header === "Image" ? (
                   <img
                     className="mx-auto"
@@ -120,25 +89,31 @@ const TableComponent = ({
 
             {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
-                <div className="flex items-center space-x-2">
-                  {showAsyncAction && (
-                    <>
-                      <OrderModal
-                        row={row}
-                        onApprove={onApprove}
-                        onReject={onReject}
-                        onSend={onSend}
-                        onCancel={onCancel}
-                      />
-                    </>
-                  )}
-                </div>
+                {showAsyncAction && (
+                  <OrderModal
+                    row={row}
+                    onApprove={onApprove}
+                    onReject={onReject}
+                    onSend={onSend}
+                    onCancel={onCancel}
+                  />
+                )}
                 <div className="relative inline-block ml-2">
                   {(showTransfer || showIcon) && (
                     <IoEllipsisHorizontalCircle
                       size={20}
                       className="cursor-pointer"
                       onClick={() => handleDropdownToggle(rowIndex)}
+                    />
+                  )}
+                  {showApproveReject && (
+                    <Button
+                      buttonSize="small"
+                      buttonText="Manage"
+                      onClick={() => onApproveReject(row)}
+                      bgColor="bg-blue3"
+                      colorText="text-white"
+                      fontWeight="font-semibold"
                     />
                   )}
                   {showDropdownIndex === rowIndex && (
@@ -165,7 +140,7 @@ const TableComponent = ({
                         )}
                         {showIcon && (
                           <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
-                            <button onClick={() => onDelete(row)}>
+                            <button onClick={() => handleDelete(row)}>
                               Delete
                             </button>
                           </li>

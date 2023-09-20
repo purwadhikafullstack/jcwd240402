@@ -64,10 +64,10 @@ module.exports = {
         requiredStock
       );
 
-      // Respond with a success message or the result
+
       res.status(200).json(result);
     } catch (error) {
-      // Handle errors and respond with an error message
+      
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }

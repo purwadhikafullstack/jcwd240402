@@ -5,6 +5,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import axios from "../../../api/axios";
+import ConfirmDeleteProduct from "../../modal/product/ModalDeleteProduct";
+import withAuthAdminWarehouse from "../../admin/withAuthAdminWarehouse";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -15,6 +17,8 @@ const ProductList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const debouncedNavigate = debounce((updatedParams) => {
     for (const key in updatedParams) {
@@ -98,6 +102,15 @@ const ProductList = () => {
     debouncedNavigate({ category_id: selectedCategoryId });
   };
 
+  const handleShowDeleteModal = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleSuccessfulDelete = () => {
+    fetchProducts();
+  };
+
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid">
       <div className="px-8 pt-1">
@@ -110,25 +123,22 @@ const ProductList = () => {
             onChange={handleSearchChange}
           />
           <AsyncSelect
-            className="flex-1 z-10"
+            className="flex-1 z-20"
             cacheOptions
             defaultOptions
             loadOptions={loadCategories}
             onChange={handleCategoryChange}
             placeholder="Select a category"
+            menuPortalTarget={document.body}
           />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3 z-0">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3">
           {products.map((product) => (
             <AdminCardProduct
               key={product.id}
-              src={`${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`}
-              category={product.category.name}
-              name={product.name}
-              price={product.price}
-              isActive={product.is_active}
+              product={product}
               onEdit={() => console.log("Edit product:", product.name)}
-              onDelete={() => console.log("Delete product:", product.name)}
+              onDelete={() => handleShowDeleteModal(product)}
               setActive={(value) => {
                 const index = products.findIndex((p) => p.id === product.id);
                 if (index !== -1) {
@@ -140,6 +150,14 @@ const ProductList = () => {
             />
           ))}
         </div>
+        {showDeleteModal && (
+          <ConfirmDeleteProduct
+            show={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            handleSuccessfulDelete={handleSuccessfulDelete}
+            productId={productToDelete ? productToDelete.id : null}
+          />
+        )}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
             totalPages={totalPages}
@@ -155,4 +173,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default withAuthAdminWarehouse(ProductList);

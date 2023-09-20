@@ -161,11 +161,6 @@ router.patch(
   productController.updateProductImage
 );
 router.patch(
-  "/product/delete/:id",
-  authMiddleware.verifyAccessTokenSuperAdmin,
-  productController.deleteProduct
-);
-router.patch(
   "/product/status/:name",
   authMiddleware.verifyAccessTokenSuperAdmin,
   productController.toggleProductStatus

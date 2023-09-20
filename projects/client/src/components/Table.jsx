@@ -130,7 +130,7 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             )}
-            {/* {shouldShowActions() && (
+            {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 <div className="flex items-center space-x-2">
                   {showAsyncAction && (
@@ -212,7 +212,7 @@ const TableComponent = ({
                   )}
                 </div>
               </Table.Cell>
-            )} */}
+            )}
           </Table.Row>
         ))}
       </Table.Body>

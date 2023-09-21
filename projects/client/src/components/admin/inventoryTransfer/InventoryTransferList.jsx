@@ -112,7 +112,7 @@ const InventoryTransferList = () => {
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"
-          className={`flex-1 ${adminData.role_id !== 1 ? 'hidden' : ''}`}
+          className={`flex-1 ${adminData.role_id !== 1 ? "hidden" : ""}`}
         />
         <AsyncSelect
           cacheOptions
@@ -121,7 +121,7 @@ const InventoryTransferList = () => {
           onChange={(option) => setSelectedStatus(option)}
           value={selectedStatus}
           placeholder="Select a status"
-          className={`flex-1 ${adminData.role_id === 1 ? 'ml-4' : ''}`}
+          className={`flex-1 ${adminData.role_id === 1 ? "ml-4" : ""}`}
           isSearchable={false}
         />
         <input
@@ -167,6 +167,12 @@ const InventoryTransferList = () => {
                 ? moment(transfer.updatedAt).format("DD/MM/YY HH:mm")
                 : "-",
             Status: transfer.status,
+            showManageButton:
+              transfer.status === "Pending" &&
+              (adminData.role_id === 1 ||
+                (adminData.role_id === 2 &&
+                  transfer.ToWarehouse.toWarehouseName ===
+                  adminData?.warehouse?.warehouse_name)),
             _original: transfer,
           }))}
           onTransferDetails={(row) => {

@@ -215,8 +215,7 @@ const StockList = () => {
       <TransferStockModal
         show={showTransferModal}
         onClose={() => setShowTransferModal(false)}
-        productId={productToTransfer?.productId}
-        fromWarehouseId={productToTransfer?.fromWarehouseId}
+        product={productToTransfer}
         fetchStocks={fetchStocks}
       />
       <ProductDetailsModal

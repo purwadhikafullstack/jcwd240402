@@ -48,10 +48,10 @@ const TableComponent = ({
 
   const handleDelete = (row) => {
     if (onDelete) {
-      onDelete(row); 
+      onDelete(row);
     }
     setShowDropdownIndex(-1);
-  }
+  };
 
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
@@ -62,15 +62,17 @@ const TableComponent = ({
           </Table.HeadCell>
         ))}
         {shouldShowActions() && (
-          <Table.HeadCell className="bg-blue5 text-center">
-          </Table.HeadCell>
+          <Table.HeadCell className="bg-blue5 text-center"></Table.HeadCell>
         )}
       </Table.Head>
       <Table.Body className="divide-y">
         {data.map((row, rowIndex) => (
           <Table.Row className="custom-row" key={rowIndex}>
             {headers.map((header) => (
-              <Table.Cell className={`custom-cell text-center  max-w-md break-words whitespace-normal `} key={header}>
+              <Table.Cell
+                className={`custom-cell text-center  max-w-md break-words whitespace-normal `}
+                key={header}
+              >
                 {header === "Image" ? (
                   <img
                     className="mx-auto"
@@ -103,7 +105,7 @@ const TableComponent = ({
                       onClick={() => handleDropdownToggle(rowIndex)}
                     />
                   )}
-                  {showApproveReject && (
+                  {showApproveReject && row.Status === "Pending" && (
                     <Button
                       buttonSize="small"
                       buttonText="Manage"
@@ -156,4 +158,3 @@ const TableComponent = ({
 };
 
 export default TableComponent;
-

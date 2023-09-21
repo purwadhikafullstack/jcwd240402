@@ -3,9 +3,9 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
-import InputForm from "../../InputForm";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+
 
 const UpdateStock = ({
   show,
@@ -34,6 +34,7 @@ const UpdateStock = ({
       if (response.status === 200) {
         onClose();
         formik.resetForm();
+        setErrMsg("");
         handleSuccessfulEdit();
       } else {
         throw new Error("Update Stock Failed");
@@ -71,6 +72,7 @@ const UpdateStock = ({
   useEffect(() => {
     if (!show && !hasResetForm.current) {
       formik.resetForm();
+      setErrMsg(""); 
       hasResetForm.current = true;
     } else if (show) {
       hasResetForm.current = false;
@@ -94,7 +96,7 @@ const UpdateStock = ({
             </div>
           )}
           <div className="mt-5 px-6 grid gap-y-3">
-            <InputForm
+            <input
               label="Product Stock"
               name="productStock"
               type="number"
@@ -102,6 +104,7 @@ const UpdateStock = ({
               onChange={formik.handleChange}
               value={formik.values.productStock}
               errorMessage={formik.errors.productStock}
+              min="1"
             />
             <div>
               <label className="block text-sm font-medium text-gray-700">

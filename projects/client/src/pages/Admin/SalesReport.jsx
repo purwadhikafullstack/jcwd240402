@@ -7,19 +7,20 @@ import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
+import toRupiah from "@develoka/angka-rupiah-js";
+import AsyncSelect from "react-select/async";
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-  const [roleId, setRoleId] = useState("");
   const [productId, setProductId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [orderSalesList, setOrderSalesList] = useState([]);
+  const [salesTableData, setsalesTableData] = useState([]);
   const [salesReport, setSalesReport] = useState("");
-  const [salesReport2, setSalesReport2] = useState("");
   const [error, setError] = useState("");
   const access_token = getCookie("access_token");
   const adminData = useSelector((state) => state.profilerAdmin.value);
@@ -95,8 +96,7 @@ const SalesReport = () => {
       )
       .then((response) => {
         setSalesReport(response?.data?.sales_report);
-        setSalesReport2(response?.data?.sales_report2);
-        setOrderSalesList(response?.data?.orders)
+        setOrderSalesList(response?.data?.order_details);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -117,6 +117,30 @@ const SalesReport = () => {
   };
   const handleChangeWarehouseId = (warehouseId) => {
     setWarehouseId(warehouseId.value);
+  };
+
+  const loadWarehouseOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        {
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        }
+      );
+      const warehouseOptions = [
+        { value: "", label: "All Warehouses" },
+        ...response.data.warehouses.map((warehouse) => ({
+          value: warehouse.id,
+          label: warehouse.warehouse_name,
+        })),
+      ];
+      return warehouseOptions;
+    } catch (error) {
+      console.error("Error loading warehouses:", error);
+      return [];
+    }
   };
 
   return (
@@ -146,41 +170,39 @@ const SalesReport = () => {
             placeholder={<div>product</div>}
             onChange={handleChangeProduct}
           />
-          {roleId == 1 ? (
-            <Select
-              options={warehouseOptions}
-              placeholder={<div>Warehouse</div>}
+          {adminData.role_id == 1 && (
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              loadOptions={loadWarehouseOptions}
               onChange={handleChangeWarehouseId}
+              placeholder="All Warehouses"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
-          ) : (
-            <div></div>
           )}
-          <div>Sales Report: {salesReport}</div>
-          <div>Sales Report 2: {salesReport2}</div>
         </div>
         <div className="py-4">
-        {orderSalesList.map((order) => (            
           <TableComponent
             headers={[
               "Month",
               "Category",
               "Product",
+              "Price",
+              "Quantity",
               "Sub Total",
             ]}
-            data={order?.Order_details.map((sales) => ({
-              "Month": order?.delivery_time.split(' ')[1] || "",
-              "Category": sales?.Warehouse_stock?.Product?.category?.name || "",
-              "Product": sales?.Warehouse_stock?.Product?.name || "",
-              "Sub Total": sales?.Warehouse_stock?.Product?.price * sales?.quantity|| 0,
+            data={orderSalesList.map((sales) => ({
+              Month: sales.Order?.delivery_time || "",
+              Category: sales?.Warehouse_stock?.Product?.category?.name || "",
+              Product: sales?.Warehouse_stock?.Product?.name || "",
+              Price: sales?.Warehouse_stock?.Product?.price || "",
+              Quantity: sales?.quantity || "",
+              "Sub Total":
+                sales?.Warehouse_stock?.Product?.price * sales?.quantity || 0,
             }))}
             showIcon={false}
-
-            // "Month": sales?.delivery_time.split(' ')[1] || "",
-              // "Category": sales?.Order_details?.Warehouse_stock?.Product?.category?.name || "",
-              // "Product": sales?.Order_details?.Warehouse_stock?.Product?.name || "",
-              // "Sub Total": sales?.Order_details?.Warehouse_stock?.Product?.price * sales?.Order_details?.quantity|| 0,
           />
-          ))}
+          <div>Total: {salesReport}</div>
         </div>
       </div>
     </div>

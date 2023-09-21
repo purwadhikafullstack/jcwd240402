@@ -23,6 +23,10 @@ router.post(
   UserController.registerUser
 );
 router.get("/auth/verify/:verify_token", UserController.updateVerify);
+router.post(
+  "/auth/verify/:verify_token",
+  UserController.updateVerifyByPassword
+);
 router.post("/auth/login", validatorMiddleware.login, UserController.login);
 router.get(
   "/auth/keep-login",

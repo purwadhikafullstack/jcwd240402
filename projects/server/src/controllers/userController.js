@@ -26,7 +26,7 @@ module.exports = {
         is_verify = false,
         first_name,
         last_name,
-        img_profile = "photo-profile/imgprofiledefault.png",
+        img_profile = "/photo-profile/imgprofiledefault.png",
         phone,
         by_form = true,
       } = req.body;
@@ -241,6 +241,8 @@ module.exports = {
 
   updateVerify: async (req, res) => {
     const { verify_token } = req.params;
+    const { password } = req.body;
+
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -258,7 +260,72 @@ module.exports = {
       if (isVerifyTokenExist.is_verify) {
         await transaction.rollback();
         return res.status(400).send({
+          ok: false,
           message: "user already verified",
+        });
+      }
+
+      await db.User.update(
+        {
+          is_verify: true,
+          verify_token: null,
+        },
+        {
+          where: {
+            verify_token: verify_token,
+          },
+          transaction,
+        }
+      );
+
+      await transaction.commit();
+      res.json({
+        ok: true,
+        message: "verification successful",
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "something bad happeneded",
+        error: error.message,
+      });
+    }
+  },
+
+  updateVerifyByPassword: async (req, res) => {
+    const { verify_token } = req.params;
+    const { password } = req.body;
+
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const isVerifyTokenExist = await db.User.findOne({
+        where: { verify_token: verify_token },
+      });
+
+      if (!isVerifyTokenExist) {
+        await transaction.rollback();
+        return res.json({
+          ok: false,
+          message: "token invalid",
+        });
+      }
+      if (isVerifyTokenExist.is_verify) {
+        await transaction.rollback();
+        return res.status(400).send({
+          ok: false,
+          message: "user already verified",
+        });
+      }
+
+      const match = await bcrypt.compare(password, isVerifyTokenExist.password);
+      console.log(match);
+      if (!match) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "wrong password",
         });
       }
 
@@ -494,9 +561,19 @@ module.exports = {
       });
 
       if (!isUserExist) {
+        await transaction.rollback();
         return res.status(400).json({
           ok: false,
           message: "user not found",
+        });
+      }
+
+      console.log(isUserExist);
+      if (!isUserExist.by_form) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "this email registered by gmail. please login instead",
         });
       }
 

@@ -10,6 +10,7 @@ const { Sequelize } = require("sequelize");
 const { getAllUsers } = require("../service/user");
 const { autoStockTransfer } = require("../utils/index");
 const { getAllUserOrder, getAllUserOrderDetails } = require("../service/order");
+const { newStockHistory } = require("../service/warehouse_stock");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -423,6 +424,26 @@ module.exports = {
     }
   },
 
+  /* 
+1 = payment pending
+2 = awaiting payment confirmation
+3 = completed   
+4 = In Process
+5 = cancelled
+6 = shipped
+7 = rejected
+*/
+
+  /* 
+  yang sudah awaiting payment confirmation (2) user tidak bisa cancel (5)
+  yang sudah awaiting payment confirmation (2) admin bisa bisa cancel (5)
+  yang rejected user boleh payment pending - awaiting payment confirmatoin 
+  yang shipped (6) admin tidak boleh cancel (5) dan reject (7)
+  yang in process (4) admin tidak boleh cancel (5) dan reject (7)
+  yang completed tidak boleh diapa apain
+
+  */
+
   async updateOrderStatus(orderId, newStatusId) {
     const updatedOrder = await db.db.Order.update(
       { order_status_id: newStatusId },
@@ -441,6 +462,38 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 4) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot accept the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1 || isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "user have to upload payment proof first",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 5 ||
+        isAllowed.order_status_id === 6
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot accept payment in this stage",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 4 },
         { where: { id: orderId } }
@@ -534,6 +587,47 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot reject the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "The user has not uploaded the payment proof yet",
+        });
+      }
+
+      if (isAllowed.order_status_id === 5) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "The order has been canceled, you cannot cancel the rejected order",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 4 ||
+        isAllowed.order_status_id === 6
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot reject the order in this stage",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 7 },
         { where: { id: orderId } }
@@ -568,11 +662,48 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      if (isAllowed.order_status_id === 6) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot ship the order twice",
+        });
+      }
+
+      if (isAllowed.order_status_id === 3) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "this order already completed",
+        });
+      }
+
+      if (isAllowed.order_status_id === 1 || isAllowed.order_status_id === 2) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you have to approve the payment first",
+        });
+      }
+
+      if (isAllowed.order_status_id === 5 || isAllowed.order_status_id === 7) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message:
+            "the order has been canceled or rejected, you cannot ship the orderx",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         {
           order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date().toString(),
+          delivery_time: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Bangkok' }),
         },
         { where: { id: orderId }, transaction: t }
       );
@@ -586,6 +717,16 @@ module.exports = {
         include: [
           {
             model: db.Order,
+            include: [
+              {
+                model: db.Warehouse,
+                include: [
+                  {
+                    model: db.Admin,
+                  }
+                ]
+              }
+            ]
           },
           {
             model: db.Warehouse_stock,
@@ -606,6 +747,15 @@ module.exports = {
             transaction: t,
           }
         );
+
+        const stockHistory = newStockHistory(
+          reservedStock.WarehouseProductReservation.id,
+          reservedStock.Order.warehouse_id,
+          reservedStock.Order.Warehouse.Admins[0].id,
+          reservedStock.WarehouseProductReservation.product_stock,
+          reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
+          reservedStock.reserve_quantity,
+          "Transaction")
 
         const reservedStockDestroy = await db.Reserved_stock.destroy({
           where: {
@@ -649,6 +799,34 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
+      const isAllowed = await db.Order.findOne({
+        where: { id: orderId },
+      });
+
+      /* selama fase reject dari admin, kan nunggu pembayaran user, itu admin boleh cancel ga? */
+
+      if (isAllowed.order_status_id === 5) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot cancel twice",
+        });
+      }
+
+      if (
+        isAllowed.order_status_id === 3 ||
+        isAllowed.order_status_id === 4 ||
+        isAllowed.order_status_id === 5 ||
+        isAllowed.order_status_id === 6 ||
+        isAllowed.order_status_id === 7
+      ) {
+        await t.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "you cannot cancel the order",
+        });
+      }
+
       const updatedOrder = await db.Order.update(
         { order_status_id: 5, transaction: t },
         { where: { id: orderId } }
@@ -658,7 +836,7 @@ module.exports = {
         throw new Error("Order not found");
       }
 
-      const reservedStockDestroy = await db.Reserved_stock.destroy({
+      await db.Reserved_stock.destroy({
         where: { order_id: orderId },
         include: [
           {
@@ -671,9 +849,11 @@ module.exports = {
 
       await t.commit();
 
-      res
-        .status(200)
-        .json({ ok: true, message: "order canceled", test: updatedOrder });
+      res.status(200).json({
+        ok: true,
+        message: "order canceled successful",
+        test: updatedOrder,
+      });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -826,12 +1006,9 @@ module.exports = {
   },
 
   async salesReport(req, res) {
-    const adminWarehouseId = req.user.warehouse;
-    const adminRoleId = req.user.role;
 
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
-    const loggedAdmin = req.query.loggedAdmin;
     const warehouse_id = req.query.warehouseId;
     const category_id = req.query.categoryId;
     const product_id = req.query.productId;
@@ -854,16 +1031,6 @@ module.exports = {
 
     if (warehouse_id) {
       options.where.warehouse_id = warehouse_id;
-    }
-
-    if (loggedAdmin) {
-      options.where.admin_id = loggedAdmin;
-    }
-
-    if (adminWarehouseId) {
-      if (adminRoleId != 1) {
-        options.where.warehouse_id = adminWarehouseId;
-      }
     }
 
     if (month && year) {
@@ -894,32 +1061,25 @@ module.exports = {
     }
 
     try {
-      const response = await getAllUserOrder(options, filter3, page, perPage);
+      const response = await getAllUserOrderDetails(options, filter3, page, perPage);
 
       const userOrder = response.data;
 
       const totalOnly = [];
-      const totalOnly2 = [];
 
       const orderMap = userOrder.map((m) => {
-        totalOnly.push(m.total_price - m.delivery_price);
-        {
-          m.Order_details.map((n) => {
-            if (n.Warehouse_stock) {
-              totalOnly2.push(n.Warehouse_stock.Product.price * n.quantity);
+            if (m.Warehouse_stock) {
+              totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
             }
-          });
         }
-      });
+      );
 
       const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
-      const totalPrice2 = totalOnly2.reduce((total, n) => total + n, 0);
 
       res.status(201).send({
         message: "successfully get sales report",
         sales_report: totalPrice,
-        sales_report2: totalPrice2,
-        orders: userOrder,
+        order_details: userOrder,
       });
     } catch (error) {
       res.status(500).send({

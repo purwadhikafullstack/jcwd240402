@@ -19,10 +19,12 @@ import withOutAuthUser from "../../components/user/withoutAuthUser";
 const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
+    setSuccessMsg("Register successful");
     try {
       await axios.post("/user/auth/register", values).then((res) => {
         setStatus({ success: true });
@@ -40,14 +42,17 @@ const Register = () => {
           message:
             "Sign up successful. Please check your email for verification.",
         });
-
+        setSuccessMsg("Register successful");
+        setErrMsg("");
         navigate("/verify");
       });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
+        setSuccessMsg("");
       } else {
         setErrMsg(err.response?.data?.message);
+        setSuccessMsg("");
       }
     }
   };
@@ -189,7 +194,11 @@ const Register = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+                {errMsg ? (
+                  <AlertWithIcon errMsg={errMsg} />
+                ) : successMsg ? (
+                  <AlertWithIcon errMsg={successMsg} color="success" />
+                ) : null}
                 <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
                   <div className="flex gap-x-4 ">
                     <InputForm

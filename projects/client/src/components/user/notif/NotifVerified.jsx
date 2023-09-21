@@ -10,23 +10,14 @@ import {
 import NotifVerifies from "../notif/NotifVerifies";
 
 const NotifVerified = () => {
-  const { verify_token } = useParams();
   const navigate = useNavigate();
   const msg = "Congrats! your account verified";
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
   useEffect(() => {
-    axios.get(`user/auth/verify/${verify_token}`).then(
-      (res) => {
-        if (res.data.ok) {
-          setTimeout(() => {
-            navigate("/log-in");
-          }, 4000);
-        }
-        // navigate("/register");
-      },
-      [navigate, verify_token]
-    );
+    setTimeout(() => {
+      navigate("/log-in");
+    }, 3000);
   });
   return <NotifVerifies imgSrc={verified} msg={msg} />;
 };

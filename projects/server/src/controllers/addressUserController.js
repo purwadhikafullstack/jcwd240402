@@ -40,6 +40,7 @@ module.exports = {
   registerAddress: async (req, res) => {
     const userData = req.user;
     const {
+      province_id,
       city_id,
       user_id = userData.id,
       longitude,
@@ -52,6 +53,7 @@ module.exports = {
     try {
       const newAddress = await db.Address_user.create(
         {
+          province_id,
           city_id,
           user_id,
           longitude,
@@ -89,6 +91,7 @@ module.exports = {
     const userData = req.user;
     const { address_id } = req.params;
     const {
+      province_id,
       city_id,
       longitude,
       latitude,
@@ -116,6 +119,7 @@ module.exports = {
       if (city_id) {
         await db.Address_user.update(
           {
+            province_id,
             city_id,
           },
           { where: { user_id: userData.id, id: address_id }, transaction }

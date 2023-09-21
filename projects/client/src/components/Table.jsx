@@ -86,6 +86,7 @@ const TableComponent = ({
                 )}
               </Table.Cell>
             ))}
+
             {shouldShowActions() && (
               <Table.Cell className="overflow-visible">
                 {showAsyncAction && (

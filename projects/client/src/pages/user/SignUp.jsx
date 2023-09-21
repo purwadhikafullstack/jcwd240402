@@ -92,13 +92,6 @@ const SignUp = () => {
                         <h1 className="text-sm">Sign up with Google </h1>
                       </div>
                     </button>
-
-                    <button className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center">
-                      <img src={facebook} alt="" className="w-10 p-1" />
-                      <div>
-                        <h1 className="text-sm">Sign up with Facebook</h1>
-                      </div>
-                    </button>
                   </div>
 
                   <div className="flex justify-center items-center w-52">
@@ -117,6 +110,7 @@ const SignUp = () => {
                       fontWeight="font-semibold"
                       to="/register"
                     />
+
                     <h1 className="mt-2 my-4">
                       Have an account?{" "}
                       <Link

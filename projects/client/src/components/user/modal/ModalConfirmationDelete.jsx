@@ -11,6 +11,10 @@ export default function ModalConfirmationDelete({
   topic,
   deleteFor,
   purpose = "delete",
+  styling,
+  setErrMsg,
+  setSuccessMsg,
+  successMsg,
 }) {
   const [openModal, setOpenModal] = useState();
 
@@ -18,7 +22,7 @@ export default function ModalConfirmationDelete({
 
   return (
     <>
-      <button onClick={() => props.setOpenModal("pop-up")}>
+      <button onClick={() => props.setOpenModal("pop-up")} className={styling}>
         <p className="text-xs">{deleteFor}</p>
       </button>
       <Modal
@@ -29,13 +33,16 @@ export default function ModalConfirmationDelete({
       >
         <Modal.Header />
         <Modal.Body>
-          {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+          {errMsg ? (
+            <AlertWithIcon errMsg={errMsg} />
+          ) : successMsg ? (
+            <AlertWithIcon errMsg={successMsg} color="success" />
+          ) : null}
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">
               remember, you can't undo {purpose}. Are you sure you want to{" "}
-              {purpose}
-              this {topic}?
+              {purpose} this {topic}?
             </h3>
             <div className="flex justify-center gap-4">
               <Button
@@ -48,7 +55,11 @@ export default function ModalConfirmationDelete({
               </Button>
               <Button
                 color="gray"
-                onClick={() => props.setOpenModal(undefined)}
+                onClick={() => {
+                  props.setOpenModal(undefined);
+                  setErrMsg("");
+                  setSuccessMsg("");
+                }}
               >
                 No, cancel
               </Button>

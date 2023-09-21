@@ -1,4 +1,5 @@
 "use strict";
+const crypto = require("crypto");
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -22,10 +23,11 @@ module.exports = {
         delivery_courier: "pos",
         delivery_time: null,
         tracking_code: null,
-        no_invoice: null,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id: 1,
         warehouse_id: 1,
-        img_payment: "/payment-proof/paymentproofdefault.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -38,10 +40,11 @@ module.exports = {
         delivery_courier: "pos",
         delivery_time: null,
         tracking_code: null,
-        no_invoice: null,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id: 1,
         warehouse_id: 1,
-        img_payment: "/payment-proof/paymentproofdefault.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -54,10 +57,11 @@ module.exports = {
         delivery_courier: "pos",
         delivery_time: null,
         tracking_code: null,
-        no_invoice: null,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id: 1,
         warehouse_id: 1,
-        img_payment: "/payment-proof/paymentproofdefault.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -70,10 +74,11 @@ module.exports = {
         delivery_courier: "pos",
         delivery_time: null,
         tracking_code: null,
-        no_invoice: null,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id: 1,
         warehouse_id: 1,
-        img_payment: "/payment-proof/paymentproofdefault.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -86,10 +91,11 @@ module.exports = {
         delivery_courier: "pos",
         delivery_time: null,
         tracking_code: null,
-        no_invoice: null,
+        no_invoice:
+          `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
+          `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
         address_user_id: 1,
         warehouse_id: 1,
-        img_payment: "/payment-proof/paymentproofdefault.jpg",
         createdAt: new Date(),
         updatedAt: new Date(),
       },

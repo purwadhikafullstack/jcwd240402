@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Badge } from "flowbite-react";
+import { MdArrowBackIosNew } from "react-icons/md";
 
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import axios from "../../api/axios";
@@ -96,13 +97,20 @@ const OrderConfirmReview = () => {
         ]}
       />
       <div>
-        <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 mb-10">
+        <div className="min-h-screen mx-6 space-y-4 md:space-y-4 lg:space-y-4 lg:mx-32 mb-10">
           {yourOrder.order_status_id === 1 ||
-          yourOrder.order_status_id === 2 ||
-          yourOrder.order_status_id === 6 ||
-          yourOrder.order_status_id === 7 ? (
+          yourOrder.order_status_id === 6 ? (
             <>
-              <div className="flex justify-between font-semibold text-sm mt-4">
+              <Link
+                to="/user/setting/order"
+                className=" gap-2 flex justify-start font-semibold text-sm items-center"
+              >
+                <span>
+                  <MdArrowBackIosNew />
+                </span>{" "}
+                <h1>Back To Order List</h1>
+              </Link>
+              <div className="flex justify-between font-semibold text-sm">
                 <h1>{yourOrder.Order_status?.name}</h1>
                 <h1>invoice id: {invoiceId}</h1>
               </div>
@@ -187,23 +195,42 @@ const OrderConfirmReview = () => {
               </div>
               <div className="flex flex-col gap-3 w-full md:items-center lg:items-center">
                 <div className="md:w-96 lg:w-96 flex flex-col gap-3">
-                  <h1 className="text-center font-semibold text-grayText">
-                    Are you sure wanna proceed the payment?
-                  </h1>
+                  {yourOrder.order_status_id === 1 ? (
+                    <h1 className="text-center font-semibold text-grayText">
+                      Are you sure wanna proceed the payment?
+                    </h1>
+                  ) : (
+                    <h1 className="text-center font-semibold text-grayText">
+                      Are you sure you want to confirm that the order has been
+                      received?
+                    </h1>
+                  )}
+
                   <OrderButton
                     statusBefore={yourOrder.order_status_id}
                     orderId={yourOrder.id}
                   />
-                  <Link to={`/payment/${invoiceId}`}>
-                    <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs">
-                      Yes
-                    </button>
-                  </Link>
+                  {yourOrder.order_status_id === 1 && (
+                    <Link to={`/payment/${invoiceId}`}>
+                      <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs">
+                        Proceed Payment
+                      </button>
+                    </Link>
+                  )}
                 </div>
               </div>
             </>
           ) : (
             <>
+              <Link
+                to="/user/setting/order"
+                className=" gap-2 flex justify-start font-semibold text-sm items-center"
+              >
+                <span>
+                  <MdArrowBackIosNew />
+                </span>{" "}
+                <h1>Back To Order List</h1>
+              </Link>
               <div>
                 <h1>Order Status : {yourOrder.Order_status?.name}</h1>
                 <h1>Invoice id : {invoiceId}</h1>

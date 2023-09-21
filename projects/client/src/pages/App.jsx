@@ -48,6 +48,7 @@ import OrderConfirmReview from "./user/OrderConfirmReview";
 import UserOrder from "./admin/UserOrder";
 import SalesReport from "./admin/SalesReport";
 import UserList from "./admin/UserList";
+import NotifVerifiedByPassword from "../components/user/notif/NotifVerifiedByPassword";
 
 function App() {
   return (
@@ -69,16 +70,7 @@ function App() {
               path="/edit/:warehouseName"
               element={<WarehouseInputsEdit />}
             />
-            <Route path="/register" element={<Register />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/log-in" element={<Login />} />
-            <Route path="/verify" element={<NotifVerify />} />
-            <Route path="/verify/:verify_token" element={<NotifVerified />} />
 
-            <Route
-              path="/edit/:warehouseName"
-              element={<WarehouseInputsEdit />}
-            />
             <Route path="admin/categories" element={<CategoryList />} />
             <Route path="/admin/products/*" element={<AdminProductPage />}>
               <Route index element={<ProductList />} />
@@ -116,6 +108,16 @@ function App() {
             />
 
             {/* USER */}
+            <Route path="/register" element={<Register />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/log-in" element={<Login />} />
+            <Route path="/verify" element={<NotifVerify />} />
+            <Route path="/verified/:verify_token" element={<NotifVerified />} />
+            <Route
+              path="/verify/:verify_token"
+              element={<NotifVerifiedByPassword />}
+            />
+
             <Route path="/" element={<Home />} />
             <Route path="/redirect-login" element={<NotAuth />} />
             <Route path="/user/setting" element={<SettingProfile />} />
@@ -145,11 +147,7 @@ function App() {
               path="/reset-password-success"
               element={<NotifResetPassword />}
             />
-            <Route path="/register" element={<Register />} />
-            <Route path="/sign-up" element={<SignUp />} />
-            <Route path="/log-in" element={<Login />} />
-            <Route path="/verify" element={<NotifVerify />} />
-            <Route path="/verify/:verify_token" element={<NotifVerified />} />
+
             <Route path="/forgot-password" element={<NotifForgotPassword />} />
             <Route path="/all-categories" element={<AllCategories />} />
             <Route path="/all-products" element={<AllProducts />} />

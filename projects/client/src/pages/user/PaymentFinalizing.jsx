@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import { MdArrowBackIosNew } from "react-icons/md";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -25,6 +26,13 @@ import Button from "../../components/Button";
 import Loading from "../../components/Loading";
 import Alert from "../../components/user/Alert";
 import AlertWithIcon from "../../components/AlertWithIcon";
+import ModalConfirmationDelete from "../../components/user/modal/ModalConfirmationDelete";
+import ordercancel from "../../assets/images/ordercancel.png";
+import ordership from "../../assets/images/ordership.png";
+import orderreject from "../../assets/images/orderreject.png";
+import ordercompleted from "../../assets/images/ordercompleted.png";
+import orderwaitingpayment from "../../assets/images/orderwaitingpayment.png";
+import orderinprocess from "../../assets/images/orderinprocess.png";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
@@ -142,8 +150,7 @@ const PaymentFinalizing = () => {
   formData.append("file", file);
   formData.append("fileName", file.name);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     axios
       .patch(`/user/payment-proof/${invoiceId}`, formData, {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -190,7 +197,7 @@ const PaymentFinalizing = () => {
       />
       <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
         <h1 className="font-bold text-xl">Payment</h1>
-        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 2 ? (
+        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 1 ? (
           <div className="grid gap-4  ">
             <div className="  justify-center items-center w-full h-full">
               <h1>{yourOrder?.delivery_time}</h1>
@@ -254,15 +261,12 @@ const PaymentFinalizing = () => {
                 ))}
               </div>
             </div>
-            <div className=" flex flex-col justify-start items-center ">
-              {errMsg ? (
-                <AlertWithIcon errMsg={errMsg} />
-              ) : successMsg ? (
-                <AlertWithIcon color="success" errMsg={successMsg} />
-              ) : null}
+            <div className=" flex flex-col justify-start items-start ">
+              <div className="flex justify-center"></div>
 
               <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">
                 <h1 className="text-sm font-semibold">upload payment proof</h1>
+
                 <div className="md:w-96 lg:w-96">
                   <img
                     src={showImage ? showImage : `${emptyImage}`}
@@ -291,6 +295,8 @@ const PaymentFinalizing = () => {
                   <Button
                     onClick={() => {
                       setShowImage(false);
+                      setErrMsg("");
+                      setSuccessMsg("");
                     }}
                     buttonSize="small"
                     buttonText="Cancel"
@@ -300,18 +306,29 @@ const PaymentFinalizing = () => {
                     fontWeight="font-semibold"
                   />
                 </div>
-                <button
+                <ModalConfirmationDelete
+                  handleDelete={handleSubmit}
+                  errMsg={errMsg}
+                  successMsg={successMsg}
+                  setErrMsg={setErrMsg}
+                  setSuccessMsg={setSuccessMsg}
+                  topic="Payment Proof"
+                  deleteFor="Upload"
+                  purpose="upload"
+                  styling="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+                />
+                {/* <button
                   className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
                   onClick={handleSubmit}
                   type="submit"
                 >
                   Upload
-                </button>
+                </button> */}
               </div>
             </div>
           </div>
         ) : (
-          <>
+          /*  <>
             <h1>Order Status : {yourOrder.Order_status?.name}</h1>
             <h1>Invoice id : {invoiceId}</h1>
             <div className=" md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
@@ -363,6 +380,40 @@ const PaymentFinalizing = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </> */
+          <>
+            <Link
+              to="/user/setting/order"
+              className=" gap-2 flex justify-start font-semibold text-sm items-center"
+            >
+              <span>
+                <MdArrowBackIosNew />
+              </span>{" "}
+              <h1>Back To Order List</h1>
+            </Link>
+            <h1 className="font-bold">Invoice id : {invoiceId}</h1>
+            <div className="flex flex-col justify-center items-center">
+              <img
+                src={
+                  yourOrder.order_status_id === 2
+                    ? orderwaitingpayment
+                    : yourOrder.order_status_id === 3
+                    ? ordercompleted
+                    : yourOrder.order_status_id === 4
+                    ? orderinprocess
+                    : yourOrder.order_status_id === 5
+                    ? ordercancel
+                    : yourOrder.order_status_id === 6
+                    ? ordership
+                    : null
+                }
+                alt=""
+                className="w-1/2 md:w-1/3 lg:w-1/3"
+              />
+              <h1 className="mt-3 font-semibold text-grayText text-sm">
+                Your order status is {yourOrder.Order_status?.name}
+              </h1>
             </div>
           </>
         )}

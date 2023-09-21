@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../api/axios";
+import ModalConfirmationDelete from "./modal/ModalConfirmationDelete";
 
 export const OrderButton = ({ statusBefore, orderId }) => {
   const [yourOrder, setYourOrder] = useState([]);
@@ -35,9 +36,16 @@ export const OrderButton = ({ statusBefore, orderId }) => {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
+          console.log(res.data);
           setYourOrder(res.data?.order);
+          setSuccessMsg("process successful");
+          setTimeout(() => {
+            navigate("/user/setting/order");
+          }, 2000);
         })
-        .catch((error) => {});
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+        });
     } catch (error) {
       setErrMsg(error.response?.data?.message);
     }
@@ -57,37 +65,40 @@ export const OrderButton = ({ statusBefore, orderId }) => {
 
   if (statusBefore === 6) {
     return (
-      <button
-        className=""
-        onClick={() => {
-          handleClickStatus(orderId, 3);
-          navigate("/user/setting/order");
-        }}
-      >
-        Confirm
-      </button>
-    );
-  } else if (statusBefore === 5) {
-    return (
-      <button
-        className="w-full bg-danger3 p-2 font-semibold text-white rounded-md text-xs"
-        disabled={true}
-      >
-        Order Canceled
-      </button>
+      <>
+        <ModalConfirmationDelete
+          handleDelete={() => {
+            handleClickStatus(orderId, 3);
+          }}
+          errMsg={errMsg}
+          topic="order"
+          deleteFor="Confirmation Received Order"
+          purpose="Confirmation Received Order"
+          styling="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs"
+          successMsg={successMsg}
+          setSuccessMsg
+          setErrMsg
+        />
+      </>
     );
   } else {
     return (
-      <button
-        className="w-full bg-danger1 p-2 font-semibold text-white rounded-md text-xs"
-        onClick={() => {
-          handleDeleteReserved(orderId);
-          handleClickStatus(orderId, 5);
-          navigate("/user/setting/order");
-        }}
-      >
-        Cancel
-      </button>
+      <>
+        <ModalConfirmationDelete
+          handleDelete={() => {
+            handleDeleteReserved(orderId);
+            handleClickStatus(orderId, 5);
+          }}
+          errMsg={errMsg}
+          setErrMsg={setErrMsg}
+          topic="order"
+          deleteFor="Cancel Order"
+          purpose="Cancel Order"
+          styling="w-full bg-danger1 p-2 font-semibold text-white rounded-md text-xs"
+          successMsg={successMsg}
+          setSuccessMsg={setSuccessMsg}
+        />
+      </>
     );
   }
 };

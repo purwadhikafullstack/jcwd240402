@@ -13,12 +13,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "address_user_id",
       });
       Address_user.belongsTo(models.City, { foreignKey: "city_id" });
+      Address_user.belongsTo(models.Province, { foreignKey: "province_id" });
       // Address_user.belongsTo(models.Province, { foreignKey: "province_id" });
       Address_user.hasMany(models.Order, { foreignKey: "address_user_id" });
     }
   }
   Address_user.init(
     {
+      province_id: DataTypes.INTEGER,
       city_id: DataTypes.INTEGER,
       user_id: DataTypes.INTEGER,
       address_details: DataTypes.STRING,
@@ -30,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "Address_user",
+      paranoid: true,
     }
   );
   return Address_user;

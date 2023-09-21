@@ -11,14 +11,25 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import ConfirmationPaymentModal from "./ConfirmationPaymentModal";
 import waitingpayment from "../../../assets/images/waitingpayment.png";
+import DismissableAlert from "../../DismissableAlert";
 
-const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
+const OrderModal = ({
+  row,
+  onApprove,
+  onReject,
+  onSend,
+  onCancel,
+  successMsg,
+  openAlert,
+  setOpenAlert,
+  color,
+  errMsg,
+}) => {
   console.log(row.id);
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
-  const [errMsg, setErrMsg] = useState("");
   const imgPayment = `${process.env.REACT_APP_API_BASE_URL}${row.Image}`;
 
   console.log(row);
@@ -29,6 +40,8 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
     saveAs(imgPayment, `payment-proof/${row.invoiceId}-${row.Username}`);
   };
   console.log(row.Image);
+  console.log(successMsg);
+  console.log(errMsg);
   return (
     <>
       <button
@@ -95,6 +108,24 @@ const OrderModal = ({ row, onApprove, onReject, onSend, onCancel }) => {
 
               <div className="w-full flex flex-col justify-between items-end ">
                 <div className=" w-full h-full flex flex-col justify-between mb-4">
+                  {successMsg ? (
+                    <div className="mx-4 md:mx-0 lg:mx-0 absolute left-0 right-0 flex justify-center items-start z-10">
+                      <DismissableAlert
+                        successMsg={successMsg}
+                        openAlert={openAlert}
+                        setOpenAlert={setOpenAlert}
+                      />
+                    </div>
+                  ) : errMsg ? (
+                    <div className="mx-4 md:mx-0 lg:mx-0  absolute left-0 right-0 flex justify-center items-start z-10">
+                      <DismissableAlert
+                        successMsg={errMsg}
+                        openAlert={openAlert}
+                        setOpenAlert={setOpenAlert}
+                        color="failure"
+                      />
+                    </div>
+                  ) : null}
                   <div>
                     <h1 className="font-semibold text-xl">Order Data</h1>
                     <h1 className="text-sm">Products :</h1>

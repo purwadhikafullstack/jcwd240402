@@ -7,6 +7,8 @@ import {
   AiFillMinusSquare,
 } from "react-icons/ai";
 import toRupiah from "@develoka/angka-rupiah-js";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
@@ -176,7 +178,22 @@ const ProductDetail = () => {
                 <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
               </div>
             ) : (
-              <CarouselProductDetail data={product} />
+              // <CarouselProductDetail data={product} />
+              <div className="w-full md:w-96 lg:w-96 h-full mt-10 flex flex-col justify-center items-center">
+                <Carousel>
+                  {dataImage.map((item, idx) => (
+                    <div key={idx}>
+                      {" "}
+                      {/* Tambahkan key untuk setiap elemen dalam daftar */}
+                      <img
+                        src={`${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`}
+                        alt=""
+                        className=""
+                      />
+                    </div>
+                  ))}
+                </Carousel>
+              </div>
             )}
             <div className="hidden lg:block md:hidden w-full">
               {product.length === 0 ? null : (

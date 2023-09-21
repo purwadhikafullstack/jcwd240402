@@ -12,36 +12,46 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
      */
-    return queryInterface.bulkInsert("Reserved_stock", [
+    return queryInterface.bulkInsert("Reserved_stocks", [
       {
         id: 1,
         warehouse_stock_id: 1,
         order_id: 1,
         reserve_quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 2,
         warehouse_stock_id: 2,
         order_id: 2,
         reserve_quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 3,
         warehouse_stock_id: 3,
         order_id: 3,
         reserve_quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 4,
         warehouse_stock_id: 4,
         order_id: 4,
         reserve_quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
       {
         id: 5,
         warehouse_stock_id: 5,
         order_id: 5,
         reserve_quantity: 10,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       },
     ]);
   },
@@ -53,6 +63,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-    await queryInterface.bulkDelete("Reserved_stock", null, {});
+    await queryInterface.bulkDelete("Reserved_stocks", null, {});
   },
 };

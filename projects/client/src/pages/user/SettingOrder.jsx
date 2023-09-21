@@ -255,22 +255,23 @@ const SettingOrder = () => {
                                   </Badge>
                                 </div>
                               </div>
-
-                              {order.Order_details?.map((details) => (
-                                <div className="flex ml-4 mb-2 text-xs gap-2 h-fit rounded-lg">
-                                  <img
-                                    src={`${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                                    alt=""
-                                    className="w-20 object-cover"
-                                  />
-                                  <div>
-                                    <h1 className="font-bold">
-                                      {details.Warehouse_stock?.Product?.name}
-                                    </h1>
-                                    <h1> {details.quantity} unit</h1>
+                              <div className="">
+                                {order.Order_details?.map((details) => (
+                                  <div className="flex ml-4 mb-2 text-xs gap-2 h-fit rounded-lg">
+                                    <img
+                                      src={`${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
+                                      alt=""
+                                      className="w-20 object-cover"
+                                    />
+                                    <div>
+                                      <h1 className="font-bold">
+                                        {details.Warehouse_stock?.Product?.name}
+                                      </h1>
+                                      <h1> {details.quantity} unit</h1>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                ))}
+                              </div>
                             </div>
                             {order.Order_status?.id === 1 ||
                             order.Order_status?.id === 7 ? (
@@ -309,8 +310,7 @@ const SettingOrder = () => {
                             {order.Order_status?.id === 2 ||
                             order.Order_status?.id === 3 ||
                             order.Order_status?.id === 4 ||
-                            order.Order_status?.id === 5 ||
-                            order.Order_status?.id === 7 ? (
+                            order.Order_status?.id === 5 ? (
                               <Link
                                 to={`/order-confirm/${order?.no_invoice?.substr(
                                   -8
@@ -328,8 +328,6 @@ const SettingOrder = () => {
                                       ? "bg-gray-200 text-grayText"
                                       : order.Order_status?.id === 6
                                       ? "bg-infobg text-infoText"
-                                      : order.Order_status?.id === 7
-                                      ? "bg-failurebg text-failureText"
                                       : "bg-defaultbg text-defaultText"
                                   } p-2 mt-2 font-semibold rounded-md`}
                                 >

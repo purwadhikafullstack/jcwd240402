@@ -424,22 +424,26 @@ module.exports = {
   uploadPaymentProof: async (req, res) => {
     const userId = req.user.id;
     const id = req.params.id;
+    console.log(id);
     const paymentImage = req.file?.filename;
     const transaction = await db.sequelize.transaction();
     try {
       const orderData = await db.Order.findOne({
         where: {
           user_id: userId,
-          order_status_id: 1,
+          order_status_id: { [Op.or]: [1, 7] },
           no_invoice: { [Op.endsWith]: id },
         },
         attributes: {
           exclude: ["createdAt", "updatedAt", "user_id"],
         },
       });
+      console.log("order data", orderData);
+
       if (!orderData) {
         return res.status(404).json({
           ok: false,
+          id,
           message: "order not found",
         });
       }
@@ -460,7 +464,7 @@ module.exports = {
         {
           where: {
             user_id: userId,
-            order_status_id: 1,
+            order_status_id: { [Op.or]: [1, 7] },
             no_invoice: { [Op.endsWith]: id },
           },
         },
@@ -854,8 +858,12 @@ module.exports = {
           message: "you have to get approval payment first",
         });
       } */
+      let orderStatusChanged;
+      if (statusId === 3) {
+        orderStatusChanged;
+      }
 
-      const orderStatusChanged = await db.Order.update(
+      orderStatusChanged = await db.Order.update(
         {
           order_status_id: statusId,
         },

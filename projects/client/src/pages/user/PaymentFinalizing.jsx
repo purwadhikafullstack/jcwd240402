@@ -179,6 +179,7 @@ const PaymentFinalizing = () => {
       </div>
     );
   }
+  console.log(yourOrder);
 
   return (
     <div>
@@ -197,7 +198,7 @@ const PaymentFinalizing = () => {
       />
       <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
         <h1 className="font-bold text-xl">Payment</h1>
-        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 1 ? (
+        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 7 ? (
           <div className="grid gap-4  ">
             <div className="  justify-center items-center w-full h-full">
               <h1>{yourOrder?.delivery_time}</h1>

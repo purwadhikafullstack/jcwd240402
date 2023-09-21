@@ -25,6 +25,11 @@ const TableComponent = ({
   showCancel = false,
   showAsyncAction = false,
   showDetails = false,
+  successMsg,
+  openAlert,
+  setOpenAlert,
+  color,
+  errMsg,
 }) => {
   const [showDropdownIndex, setShowDropdownIndex] = useState(-1);
 
@@ -96,6 +101,11 @@ const TableComponent = ({
                     onReject={onReject}
                     onSend={onSend}
                     onCancel={onCancel}
+                    successMsg={successMsg}
+                    errMsg={errMsg}
+                    openAlert={openAlert}
+                    setOpenAlert={setOpenAlert}
+                    color={color}
                   />
                 )}
                 <div className="relative inline-block ml-2">

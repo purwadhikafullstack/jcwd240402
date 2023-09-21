@@ -20,6 +20,9 @@ const UserOrder = () => {
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
   const [selectedActions, setSelectedActions] = useState([]);
+  const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [openAlert, setOpenAlert] = useState(false);
 
   const orderStatusOptions = [
     { value: "", label: "all status" },
@@ -113,14 +116,32 @@ const UserOrder = () => {
           },
         }
       );
-      console.log(response.data);
+
       if (response.data.ok) {
         refetch();
+        setErrMsg("");
+        setSuccessMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setSuccessMsg("");
+        }, 4000);
       } else {
+        setSuccessMsg("");
         setError("Failed to cancel the order.");
+        setErrMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 4000);
       }
     } catch (error) {
+      setSuccessMsg("");
       setError(error.response?.message || "An error occurred.");
+      setErrMsg(error.response?.data?.message);
+      setOpenAlert(true);
+      setTimeout(() => {
+        setErrMsg("");
+      }, 4000);
     }
   };
 
@@ -135,14 +156,32 @@ const UserOrder = () => {
           },
         }
       );
-      console.log(response.data);
+      console.log("accept", response.data);
       if (response.data.ok) {
         refetch();
+        setErrMsg("");
+        setSuccessMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setSuccessMsg("");
+        }, 4000);
       } else {
-        setError("Failed to accept payment.");
+        setSuccessMsg("");
+        setError("Failed to cancel the order.");
+        setErrMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 4000);
       }
     } catch (error) {
+      setSuccessMsg("");
       setError(error.response?.message || "An error occurred.");
+      setErrMsg(error.response?.data?.message);
+      setOpenAlert(true);
+      setTimeout(() => {
+        setErrMsg("");
+      }, 4000);
     }
   };
 
@@ -160,15 +199,34 @@ const UserOrder = () => {
 
       if (response.data.ok) {
         refetch();
+        setErrMsg("");
+        setSuccessMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setSuccessMsg("");
+        }, 4000);
       } else {
-        setError("Failed to reject payment.");
+        setSuccessMsg("");
+        setError("Failed to cancel the order.");
+        setErrMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 4000);
       }
     } catch (error) {
+      setSuccessMsg("");
       setError(error.response?.message || "An error occurred.");
+      setErrMsg(error.response?.data?.message);
+      setOpenAlert(true);
+      setTimeout(() => {
+        setErrMsg("");
+      }, 4000);
     }
   };
 
   const handleSendOrder = async (id) => {
+    console.log(id);
     try {
       const response = await axios.patch(
         `/admin/send-order/${id}`,
@@ -182,14 +240,35 @@ const UserOrder = () => {
 
       if (response.data.ok) {
         refetch();
+        setErrMsg("");
+        setSuccessMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setSuccessMsg("");
+        }, 4000);
       } else {
-        setError("Failed to send the order.");
+        setSuccessMsg("");
+        setError("Failed to cancel the order.");
+        setErrMsg(response.data.message);
+        setOpenAlert(true);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 4000);
       }
     } catch (error) {
+      setSuccessMsg("");
       setError(error.response?.message || "An error occurred.");
+      setErrMsg(error.response?.data?.message);
+      setOpenAlert(true);
+      setTimeout(() => {
+        setErrMsg("");
+      }, 4000);
     }
   };
-  console.log(userOrderList);
+
+  console.log(successMsg);
+  console.log(errMsg);
+
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -250,6 +329,11 @@ const UserOrder = () => {
             onApprove={(row) => handleAcceptPayment(row)}
             onReject={(row) => handleRejectPayment(row)}
             onSend={(row) => handleSendOrder(row)}
+            successMsg={successMsg}
+            errMsg={errMsg}
+            openAlert={openAlert}
+            setOpenAlert={setOpenAlert}
+            color="failure"
           />
         </div>
         <div className="flex justify-center items-center mt-4">

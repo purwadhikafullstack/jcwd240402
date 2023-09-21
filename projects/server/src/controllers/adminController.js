@@ -666,6 +666,15 @@ module.exports = {
         where: { id: orderId },
       });
 
+      if (!isAllowed) {
+        await t.rollback();
+        return res.status(404).json({
+          ok: false,
+          message: "Order not found",
+        });
+      }
+      console.log(isAllowed);
+
       if (isAllowed.order_status_id === 6) {
         await t.rollback();
         return res.status(400).json({
@@ -703,7 +712,9 @@ module.exports = {
         {
           order_status_id: 6,
           tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Bangkok' }),
+          delivery_time: new Date().toLocaleString("id-ID", {
+            timeZone: "Asia/Bangkok",
+          }),
         },
         { where: { id: orderId }, transaction: t }
       );
@@ -723,10 +734,10 @@ module.exports = {
                 include: [
                   {
                     model: db.Admin,
-                  }
-                ]
-              }
-            ]
+                  },
+                ],
+              },
+            ],
           },
           {
             model: db.Warehouse_stock,
@@ -751,11 +762,13 @@ module.exports = {
         const stockHistory = newStockHistory(
           reservedStock.WarehouseProductReservation.id,
           reservedStock.Order.warehouse_id,
-          reservedStock.Order.Warehouse.Admins[0].id,
+          reservedStock.Order.Warehouse.Admins[0]?.id,
           reservedStock.WarehouseProductReservation.product_stock,
-          reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
+          reservedStock.WarehouseProductReservation.product_stock -
+            reservedStock.reserve_quantity,
           reservedStock.reserve_quantity,
-          "Transaction")
+          "Transaction"
+        );
 
         const reservedStockDestroy = await db.Reserved_stock.destroy({
           where: {
@@ -786,7 +799,7 @@ module.exports = {
       console.error(error);
       res.status(500).json({
         ok: false,
-        message: "An error occurred while accepting payment",
+        message: "An error occurred while shipping order",
         error: error.message,
       });
     }
@@ -1006,7 +1019,6 @@ module.exports = {
   },
 
   async salesReport(req, res) {
-
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
     const warehouse_id = req.query.warehouseId;
@@ -1061,18 +1073,22 @@ module.exports = {
     }
 
     try {
-      const response = await getAllUserOrderDetails(options, filter3, page, perPage);
+      const response = await getAllUserOrderDetails(
+        options,
+        filter3,
+        page,
+        perPage
+      );
 
       const userOrder = response.data;
 
       const totalOnly = [];
 
       const orderMap = userOrder.map((m) => {
-            if (m.Warehouse_stock) {
-              totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
-            }
+        if (m.Warehouse_stock) {
+          totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
         }
-      );
+      });
 
       const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
 

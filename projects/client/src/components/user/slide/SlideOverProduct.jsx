@@ -64,8 +64,15 @@ export default function SlideOverProduct({ name }) {
           setSuccessMsg(res.data?.message);
           setOpenAlert(true);
         })
-        .catch((error) => setLoading(false));
+        .catch((error) => {
+          setLoading(false);
+          console.log(error.response?.data?.message);
+          setErrMsg(error.response?.data?.message);
+          setOpenAlert(true);
+          setQty(0);
+        });
     } catch (error) {
+      console.log(error);
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {

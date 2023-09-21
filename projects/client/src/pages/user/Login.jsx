@@ -23,13 +23,13 @@ import { UserAuth } from "../../context/AuthContext";
 import google from "../../assets/icons/google.png";
 
 const Login = () => {
-  removeCookie("access_token");
-  removeLocalStorage("refresh_token");
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   const { googleSignIn, user, logOutAuth } = UserAuth();
 
   const loginUser = async (values, { setStatus, setValues }) => {
+    removeCookie("access_token");
+    removeLocalStorage("refresh_token");
     try {
       await axios.post("/user/auth/login", values).then((res) => {
         const accessToken = res.data?.accessToken;

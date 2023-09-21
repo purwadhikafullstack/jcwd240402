@@ -64,10 +64,8 @@ module.exports = {
         requiredStock
       );
 
-
       res.status(200).json(result);
     } catch (error) {
-      
       console.error(error);
       res.status(500).json({ error: "Internal server error" });
     }
@@ -205,6 +203,8 @@ module.exports = {
     }
   },
 
+  // bug disini.
+  /* jadi yang di kirim sebagai response seharusnya sudah bukan lagi per warehouse. tetapi product nya saja. pun total stock juga hasil akumulasi dari semua warehouse dengan product id yang sama */
   getAllWarehouseStockFilter: async (req, res) => {
     const findMaxWeight = await db.Product.findOne({
       attributes: [Sequelize.fn("MAX", Sequelize.col("weight"))],
@@ -406,9 +406,42 @@ module.exports = {
     }
   },
 
+  //bug disini juga
+  /* jadi  coba pastikan kondisi yang sama seperti di atas*/
   getProductStockByProductName: async (req, res) => {
     const { name } = req.params;
     try {
+      const productData = await db.Product.findOne({
+        where: { name },
+        attributes: ["id"],
+      });
+
+      if (!productData) {
+        return res
+          .status(404)
+          .json({ ok: false, message: "Product not found" });
+      }
+
+      const reservedStock = await db.Reserved_stock.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: {
+          model: db.Warehouse_stock,
+          as: "WarehouseProductReservation",
+          where: { product_id: productData.id },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      });
+
+      const getReservedStockValue = reservedStock.map((item) => {
+        return item.reserve_quantity;
+      });
+      let reservedStockTotal = 0;
+      if (getReservedStockValue.length !== 0) {
+        reservedStockTotal = getReservedStockValue.reduce((acc, cv) => {
+          return acc + cv;
+        });
+      }
+
       const result = await db.Warehouse_stock.findOne({
         attributes: { exclude: ["updatedAt", "createdAt"] },
         include: [
@@ -433,63 +466,11 @@ module.exports = {
           },
         ],
       });
+
       if (!result) {
         return res
           .status(404)
           .json({ ok: false, message: "Product not found" });
-      }
-
-      const productData = await db.Product.findOne({
-        where: { name },
-      });
-
-      if (!productData) {
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-
-      const warehouseStockData = await db.Warehouse_stock.findOne({
-        where: { id: productData.id },
-      });
-
-      if (!warehouseStockData) {
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-
-      const reservedStock = await db.Reserved_stock.findAll({
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: {
-          model: db.Warehouse_stock,
-          as: "WarehouseProductReservation",
-          where: { id: warehouseStockData.id },
-          attributes: { exclude: ["createdAt", "updatedAt"] },
-        },
-      });
-
-      if (!reservedStock) {
-        return res.status(400).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-
-      const getReservedStockValue = reservedStock.map((item) => {
-        return item.reserve_quantity;
-      });
-      let reservedStockTotal;
-      if (reservedStock.length !== 0) {
-        reservedStockTotal = getReservedStockValue.reduce((acc, cv) => {
-          return acc + cv;
-        });
-      }
-
-      if (!reservedStockTotal) {
-        reservedStockTotal = 0;
       }
 
       res.json({

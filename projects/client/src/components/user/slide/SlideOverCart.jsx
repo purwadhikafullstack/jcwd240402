@@ -54,6 +54,12 @@ export default function SlideOverCart({ name, quantity }) {
               headers: { Authorization: `Bearer ${access_token}` },
             })
             .then((res) => dispatch(cartsUser(res.data?.result)));
+        })
+        .catch((error) => {
+          console.log(error.response?.data?.message);
+          setErrMsg(error.response?.data?.message);
+          setOpenAlert(true);
+          setQty(0);
         });
     } catch (error) {
       if (!error.response) {
@@ -85,6 +91,8 @@ export default function SlideOverCart({ name, quantity }) {
     };
     return image;
   });
+
+  console.log(errMsg);
 
   return (
     <>
@@ -156,12 +164,24 @@ export default function SlideOverCart({ name, quantity }) {
                         </Dialog.Title>
                       </div>
                       <div className="relative mt-4 flex-1 px-4 sm:px-6">
-                        <Alert
-                          successMsg={successMsg}
-                          setOpenAlert={setOpenAlert}
-                          openAlert={openAlert}
-                          errMsg={errMsg}
-                        />
+                        {successMsg ? (
+                          <div className="mx-4 md:mx-0 lg:mx-0 absolute left-0 right-0 flex justify-center items-start z-10">
+                            <DismissableAlert
+                              successMsg={successMsg}
+                              openAlert={openAlert}
+                              setOpenAlert={setOpenAlert}
+                            />
+                          </div>
+                        ) : errMsg ? (
+                          <div className="mx-4 md:mx-0 lg:mx-0  absolute left-0 right-0 flex justify-center items-start z-10">
+                            <DismissableAlert
+                              successMsg={errMsg}
+                              openAlert={openAlert}
+                              setOpenAlert={setOpenAlert}
+                              color="failure"
+                            />
+                          </div>
+                        ) : null}
                         <CarouselProductDetail data={product} />
                         <div>
                           <h1 className="font-bold text-xl md:text-3xl lg:text-2xl">

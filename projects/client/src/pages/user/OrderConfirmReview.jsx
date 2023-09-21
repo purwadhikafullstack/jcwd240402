@@ -99,6 +99,7 @@ const OrderConfirmReview = () => {
       <div>
         <div className="min-h-screen mx-6 space-y-4 md:space-y-4 lg:space-y-4 lg:mx-32 mb-10">
           {yourOrder.order_status_id === 1 ||
+          yourOrder.order_status_id === 7 ||
           yourOrder.order_status_id === 6 ? (
             <>
               <Link
@@ -195,7 +196,9 @@ const OrderConfirmReview = () => {
               </div>
               <div className="flex flex-col gap-3 w-full md:items-center lg:items-center">
                 <div className="md:w-96 lg:w-96 flex flex-col gap-3">
-                  {yourOrder.order_status_id === 1 ? (
+                  {yourOrder.order_status_id === 1 ||
+                  yourOrder.order_status_id === 7 ||
+                  yourOrder.order_status_id === 6 ? (
                     <h1 className="text-center font-semibold text-grayText">
                       Are you sure wanna proceed the payment?
                     </h1>
@@ -210,13 +213,14 @@ const OrderConfirmReview = () => {
                     statusBefore={yourOrder.order_status_id}
                     orderId={yourOrder.id}
                   />
-                  {yourOrder.order_status_id === 1 && (
+                  {yourOrder.order_status_id === 1 ||
+                  yourOrder.order_status_id === 7 ? (
                     <Link to={`/payment/${invoiceId}`}>
                       <button className="w-full bg-blue3 p-2 font-semibold text-white rounded-md text-xs">
                         Proceed Payment
                       </button>
                     </Link>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </>

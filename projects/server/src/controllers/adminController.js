@@ -657,6 +657,7 @@ module.exports = {
 
   async sendUserOrder(req, res) {
     const orderId = req.params.id;
+    const adminData = req.user;
     console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
@@ -750,8 +751,8 @@ module.exports = {
 
         const stockHistory = newStockHistory(
           reservedStock.WarehouseProductReservation.id,
-          reservedStock.Order.warehouse_id,
-          reservedStock.Order.Warehouse.Admins[0].id,
+          adminData.warehouse_id,
+          adminData.id,
           reservedStock.WarehouseProductReservation.product_stock,
           reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
           reservedStock.reserve_quantity,
@@ -786,7 +787,7 @@ module.exports = {
       console.error(error);
       res.status(500).json({
         ok: false,
-        message: "An error occurred while accepting payment",
+        message: "An error occurred while shipping order",
         error: error.message,
       });
     }
@@ -861,7 +862,7 @@ module.exports = {
       console.error(error);
       res.status(500).json({
         ok: false,
-        message: "An error occurred while accepting payment",
+        message: "An error occurred while canceling order",
         error: error.message,
       });
     }

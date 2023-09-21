@@ -519,14 +519,16 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
-        console.log(
-          "test",
-          reservedStock.WarehouseProductReservation.warehouse_id
-        );
-        console.log(
-          "test",
-          reservedStock.WarehouseProductReservation.product_id
-        );
+
+        // console.log(
+        //   "test",
+        //   reservedStock.WarehouseProductReservation.warehouse_id
+        // );
+        // console.log(
+        //   "test",
+        //   reservedStock.WarehouseProductReservation.product_id
+        // );
+
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
@@ -559,6 +561,7 @@ module.exports = {
           }
 
           await warehouseStock.reload();
+          
         }
         await warehouseStock.save({ transaction: t });
       }

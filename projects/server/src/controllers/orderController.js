@@ -287,49 +287,79 @@ module.exports = {
 
     const newOrderDetails = [];
     const newReservedStock = [];
-    const newAutoStockTransfer = [];
+    const newWarehouseStockArr = [];
+
+    const t = await db.sequelize.transaction();
 
     try {
       for (const i in cart_data.cart_data) {
-        newAutoStockTransfer.push(
-          await autoStockTransfer(
-            warehouse_id,
-            cart_data.cart_data[i]?.Warehouse_stock?.product_id,
-            cart_data.cart_data[i]?.quantity
-          )
-        );
+        // newAutoStockTransfer.push(
+        //   await autoStockTransfer(
+        //     warehouse_id,
+        //     cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+        //     cart_data.cart_data[i]?.quantity
+        //   )
+        // );
 
-        let transferedWarehouseStock = await db.Warehouse_stock.findOne({
+        // let transferedWarehouseStock = await db.Warehouse_stock.findOne({
+        //   where: {
+        //     warehouse_id: warehouse_id,
+        //     product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+        //   },
+        // });
+
+        let closestWarehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id: warehouse_id,
             product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
           },
-        });
-
-        newOrderDetails.push(
-          await db.Order_detail.create({
-            order_id,
-            warehouse_stock_id: transferedWarehouseStock.id,
-            quantity: cart_data.cart_data[i]?.quantity,
-          })
+        },
+        { transaction: t }
         );
+
+        if(closestWarehouseStock){
+          newWarehouseStockArr.push(
+            closestWarehouseStock
+          );
+        }else{
+          newWarehouseStockArr.push(await db.Warehouse_stock.create({
+            warehouse_id: warehouse_id,
+            product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+            product_stock: 0,
+          },
+          { transaction: t }));
+        }
 
         newReservedStock.push(
           await db.Reserved_stock.create({
             order_id,
-            warehouse_stock_id: transferedWarehouseStock.id,
+            warehouse_stock_id: newWarehouseStockArr[i].id,
             reserve_quantity: cart_data.cart_data[i]?.quantity,
-          })
+          },
+          { transaction: t })
         );
+
+        newOrderDetails.push(
+          await db.Order_detail.create({
+            order_id,
+            warehouse_stock_id: newWarehouseStockArr[i].id,
+            quantity: cart_data.cart_data[i]?.quantity,
+          },
+          { transaction: t })
+        );
+
       }
+
+      await t.commit();
 
       res.status(200).json({
         ok: true,
         order: newOrderDetails,
-        reserved_stock: newReservedStock,
-        transfered_stock: newAutoStockTransfer,
+        // reserved_stock: newReservedStock,
+        new_stock: newWarehouseStockArr,
       });
     } catch (error) {
+      await t.rollback();
       res.status(500).json({
         ok: false,
         message: "something bad happened 1",

@@ -11,6 +11,7 @@ import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
+import { useWarehouseOptions } from "../../utils/loadWarehouseOptions";
 
 const AdminList = () => {
   const [admins, setAdmins] = useState([]);
@@ -26,6 +27,7 @@ const AdminList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
+  const loadWarehouseOptions = useWarehouseOptions();
 
   useEffect(() => {
     refreshAdminList();
@@ -33,25 +35,6 @@ const AdminList = () => {
 
   const handleWarehouseChange = (selectedOption) => {
     setSelectedWarehouse(selectedOption.value);
-  };
-
-  const loadWarehouseOptions = async (inputValue) => {
-    try {
-      const response = await axios.get(
-        `/warehouse/warehouse-list?searchName=${inputValue}`
-      );
-      const warehouseOptions = [
-        { value: "", label: "All Warehouses" },
-        ...response.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
-        })),
-      ];
-      return warehouseOptions;
-    } catch (error) {
-      console.error("Error loading warehouses:", error);
-      return [];
-    }
   };
 
   const fetchAdmins = async () => {
@@ -87,6 +70,9 @@ const AdminList = () => {
 
   const refreshAdminList = async () => {
     await fetchAdmins();
+    if (formattedAdmins.length === 0 && currentPage > 1) {
+      setCurrentPage(1);
+    }
   };
 
   return (

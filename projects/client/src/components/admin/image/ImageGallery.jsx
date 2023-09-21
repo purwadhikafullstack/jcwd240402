@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaTrash, FaUpload } from "react-icons/fa";
 
 function MainImageDisplay({ image }) {
-  console.log(image)
+
   if (!image || !(image instanceof Blob || image instanceof File)) {
     return (
       <div className="main-image-placeholder w-80 h-80 border-2 border-dashed border-gray-300 flex items-center justify-center m-5">

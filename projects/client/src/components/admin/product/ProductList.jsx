@@ -7,10 +7,10 @@ import debounce from "lodash/debounce";
 import axios from "../../../api/axios";
 import ConfirmDeleteProduct from "../../modal/product/ModalDeleteProduct";
 import withAuthAdminWarehouse from "../../admin/withAuthAdminWarehouse";
+import { useCategoryOptions } from "../../../utils/loadCategoryOptions";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,6 +19,7 @@ const ProductList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const loadCategories = useCategoryOptions
 
   const debouncedNavigate = debounce((updatedParams) => {
     for (const key in updatedParams) {
@@ -27,30 +28,6 @@ const ProductList = () => {
     navigate({ search: searchParams.toString() });
   }, 150);
 
-  const loadCategories = async (inputValue = "") => {
-    try {
-      const response = await axios.get("/admin/categories", {
-        params: {
-          name: inputValue,
-        },
-      });
-
-      if (response.data.success) {
-        return [
-          { value: "", label: "All Categories" },
-          ...response.data.data.map((cat) => ({
-            value: cat.id,
-            label: cat.name,
-          })),
-        ];
-      } else {
-        return [];
-      }
-    } catch (error) {
-      console.error("Error fetching categories for select:", error);
-      return [];
-    }
-  };
 
   const fetchProducts = async (
     page = 1,

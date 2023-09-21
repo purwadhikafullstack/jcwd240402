@@ -95,6 +95,7 @@ const CreateStock = () => {
       <div className="w-1/3 mx-auto">
         <AsyncSelect
           cacheOptions
+          defaultOptions
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"
@@ -103,6 +104,7 @@ const CreateStock = () => {
       <div className="w-1/3 mx-auto mt-4">
         <AsyncSelect
           cacheOptions
+          defaultOptions
           loadOptions={loadProducts}
           onChange={setSelectedProduct}
           placeholder="Select a product"

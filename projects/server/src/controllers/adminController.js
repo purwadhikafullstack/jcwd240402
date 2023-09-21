@@ -647,6 +647,7 @@ module.exports = {
 
   async sendUserOrder(req, res) {
     const orderId = req.params.id;
+    const adminData = req.user;
     console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
@@ -751,8 +752,8 @@ module.exports = {
 
         const stockHistory = newStockHistory(
           reservedStock.WarehouseProductReservation.id,
-          reservedStock.Order.warehouse_id,
-          reservedStock.Order.Warehouse.Admins[0]?.id,
+          adminData.warehouse_id,
+          adminData.id,
           reservedStock.WarehouseProductReservation.product_stock,
           reservedStock.WarehouseProductReservation.product_stock -
             reservedStock.reserve_quantity,
@@ -864,7 +865,7 @@ module.exports = {
       console.error(error);
       res.status(500).json({
         ok: false,
-        message: "An error occurred while accepting payment",
+        message: "An error occurred while canceling order",
         error: error.message,
       });
     }
@@ -876,6 +877,8 @@ module.exports = {
     const order_status_id = req.query.orderStatusId;
     const warehouse_id = req.query.warehouseId;
     const searchName = req.query.searchName;
+    const year = req.query.year;
+    const month = req.query.month;
 
     const options = {
       where: {},
@@ -893,6 +896,27 @@ module.exports = {
 
     if (searchName) {
       options.where.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
+    }
+
+    if (month && year) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(
+          Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+          month
+        ),
+        Sequelize.where(Sequelize.fn("YEAR", Sequelize.col("createdAt")), year),
+      ];
+    } else if (year) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(Sequelize.fn("YEAR", Sequelize.col("createdAt")), year),
+      ];
+    } else if (month) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(
+          Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+          month
+        ),
+      ];
     }
 
     try {
@@ -1073,6 +1097,13 @@ module.exports = {
       const userOrder = response.data;
 
       const totalOnly = [];
+      const availableWarehouseStock = [];
+
+      const notNull = userOrder.map((m) => {
+        if (m.Warehouse_stock) {
+          availableWarehouseStock.push(m);
+        }
+      });
 
       const orderMap = userOrder.map((m) => {
         if (m.Warehouse_stock) {
@@ -1085,7 +1116,7 @@ module.exports = {
       res.status(201).send({
         message: "successfully get sales report",
         sales_report: totalPrice,
-        order_details: userOrder,
+        order_details: availableWarehouseStock,
       });
     } catch (error) {
       res.status(500).send({

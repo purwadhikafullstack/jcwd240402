@@ -36,7 +36,7 @@ module.exports = {
     return token;
   },
   
-  autoStockTransfer: async (warehouse_id, product_id, requiredStock,orderId) => {
+  autoStockTransfer: async (warehouse_id, product_id, requiredStock, orderId) => {
     console.log(warehouse_id,product_id,requiredStock,orderId)
     const t = await db.sequelize.transaction();
   

@@ -10,7 +10,6 @@ const AdminCategoryCard = ({
   name,
   createdAt,
   handleSuccessfulEdit,
-  onDelete,
   id,
 }) => {
   const [showMenu, setShowMenu] = useState(false);

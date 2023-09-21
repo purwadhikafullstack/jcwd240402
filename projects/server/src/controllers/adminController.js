@@ -445,17 +445,6 @@ module.exports = {
 
   */
 
-  async updateOrderStatus(orderId, newStatusId) {
-    const updatedOrder = await db.db.Order.update(
-      { order_status_id: newStatusId },
-      { where: { id: orderId } }
-    );
-
-    if (updatedOrder[0] === 0) {
-      throw new Error("Order not found");
-    }
-  },
-
   async acceptPayment(req, res) {
     const orderId = req.params.id;
     console.log("Extracted Order ID:", orderId);

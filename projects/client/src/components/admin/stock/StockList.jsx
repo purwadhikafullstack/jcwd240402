@@ -9,6 +9,8 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import ProductDetailsModal from "../../modal/stock/ModalProductDetails";
 import axios from "../../../api/axios";
+import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
+import { useCategoryOptions } from "../../../utils/loadCategoryOptions";
 
 const StockList = () => {
   const [stocks, setStocks] = useState([]);
@@ -26,10 +28,12 @@ const StockList = () => {
   const [selectedProductDetails, setSelectedProductDetails] = useState(null);
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
+  const loadWarehouses = useWarehouseOptions();
+  const loadCategories = useCategoryOptions();
 
   useEffect(() => {
     fetchStocks();
-  }, [selectedWarehouse, selectedCategory, searchProductName]);
+  }, [selectedWarehouse, selectedCategory, searchProductName,currentPage]);
 
   const fetchStocks = async () => {
     try {
@@ -66,49 +70,6 @@ const StockList = () => {
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
-    }
-  };
-
-  const loadWarehouses = async (inputValue) => {
-    try {
-      const response = await axios.get(`/warehouse/warehouse-list`, {
-        params: {
-          searchName: inputValue,
-        },
-      });
-      const warehouseOptions = [
-        { value: "", label: "All Warehouses" },
-        ...response.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
-        })),
-      ];
-      return warehouseOptions;
-    } catch (error) {
-      console.error("Error fetching warehouses:", error);
-      return [];
-    }
-  };
-
-  const loadCategories = async (inputValue) => {
-    console.log("Input value for categories:", inputValue);
-    try {
-      const response = await axios.get(`/admin/categories`, {
-        params: {
-          name: inputValue,
-        },
-      });
-      const categoryOptions = [
-        { value: "", label: "All Categories" },
-        ...response.data.data.map((category) => ({
-          value: category.id,
-          label: category.name,
-        })),
-      ];
-      return categoryOptions;
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      return [];
     }
   };
 

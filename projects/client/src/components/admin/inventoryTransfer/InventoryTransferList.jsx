@@ -7,6 +7,7 @@ import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
+import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
 import moment from "moment";
 
 const InventoryTransferList = () => {
@@ -25,6 +26,7 @@ const InventoryTransferList = () => {
   const [sortOrder, setSortOrder] = useState("latest");
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
+  const loadWarehouses = useWarehouseOptions();
 
   useEffect(() => {
     fetchTransfers();
@@ -41,27 +43,6 @@ const InventoryTransferList = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedWarehouse]);
-
-  const loadWarehouses = async (inputValue) => {
-    try {
-      const response = await axios.get(`/warehouse/warehouse-list`, {
-        params: {
-          searchName: inputValue,
-        },
-      });
-      const warehouseOptions = [
-        { value: "", label: "All Warehouses" },
-        ...response.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
-        })),
-      ];
-      return warehouseOptions;
-    } catch (error) {
-      console.error("Error fetching warehouses:", error);
-      return [];
-    }
-  };
 
   const loadStatusOptions = async () => {
     return [
@@ -155,26 +136,29 @@ const InventoryTransferList = () => {
             "Request Date",
             "Response Date",
           ]}
-          data={transfers.map((transfer) => ({
-            "Transfer ID": transfer.id,
-            "From Warehouse": transfer.FromWarehouse.fromWarehouseName,
-            "To Warehouse": transfer.ToWarehouse.toWarehouseName,
-            "Product Name": transfer.Warehouse_stock.Product.name,
-            Quantity: transfer.quantity,
-            "Request Date": moment(transfer.createdAt).format("DD/MM/YY HH:mm"),
-            "Response Date":
-              transfer.status !== "Pending"
-                ? moment(transfer.updatedAt).format("DD/MM/YY HH:mm")
-                : "-",
-            Status: transfer.status,
-            showManageButton:
+          data={transfers.map((transfer) => {
+            const shouldShow = 
               transfer.status === "Pending" &&
               (adminData.role_id === 1 ||
-                (adminData.role_id === 2 &&
-                  transfer.ToWarehouse.toWarehouseName ===
-                  adminData?.warehouse?.warehouse_name)),
-            _original: transfer,
-          }))}
+              (adminData.role_id === 2 && 
+              transfer.to_warehouse_id === adminData?.warehouse_id));
+
+            return {
+              "Transfer ID": transfer.id,
+              "From Warehouse": transfer.FromWarehouse.fromWarehouseName,
+              "To Warehouse": transfer.ToWarehouse.toWarehouseName,
+              "Product Name": transfer.Warehouse_stock.Product.name,
+              Quantity: transfer.quantity,
+              "Request Date": moment(transfer.createdAt).format("DD/MM/YY HH:mm"),
+              "Response Date":
+                transfer.status !== "Pending"
+                  ? moment(transfer.updatedAt).format("DD/MM/YY HH:mm")
+                  : "-",
+              Status: transfer.status,
+              shouldShowApproveReject: shouldShow,
+              _original: transfer,
+            };
+          })}
           onTransferDetails={(row) => {
             setSelectedTransfer(row._original);
             setShowTransferModal(true);

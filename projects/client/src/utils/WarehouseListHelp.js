@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../api/axios";
 
 export const refreshWarehouseList = (
   searchName,
@@ -7,7 +7,7 @@ export const refreshWarehouseList = (
   setWarehouses,
   setTotalPages
 ) => {
-  const url = `http://localhost:8000/api/warehouse/warehouse-list?searchName=${searchName}&cityId=${cityId}&page=${page}&pageSize=10`;
+  const url = `/warehouse/warehouse-list?searchName=${searchName}&cityId=${cityId}&page=${page}&pageSize=10`;
   axios
     .get(url)
     .then((res) => {
@@ -39,7 +39,7 @@ export const updateWarehouse = (
   } else {
     updatedData = { [field]: value };
   }
-  const url = `http://localhost:8000/api/warehouse/${selectedWarehouse.id}`;
+  const url = `/warehouse/${selectedWarehouse.id}`;
   axios
     .patch(url, updatedData)
     .then(() => {
@@ -55,7 +55,7 @@ export const updateWarehouse = (
 export const loadCities = (inputValue, callback) => {
   axios
     .get(
-      `http://localhost:8000/api/admin/city/?provinceId=&page=1&searchName=${inputValue}`
+      `/admin/city/?provinceId=&page=1&searchName=${inputValue}`
     )
     .then((res) => {
       const results = res.data.cities.map((city) => ({

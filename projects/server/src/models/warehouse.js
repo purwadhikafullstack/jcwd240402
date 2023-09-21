@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Warehouse.hasMany(models.Admin, { foreignKey: "warehouse_id" });
       Warehouse.belongsTo(models.City, { foreignKey: "city_id" });
-      // Warehouse.belongsTo(models.Province, { foreignKey: "province_id" });
+      Warehouse.belongsTo(models.Province, { foreignKey: "province_id" });
       Warehouse.hasMany(models.Order, { foreignKey: "warehouse_id" });
       Warehouse.hasMany(models.Inventory_transfer, {
         foreignKey: "warehouse_id",
@@ -34,10 +34,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      // province_id: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: true,
-      // },
+      province_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       latitude: {
         type: DataTypes.STRING,
         allowNull: false,

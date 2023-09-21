@@ -106,7 +106,7 @@ const TableComponent = ({
                       onClick={() => handleDropdownToggle(rowIndex)}
                     />
                   )}
-                  {showApproveReject && row.Status === "Pending" && (
+                  {showApproveReject && row.shouldShowApproveReject && (
                     <Button
                       buttonSize="small"
                       buttonText="Manage"

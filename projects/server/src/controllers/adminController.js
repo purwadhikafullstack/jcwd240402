@@ -73,6 +73,7 @@ module.exports = {
 
   async adminInformation(req, res) {
     const adminData = req.user;
+
     try {
       const admin = await db.Admin.findOne({
         where: { id: adminData.id },

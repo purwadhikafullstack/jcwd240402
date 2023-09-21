@@ -858,8 +858,12 @@ module.exports = {
           message: "you have to get approval payment first",
         });
       } */
+      let orderStatusChanged;
+      if (statusId === 3) {
+        orderStatusChanged;
+      }
 
-      const orderStatusChanged = await db.Order.update(
+      orderStatusChanged = await db.Order.update(
         {
           order_status_id: statusId,
         },

@@ -6,6 +6,7 @@ import toRupiah from "@develoka/angka-rupiah-js";
 import SlideOverProduct from "../slide/SlideOverProduct";
 
 const CardProduct = ({ src, category, name, desc, price, id }) => {
+  console.log(src);
   return (
     <div className="bg-white flex flex-col justify-center items-center  ">
       <div className="w-36 md:w-52 h-full  flex flex-col items-center hover:shadow-card-1 transition-all ease-out duration-400 rounded-lg m-3">
@@ -36,7 +37,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
             <h4 className="text-xs text-ellipsis text-gray-400">{desc}</h4>
           )}
           <p className="text-xs md:text-xl lg:text-xl font-semibold mt-2">
-            {toRupiah(price)}
+            {price}
           </p>
           <div className="flex justify-end ">
             <SlideOverProduct name={name} />

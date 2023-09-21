@@ -144,6 +144,7 @@ router.get(
   "/warehouse-stock/filter",
   Warehouse_stockController.getAllWarehouseStockFilter
 );
+
 router.get(
   "/warehouse-stock/product/:name",
   Warehouse_stockController.getProductStockByProductName

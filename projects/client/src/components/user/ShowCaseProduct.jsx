@@ -36,6 +36,7 @@ const ShowCaseProduct = ({ perPage }) => {
         `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
+        console.log(res.data);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -121,11 +122,11 @@ const ShowCaseProduct = ({ perPage }) => {
           <div className="flex flex-wrap justify-center">
             {productData.map((productItem) => (
               <CardProduct
-                src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Product?.Image_products[0]?.img_product}`}
-                category={productItem.Product?.category?.name}
-                name={productItem.Product?.name}
-                desc={productItem.Product?.description}
-                price={productItem.Product?.price}
+                src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`}
+                category={productItem?.category?.name}
+                name={productItem?.name}
+                desc={productItem?.description}
+                price={productItem?.price}
                 key={productItem.id}
               />
             ))}

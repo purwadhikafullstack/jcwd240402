@@ -20,7 +20,9 @@ const UserOrder = () => {
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
   const [selectedActions, setSelectedActions] = useState([]);
-
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  
   const orderStatusOptions = [
     { value: "", label: "all status" },
     { value: 1, label: "Pending Payment" },
@@ -29,7 +31,31 @@ const UserOrder = () => {
     { value: 4, label: "In Process" },
     { value: 5, label: "Cancelled" },
     { value: 6, label: "Shipped" },
-    { value: 7, label: "Order Confirmed" },
+    { value: 7, label: "Rejected" },
+  ];
+
+  const monthOptions = [
+    { value: "", label: "any month" },
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ];
+
+  const yearOptions = [
+    { value: "", label: "any year" },
+    { value: 2020, label: "2020" },
+    { value: 2021, label: "2021" },
+    { value: 2022, label: "2022" },
+    { value: 2023, label: "2023" },
   ];
 
   const loadWarehouseOptions = async (inputValue) => {
@@ -59,7 +85,7 @@ const UserOrder = () => {
   useEffect(() => {
     axios
       .get(
-        `/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
+        `/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}&month=${month}&year=${year}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -73,7 +99,7 @@ const UserOrder = () => {
       .catch((err) => {
         setError(err.response);
       });
-  }, [warehouseId, orderStatusId, currentPage]);
+  }, [warehouseId, orderStatusId, currentPage, month, year]);
 
   const handleChangeStatus = (status) => {
     setOrderStatusId(status.value);
@@ -86,7 +112,7 @@ const UserOrder = () => {
   const refetch = async () => {
     await axios
       .get(
-        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}`,
+        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}&month=${month}&year=${year}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -189,7 +215,15 @@ const UserOrder = () => {
       setError(error.response?.message || "An error occurred.");
     }
   };
-  console.log(userOrderList);
+
+  const handleChangeMonth = (month) => {
+    setMonth(month.value);
+  };
+
+  const handleChangeYear = (year) => {
+    setYear(year.value);
+  };
+
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
@@ -212,6 +246,16 @@ const UserOrder = () => {
             placeholder="Order Status"
             onChange={handleChangeStatus}
             className="flex-1 rounded text-base bg-white  shadow-sm"
+          />
+          <Select
+            options={monthOptions}
+            placeholder={<div>month</div>}
+            onChange={handleChangeMonth}
+          />
+          <Select
+            options={yearOptions}
+            placeholder={<div>year</div>}
+            onChange={handleChangeYear}
           />
         </div>
         <div className="pt-4">

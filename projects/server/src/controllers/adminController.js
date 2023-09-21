@@ -873,6 +873,9 @@ module.exports = {
     const order_status_id = req.query.orderStatusId;
     const warehouse_id = req.query.warehouseId;
     const searchName = req.query.searchName;
+    const year = req.query.year;
+    const month = req.query.month;
+
 
     const options = {
       where: {},
@@ -890,6 +893,33 @@ module.exports = {
 
     if (searchName) {
       options.where.name = { [db.Sequelize.Op.like]: `%${searchName}%` };
+    }
+
+    if (month && year) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(
+          Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+          month
+        ),
+        Sequelize.where(
+          Sequelize.fn("YEAR", Sequelize.col("createdAt")),
+          year
+        ),
+      ];
+    } else if (year) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(
+          Sequelize.fn("YEAR", Sequelize.col("createdAt")),
+          year
+        ),
+      ];
+    } else if (month) {
+      options.where[db.Sequelize.Op.and] = [
+        Sequelize.where(
+          Sequelize.fn("MONTH", Sequelize.col("createdAt")),
+          month
+        ),
+      ];
     }
 
     try {
@@ -1066,20 +1096,28 @@ module.exports = {
       const userOrder = response.data;
 
       const totalOnly = [];
+      const availableWarehouseStock = []
 
-      // const orderMap = userOrder.map((m) => {
-      //       if (m.Warehouse_stock) {
-      //         totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
-      //       }
-      //   }
-      // );
+      const notNull = userOrder.map((m) => {
+        if (m.Warehouse_stock) {
+          availableWarehouseStock.push(m);
+        }
+    }
+  );
+
+      const orderMap = userOrder.map((m) => {
+            if (m.Warehouse_stock) {
+              totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
+            }
+        }
+      );
 
       const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
 
       res.status(201).send({
         message: "successfully get sales report",
         sales_report: totalPrice,
-        order_details: response,
+        order_details: availableWarehouseStock,
       });
     } catch (error) {
       res.status(500).send({

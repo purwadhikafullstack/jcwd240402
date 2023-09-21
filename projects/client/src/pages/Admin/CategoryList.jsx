@@ -8,6 +8,7 @@ import Button from "../../components/Button";
 import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { useSelector } from "react-redux";
+import { useCategoryOptions } from "../../utils/loadCategoryOptions";
 
 const CategoryList = () => {
     const [categories, setCategories] = useState([]);
@@ -16,6 +17,7 @@ const CategoryList = () => {
     const [searchName, setSearchName] = useState("");
     const [showModal, setShowModal] = useState(false);
     const adminData = useSelector((state) => state.profilerAdmin.value);
+    const loadCategories = useCategoryOptions()
   
     useEffect(() => {
       fetchCategories();
@@ -42,34 +44,6 @@ const CategoryList = () => {
         console.error("Error fetching categories:", error);
       }
     };
-
-
-
-  const loadCategories = async (inputValue = "") => {
-    try {
-      const response = await axios.get(`/admin/categories`, {
-        params: {
-          name: inputValue,
-        },
-      });
-
-      if (response.data.success) {
-        const formattedCategories = [
-          { value: "", label: "All Categories" },
-          ...response.data.data.map((category) => ({
-            value: category.name,
-            label: category.name,
-          })),
-        ];
-        return formattedCategories;
-      } else {
-        return [];
-      }
-    } catch (error) {
-      console.error("Error fetching category names:", error);
-      return [];
-    }
-  };
 
   const handleSuccessfulEdit = () => {
     fetchCategories();

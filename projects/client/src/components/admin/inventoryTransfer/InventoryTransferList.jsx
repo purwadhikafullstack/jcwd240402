@@ -18,9 +18,7 @@ const InventoryTransferList = () => {
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [showApproveRejectModal, setShowApproveRejectModal] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState({
-    value: "",
-    label: "All Status",
+  const [selectedStatus, setSelectedStatus] = useState({value: "",label: "All Status",
   });
   const [searchProductName, setSearchProductName] = useState("");
   const [sortOrder, setSortOrder] = useState("latest");
@@ -30,13 +28,7 @@ const InventoryTransferList = () => {
 
   useEffect(() => {
     fetchTransfers();
-  }, [
-    currentPage,
-    selectedWarehouse,
-    selectedStatus,
-    searchProductName,
-    sortOrder,
-  ]);
+  }, [currentPage,selectedWarehouse,selectedStatus,searchProductName,sortOrder,]);
 
   useEffect(() => {}, [selectedTransfer]);
 
@@ -142,7 +134,6 @@ const InventoryTransferList = () => {
               (adminData.role_id === 1 ||
               (adminData.role_id === 2 && 
               transfer.to_warehouse_id === adminData?.warehouse_id));
-
             return {
               "Transfer ID": transfer.id,
               "From Warehouse": transfer.FromWarehouse.fromWarehouseName,

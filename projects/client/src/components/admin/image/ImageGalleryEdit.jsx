@@ -23,9 +23,7 @@ function ImageGalleryEdit() {
       try {
         const formData = new FormData();
         formData.append("image", file);
-
         let response;
-
         if (imgProductId) {
           response = await axios.patch(
             `/admin/product/image/${imgProductId}`,

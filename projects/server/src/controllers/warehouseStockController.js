@@ -378,8 +378,6 @@ module.exports = {
     }
   },
 
-  //bug disini juga
-  /* jadi  coba pastikan kondisi yang sama seperti di atas*/
   getProductStockByProductName: async (req, res) => {
     const { name } = req.params;
     try {

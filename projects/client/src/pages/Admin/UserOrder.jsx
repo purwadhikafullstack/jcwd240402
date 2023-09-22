@@ -379,10 +379,10 @@ const UserOrder = () => {
           />
         </div>
         <div className="flex justify-center items-center mt-4">
-          <DefaultPagination
+          {/* <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-          />
+          /> */}
         </div>
       </div>
     </div>

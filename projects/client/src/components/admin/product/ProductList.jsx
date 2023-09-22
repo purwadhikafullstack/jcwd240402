@@ -3,7 +3,6 @@ import AdminCardProduct from "../card/AdminCardProduct";
 import DefaultPagination from "../../Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AsyncSelect from "react-select/async";
-import debounce from "lodash/debounce";
 import axios from "../../../api/axios";
 import ConfirmDeleteProduct from "../../modal/product/ModalDeleteProduct";
 import withAuthAdminWarehouse from "../../admin/withAuthAdminWarehouse";
@@ -19,27 +18,22 @@ const ProductList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const loadCategories = useCategoryOptions
+  const loadCategories = useCategoryOptions();
 
-  const debouncedNavigate = debounce((updatedParams) => {
+  const navigateWithParams = (updatedParams) => {
     for (const key in updatedParams) {
       searchParams.set(key, updatedParams[key]);
     }
     navigate({ search: searchParams.toString() });
-  }, 150);
+  };
 
-
-  const fetchProducts = async (
-    page = 1,
-    productName = search,
-    category = selectedCategory
-  ) => {
+  const fetchProducts = async () => {
     try {
       const response = await axios.get("/admin/products", {
         params: {
-          category_id: category,
-          product_name: productName,
-          page: page,
+          category_id: selectedCategory,
+          product_name: search,
+          page: currentPage,
         },
       });
       setProducts(response.data.data);
@@ -51,7 +45,7 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    fetchProducts(currentPage, search, selectedCategory);
+    fetchProducts();
   }, [currentPage, search, selectedCategory]);
 
   useEffect(() => {
@@ -61,22 +55,19 @@ const ProductList = () => {
     setSearch(productNameFromUrl);
     setSelectedCategory(categoryIdFromUrl);
     setCurrentPage(Number(pageFromUrl));
-    fetchProducts(Number(pageFromUrl), productNameFromUrl, categoryIdFromUrl);
   }, [searchParams.toString()]);
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    debouncedNavigate({ product_name: e.target.value });
+    setCurrentPage(1);
+    navigateWithParams({ product_name: e.target.value, page: 1 });
   };
 
   const handleCategoryChange = (selectedOption) => {
     const selectedCategoryId = selectedOption ? selectedOption.value : "";
     setSelectedCategory(selectedCategoryId);
-    debouncedNavigate({ category_id: selectedCategoryId });
+    setCurrentPage(1);
+    navigateWithParams({ category_id: selectedCategoryId, page: 1 });
   };
 
   const handleShowDeleteModal = (product) => {
@@ -91,7 +82,7 @@ const ProductList = () => {
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid">
       <div className="px-8 pt-1">
-        <div className="flex  relative mb-5">
+        <div className="flex relative mb-5">
           <input
             type="text"
             placeholder="Search Product"
@@ -137,11 +128,11 @@ const ProductList = () => {
         )}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={(page) => {
               setCurrentPage(page);
-              searchParams.set("page", page);
-              navigate({ search: searchParams.toString() });
+              navigateWithParams({ page });
             }}
           />
         </div>

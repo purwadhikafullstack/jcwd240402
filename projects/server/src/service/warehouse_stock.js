@@ -35,9 +35,9 @@ module.exports = {
 
   getAllWarehouseStocks: async (options) => {
     const { page, pageSize, warehouseId, categoryId, productName } = options;
-
+  
     const filter = {};
-
+  
     const productCondition = {};
     if (productName) {
       productCondition.name = {
@@ -48,32 +48,30 @@ module.exports = {
         [db.Sequelize.Op.not]: null,
       };
     }
-
+  
     const categoryCondition = {};
     if (categoryId) {
       categoryCondition.id = categoryId;
     }
-
+  
     const warehouseCondition = {};
     if (warehouseId) {
       warehouseCondition.id = warehouseId;
     }
-
+  
     const includeOptions = [
       {
         model: db.Product,
         as: "Product",
         required: true,
-        where: Object.keys(productCondition).length
-          ? productCondition
-          : undefined,
+        attributes: ["id", "name", "price", "weight", "category_id", "description", "is_active", "createdAt", "updatedAt", "deletedAt"],
+        where: Object.keys(productCondition).length ? productCondition : undefined,
+        paranoid: false,
         include: [
           {
             model: db.Category,
             as: "category",
-            where: Object.keys(categoryCondition).length
-              ? categoryCondition
-              : undefined,
+            where: Object.keys(categoryCondition).length ? categoryCondition : undefined,
             paranoid: false,
           },
           {
@@ -85,25 +83,33 @@ module.exports = {
       {
         model: db.Warehouse,
         as: "Warehouse",
-        attributes: ["id", "warehouse_name"],
-        where: Object.keys(warehouseCondition).length
-          ? warehouseCondition
-          : undefined,
-          paranoid: false,
+        attributes: ["id", "warehouse_name", "deletedAt"],
+        where: Object.keys(warehouseCondition).length ? warehouseCondition : undefined,
+        paranoid: false,
       },
     ];
-
+  
     const queryOptions = {
       where: filter,
       include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,
     };
-
+  
     try {
       const results = await db.Warehouse_stock.findAll(queryOptions);
+  
+      results.forEach(stock => {
+        if (stock.Product && stock.Product.deletedAt) {
+          stock.Product.name = `${stock.Product.name} (DELETED)`;
+        }
+        if (stock.Warehouse && stock.Warehouse.deletedAt) {
+          stock.Warehouse.warehouse_name = `${stock.Warehouse.warehouse_name} (DELETED)`;
+        }
+      });
+  
       const totalItems = await db.Warehouse_stock.count({ where: filter });
-
+  
       return {
         success: true,
         data: results,
@@ -122,6 +128,9 @@ module.exports = {
       };
     }
   },
+  
+  
+  
 
   newStockHistory: async (
     warehouseStockId,

@@ -11,6 +11,18 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const [defaultCategories, setDefaultCategories] = useState([]);
 
   useEffect(() => {
+    const fetchDefaultCategories = async () => {
+      try {
+        const categories = await loadCategoryOptions('');
+        setDefaultCategories(categories);
+      } catch (error) {
+        console.error("Error fetching default categories:", error);
+      }
+    };
+    fetchDefaultCategories();
+  }, []);
+
+  useEffect(() => {
     if (
       initialProduct &&
       initialProduct.category &&

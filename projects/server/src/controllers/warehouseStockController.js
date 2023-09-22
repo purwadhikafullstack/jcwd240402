@@ -127,7 +127,7 @@ module.exports = {
     try {
       const options = {
         page: Number(req.query.page) || 1,
-        pageSize: Number(req.query.pageSize) || 20,
+        pageSize: 10,
         categoryId: req.query.categoryId,
         productName: req.query.productName,
       };

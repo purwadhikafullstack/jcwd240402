@@ -5,7 +5,7 @@ const { join } = require("path");
 const router = require("./routes");
 const path = require("path");
 const cookieParser = require("cookie-parser");
-require("./schedule/cancelledOrder");
+// require("./schedule/cancelledOrder");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const PORT = process.env.PORT || 8000;

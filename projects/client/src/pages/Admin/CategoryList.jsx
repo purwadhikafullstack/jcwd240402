@@ -1,49 +1,46 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "../../api/axios";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import DefaultPagination from "../../components/Pagination";
-import AsyncSelect from "react-select/async";
-import RegisterCategoryModal from "../../components/modal/category/ModalRegisterCategory";
 import Button from "../../components/Button";
 import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
+import RegisterCategoryModal from "../../components/modal/category/ModalRegisterCategory";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { useSelector } from "react-redux";
-import { useCategoryOptions } from "../../utils/loadCategoryOptions";
 
 const CategoryList = () => {
-    const [categories, setCategories] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [searchName, setSearchName] = useState("");
-    const [showModal, setShowModal] = useState(false);
-    const adminData = useSelector((state) => state.profilerAdmin.value);
-    const loadCategories = useCategoryOptions()
-  
-    useEffect(() => {
-      fetchCategories();
-    }, [currentPage, searchName]);
-  
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(`/admin/categories`, {
-          params: {
-            page: currentPage,
-            name: searchName,
-          },
-        });
-  
-        if (response.data.success) {
-          setCategories(response.data.data);
-          const { totalPages } = response.data.pagination;
-          setTotalPages(totalPages);
-          if (currentPage > totalPages) {
-            setCurrentPage(totalPages);
-          }
+  const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchName, setSearchName] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const adminData = useSelector((state) => state.profilerAdmin.value);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [currentPage, searchName]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`/admin/categories`, {
+        params: {
+          page: currentPage,
+          name: searchName,
+        },
+      });
+
+      if (response.data.success) {
+        setCategories(response.data.data);
+        const { totalPages } = response.data.pagination;
+        setTotalPages(totalPages);
+        if (currentPage > totalPages) {
+          setCurrentPage(totalPages);
         }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const handleSuccessfulEdit = () => {
     fetchCategories();
@@ -51,11 +48,6 @@ const CategoryList = () => {
 
   const handleRegisterSuccess = () => {
     fetchCategories();
-  };
-
-  const handleCategoryChange = (selectedOption) => {
-    const selectedName = selectedOption ? selectedOption.value : "";
-    setSearchName(selectedName);
   };
 
   return (
@@ -66,13 +58,12 @@ const CategoryList = () => {
       <div className="px-8 pt-8">
         <div className="flex items-center space-x-4">
           <div className="flex-grow">
-            <AsyncSelect
-              className="w-full"
-              cacheOptions
-              defaultOptions
-              loadOptions={loadCategories}
-              onChange={handleCategoryChange}
-              placeholder="Category Name"
+            <input
+              type="text"
+              placeholder="Search Category Name"
+              className="w-full p-2 border rounded text-base bg-white border-gray-300 shadow-sm"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
             />
           </div>
           <Button
@@ -100,6 +91,7 @@ const CategoryList = () => {
         <div className="flex justify-center items-center w-full my-4">
           <DefaultPagination
             totalPages={totalPages}
+            currentPage={currentPage}
             onPageChange={setCurrentPage}
           />
         </div>

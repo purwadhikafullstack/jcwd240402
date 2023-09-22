@@ -57,11 +57,13 @@ module.exports = {
       const warehouse_id = req.query.warehouseId;
       const product_id = req.query.productId;
       const requiredStock = req.query.requiredStock;
+      const orderId = req.query.orderId;
 
       const result = await autoStockTransfer(
         warehouse_id,
         product_id,
-        requiredStock
+        requiredStock,
+        orderId
       );
 
       res.status(200).json(result);
@@ -127,7 +129,7 @@ module.exports = {
     try {
       const options = {
         page: Number(req.query.page) || 1,
-        pageSize: Number(req.query.pageSize) || 20,
+        pageSize: 10,
         categoryId: req.query.categoryId,
         productName: req.query.productName,
       };

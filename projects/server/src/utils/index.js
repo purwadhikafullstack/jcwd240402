@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../models")
+const { newStockHistory } = require("../service/warehouse_stock");
 
 const distanceKm = (lat1, lon1, lat2, lon2) => {
   const r = 6371;
@@ -36,7 +37,8 @@ module.exports = {
     return token;
   },
   
-  autoStockTransfer: async (warehouse_id, product_id, requiredStock, orderId) => {
+  autoStockTransfer: async (warehouse_id, product_id, requiredStock, orderId, adminData) => {
+
     console.log(warehouse_id,product_id,requiredStock,orderId)
     const t = await db.sequelize.transaction();
   
@@ -158,7 +160,27 @@ module.exports = {
   
         // "inventory transferlist catat",
         //
+
+        const stockHistoryFrom = newStockHistory(
+          sourceWarehouseStock.id,
+          sourceWarehouseStock.warehouse_id,
+          adminData.id,
+          sourceWarehouseStock.product_stock,
+          sourceWarehouseStock.product_stock - stockToTransfer,
+          stockToTransfer,
+          "Stock Transfer")
+        
+        const stockHistoryTo = newStockHistory(
+          currentWarehouseStock.id,
+          currentWarehouseStock.warehouse_id,
+          adminData.id,
+          currentWarehouseStock.product_stock,
+          currentWarehouseStock.product_stock + stockToTransfer,
+          stockToTransfer,
+          "Stock Transfer")
+
         await sourceWarehouseStock.save({ transaction: t });
+
       }
   
       await currentWarehouseStock.save({ transaction: t });

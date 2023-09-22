@@ -20,9 +20,12 @@ const UserList = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`/admin/user-list?searchName=${searchName}&page=${currentPage}`,{
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      const response = await axios.get(
+        `/admin/user-list?searchName=${searchName}&page=${currentPage}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
       setUsers(response.data.users);
       const { totalPages } = response.data.pagination;
       setTotalPages(totalPages);
@@ -35,7 +38,7 @@ const UserList = () => {
     id: user.id,
     username: user.username,
     email: user.email,
-    is_verify: user.is_verify === 1 ? "Yes" : "No", 
+    is_verify: user.is_verify === 1 ? "Yes" : "No",
     "Created at": moment(user.createdAt).format("MMMM D, YYYY"),
   }));
 
@@ -58,11 +61,12 @@ const UserList = () => {
           <TableComponent
             headers={["username", "email", "is_verify", "Created at"]}
             data={formattedUsers}
-            showIcon = {false}
+            showIcon={false}
           />
         </div>
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />

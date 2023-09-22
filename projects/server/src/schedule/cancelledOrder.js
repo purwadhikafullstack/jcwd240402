@@ -8,7 +8,10 @@ const job = schedule.scheduleJob("*/15 * * * * *", async () => {
 
     const unpaidOrders = await db.Order.findAll({
       where: {
-        order_status_id: 1,
+        [db.Sequelize.Op.or]: [
+          { order_status_id: 1 },
+          { order_status_id: 7 }
+        ],
         createdAt: {
           [db.Sequelize.Op.lt]: oneMinuteAgo,
         },

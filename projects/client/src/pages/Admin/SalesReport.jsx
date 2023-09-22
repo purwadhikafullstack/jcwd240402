@@ -184,7 +184,7 @@ const SalesReport = () => {
               "Sub Total",
             ]}
             data={orderSalesList.map((sales) => ({
-              Month: sales.Order?.delivery_time || "",
+              Month: sales?.Order?.delivery_time || "",
               Category: sales?.Warehouse_stock?.Product?.category?.name || "",
               Product: sales?.Warehouse_stock?.Product?.name || "",
               Price: sales?.Warehouse_stock?.Product?.price || "",

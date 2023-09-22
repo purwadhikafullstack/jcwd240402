@@ -137,8 +137,9 @@ const WarehouseList = () => {
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute mb-4">
           <DefaultPagination
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+             currentPage={currentPage}
+             totalPages={totalPages}
+             onPageChange={setCurrentPage}
           />
         </div>
       </div>

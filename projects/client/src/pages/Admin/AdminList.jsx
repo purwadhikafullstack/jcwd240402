@@ -35,6 +35,11 @@ const AdminList = () => {
 
   const handleWarehouseChange = (selectedOption) => {
     setSelectedWarehouse(selectedOption.value);
+    resetPage();
+  };
+
+  const resetPage = () => {
+    setCurrentPage(1);
   };
 
   const fetchAdmins = async () => {
@@ -50,14 +55,12 @@ const AdminList = () => {
       if (response.data.pagination) {
         const { totalPages } = response.data.pagination;
         setTotalPages(totalPages);
-        if (currentPage > totalPages) {
-          setCurrentPage(totalPages);
-        }
       }
     } catch (error) {
       console.error("Error loading admins:", error);
     }
   };
+
 
   const formattedAdmins = admins.map((admin) => ({
     id: admin.id,
@@ -157,6 +160,7 @@ const AdminList = () => {
         />
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           />

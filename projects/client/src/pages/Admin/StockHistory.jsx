@@ -67,8 +67,8 @@ const StockHistory = () => {
       const warehouseOptions = [
         { value: "", label: "All Warehouses" },
         ...response.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
+          value: warehouse?.id,
+          label: warehouse?.warehouse_name,
         })),
       ];
       return warehouseOptions;
@@ -86,7 +86,7 @@ const StockHistory = () => {
         },
       })
       .then((response) => {
-        setRoleId(response.data.role);
+        setRoleId(response?.data?.role);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -169,27 +169,27 @@ const StockHistory = () => {
               "Timestamp",
             ]}
             data={stockHistoryList.map((history) => ({
-              Product: history.Warehouse_stock.Product.name || "",
-              "Admin Username": history.Admin.username || "",
-              "Stock Before": history.stock_before_transfer || "0",
-              "Stock After": history.stock_after_transfer || "",
-              "Increment/Decrement": history.increment_decrement || "",
-              Quantity: history.quantity || "",
-              Journal: history.journal || "",
+              Product: history?.Warehouse_stock?.Product?.name || "",
+              "Admin Username": history?.Admin?.username || "",
+              "Stock Before": history?.stock_before_transfer || "0",
+              "Stock After": history?.stock_after_transfer || "",
+              "Increment/Decrement": history?.increment_decrement || "",
+              Quantity: history?.quantity || "",
+              Journal: history?.journal || "",
               Timestamp:
-                history.timestamp.slice(0, 10) +
+                history?.timestamp.slice(0, 10) +
                   ", " +
-                  history.timestamp.slice(11, 19) || "",
+                  history?.timestamp.slice(11, 19) || "",
             }))}
             showIcon={false}
           />
         </div>
         {error && <div className="text-red-500">{error}</div>}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
+          {/* <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-          />
+          /> */}
         </div>
       </div>
     </div>

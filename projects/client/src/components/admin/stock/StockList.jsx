@@ -31,9 +31,13 @@ const StockList = () => {
   const loadWarehouses = useWarehouseOptions();
   const loadCategories = useCategoryOptions();
 
+  const resetPage = () => {
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
     fetchStocks();
-  }, [selectedWarehouse, selectedCategory, searchProductName,currentPage]);
+  }, [selectedWarehouse, selectedCategory, searchProductName, currentPage]);
 
   const fetchStocks = async () => {
     try {
@@ -121,7 +125,10 @@ const StockList = () => {
           cacheOptions
           defaultOptions
           loadOptions={loadWarehouses}
-          onChange={setSelectedWarehouse}
+          onChange={(selected) => {
+            setSelectedWarehouse(selected);
+            resetPage();
+          }}
           placeholder="Select a warehouse"
           className={`flex-1 ${adminData.role_id !== 1 ? "hidden" : ""}`}
         />
@@ -129,7 +136,10 @@ const StockList = () => {
           cacheOptions
           defaultOptions
           loadOptions={loadCategories}
-          onChange={setSelectedCategory}
+          onChange={(selected) => {
+            setSelectedCategory(selected);
+            resetPage();
+          }}
           placeholder="Select a category"
           className={`flex-1 ${adminData.role_id !== 1 ? "" : "ml-4"}`}
         />
@@ -137,7 +147,10 @@ const StockList = () => {
           type="text"
           placeholder="Search Product "
           value={searchProductName}
-          onChange={(e) => setSearchProductName(e.target.value)}
+          onChange={(e) => {
+            setSearchProductName(e.target.value);
+            resetPage();
+          }}
           className="flex-1 border rounded text-base bg-white border-gray-300 shadow-sm ml-4"
         />
       </div>
@@ -155,8 +168,11 @@ const StockList = () => {
       </div>
       <div className="flex justify-center items-center mt-4">
         <DefaultPagination
+          currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={(page) => {
+            setCurrentPage(page);
+          }}
         />
       </div>
       <UpdateStock

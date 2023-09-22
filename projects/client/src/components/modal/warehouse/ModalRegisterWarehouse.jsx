@@ -72,10 +72,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
     validateOnBlur: false,
     onSubmit: addWarehouse,
     validationSchema: yup.object().shape({
-      warehouse_name: yup
-        .string()
-        .required("Warehouse Name is required")
-        .min(8, "Warehouse Name must be at least 8 characters"),
+      warehouse_name: yup.string().required("Warehouse Name is required"),
       address_warehouse: yup.string().required("Address is required"),
       warehouse_contact: yup.string().required("Contact is required"),
     }),
@@ -173,7 +170,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                   styles={{
                     menuPortal: (base) => ({
                       ...base,
-                      zIndex: 9999,
+                      zIndex: 999,
                       position: "fixed",
                     }),
                   }}

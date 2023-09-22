@@ -447,6 +447,8 @@ module.exports = {
 
   async acceptPayment(req, res) {
     const orderId = req.params.id;
+    const adminData = req.user;
+
     console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
@@ -509,14 +511,16 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
-        console.log(
-          "test",
-          reservedStock.WarehouseProductReservation.warehouse_id
-        );
-        console.log(
-          "test",
-          reservedStock.WarehouseProductReservation.product_id
-        );
+
+        // console.log(
+        //   "test",
+        //   reservedStock.WarehouseProductReservation.warehouse_id
+        // );
+        // console.log(
+        //   "test",
+        //   reservedStock.WarehouseProductReservation.product_id
+        // );
+
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
@@ -536,7 +540,8 @@ module.exports = {
             reservedStock.WarehouseProductReservation.warehouse_id,
             reservedStock.WarehouseProductReservation.product_id,
             reservedStock.reserve_quantity,
-            reservedStock.order_id
+            reservedStock.order_id,
+            adminData,
           );
 
           if (stockTransferResult.status !== "success") {
@@ -549,6 +554,7 @@ module.exports = {
           }
 
           await warehouseStock.reload();
+          
         }
         await warehouseStock.save({ transaction: t });
       }
@@ -699,21 +705,6 @@ module.exports = {
         });
       }
 
-      const updatedOrder = await db.Order.update(
-        {
-          order_status_id: 6,
-          tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date().toLocaleString("id-ID", {
-            timeZone: "Asia/Bangkok",
-          }),
-        },
-        { where: { id: orderId }, transaction: t }
-      );
-
-      if (updatedOrder[0] === 0) {
-        throw new Error("Order not found");
-      }
-
       const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
         include: [
@@ -738,6 +729,19 @@ module.exports = {
       });
 
       for (let reservedStock of reservedStocks) {
+
+        if(reservedStock.WarehouseProductReservation.product_stock -
+          reservedStock.reserve_quantity < 0){
+
+          await t.rollback();
+          return res.status(400).json({
+          ok: false,
+          message:
+            "cannot send order because there is not enough stock",
+        });
+
+          }
+
         const warehouseStockUpdate = await db.Warehouse_stock.update(
           {
             product_stock:
@@ -774,6 +778,19 @@ module.exports = {
           ],
           transaction: t,
         });
+      }
+
+      const updatedOrder = await db.Order.update(
+        {
+          order_status_id: 6,
+          tracking_code: Math.floor(Math.random() * 1000000000000000),
+          delivery_time: new Date(),
+        },
+        { where: { id: orderId }, transaction: t }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
       }
 
       await t.commit();

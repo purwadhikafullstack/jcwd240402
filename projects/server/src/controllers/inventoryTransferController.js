@@ -1,5 +1,7 @@
 const db = require("../models");
 const { getAllInventoryTransfers } = require("../service/inventoryTransfer");
+const { newStockHistory } = require("../service/warehouse_stock");
+
 
 module.exports = {
   async stockTransfer(req, res) {
@@ -70,6 +72,8 @@ module.exports = {
   },
 
   async approveStockTransfer(req, res) {
+    const adminData = req.user;
+
     const t = await db.sequelize.transaction();
 
     try {
@@ -147,12 +151,34 @@ module.exports = {
       transfer.status = "Approve";
       await transfer.save({ transaction: t });
 
+      const stockHistoryFrom = newStockHistory(
+        fromStock.id,
+        fromStock.warehouse_id,
+        adminData.id,
+        fromStock.product_stock,
+        fromStock.product_stock - transfer.quantity,
+        transfer.quantity,
+        "Stock Transfer")
+
+      const stockHistoryTo = newStockHistory(
+        toStock[0].id,
+        toStock[0].warehouse_id,
+        adminData.id,
+        toStock[0].product_stock,
+        toStock[0].product_stock + transfer.quantity,
+        transfer.quantity,
+        "Stock Transfer")
+
       await t.commit();
 
       return res.status(200).json({
         success: true,
         message: "Stock transfer approved and stock updated",
         transfer: transfer,
+        from: fromStock,
+        to: toStock,
+        fromHis: fromStock,
+        toHis: toStock,
       });
     } catch (error) {
       await t.rollback();

@@ -57,11 +57,13 @@ module.exports = {
       const warehouse_id = req.query.warehouseId;
       const product_id = req.query.productId;
       const requiredStock = req.query.requiredStock;
+      const orderId = req.query.orderId;
 
       const result = await autoStockTransfer(
         warehouse_id,
         product_id,
-        requiredStock
+        requiredStock,
+        orderId
       );
 
       res.status(200).json(result);

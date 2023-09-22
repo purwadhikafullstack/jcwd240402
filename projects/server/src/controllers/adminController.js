@@ -457,6 +457,8 @@ module.exports = {
 
   async acceptPayment(req, res) {
     const orderId = req.params.id;
+    const adminData = req.user;
+
     console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
@@ -548,7 +550,8 @@ module.exports = {
             reservedStock.WarehouseProductReservation.warehouse_id,
             reservedStock.WarehouseProductReservation.product_id,
             reservedStock.reserve_quantity,
-            reservedStock.order_id
+            reservedStock.order_id,
+            adminData,
           );
 
           if (stockTransferResult.status !== "success") {
@@ -559,6 +562,24 @@ module.exports = {
                 stockTransferResult.message
             );
           }
+
+          // const stockHistoryFrom = newStockHistory(
+          //   reservedStock.WarehouseProductReservation.id,
+          //   reservedStock.WarehouseProductReservation.warehouse_id,
+          //   adminData.id,
+          //   reservedStock.WarehouseProductReservation.product_stock,
+          //   reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
+          //   reservedStock.reserve_quantity,
+          //   "Stock Transfer")
+
+          // const stockHistoryTo = newStockHistory(
+          //   warehouseStock.id,
+          //   fromStock.warehouse_id,
+          //   adminData.id,
+          //   warehouseStock.product_stock,
+          //   warehouseStock.product_stock - reservedStock.reserve_quantity,
+          //   reservedStock.reserve_quantity,
+          //   "Stock Transfer")
 
           await warehouseStock.reload();
           

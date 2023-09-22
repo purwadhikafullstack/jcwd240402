@@ -26,6 +26,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM('jne', 'pos', 'tiki'),
     },
     delivery_time: DataTypes.STRING,
+    // delivery_time: DataTypes.DATE,
     tracking_code: DataTypes.STRING,
     no_invoice: DataTypes.STRING,
     address_user_id: DataTypes.INTEGER,

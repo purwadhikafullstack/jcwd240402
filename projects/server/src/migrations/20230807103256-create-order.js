@@ -39,6 +39,7 @@ module.exports = {
       },
       delivery_time: {
         type: Sequelize.STRING,
+        // type: Sequelize.DATE,
       },
       tracking_code: {
         type: Sequelize.STRING,

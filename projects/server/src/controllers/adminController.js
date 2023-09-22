@@ -563,24 +563,6 @@ module.exports = {
             );
           }
 
-          // const stockHistoryFrom = newStockHistory(
-          //   reservedStock.WarehouseProductReservation.id,
-          //   reservedStock.WarehouseProductReservation.warehouse_id,
-          //   adminData.id,
-          //   reservedStock.WarehouseProductReservation.product_stock,
-          //   reservedStock.WarehouseProductReservation.product_stock - reservedStock.reserve_quantity,
-          //   reservedStock.reserve_quantity,
-          //   "Stock Transfer")
-
-          // const stockHistoryTo = newStockHistory(
-          //   warehouseStock.id,
-          //   fromStock.warehouse_id,
-          //   adminData.id,
-          //   warehouseStock.product_stock,
-          //   warehouseStock.product_stock - reservedStock.reserve_quantity,
-          //   reservedStock.reserve_quantity,
-          //   "Stock Transfer")
-
           await warehouseStock.reload();
           
         }
@@ -724,19 +706,6 @@ module.exports = {
         });
       }
 
-      const updatedOrder = await db.Order.update(
-        {
-          order_status_id: 6,
-          tracking_code: Math.floor(Math.random() * 1000000000000000),
-          delivery_time: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Bangkok' }),
-        },
-        { where: { id: orderId }, transaction: t }
-      );
-
-      if (updatedOrder[0] === 0) {
-        throw new Error("Order not found");
-      }
-
       const reservedStocks = await db.Reserved_stock.findAll({
         where: { order_id: orderId },
         include: [
@@ -761,6 +730,19 @@ module.exports = {
       });
 
       for (let reservedStock of reservedStocks) {
+
+        if(reservedStock.WarehouseProductReservation.product_stock -
+          reservedStock.reserve_quantity < 0){
+
+          await t.rollback();
+          return res.status(400).json({
+          ok: false,
+          message:
+            "cannot send order because there is not enough stock",
+        });
+
+          }
+
         const warehouseStockUpdate = await db.Warehouse_stock.update(
           {
             product_stock:
@@ -795,6 +777,19 @@ module.exports = {
           ],
           transaction: t,
         });
+      }
+
+      const updatedOrder = await db.Order.update(
+        {
+          order_status_id: 6,
+          tracking_code: Math.floor(Math.random() * 1000000000000000),
+          delivery_time: new Date().toLocaleString('id-ID', { timeZone: 'Asia/Bangkok' }),
+        },
+        { where: { id: orderId }, transaction: t }
+      );
+
+      if (updatedOrder[0] === 0) {
+        throw new Error("Order not found");
       }
 
       await t.commit();

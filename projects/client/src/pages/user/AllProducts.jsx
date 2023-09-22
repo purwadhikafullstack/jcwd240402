@@ -4,13 +4,11 @@ import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
-
 import ShowCaseProduct from "../../components/user/ShowCaseProduct";
 import axios from "../../api/axios";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import CarouselBanner from "../../components/user/carousel/CarouselBanner";
-
 import allproductbanner1 from "../../assets/images/allproductsbanner1.jpeg";
 import allproductbanner2 from "../../assets/images/allproductsbanner2.jpeg";
 

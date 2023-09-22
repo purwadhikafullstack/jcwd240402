@@ -34,7 +34,7 @@ const NavbarMobile = () => {
   const { logOutAuth } = UserAuth();
 
   useEffect(() => {
-    if (access_token && refresh_token) {
+    if (access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/cart", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -58,20 +58,22 @@ const NavbarMobile = () => {
           }
         });
     }
-  }, [access_token, dispatch, newAccessToken, refresh_token]);
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/wishlist", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(wishlistUser(res.data?.result));
-      })
-      .catch((error) => {
-        console.log(error.response?.data?.message);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id) {
+      axios
+        .get("/user/wishlist", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(wishlistUser(res.data?.result));
+        })
+        .catch((error) => {
+          console.log(error.response?.data?.message);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   let Links = [
     { name: "HOME", to: "/" },

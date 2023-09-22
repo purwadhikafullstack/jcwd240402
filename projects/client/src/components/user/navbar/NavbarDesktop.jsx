@@ -43,7 +43,7 @@ const NavbarDesktop = () => {
   const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {
-    if (access_token && refresh_token) {
+    if (access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/cart", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -67,20 +67,22 @@ const NavbarDesktop = () => {
           }
         });
     }
-  }, [access_token, dispatch, newAccessToken, refresh_token]);
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/wishlist", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(wishlistUser(res.data?.result));
-      })
-      .catch((error) => {
-        setErrMsg(error.response?.data?.message);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/wishlist", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(wishlistUser(res.data?.result));
+        })
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   const userNavigation = [
     { name: "Profile", to: "/user/setting", onClick: {} },

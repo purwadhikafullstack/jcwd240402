@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   AiFillCheckCircle,
   AiFillCloseCircle,
   AiFillPlusSquare,
   AiFillMinusSquare,
 } from "react-icons/ai";
-import toRupiah from "@develoka/angka-rupiah-js";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
@@ -14,7 +13,6 @@ import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
-import CarouselProductDetail from "../../components/user/carousel/CarouselProductDetail";
 import AccordionProduct from "../../components/user/accordion/AccordionProduct";
 import axios from "../../api/axios";
 import {
@@ -34,7 +32,7 @@ import AlertWithIcon from "../../components/AlertWithIcon";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import ShareButton from "../../components/user/ShareButton";
 import Wishlist from "../../components/user/Wishlist";
-import { stockProduct } from "../../features/stockProductSlice";
+import { rupiahFormat } from "../../utils/formatter";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -58,7 +56,7 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (access_token && refresh_token) {
+    if (access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/profile", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -211,7 +209,7 @@ const ProductDetail = () => {
               <>
                 <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
                 <h1 className="font-bold text-xl">
-                  {toRupiah(detailProduct.price)}
+                  {rupiahFormat(detailProduct.price)}
                 </h1>
               </>
             )}

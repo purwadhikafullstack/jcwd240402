@@ -31,11 +31,13 @@ const FooterDesktop = () => {
             <div>
               <Footer.Title title="WEBSITE WAREHOUSE" />
               <Footer.LinkGroup col>
-                <Footer.Link href="#">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud
-                </Footer.Link>
+                <p className="text-justify">
+                  Furnifor Warehouse is your premier destination for
+                  high-quality products at the most competitive prices in the
+                  market. Our commitment to excellence and customer satisfaction
+                  drives us to curate a selection of the finest merchandise,
+                  ensuring that you receive the best value for your money.
+                </p>
               </Footer.LinkGroup>
             </div>
             <div>
@@ -58,15 +60,9 @@ const FooterDesktop = () => {
             <div>
               <Footer.Title title="Legal" />
               <Footer.LinkGroup col>
-                <Footer.Link>
-                  <Link to="/this-is-fornifor">This Is ForniFor</Link>
-                </Footer.Link>
-                <Footer.Link>
-                  <Link to="/privacy-policy">Privacy Policy</Link>
-                </Footer.Link>
-                <Footer.Link>
-                  <Link to="/term-and-condition">Terms & Conditions</Link>
-                </Footer.Link>
+                <Link to="/this-is-fornifor">This Is ForniFor</Link>
+                <Link to="/privacy-policy">Privacy Policy</Link>
+                <Link to="/term-and-condition">Terms & Conditions</Link>
               </Footer.LinkGroup>
             </div>
           </div>

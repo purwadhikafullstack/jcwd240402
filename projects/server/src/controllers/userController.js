@@ -71,6 +71,7 @@ module.exports = {
       const verifyToken =
         crypto.randomBytes(16).toString("hex") +
         Math.random() +
+        "-" +
         new Date().getTime();
 
       const newUser = await db.User.create(
@@ -500,24 +501,41 @@ module.exports = {
   resendVerifyAccount: async (req, res) => {
     const userData = req.user;
     const { email } = req.body;
+    const transaction = await db.sequelize.transaction();
     try {
       const isVerified = await db.User.findOne({
         where: { email, id: userData.id },
       });
       if (!isVerified) {
+        await transaction.rollback();
         return res.status(404).json({
           ok: false,
           message: "wrong email",
         });
       }
       if (isVerified.is_verify) {
+        await transaction.rollback();
         return res.status(400).json({
           ok: false,
           message: "user already verified",
         });
       }
-      if (isVerified.verify_token && !isVerified.is_verify) {
-        const link = `${process.env.BASEPATH_FE_REACT}/verify/${isVerified.verify_token}`;
+
+      const verifyToken =
+        crypto.randomBytes(16).toString("hex") +
+        Math.random() +
+        "-" +
+        new Date().getTime();
+
+      if (!isVerified.is_verify) {
+        await db.User.update(
+          {
+            verify_token: verifyToken,
+          },
+          { where: { id: userData.id }, transaction }
+        );
+
+        const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
         const message =
           "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.!";
         const mailing = {
@@ -527,12 +545,13 @@ module.exports = {
           receiver: isVerified.username,
           message,
         };
+        await transaction.commit();
         Mailer.sendEmail(mailing)
           .then((response) =>
             res.status(201).json({
               ok: true,
               message: `${response.message}, registration ${isVerified.username} successful `,
-              verify_token: isVerified.verify_token,
+              verify_token: verifyToken,
             })
           )
           .catch((error) =>
@@ -542,6 +561,7 @@ module.exports = {
           );
       }
     } catch (error) {
+      await transaction.rollback();
       res.status(500).json({
         ok: false,
         message: "something bad happened",

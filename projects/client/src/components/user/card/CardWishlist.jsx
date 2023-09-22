@@ -2,8 +2,10 @@ import React from "react";
 import dayjs from "dayjs";
 import { Badge } from "flowbite-react";
 
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
+
 const CardWishlist = ({ item }) => {
-  console.log(item);
   return (
     <div className="my-5">
       <div className="px-4 py-1 rounded-t-md w-fit shadow-card-1">
@@ -26,9 +28,9 @@ const CardWishlist = ({ item }) => {
               {item.category}
             </Badge>
             <p>{item.desc}</p>
-            <p className="text-base font-bold">Rp.{item.price}</p>
+            <p className="text-base font-bold">Rp.{rupiahFormat(item.price)}</p>
             <p>stock: {item.stock} pcs</p>
-            <p>weight: {item.weight} gr</p>
+            <p>weight: {weightFormat(item.weight)} </p>
           </div>
         </div>
       </div>

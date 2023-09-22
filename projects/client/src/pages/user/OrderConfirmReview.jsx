@@ -18,6 +18,7 @@ import tiki from "../../assets/icons/tiki.png";
 import pos from "../../assets/icons/pos.png";
 import jne from "../../assets/icons/jne.png";
 import { OrderButton } from "../../components/user/OrderButton";
+import { rupiahFormat } from "../../utils/formatter";
 
 const OrderConfirmReview = () => {
   const { invoiceId } = useParams();
@@ -113,7 +114,7 @@ const OrderConfirmReview = () => {
               </Link>
               <div className="flex justify-between font-semibold text-sm">
                 <h1>{yourOrder.Order_status?.name}</h1>
-                <h1>invoice id: {invoiceId}</h1>
+                <h1>Invoice ID: {invoiceId}</h1>
               </div>
               <div className=" md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
                 {yourOrder.Order_details?.map((item) => (
@@ -149,7 +150,8 @@ const OrderConfirmReview = () => {
                       </div>
                       <div className="mt-2">
                         <h1>
-                          Rp. {item.Warehouse_stock?.Product?.price} x{" "}
+                          Rp.{" "}
+                          {rupiahFormat(item.Warehouse_stock?.Product?.price)} x{" "}
                           {item.quantity} unit
                         </h1>
                         <h1>
@@ -159,7 +161,9 @@ const OrderConfirmReview = () => {
                         </h1>
                         <h1 className="font-semibold text-right">
                           subtotal: Rp.{" "}
-                          {item.Warehouse_stock?.Product?.price * item.quantity}
+                          {rupiahFormat(
+                            item.Warehouse_stock?.Product?.price * item.quantity
+                          )}
                         </h1>
                       </div>
                     </div>

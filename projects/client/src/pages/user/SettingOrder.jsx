@@ -17,7 +17,7 @@ import {
   setCookie,
 } from "../../utils/tokenSetterGetter";
 import withAuthUser from "../../components/user/withAuthUser";
-import toRupiah from "@develoka/angka-rupiah-js";
+
 import { Badge } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
@@ -28,6 +28,7 @@ import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
 import { AiOutlineSearch } from "react-icons/ai";
 import { TbTruckDelivery } from "react-icons/tb";
 import invoiceidnotfound from "../../assets/images/invoiceidnotfound.png";
+import { rupiahFormat } from "../../utils/formatter";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -224,7 +225,8 @@ const SettingOrder = () => {
                               <div>
                                 <div>
                                   <h1>
-                                    Order Total: {toRupiah(order.total_price)}
+                                    Order Total:{" "}
+                                    {rupiahFormat(order.total_price)}
                                   </h1>
                                   <h1>
                                     Courier Used: {order.delivery_courier}

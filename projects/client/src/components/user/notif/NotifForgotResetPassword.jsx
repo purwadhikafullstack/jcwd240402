@@ -8,7 +8,7 @@ const NotifForgotResetPassword = ({ imgSrc, msg }) => {
       <img src={logo} alt="" className="absolute top-14 w-20" />
       <div className="absolute flex justify-center flex-col items-center w-full lg:w-[30rem] lg:bottom-52 bottom-40">
         <img src={imgSrc} alt="" className="w-96" />
-        <h1 className="text-center absolute bottom-0 text-xs mx-4 lg:text-base ">
+        <h1 className="text-center absolute bottom-0 text-xs mx-4 font-semibold text-grayText ">
           {msg}
         </h1>
       </div>

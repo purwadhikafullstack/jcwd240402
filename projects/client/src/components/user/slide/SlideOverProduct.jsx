@@ -7,8 +7,9 @@ import {
   AiFillPlusSquare,
 } from "react-icons/ai";
 import { FaCartArrowDown } from "react-icons/fa";
-import toRupiah from "@develoka/angka-rupiah-js";
 
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
 import axios from "../../../api/axios";
 import CarouselProductDetail from "../carousel/CarouselProductDetail";
 import AccordionProduct from "../accordion/AccordionProduct";
@@ -204,7 +205,7 @@ export default function SlideOverProduct({ name }) {
                             {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {toRupiah(detailProduct?.price)}
+                            {rupiahFormat(detailProduct?.price)}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">

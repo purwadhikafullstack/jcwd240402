@@ -123,8 +123,6 @@ const ProductPerCategory = () => {
       });
   }, [categoryName, currentPagination]);
 
-  console.log(display);
-
   const imageDisplay = display.map((item) => {
     return {
       banner: item?.Image_products[2]?.img_product,

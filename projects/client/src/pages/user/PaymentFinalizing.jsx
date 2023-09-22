@@ -33,6 +33,7 @@ import orderreject from "../../assets/images/orderreject.png";
 import ordercompleted from "../../assets/images/ordercompleted.png";
 import orderwaitingpayment from "../../assets/images/orderwaitingpayment.png";
 import orderinprocess from "../../assets/images/orderinprocess.png";
+import { rupiahFormat } from "../../utils/formatter";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
@@ -204,10 +205,10 @@ const PaymentFinalizing = () => {
               <h1>{yourOrder?.delivery_time}</h1>
               <div className="flex  w-full justify-between items-center font-bold text-sm text-grayText">
                 <h1 className="py-1">
-                  Order Total: Rp. {yourOrder?.total_price}
+                  Order Total: Rp. {rupiahFormat(yourOrder?.total_price)}
                 </h1>
 
-                <h1 className="py-1">invoice id: {invoiceId}</h1>
+                <h1 className="py-1">Invoice ID: {invoiceId}</h1>
               </div>
 
               <div className="md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">

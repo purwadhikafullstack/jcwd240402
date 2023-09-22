@@ -83,13 +83,13 @@ const AllCategories = () => {
                         to={`/product/product-category/${categoryProduct.category}`}
                         className="underline hover:no-underline"
                       >
-                        see all products
+                        See all products
                       </Link>
                     </li>
                   </div>
                 ) : (
                   <p className="underline hover:no-underline">
-                    this category do not have any products yet
+                    This category do not have any products yet
                   </p>
                 )}
               </ul>

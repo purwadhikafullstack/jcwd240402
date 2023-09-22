@@ -2,7 +2,7 @@ const schedule = require("node-schedule");
 const dayjs = require("dayjs");
 const db = require("../models");
 
-const job = schedule.scheduleJob("*/30 * * * * *", async () => {
+const job = schedule.scheduleJob("*/30  * * * *", async () => {
   try {
     const oneMinuteAgo = dayjs().subtract(1, "minute").toDate();
 

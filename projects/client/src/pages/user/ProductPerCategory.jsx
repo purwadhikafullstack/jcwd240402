@@ -123,6 +123,8 @@ const ProductPerCategory = () => {
       });
   }, [categoryName, currentPagination]);
 
+  console.log(display);
+
   const imageDisplay = display.map((item) => {
     return {
       banner: item?.Image_products[2]?.img_product,
@@ -132,7 +134,7 @@ const ProductPerCategory = () => {
     };
   });
 
-  const categoryImage = productData[0]?.Product?.category?.category_img;
+  const categoryImage = productData[0]?.category?.category_img;
 
   function handlePage(page) {
     setCurrentPage(page);

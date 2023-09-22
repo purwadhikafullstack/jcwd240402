@@ -683,7 +683,8 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message:
+          "This reset password code is expired. You only have 10 minutes to use it",
         error: error.message,
       });
     }

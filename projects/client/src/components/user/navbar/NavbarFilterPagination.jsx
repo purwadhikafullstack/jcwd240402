@@ -3,7 +3,9 @@ import SlideOverFilter from "../slide/SlideOverFilter";
 import { Pagination } from "flowbite-react";
 import { TbZoomMoney } from "react-icons/tb";
 import { RiScales2Fill } from "react-icons/ri";
-import toRupiah from "@develoka/angka-rupiah-js";
+import { FaFilterCircleXmark } from "react-icons/fa6";
+
+import { rupiahFormat, weightFormat } from "../../../utils/formatter";
 
 const NavbarFilterPagination = ({
   rangePriceMin,
@@ -28,7 +30,7 @@ const NavbarFilterPagination = ({
   return (
     <div className="w-full">
       <div className="flex w-full mb-2 h-fit items-center justify-between">
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center gap-2 items-center">
           <SlideOverFilter
             rangePriceMin={rangePriceMin}
             rangePriceMax={rangePriceMax}
@@ -40,22 +42,28 @@ const NavbarFilterPagination = ({
             limitWeight={limitWeight}
             setCurrentPage={setCurrentPage}
           />
-          <div className="hidden lg:flex md:flex">
+          <div className="hidden lg:flex md:flex gap-2">
             {currentPriceMin && currentPriceMax ? (
-              <p className="flex  text-xs lg:text-sm justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2">
+              <div className="flex  text-xs lg:text-sm justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2">
                 <span>
                   <TbZoomMoney className="text-xl" />
                 </span>
-                from {toRupiah(currentPriceMin)} to {toRupiah(currentPriceMax)}
-              </p>
+                <p className="text-xs">
+                  from {rupiahFormat(currentPriceMin)} to{" "}
+                  {rupiahFormat(currentPriceMax)}
+                </p>
+              </div>
             ) : null}
             {currentWeightMin && currentWeightMax ? (
-              <p className="flex text-xs lg:text-sm justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2">
+              <div className="flex text-xs lg:text-sm justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2">
                 <span>
                   <RiScales2Fill className="text-xl" />
                 </span>
-                from {currentWeightMin} gr to {currentWeightMax} gr
-              </p>
+                <p className="text-xs">
+                  from {weightFormat(currentWeightMin)} to{" "}
+                  {weightFormat(currentWeightMax)}
+                </p>
+              </div>
             ) : null}
             {(currentPriceMin && currentPriceMax) ||
             (currentWeightMin && currentWeightMax) ? (
@@ -63,7 +71,8 @@ const NavbarFilterPagination = ({
                 onClick={handleResetFilter}
                 className="text-center flex text-xs lg:text-sm justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2 flex-nowrap"
               >
-                reset filter
+                <FaFilterCircleXmark />
+                <p className="text-xs">reset filter</p>
               </button>
             ) : null}
           </div>
@@ -96,7 +105,8 @@ const NavbarFilterPagination = ({
               <span>
                 <TbZoomMoney className="text-xl" />
               </span>
-              from {toRupiah(currentPriceMin)} to {toRupiah(currentPriceMax)}
+              from {rupiahFormat(currentPriceMin)} to{" "}
+              {rupiahFormat(currentPriceMax)}
             </p>
           ) : null}
           {currentWeightMin && currentWeightMax ? (
@@ -107,7 +117,8 @@ const NavbarFilterPagination = ({
               <span>
                 <RiScales2Fill className="text-xl" />
               </span>
-              from {currentWeightMin} to {currentWeightMax}
+              from {weightFormat(currentWeightMin)} to{" "}
+              {weightFormat(currentWeightMax)}
             </p>
           ) : null}
         </div>

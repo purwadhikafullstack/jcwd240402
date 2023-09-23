@@ -23,6 +23,8 @@ const ShowCaseProduct = ({ perPage }) => {
   const [rangeWeightMin, setRangeWeightMin] = useState(0);
   const [rangeWeightMax, setRangeWeightMax] = useState(0);
 
+  const [countDown, setCountDown] = useState(4);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPagination = searchParams.get("page");
   const currentPriceMax = searchParams.get("priceMax") || limitPrice;
@@ -113,9 +115,12 @@ const ShowCaseProduct = ({ perPage }) => {
       </div>
       <div className="flex flex-col justify-center">
         {errMsg ? (
-          <div className=" flex flex-col justify-center items-center">
+          <div className="mb-4 flex flex-col justify-center items-center">
             <AlertWithIcon errMsg={errMsg} />
             <img src={productNotFound} alt="" className="w-96" />
+            <h1 className="text-xs font-bold text-grayText">
+              you will be redirect soon
+            </h1>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center">

@@ -3,6 +3,7 @@ import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import { MdDraw } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import { GrLinkTop } from "react-icons/gr";
 
 import CarouselBanner from "../../components/user/carousel/CarouselBanner";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
@@ -126,7 +127,7 @@ const Home = () => {
   }
 
   return (
-    <div>
+    <div id="back-to-the-top">
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb />
@@ -180,6 +181,12 @@ const Home = () => {
           <ServiceCard services={services} />
         </div>
       </div>
+      <a
+        href="#back-to-the-top"
+        className="fixed bottom-16 right-4 bg-gray-300 w-16 h-16 flex justify-center items-center rounded-full"
+      >
+        <GrLinkTop />
+      </a>
       <FooterDesktop />
       <NavigatorMobile />
     </div>

@@ -161,7 +161,7 @@ const ProductPerCategory = () => {
   }
 
   return (
-    <div>
+    <div id="back-to-the-top">
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb
@@ -173,10 +173,7 @@ const ProductPerCategory = () => {
           },
         ]}
       />
-      <div
-        className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32"
-        id="back-to-the-top"
-      >
+      <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         {errMsg ? (
           <div className="flex flex-col justify-center items-center h-screen">
             <img src={productpercategorynotfound} alt="" className="w-96" />
@@ -286,7 +283,7 @@ const ProductPerCategory = () => {
                 setCurrentPage={setCurrentPage}
               />
             </div>
-            <div className="flex flex-col justify-center  ">
+            <div className="flex flex-col justify-center  mb-4">
               <div className=" lg:h-[42rem] md:h-[72rem]  mt-4 mb-4 md:mb-0 lg:mb-0">
                 <div className="flex flex-wrap justify-center ">
                   {errMsg ? (
@@ -317,8 +314,6 @@ const ProductPerCategory = () => {
                   <GrLinkTop />
                 </a>
               </div>
-
-              <div className="w-full justify-center hidden lg:flex md:flex mb-4"></div>
             </div>
           </div>
         )}

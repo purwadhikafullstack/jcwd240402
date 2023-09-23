@@ -25,10 +25,10 @@ export default function SlideOverFilter({
         <div>
           <button
             onClick={() => setOpen(true)}
-            className=" flex justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2"
+            className=" flex justify-start items-center px-3 py-1.5 rounded-full w-fit gap-2 border-2"
           >
             <VscSettings />
-            <span className="text-sm">Filter</span>
+            <span className="text-xs">Filter</span>
           </button>
         </div>
       </div>

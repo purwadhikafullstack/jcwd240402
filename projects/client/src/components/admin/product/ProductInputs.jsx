@@ -92,7 +92,7 @@ const ProductInputs = ({ formik }) => {
           placeholder="Select a category"
         />
         {formik.touched.category_id && formik.errors.category_id && (
-          <p className="text-red-500 mt-2">{formik.errors.category_id}</p>
+          <p className="text-red-500">{formik.errors.category_id}</p>
         )}
       </div>
     </div>

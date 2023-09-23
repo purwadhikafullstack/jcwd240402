@@ -11,7 +11,6 @@ const storage = multer.diskStorage({
       "public",
       "imgProduct"
     );
-
     cb(null, static);
   },
   filename: (req, file, cb) => {
@@ -25,19 +24,53 @@ const imageFilter = (req, file, cb) => {
   if (
     file.mimetype === "image/jpeg" ||
     file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/webp"
+    file.mimetype === "image/jpg"
   ) {
     cb(null, true);
   } else {
-    cb(new Error("File type not supported"), false);
+    req.fileValidationError = "File type not supported";
+    cb(
+      new multer.MulterError(
+        "LIMIT_UNEXPECTED_FILE",
+        "Unsupported format. Use: JPEG, PNG, JPG, WEBP."
+      )
+    );
   }
 };
 
 const upload = multer({
   storage: storage,
-  limits: { files: 5, fileSize: 10 * 1000 * 1000 },
+  limits: {
+    fileSize: 10 * 1000 * 1000, // 10 MB
+    files: 5,
+  },
   fileFilter: imageFilter,
 });
 
-module.exports = upload;
+module.exports = handleImageProductUpload = (req, res, next) => {
+  const isSingleImageRoute =
+    req.route.path === "/product/:id/image" ||
+    req.route.path === "/product/image/:id";
+
+  const uploader = isSingleImageRoute
+    ? upload.single("image")
+    : upload.array("images", 5);
+
+  uploader(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          res.status(400).send({ error: "File size exceeded the limit" });
+        } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
+          res
+            .status(400)
+            .send({ error: "Unsupported format. Use: JPEG, PNG, JPG." });
+        }
+      } else {
+        res.status(400).send({ error: err.message });
+      }
+    } else {
+      next();
+    }
+  });
+};

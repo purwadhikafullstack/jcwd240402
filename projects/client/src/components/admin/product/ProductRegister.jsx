@@ -6,11 +6,13 @@ import ProductInputs from "../product/ProductInputs";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import AlertWithIcon from "../../AlertWithIcon";
 
 const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
   const access_token = getCookie("access_token");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (values) => {
     try {
@@ -33,15 +35,23 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
       setSuccessMessage("Product created successfully");
     } catch (error) {
       console.error("Error creating product:", error.response.data);
-      if (error.response && error.response.data && error.response.data.errors) {
+
+      if (error.response && error.response.data && error.response.data.error) {
+          setErrorMessage(error.response.data.error);
+      } else if (
+        error.response &&
+        error.response.data &&
+        error.response.data.errors
+      ) {
         const serverErrors = error.response.data.errors;
         const formikErrors = {};
+
         serverErrors.forEach((err) => {
           if (err.path) {
             formikErrors[err.path] = err.msg;
           }
         });
-        formik.setErrors(formikErrors);
+        formik.setErrors(formikErrors)
       }
     }
   };
@@ -88,7 +98,7 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                     handleInputChange={formik.handleChange}
                     formik={formik}
                   />
-                  <div className="flex mt-6 justify-center w-full">
+                  <div className="flex justify-center w-full">
                     <Button
                       type="submit"
                       buttonText={isEditMode ? "Update Product" : "Add Product"}
@@ -100,6 +110,9 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                   </div>
                   {successMessage && (
                     <p className="text-green-500 mt-3">{successMessage}</p>
+                  )}
+                  {errorMessage && (
+                    <AlertWithIcon errMsg={errorMessage} color="bg-red-500" />
                   )}
                 </div>
               </div>

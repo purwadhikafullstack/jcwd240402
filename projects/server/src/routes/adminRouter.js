@@ -6,6 +6,7 @@ const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const inventoryController = require("../controllers/inventoryTransferController");
 const multerCategory = require("../middleware/multer/category/category");
+const handleImageCategoryUpload = require("../middleware/multer/category/category");
 const multerProduct = require("../middleware/multer/product/product");
 const stockController = require("../controllers/warehouseStockController");
 const authMiddleware = require("../middleware/auth");
@@ -105,7 +106,7 @@ router.get("/categories", adminController.getCategories);
 router.post(
   "/category",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerCategory.single("category_img"),
+  handleImageCategoryUpload,
   validatorMiddlewareCategory.validateCategory,
   categoryController.createCategory
 );
@@ -113,7 +114,7 @@ router.post(
 router.patch(
   "/category/img/:id",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerCategory.single("category_img"),
+  handleImageCategoryUpload,
   categoryController.updateCategoryImage
 );
 router.patch(

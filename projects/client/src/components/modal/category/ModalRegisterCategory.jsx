@@ -21,7 +21,7 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
   };
 
   const validationSchema = yup.object().shape({
-    name: yup.string().required("Category name is required"),
+    name: yup.string()
   });
 
   const formik = useFormik({
@@ -51,26 +51,10 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
           throw new Error("Category Registration Failed");
         }
       } catch (error) {
-        let displayedError = false;
-
-        if (error.response?.data?.errors) {
-          error.response.data.errors.forEach((err) => {
-            if (err.path === "name") {
-              formik.setFieldError("name", err.msg);
-              displayedError = true;
-            }
-          });
-        }
-
-        if (!displayedError && error.response?.data?.message) {
-          if (
-            error.response.data.message ===
-            "Image is required for category creation"
-          ) {
-            setErrMsg("Image is required for category creation");
-          } else {
-            setErrMsg("An unexpected error occurred. Please try again.");
-          }
+        if (error.response?.data?.error) {
+          setErrMsg(error.response.data.error);
+        } else if (error.response?.data?.message) {
+          setErrMsg(error.response.data.errors[0].msg);
         }
       }
     },

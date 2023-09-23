@@ -44,20 +44,10 @@ const EditCategoryImageModal = ({
         throw new Error("Edit Category Image Failed");
       }
     } catch (err) {
-      let displayedError = false;
-      if (err.response?.data?.errors) {
-        err.response.data.errors.forEach((error) => {
-          if (error.path === "categoryImage") {
-            formik.setFieldError("categoryImage", error.msg);
-            displayedError = true;
-          }
-        });
-      }
-      if (!displayedError) {
-        setErrMsg(
-          err.response?.data?.message ||
-            "An unexpected error occurred. Please try again."
-        );
+      if (err.response?.data?.error) {
+        setErrMsg(err.response.data.error);
+      } else if (err.response?.data?.message) {
+        setErrMsg(err.response.data.errors[0].msg);
       }
     }
   };
@@ -95,7 +85,7 @@ const EditCategoryImageModal = ({
       <Modal.Body>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
           {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
+            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center my-2">
               <p>{errMsg}</p>
             </div>
           )}

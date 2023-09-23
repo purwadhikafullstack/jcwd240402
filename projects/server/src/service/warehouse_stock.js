@@ -108,7 +108,12 @@ module.exports = {
         }
       });
   
-      const totalItems = await db.Warehouse_stock.count({ where: filter });
+      const totalItems = await db.Warehouse_stock.count({
+        distinct: true,
+        where: filter,
+        include: includeOptions
+    });
+    
   
       return {
         success: true,

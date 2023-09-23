@@ -2,7 +2,6 @@ const db = require("../models");
 const { getAllInventoryTransfers } = require("../service/inventoryTransfer");
 const { newStockHistory } = require("../service/warehouse_stock");
 
-
 module.exports = {
   async stockTransfer(req, res) {
     const t = await db.sequelize.transaction();
@@ -158,7 +157,8 @@ module.exports = {
         fromStock.product_stock,
         fromStock.product_stock - transfer.quantity,
         transfer.quantity,
-        "Stock Transfer")
+        "Stock Transfer"
+      );
 
       const stockHistoryTo = newStockHistory(
         toStock[0].id,
@@ -167,7 +167,8 @@ module.exports = {
         toStock[0].product_stock,
         toStock[0].product_stock + transfer.quantity,
         transfer.quantity,
-        "Stock Transfer")
+        "Stock Transfer"
+      );
 
       await t.commit();
 
@@ -243,24 +244,28 @@ module.exports = {
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
     const productName = req.query.productName;
-    let to_warehouse_id = req.query.warehouseId; 
+    let to_warehouse_id = req.query.warehouseId;
     const sort = req.query.sort === "asc" ? "ASC" : "DESC";
-    const status = req.query.status; 
-  
-    if(req.user.role_id == 2) {
-      to_warehouse_id = req.user.warehouse_id; 
+    const status = req.query.status;
+    const year = Number(req.query.year);
+    const month = Number(req.query.month);
+
+    if (req.user.role_id == 2) {
+      to_warehouse_id = req.user.warehouse_id;
     }
-  
+
     let options = {
       order: [["createdAt", sort]],
       productName: productName,
       warehouseId: to_warehouse_id,
-      status: status
+      status: status,
+      year: year,
+      month: month
     };
-  
+
     try {
       const response = await getAllInventoryTransfers(options, page, perPage);
-  
+
       if (response.success) {
         res.status(200).send({
           message: "Inventory transfer list retrieved successfully",
@@ -277,7 +282,5 @@ module.exports = {
         errors: error.message,
       });
     }
-  }
-  
-
+  },
 };

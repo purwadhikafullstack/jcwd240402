@@ -31,9 +31,6 @@ const StockList = () => {
   const loadWarehouses = useWarehouseOptions();
   const loadCategories = useCategoryOptions();
 
-  const resetPage = () => {
-    setCurrentPage(1);
-  };
 
   useEffect(() => {
     fetchStocks();
@@ -44,12 +41,7 @@ const StockList = () => {
       const warehouseId = selectedWarehouse ? selectedWarehouse.value : null;
       const categoryId = selectedCategory ? selectedCategory.value : null;
       const response = await axios.get(`/warehouse-stock`, {
-        params: {
-          warehouseId: warehouseId,
-          categoryId: categoryId,
-          productName: searchProductName,
-          page: currentPage,
-        },
+        params: {warehouseId: warehouseId,categoryId: categoryId,productName: searchProductName,page: currentPage,},
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (response.data && response.data.stocks) {
@@ -68,9 +60,11 @@ const StockList = () => {
         });
         setStocks(flattenedStocks);
       }
-
       if (response.data && response.data.pagination) {
         setTotalPages(response.data.pagination.totalPages);
+      }
+      if (currentPage > response.data.pagination.totalPages) {
+        setCurrentPage(1);
       }
     } catch (error) {
       console.error("Error fetching stocks:", error);
@@ -127,7 +121,7 @@ const StockList = () => {
           loadOptions={loadWarehouses}
           onChange={(selected) => {
             setSelectedWarehouse(selected);
-            resetPage();
+            setCurrentPage(1);
           }}
           placeholder="Select a warehouse"
           className={`flex-1 ${adminData.role_id !== 1 ? "hidden" : ""}`}
@@ -138,7 +132,7 @@ const StockList = () => {
           loadOptions={loadCategories}
           onChange={(selected) => {
             setSelectedCategory(selected);
-            resetPage();
+            setCurrentPage(1);
           }}
           placeholder="Select a category"
           className={`flex-1 ${adminData.role_id !== 1 ? "" : "ml-4"}`}
@@ -149,7 +143,7 @@ const StockList = () => {
           value={searchProductName}
           onChange={(e) => {
             setSearchProductName(e.target.value);
-            resetPage();
+            setCurrentPage(1);
           }}
           className="flex-1 border rounded text-base bg-white border-gray-300 shadow-sm ml-4"
         />

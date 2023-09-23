@@ -1,4 +1,7 @@
 const db = require("../models");
+const dayjs = require("dayjs");
+const isToday = require("dayjs/plugin/isToday");
+dayjs.extend(isToday);
 
 module.exports = {
   getOneInventoryTransfer: async (filter) => {
@@ -42,6 +45,14 @@ module.exports = {
     if (options.status) {
       filter.status = options.status;
     }
+
+    if (options.month && options.year) {
+      const startOfMonth = new Date(options.year, options.month - 1, 1);
+      const endOfMonth = new Date(options.year, options.month, 0); 
+      filter.createdAt = {
+          [db.Sequelize.Op.between]: [startOfMonth, endOfMonth]
+      };
+  }
 
     const queryOptions = {
       where: filter,

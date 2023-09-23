@@ -100,7 +100,7 @@ module.exports = {
 
       const link = `${process.env.BASEPATH_FE_REACT}/verify/${newUser.verify_token}`;
       const message =
-        "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.!";
+        "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.! Remember, you only have 20 minutes to verify your account";
       const mailing = {
         recipient_email: email,
         link,

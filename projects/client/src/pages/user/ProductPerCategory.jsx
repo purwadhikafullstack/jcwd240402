@@ -20,6 +20,7 @@ import NavbarFilterPagination from "../../components/user/navbar/NavbarFilterPag
 import AlertWithIcon from "../../components/AlertWithIcon";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import productpercategorynotfound from "../../assets/images/productpercategorynotfound.png";
 
 const ProductPerCategory = () => {
   const { categoryName } = useParams();
@@ -81,9 +82,10 @@ const ProductPerCategory = () => {
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?perPage=9&page=${currentPagination}&product=&category=${categoryName}&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
+        `/user/warehouse-stock/filter?perPage=10&page=${currentPagination}&product=&category=${categoryName}&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
+        console.log(res);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -96,7 +98,9 @@ const ProductPerCategory = () => {
         setLoading(false);
       })
       .catch((error) => {
+        console.log(error.response);
         setErrMsg("product not found");
+        setLoading(false);
         setTimeout(() => {
           setSearchParams({});
         }, 4000);
@@ -165,7 +169,7 @@ const ProductPerCategory = () => {
           { title: ["Category"], link: "/product-category" },
           {
             title: ["Product per Category"],
-            link: "/product/product-category/",
+            link: `/product/product-category/${categoryName}`,
           },
         ]}
       />
@@ -173,7 +177,14 @@ const ProductPerCategory = () => {
         className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32"
         id="back-to-the-top"
       >
-        {imageDisplay.length === 0 && errMsg ? (
+        {errMsg ? (
+          <div className="flex flex-col justify-center items-center h-screen">
+            <img src={productpercategorynotfound} alt="" className="w-96" />
+            <h1 className="font-bold text-grayText text-xs">
+              product not found
+            </h1>
+          </div>
+        ) : imageDisplay.length === 0 && errMsg ? (
           <div className="w-full h-full flex flex-col justify-center items-center ">
             <img src={productNotFound} alt="" className="w-1/2 lg:w-1/3" />
             <p>{errMsg}</p>

@@ -191,7 +191,7 @@ const SettingOrder = () => {
                   >
                     <input
                       type="text"
-                      placeholder="search invoice id"
+                      placeholder="Search Invoice ID"
                       value={query}
                       onChange={(e) => {
                         setQuery(e.target.value);

@@ -165,10 +165,12 @@ const PaymentFinalizing = () => {
         setTimeout(() => {
           navigate(`/user/setting/order`);
         }, 3000);
+        console.log(res);
       })
       .catch((error) => {
+        console.log(error);
         setSuccessMsg("");
-        setErrMsg(error.response.data.message);
+        setErrMsg(error.response.data.error);
         setLoading(false);
       });
   };
@@ -263,7 +265,7 @@ const PaymentFinalizing = () => {
                 ))}
               </div>
             </div>
-            <div className=" flex flex-col justify-start items-start ">
+            <div className=" flex flex-col justify-center items-center ">
               <div className="flex justify-center"></div>
 
               <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">

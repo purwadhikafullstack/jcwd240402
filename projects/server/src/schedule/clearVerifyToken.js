@@ -19,7 +19,7 @@ const job = schedule.scheduleJob("*/30 * * * * *", async () => {
 
       const timeDiffMinutes = (currentTime - dateFormatToken) / (1000 * 60);
 
-      if (timeDiffMinutes >= 5) {
+      if (timeDiffMinutes >= 20) {
         await db.User.update(
           { verify_token: null },
           {

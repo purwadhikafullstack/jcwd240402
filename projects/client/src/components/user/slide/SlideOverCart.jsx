@@ -7,8 +7,9 @@ import {
   AiFillPlusSquare,
 } from "react-icons/ai";
 import { FaCartArrowDown } from "react-icons/fa";
-import toRupiah from "@develoka/angka-rupiah-js";
 
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
 import axios from "../../../api/axios";
 import CarouselProductDetail from "../carousel/CarouselProductDetail";
 import AccordionProduct from "../accordion/AccordionProduct";
@@ -19,6 +20,7 @@ import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
 import { cartsUser } from "../../../features/cartSlice";
 import Alert from "../Alert";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 export default function SlideOverCart({ name, quantity }) {
   const access_token = getCookie("access_token");
@@ -87,7 +89,9 @@ export default function SlideOverCart({ name, quantity }) {
   const product = dataImage?.map((item) => {
     let image;
     image = {
-      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
+      image: item?.img_product
+        ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
+        : emptyImage,
     };
     return image;
   });
@@ -158,7 +162,7 @@ export default function SlideOverCart({ name, quantity }) {
                         <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                           <img
                             src={logo}
-                            alt=""
+                            alt="logo"
                             className=" h-8 md:h-10 lg:h-8"
                           />
                         </Dialog.Title>
@@ -188,7 +192,7 @@ export default function SlideOverCart({ name, quantity }) {
                             {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {toRupiah(detailProduct?.price)}
+                            {rupiahFormat(detailProduct?.price)}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">

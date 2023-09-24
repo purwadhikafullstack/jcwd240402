@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../api/axios";
 import { profileUser } from "../../../features/userDataSlice";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 const NavigatorMobile = () => {
   const location = useLocation();
@@ -145,8 +146,12 @@ const NavigatorMobile = () => {
               <div className="relative w-8 h-8  flex flex-col max-w-xs items-center rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                 <img
                   className="w-full h-full object-cover rounded-full "
-                  src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
-                  alt=""
+                  src={
+                    userData.User_detail?.img_profile
+                      ? `${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`
+                      : emptyImage
+                  }
+                  alt="profile"
                 />
               </div>
             ) : (

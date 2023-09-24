@@ -7,6 +7,7 @@ import AlertWithIcon from "../AlertWithIcon";
 import NavbarFilterPagination from "./navbar/NavbarFilterPagination";
 import productNotFound from "../../assets/images/productNotFound.png";
 import Loading from "../Loading";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const ShowCaseProduct = ({ perPage }) => {
   const [productData, setProductData] = useState([]);
@@ -29,14 +30,19 @@ const ShowCaseProduct = ({ perPage }) => {
   const currentPriceMin = searchParams.get("priceMin") || 0;
   const currentWeightMax = searchParams.get("weightMax") || limitWeight;
   const currentWeightMin = searchParams.get("weightMin") || 0;
-  console.log(perPage);
+
+  console.log(currentPagination);
+  console.log(currentPriceMax);
+  console.log(currentPriceMin);
+  console.log(currentWeightMax);
+  console.log(currentWeightMin);
+
   useEffect(() => {
     axios
       .get(
         `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
-        console.log(res.data);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -114,15 +120,26 @@ const ShowCaseProduct = ({ perPage }) => {
       </div>
       <div className="flex flex-col justify-center">
         {errMsg ? (
-          <div className=" flex flex-col justify-center items-center">
+          <div className="mb-4 flex flex-col justify-center items-center">
             <AlertWithIcon errMsg={errMsg} />
-            <img src={productNotFound} alt="" className="w-96" />
+            <img
+              src={productNotFound}
+              alt="product not found"
+              className="w-96"
+            />
+            <h1 className="text-xs font-bold text-grayText">
+              you will be redirect soon
+            </h1>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center">
             {productData.map((productItem) => (
               <CardProduct
-                src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`}
+                src={
+                  productItem?.Image_products[0]?.img_product
+                    ? `${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`
+                    : emptyImage
+                }
                 category={productItem?.category?.name}
                 name={productItem?.name}
                 desc={productItem?.description}

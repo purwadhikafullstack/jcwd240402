@@ -10,7 +10,7 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
-import { getCookie } from "../../utils/tokenSetterGetter";
+import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import Loading from "../../components/Loading";
 import { wishlistUser } from "../../features/wishlistDataSlice";
 import wishlistempty from "../../assets/images/wishlistempty.png";
@@ -22,6 +22,9 @@ const AllWishlist = () => {
   const [errMsg, setErrMsg] = useState("");
   const [loading, setLoading] = useState(true);
   const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+  const userData = useSelector((state) => state.profiler.value);
+
   const [list, setList] = useState([]);
   const [lastId, setLastId] = useState(0);
   const [tempId, setTempId] = useState(0);
@@ -36,20 +39,22 @@ const AllWishlist = () => {
   }, [lastId, limit]);
 
   const getList = async () => {
-    try {
-      const response = await axios.get(
-        `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
+    if (access_token && refresh_token && userData.role_id === 3) {
+      try {
+        const response = await axios.get(
+          `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,
+          {
+            headers: { Authorization: `Bearer ${access_token}` },
+          }
+        );
 
-      const newList = response.data.result;
-      setList([...list, ...newList]);
-      setTempId(response.data.lastId);
-      setHasMore(response.data.hasMore);
-    } catch (error) {
-      setErrMsg(error.response.data.message);
+        const newList = response.data.result;
+        setList([...list, ...newList]);
+        setTempId(response.data.lastId);
+        setHasMore(response.data.hasMore);
+      } catch (error) {
+        setErrMsg(error.response.data.message);
+      }
     }
   };
 
@@ -82,13 +87,17 @@ const AllWishlist = () => {
           {wishlistData.length === 0 ? (
             <div className="space-y-4 flex w-full h-screen flex-col justify-center items-center">
               <div className="flex justify-center items-center">
-                <img src={wishlistempty} alt="" className="w-1/2" />
+                <img
+                  src={wishlistempty}
+                  alt="wishlist empty"
+                  className="w-1/2"
+                />
               </div>
               <div className="space-y-4 flex flex-col justify-center items-center">
                 <p className="text-sm font-bold">
                   All Your Wishlist Will be Saved Here
                 </p>
-                <p className="text-xs text-grayText">
+                <p className="text-xs text-center text-grayText">
                   Fill in your Wishlist by clicking the heart icon when you find
                   a product you like.
                 </p>
@@ -110,12 +119,16 @@ const AllWishlist = () => {
                 hasMore={hasMore}
                 loader={
                   <div className="animate-bounce flex gap-4 mb-4 justify-center items-center">
-                    <img src={loadingfurnifor} alt="" />
+                    <img src={loadingfurnifor} alt="loading scroll" />
                   </div>
                 }
                 endMessage={
                   <div className="flex flex-col gap-4 mb-4 justify-center items-center">
-                    <img src={loadingfurnifor} alt="" className="w-8" />
+                    <img
+                      src={loadingfurnifor}
+                      alt="end scroll"
+                      className="w-8"
+                    />
                   </div>
                 }
               >

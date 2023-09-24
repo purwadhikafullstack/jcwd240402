@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
 import login from "../assets/images/furnifor.png";
+import loginSideBar from "../assets/images/furniforNav.png";
 import { logout } from "../utils/tokenSetterGetter";
 import {
   AiOutlineUser,
@@ -26,8 +27,13 @@ function SidebarAdminDesktop() {
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
-    { to: "/admin/users", label: "Users", icon: AiOutlineTeam , roles: [1] },
-    { to: "/admin/warehouses", label: "Warehouse", icon: AiOutlineShop, roles: [1] },
+    { to: "/admin/users", label: "Users", icon: AiOutlineTeam, roles: [1] },
+    {
+      to: "/admin/warehouses",
+      label: "Warehouse",
+      icon: AiOutlineShop,
+      roles: [1],
+    },
     {
       to: "/admin/products",
       label: "Product",
@@ -54,12 +60,10 @@ function SidebarAdminDesktop() {
     <Sidebar className="text-black font-poppins ">
       <Sidebar.Logo
         href="#"
-        img={login}
+        img={loginSideBar}
         imgAlt="Your Logo Description"
         className="text-blue1"
-      >
-        Furnifor
-      </Sidebar.Logo>
+      />
       <div className="user-info px-4 py-2 rounded-lg my-4 shadow-sm bg-gray-200">
         <div className="flex items-center mb-2">
           <FaUserAlt className="mr-2 text-blue1" />

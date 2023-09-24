@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import toRupiah from "@develoka/angka-rupiah-js";
+import { rupiahFormat } from "../../utils/formatter";
 
 import addtocart from "../../assets/images/addtocart.png";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
@@ -25,13 +25,14 @@ const Cart = () => {
   const refresh_token = getLocalStorage("refresh_token");
   const dispatch = useDispatch();
   const cartsData = useSelector((state) => state.carter.value);
+  const userData = useSelector((state) => state.profiler.value);
 
   const [loading, setLoading] = useState(true);
   const [newAccessToken, setNewAccessToken] = useState("");
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (refresh_token && access_token) {
+    if (refresh_token && access_token && userData.role_id === 3) {
       axios
         .get("/user/cart", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -94,7 +95,7 @@ const Cart = () => {
         <div className="p-4 w-full border-b-2 h-20 flex justify-between items-center sticky top-14 md:hidden lg:hidden bg-white rounded-lg">
           <div>
             <h1 className="text-xs">{productsData.length} products:</h1>
-            <h1>{toRupiah(total)}</h1>
+            <h1>{rupiahFormat(total)}</h1>
           </div>
           <button className="w-36 h-12 text-sm rounded-full font-bold text-white bg-blue3">
             Checkout
@@ -117,7 +118,11 @@ const Cart = () => {
             </div>
             {productsData.length === 0 ? (
               <div className="flex flex-col justify-center items-center w-[21rem] md:w-[47rem] lg:w-[79rem]">
-                <img src={addtocart} alt="" className="w-56 md:w-96" />
+                <img
+                  src={addtocart}
+                  alt="add to cart"
+                  className="w-56 md:w-96"
+                />
                 <h1 className="text-gray-400 text-center text-xs md:text-sm lg:text-sm mt-2">
                   Your Shopping Cart is empty. You do not have any products in
                   your shopping list
@@ -143,7 +148,7 @@ const Cart = () => {
           <div className="hidden md:flex lg:flex justify-between items-center mb-4">
             <h1>
               Total Amount :{" "}
-              <span className="font-bold">{toRupiah(total)}</span>
+              <span className="font-bold">{rupiahFormat(total)}</span>
             </h1>
             <Link to="/checkout">
               <button className="bg-blue3 font-bold text-white w-96 h-10 rounded-full">

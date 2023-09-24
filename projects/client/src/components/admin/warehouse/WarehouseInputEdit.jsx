@@ -35,21 +35,24 @@ const WarehouseInputsEdit = () => {
 
     const formData = new FormData();
     formData.append("file", image);
+    console.log("test");
     try {
-      const response = await axios.patch(
-        `/warehouse/image/${warehouseName}`,
-        formData,
-        {
+      await axios
+        .patch(`/warehouse/image/${warehouseName}`, formData, {
           headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
-      if (response.data.ok) {
-        setSuccessMsg("image update successful");
-        setTimeout(() => {
-          setSuccessMsg("");
-        }, 3000);
-      }
+        })
+        .then((res) => {
+          console.log(res);
+          setSuccessMsg("image update successful");
+          setTimeout(() => {
+            setSuccessMsg("");
+          }, 3000);
+        })
+        .catch((err) => {
+          setErrMsg(err.response?.data?.error);
+        });
     } catch (error) {
+      console.log(error);
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
@@ -91,7 +94,7 @@ const WarehouseInputsEdit = () => {
       }
 
       try {
-        const response = await axios.patch(`/warehouse/${values.id}`, changes,{
+        const response = await axios.patch(`/warehouse/${values.id}`, changes, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
         if (response.status === 200) {
@@ -160,6 +163,8 @@ const WarehouseInputsEdit = () => {
     navigate("/admin/warehouses");
   };
 
+  console.log(errMsg);
+
   const loadCities = async (inputValue) => {
     try {
       const response = await axios.get(
@@ -190,11 +195,15 @@ const WarehouseInputsEdit = () => {
       </div>
       <div className="w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 px-6">
         <h2 className="text-xl font-semibold mb-5">Edit Warehouse</h2>
-        {successMsg && (
+        {successMsg ? (
           <div className="bg-green-200 text-green-700 h-10 flex justify-center items-center mt-2">
             <p>{successMsg}</p>
           </div>
-        )}
+        ) : errMsg ? (
+          <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
+            <p>{errMsg}</p>
+          </div>
+        ) : null}
         <div className="md:grid lg:grid md:grid-cols-2 lg:grid-cols-2 w-full">
           <div className="md:col-span-1 lg:col-span-1">
             <form onSubmit={formik.handleSubmit}>
@@ -261,7 +270,7 @@ const WarehouseInputsEdit = () => {
               </div>
             </form>
           </div>
-          <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center">
+          <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center mt-10">
             <img
               src={
                 showImage
@@ -272,9 +281,6 @@ const WarehouseInputsEdit = () => {
               className="w-1/2"
             />
             <div className="flex flex-col items-center">
-              {successMsg ? (
-                <AlertWithIcon errMsg={errMsg} color="success" />
-              ) : null}
               <input
                 type="file"
                 onChange={handleFile}

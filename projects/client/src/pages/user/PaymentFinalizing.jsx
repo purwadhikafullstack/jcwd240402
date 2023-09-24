@@ -18,27 +18,24 @@ import {
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
-import toRupiah from "@develoka/angka-rupiah-js";
 import { Badge } from "flowbite-react";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptyImage from "../../assets/images/emptyImage.jpg";
 import Button from "../../components/Button";
 import Loading from "../../components/Loading";
-import Alert from "../../components/user/Alert";
-import AlertWithIcon from "../../components/AlertWithIcon";
 import ModalConfirmationDelete from "../../components/user/modal/ModalConfirmationDelete";
 import ordercancel from "../../assets/images/ordercancel.png";
 import ordership from "../../assets/images/ordership.png";
-import orderreject from "../../assets/images/orderreject.png";
 import ordercompleted from "../../assets/images/ordercompleted.png";
 import orderwaitingpayment from "../../assets/images/orderwaitingpayment.png";
 import orderinprocess from "../../assets/images/orderinprocess.png";
+import { rupiahFormat } from "../../utils/formatter";
+import datanofound from "../../assets/images/productpercategorynotfound.png";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
   const [paymentProofData, setPaymentProofData] = useState("");
   const [yourOrder, setYourOrder] = useState([]);
-  const [orderProduct, setOrderProduct] = useState([]);
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
@@ -49,52 +46,35 @@ const PaymentFinalizing = () => {
   const [showImage, setShowImage] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingOrder, setLoadingOrder] = useState(true);
-  const [productReview, setProductReview] = useState([]);
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+  const userData = useSelector((state) => state.profiler.value);
 
   const { invoiceId } = useParams();
   console.log(invoiceId);
   const inputPhotoRef = useRef();
 
   useEffect(() => {
-    setLoadingOrder(true);
-    setTimeout(() => {
-      axios
-        .get(`/user/order/${invoiceId}`, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          setYourOrder(res.data?.order);
-          setLoadingOrder(false);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setLoading(false);
-          setLoadingOrder(false);
-        });
-    }, 2000);
-  }, [access_token, invoiceId]);
-
-  console.log("first yourOrder", yourOrder);
-
-  useEffect(() => {
-    if (!access_token && refresh_token) {
-      axios
-        .get("/user/auth/keep-login", {
-          headers: { Authorization: `Bearer ${refresh_token}` },
-        })
-        .then((res) => {
-          setNewAccessToken(res.data?.accessToken);
-          setCookie("access_token", newAccessToken, 1);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setLoading(false);
-        });
+    if (access_token && refresh_token && userData.role_id === 3) {
+      setLoadingOrder(true);
+      setTimeout(() => {
+        axios
+          .get(`/user/order/${invoiceId}`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((res) => {
+            setYourOrder(res.data?.order);
+            setLoadingOrder(false);
+            setLoading(false);
+          })
+          .catch((error) => {
+            setLoading(false);
+            setLoadingOrder(false);
+          });
+      }, 2000);
     }
-  }, [access_token, newAccessToken, refresh_token]);
+  }, [access_token, invoiceId, refresh_token, userData.role_id]);
 
   useEffect(() => {
     axios
@@ -164,10 +144,12 @@ const PaymentFinalizing = () => {
         setTimeout(() => {
           navigate(`/user/setting/order`);
         }, 3000);
+        console.log(res);
       })
       .catch((error) => {
+        console.log(error);
         setSuccessMsg("");
-        setErrMsg(error.response.data.message);
+        setErrMsg(error.response.data.error);
         setLoading(false);
       });
   };
@@ -198,16 +180,24 @@ const PaymentFinalizing = () => {
       />
       <div className="min-h-screen mx-6 space-y-2 md:space-y-2 lg:space-y-2 lg:mx-32 mb-4">
         <h1 className="font-bold text-xl">Payment</h1>
-        {yourOrder.order_status_id === 1 || yourOrder.order_status_id === 7 ? (
+        {!yourOrder ? (
+          <div className="flex flex-col justify-center items-center h-screen">
+            <img src={datanofound} alt="data not found" className="w-96" />
+            <h1 className="font-bold text-grayText text-xs">
+              Payment data not found
+            </h1>
+          </div>
+        ) : yourOrder.order_status_id === 1 ||
+          yourOrder.order_status_id === 7 ? (
           <div className="grid gap-4  ">
             <div className="  justify-center items-center w-full h-full">
               <h1>{yourOrder?.delivery_time}</h1>
               <div className="flex  w-full justify-between items-center font-bold text-sm text-grayText">
                 <h1 className="py-1">
-                  Order Total: Rp. {yourOrder?.total_price}
+                  Order Total: Rp. {rupiahFormat(yourOrder?.total_price)}
                 </h1>
 
-                <h1 className="py-1">invoice id: {invoiceId}</h1>
+                <h1 className="py-1">Invoice ID: {invoiceId}</h1>
               </div>
 
               <div className="md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
@@ -223,9 +213,12 @@ const PaymentFinalizing = () => {
                             (image, idx) => (
                               <div key={idx} className=" ">
                                 <img
-                                  src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
-                                  alt=""
-                                  className=""
+                                  src={
+                                    image.img_product
+                                      ? `${process.env.REACT_APP_API_BASE_URL}${image.img_product}`
+                                      : emptyImage
+                                  }
+                                  alt="product"
                                 />
                               </div>
                             )
@@ -262,7 +255,7 @@ const PaymentFinalizing = () => {
                 ))}
               </div>
             </div>
-            <div className=" flex flex-col justify-start items-start ">
+            <div className=" flex flex-col justify-center items-center ">
               <div className="flex justify-center"></div>
 
               <div className="shadow-card-1 p-4 space-y-4 flex flex-col justify-center items-center rounded-lg">
@@ -271,7 +264,7 @@ const PaymentFinalizing = () => {
                 <div className="md:w-96 lg:w-96">
                   <img
                     src={showImage ? showImage : `${emptyImage}`}
-                    alt=""
+                    alt="upload payment"
                     className="object-cover w-full"
                   />
                 </div>
@@ -329,60 +322,6 @@ const PaymentFinalizing = () => {
             </div>
           </div>
         ) : (
-          /*  <>
-            <h1>Order Status : {yourOrder.Order_status?.name}</h1>
-            <h1>Invoice id : {invoiceId}</h1>
-            <div className=" md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
-              {yourOrder.Order_details?.map((item) => (
-                <div
-                  key={item.id}
-                  className="shadow-card-1 rounded-lg md:col-span-1 lg:col-span-1 "
-                >
-                  <div className=" flex flex-col justify-center items-center">
-                    <div className="w-52 md:w-80 lg:w-80">
-                      <Carousel>
-                        {item.Warehouse_stock?.Product?.Image_products?.map(
-                          (image, idx) => (
-                            <div key={idx} className=" ">
-                              <img
-                                src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
-                                alt=""
-                                className=""
-                              />
-                            </div>
-                          )
-                        )}
-                      </Carousel>
-                    </div>
-                  </div>
-                  <div className="p-4 text-xs ">
-                    <div className="flex gap-4 items-center">
-                      <h1 className="font-bold md:text-base lg:text-base">
-                        {item.Warehouse_stock?.Product?.name}
-                      </h1>
-                      <Badge color="purple" className="w-fit">
-                        {item.Warehouse_stock?.Product?.category?.name}
-                      </Badge>
-                    </div>
-                    <div className="mt-2">
-                      <h1>
-                        Rp. {item.Warehouse_stock?.Product?.price} x{" "}
-                        {item.quantity} unit
-                      </h1>
-                      <h1>
-                        {item.Warehouse_stock?.Product?.weight * item.quantity}{" "}
-                        gr
-                      </h1>
-                      <h1 className="font-semibold text-right">
-                        subtotal: Rp.{" "}
-                        {item.Warehouse_stock?.Product?.price * item.quantity}
-                      </h1>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </> */
           <>
             <Link
               to="/user/setting/order"
@@ -409,7 +348,7 @@ const PaymentFinalizing = () => {
                     ? ordership
                     : null
                 }
-                alt=""
+                alt="order"
                 className="w-1/2 md:w-1/3 lg:w-1/3"
               />
               <h1 className="mt-3 font-semibold text-grayText text-sm">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Accordion } from "flowbite-react";
-import toRupiah from "@develoka/angka-rupiah-js";
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
 
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -58,7 +59,7 @@ const AccordionFilter = ({
           </Accordion.Title>
           <Accordion.Content>
             <span className="text-xs font-bold">
-              From {toRupiah(priceMin)} to {toRupiah(priceMax)}
+              From {rupiahFormat(priceMin)} to {rupiahFormat(priceMax)}
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>
@@ -84,7 +85,7 @@ const AccordionFilter = ({
           </Accordion.Title>
           <Accordion.Content>
             <span className="text-xs font-bold">
-              From {weightMin} gr to {weightMax} gr
+              From {weightFormat(weightMin)} to {weightFormat(weightMax)}
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>

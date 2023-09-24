@@ -20,6 +20,7 @@ import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
 import { UserAuth } from "../../../context/AuthContext";
 import { wishlistUser } from "../../../features/wishlistDataSlice";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -43,7 +44,7 @@ const NavbarDesktop = () => {
   const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {
-    if (access_token && refresh_token) {
+    if (access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/cart", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -67,20 +68,22 @@ const NavbarDesktop = () => {
           }
         });
     }
-  }, [access_token, dispatch, newAccessToken, refresh_token]);
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/wishlist", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(wishlistUser(res.data?.result));
-      })
-      .catch((error) => {
-        setErrMsg(error.response?.data?.message);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/wishlist", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(wishlistUser(res.data?.result));
+        })
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   const userNavigation = [
     { name: "Profile", to: "/user/setting", onClick: {} },
@@ -109,7 +112,7 @@ const NavbarDesktop = () => {
     >
       <div className="flex w-[1200px] justify-evenly items-center h-16">
         <Link to="/" className="">
-          <img src={logo} alt="" className=" h-10" />
+          <img src={logo} alt="logo" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
           <Link to="/product-category">Categories</Link>
@@ -161,8 +164,12 @@ const NavbarDesktop = () => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
-                      alt=""
+                      src={
+                        userData.User_detail?.img_profile
+                          ? `${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`
+                          : emptyImage
+                      }
+                      alt="profile"
                     />
                   </Menu.Button>
                 </div>

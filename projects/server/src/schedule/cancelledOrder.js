@@ -2,16 +2,13 @@ const schedule = require("node-schedule");
 const dayjs = require("dayjs");
 const db = require("../models");
 
-const job = schedule.scheduleJob("*/15 * * * * *", async () => {
+const job = schedule.scheduleJob("*/15 * * *", async () => {
   try {
     const oneMinuteAgo = dayjs().subtract(1, "minute").toDate();
 
     const unpaidOrders = await db.Order.findAll({
       where: {
-        [db.Sequelize.Op.or]: [
-          { order_status_id: 1 },
-          { order_status_id: 7 }
-        ],
+        [db.Sequelize.Op.or]: [{ order_status_id: 1 }, { order_status_id: 7 }],
         createdAt: {
           [db.Sequelize.Op.lt]: oneMinuteAgo,
         },

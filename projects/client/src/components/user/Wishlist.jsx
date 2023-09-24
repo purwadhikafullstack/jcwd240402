@@ -13,7 +13,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
 
   const dispatch = useDispatch();
 
-  const [loading, setLoading] = useState(true);
   const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
@@ -28,11 +27,10 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
         } else {
           setIsAdded(true);
         }
-        setLoading(false);
       })
       .catch((error) => {
         setIsAdded(false);
-        setLoading(false);
+
         if (!error.response) {
           setErrMsg("No Server Response");
           setIsAdded(false);
@@ -56,7 +54,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       if (response.data.ok) {
         setSuccessMsg(response.data?.message);
         setOpenAlert(true);
-        setLoading(false);
 
         axios
           .get("/user/wishlist", {
@@ -64,16 +61,14 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
           })
           .then((res) => {
             dispatch(wishlistUser(res.data?.result));
-            setLoading(false);
           })
           .catch((error) => {
             setErrMsg(error.response?.data?.message);
-            setLoading(false);
           });
       }
     } catch (error) {
       setOpenAlert(true);
-      setLoading(false);
+
       setIsAdded(false);
       if (!error.response) {
         setErrMsg("No Server Response");
@@ -92,7 +87,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       if (response.data.ok) {
         setSuccessMsg(response.data?.message);
         setOpenAlert(true);
-        setLoading(false);
+
         axios
           .get("/user/wishlist", {
             headers: { Authorization: `Bearer ${access_token}` },
@@ -107,7 +102,7 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
       }
     } catch (error) {
       setOpenAlert(true);
-      setLoading(false);
+
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
@@ -116,15 +111,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className=" w-full h-screen flex justify-center items-center">
-        <Loading />
-      </div>
-    );
-  }
-
-  console.log(isAdded);
   return (
     <>
       {isAdded ? (

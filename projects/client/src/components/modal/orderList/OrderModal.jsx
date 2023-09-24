@@ -73,7 +73,7 @@ const OrderModal = ({
                         ? `${process.env.REACT_APP_API_BASE_URL}${row.Image}`
                         : waitingpayment
                     }
-                    alt="Product"
+                    alt="Payment Proof"
                   />
                 </div>
 

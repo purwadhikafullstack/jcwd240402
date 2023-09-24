@@ -8,7 +8,7 @@ const AdminHome = () => {
   const adminData = useSelector((state) => state.profilerAdmin.value);
 
   return (
-    <div className="bg-blue1 h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
+    <div className="bg-white h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
       <div className="lg:flex lg:flex-col lg:justify-start">
         <SidebarAdmin adminData={adminData} />
       </div>

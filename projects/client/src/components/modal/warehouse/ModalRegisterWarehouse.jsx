@@ -25,9 +25,12 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   };
 
   const handleErrors = (error) => {
+    console.log(error);
     const serverErrors = error.response?.data?.errors;
     if (serverErrors) {
       serverErrors.forEach((err) => formik.setFieldError(err.path, err.msg));
+    } else if (error.response.data.error) {
+      setErrMsg(error.response.data.error);
     } else {
       setErrMsg(error.message || "Registration failed");
     }
@@ -55,9 +58,12 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
         setShowImage(false);
         setImage(null);
       } else {
+        console.log(response);
         throw new Error("Warehouse Registration Failed");
       }
     } catch (error) {
+      console.log(error);
+      setErrMsg(error.response.data.error);
       handleErrors(error);
     }
   };
@@ -98,7 +104,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
     setShowImage(URL.createObjectURL(selectedImage));
     setImage(selectedImage);
   };
-
+  console.log(errMsg);
   return (
     <Modal
       show={show}
@@ -179,7 +185,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
               <div className="flex flex-col flex-wrap justify-center items-center mt-2 w-fit">
                 <img
                   src={showImage ? showImage : emptyImage}
-                  alt=""
+                  alt="warehouse"
                   className="w-52 md:w-full lg:w-full"
                 />
                 <input

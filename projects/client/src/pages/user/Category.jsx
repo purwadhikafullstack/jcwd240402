@@ -9,6 +9,7 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const Category = () => {
   const [categoryList, setCategoryList] = useState([]);
@@ -67,8 +68,12 @@ const Category = () => {
                     {list.name}
                   </Link>
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}${list.category_img}`}
-                    alt=""
+                    src={
+                      list.category_img
+                        ? `${process.env.REACT_APP_API_BASE_URL}${list.category_img}`
+                        : emptyImage
+                    }
+                    alt={`${list.name}`}
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in "
                   />
                 </div>
@@ -88,8 +93,12 @@ const Category = () => {
                     {list.name}
                   </Link>
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}${list.category_img}`}
-                    alt=""
+                    src={
+                      list.category_img
+                        ? `${process.env.REACT_APP_API_BASE_URL}${list.category_img}`
+                        : emptyImage
+                    }
+                    alt={`${list.name}`}
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-in "
                   />
                 </div>

@@ -6,7 +6,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 const Loading = () => {
   return (
     <div>
-      <img src={logo} alt="" className="w-32 mb-4" />
+      <img src={logo} alt="loading" className="w-32 mb-4" />
       <Box sx={{ width: "100%" }}>
         <LinearProgress />
       </Box>

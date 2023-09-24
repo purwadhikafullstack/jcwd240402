@@ -24,6 +24,7 @@ import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProf
 import withAuthUser from "../../components/user/withAuthUser";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -79,8 +80,12 @@ const SettingProfile = () => {
               {/* CARD PHOTO */}
               <div className=" rounded-lg shadow-card-1 p-2 m-4 w-fit">
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`}
-                  alt=""
+                  src={
+                    userData?.User_detail?.img_profile
+                      ? `${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`
+                      : emptyImage
+                  }
+                  alt="profile"
                   className="p-2 w-72"
                 />
 

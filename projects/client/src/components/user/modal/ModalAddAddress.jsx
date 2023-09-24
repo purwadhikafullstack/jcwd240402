@@ -30,6 +30,7 @@ const ModalAddAddress = () => {
   const [selectedProvince, setSelectedProvince] = useState(0);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(0);
+  const [successMsg, setSuccessMsg] = useState("");
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -55,7 +56,6 @@ const ModalAddAddress = () => {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
-          props.setOpenModal(undefined);
           axios
             .get("/user/profile/address", {
               headers: { Authorization: `Bearer ${access_token}` },
@@ -75,23 +75,14 @@ const ModalAddAddress = () => {
             city_id: "",
             province_id: "",
           });
-
-          setErrMsg(null);
+          setSuccessMsg(res.data.message);
+          setErrMsg("");
+          setTimeout(() => {
+            props.setOpenModal(undefined);
+          }, 3000);
         })
         .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
+          setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
       if (!err.response) {
@@ -155,7 +146,11 @@ const ModalAddAddress = () => {
               Register Address
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon errMsg={successMsg} color="success" />
+              ) : null}
 
               {/* drop down province */}
               <div className="flex flex-col gap-y-2 mb-3">

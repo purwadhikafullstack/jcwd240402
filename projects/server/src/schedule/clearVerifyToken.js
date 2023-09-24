@@ -1,47 +1,39 @@
 const schedule = require("node-schedule");
 const dayjs = require("dayjs");
 const db = require("../models");
+const { Op } = require("sequelize");
 
 const job = schedule.scheduleJob("*/30 * * * * *", async () => {
+  const transaction = await db.sequelize.transaction();
   try {
-    const oneMinuteAgo = dayjs().subtract(1, "minute").toDate();
-
-    const unpaidOrders = await db.Order.findAll({
-      where: {
-        order_status_id: 1,
-        createdAt: {
-          [db.Sequelize.Op.lt]: oneMinuteAgo,
-        },
-      },
+    const tokenValue = await db.User.findAll({
+      where: { verify_token: { [Op.ne]: null } },
     });
 
-    const t = await db.sequelize.transaction();
+    const currentTime = new Date();
 
-    for (let order of unpaidOrders) {
-      await db.Order.update(
-        { order_status_id: 5 },
-        { where: { id: order.id } },
-        { transaction: t }
-      );
+    for (let i = 0; i < tokenValue.length; i++) {
+      const token = tokenValue[i].verify_token;
+      const newToken = token.split("-")[1];
+      const dateFormatToken = new Date(Number(newToken));
 
-      await db.Reserved_stock.destroy({
-        where: { order_id: order.id },
-        include: [
+      const timeDiffMinutes = (currentTime - dateFormatToken) / (1000 * 60);
+
+      if (timeDiffMinutes >= 20) {
+        await db.User.update(
+          { verify_token: null },
           {
-            model: db.Warehouse_stock,
-            as: "WarehouseProductReservation",
-          },
-        ],
-        transaction: t,
-      });
+            where: { verify_token: token },
+            transaction,
+          }
+        );
+      }
     }
 
-    await t.commit();
-    console.log(`Cancelled ${unpaidOrders.length} unpaid orders`);
+    await transaction.commit();
+    console.log("Scheduled job completed.");
   } catch (error) {
-    if (t && !t.finished) {
-      await t.rollback();
-    }
+    await transaction.rollback();
     console.error("Error in the scheduled job:", error);
   }
 });

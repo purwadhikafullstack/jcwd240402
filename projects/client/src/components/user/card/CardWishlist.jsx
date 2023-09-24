@@ -2,8 +2,11 @@ import React from "react";
 import dayjs from "dayjs";
 import { Badge } from "flowbite-react";
 
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
+
 const CardWishlist = ({ item }) => {
-  console.log(item);
   return (
     <div className="my-5">
       <div className="px-4 py-1 rounded-t-md w-fit shadow-card-1">
@@ -15,8 +18,12 @@ const CardWishlist = ({ item }) => {
         <div className="md:grid lg:grid md:grid-cols-4 lg:grid-cols-4  ">
           <div className="flex p-2 justify-center md:justify-center lg:justify-center md:items-center lg:items-center">
             <img
-              src={`${process.env.REACT_APP_API_BASE_URL}${item?.src}`}
-              alt=""
+              src={
+                item?.src
+                  ? `${process.env.REACT_APP_API_BASE_URL}${item?.src}`
+                  : emptyImage
+              }
+              alt={`wishlist ${item.name}`}
               className="w-40 object-cover"
             />
           </div>
@@ -26,9 +33,9 @@ const CardWishlist = ({ item }) => {
               {item.category}
             </Badge>
             <p>{item.desc}</p>
-            <p className="text-base font-bold">Rp.{item.price}</p>
+            <p className="text-base font-bold">Rp.{rupiahFormat(item.price)}</p>
             <p>stock: {item.stock} pcs</p>
-            <p>weight: {item.weight} gr</p>
+            <p>weight: {weightFormat(item.weight)} </p>
           </div>
         </div>
       </div>

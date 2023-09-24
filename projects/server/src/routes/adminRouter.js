@@ -9,6 +9,7 @@ const handleImageCategoryUpload = require("../middleware/multer/category/categor
 const handleImageProductUpload = require("../middleware/multer/product/product");
 const multerProduct = require("../middleware/multer/product/product");
 const stockController = require("../controllers/warehouseStockController");
+const statisticController = require("../controllers/statisticController");
 const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
@@ -214,5 +215,11 @@ router.patch("/auto-transfer", stockController.test);
 
 router.get("/city", adminController.getCitiesList);
 router.get("/province", adminController.getProvincesList);
+
+// statistic
+router.get("/statistic", statisticController.userStatistic);
+router.get("/statistic/pie-chart", statisticController.pieChart);
+router.get("/statistic/top-ten-product", statisticController.topTenProduct);
+router.get("/statistic/income-graph", statisticController.incomeGraph);
 
 module.exports = router;

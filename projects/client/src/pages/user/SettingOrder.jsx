@@ -17,7 +17,7 @@ import {
   setCookie,
 } from "../../utils/tokenSetterGetter";
 import withAuthUser from "../../components/user/withAuthUser";
-import toRupiah from "@develoka/angka-rupiah-js";
+
 import { Badge } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../components/Loading";
@@ -28,6 +28,8 @@ import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
 import { AiOutlineSearch } from "react-icons/ai";
 import { TbTruckDelivery } from "react-icons/tb";
 import invoiceidnotfound from "../../assets/images/invoiceidnotfound.png";
+import { rupiahFormat } from "../../utils/formatter";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const SettingOrder = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -161,7 +163,7 @@ const SettingOrder = () => {
 
             {userOrder.length === 0 ? (
               <div className="p-4 w-full flex flex-col justify-center items-center">
-                <img src={orderempty} alt="" className="w-72" />
+                <img src={orderempty} alt="order empty" className="w-72" />
                 <h4 className="text-center text-xs text-grayText ">
                   you have not made any order yet
                 </h4>
@@ -173,12 +175,16 @@ const SettingOrder = () => {
                 hasMore={hasMore}
                 loader={
                   <div className="animate-bounce flex gap-4 my-4 justify-center items-center">
-                    <img src={loadingfurnifor} alt="" />
+                    <img src={loadingfurnifor} alt="loading" />
                   </div>
                 }
                 endMessage={
                   <div className="flex flex-col gap-4 my-4 justify-center items-center">
-                    <img src={loadingfurnifor} alt="" className="w-8" />
+                    <img
+                      src={loadingfurnifor}
+                      alt="end scroll"
+                      className="w-8"
+                    />
                   </div>
                 }
               >
@@ -190,7 +196,7 @@ const SettingOrder = () => {
                   >
                     <input
                       type="text"
-                      placeholder="search invoice id"
+                      placeholder="Search Invoice ID"
                       value={query}
                       onChange={(e) => {
                         setQuery(e.target.value);
@@ -224,7 +230,8 @@ const SettingOrder = () => {
                               <div>
                                 <div>
                                   <h1>
-                                    Order Total: {toRupiah(order.total_price)}
+                                    Order Total:{" "}
+                                    {rupiahFormat(order.total_price)}
                                   </h1>
                                   <h1>
                                     Courier Used: {order.delivery_courier}
@@ -259,8 +266,13 @@ const SettingOrder = () => {
                                 {order.Order_details?.map((details) => (
                                   <div className="flex ml-4 mb-2 text-xs gap-2 h-fit rounded-lg">
                                     <img
-                                      src={`${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                                      alt=""
+                                      src={
+                                        details.Warehouse_stock?.Product
+                                          ?.Image_products[0]?.img_product
+                                          ? `${process.env.REACT_APP_API_BASE_URL}${details.Warehouse_stock?.Product?.Image_products[0]?.img_product}`
+                                          : emptyImage
+                                      }
+                                      alt="product"
                                       className="w-20 object-cover"
                                     />
                                     <div>
@@ -342,7 +354,11 @@ const SettingOrder = () => {
                   </>
                 ) : (
                   <div className="p-4 w-full flex flex-col justify-center items-center">
-                    <img src={invoiceidnotfound} alt="" className="w-72" />
+                    <img
+                      src={invoiceidnotfound}
+                      alt="invoice not found"
+                      className="w-72"
+                    />
                     <h4 className="text-center text-xs text-grayText ">
                       The invoice ID you are looking for was not found
                     </h4>

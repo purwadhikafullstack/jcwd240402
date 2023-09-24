@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "flowbite-react";
 import Select from "react-select";
-import toRupiah from "@develoka/angka-rupiah-js";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
@@ -21,15 +21,15 @@ import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptycheckout from "../../assets/images/emptycheckout.png";
+import { rupiahFormat } from "../../utils/formatter";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
   const cartData = useSelector((state) => state.carter.value);
-  const addressData = useSelector((state) => state.addresser.value);
   const [closestWarehouse, setClosestWarehouse] = useState({});
   const [rajaOngkir, setRajaOngkir] = useState({});
   const [serviceOptions, setServiceOptions] = useState({});
-  const [checkoutDetails, SetCheckoutDetails] = useState([]);
   const [totalCart, setTotalCart] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalWeight, setTotalWeight] = useState("");
@@ -223,7 +223,7 @@ const CheckOut = () => {
             <div className="w-full h-screen text-xs text-grayText space-y-2 flex flex-col justify-center items-center">
               <img
                 src={emptycheckout}
-                alt=""
+                alt="empty checkout"
                 className="w-1/2 md:w-1/2 lg:w-1/3"
               />
               <p className="font-semibold">
@@ -270,8 +270,13 @@ const CheckOut = () => {
                         >
                           <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
                             <img
-                              src={`${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                              alt=""
+                              src={
+                                item?.Warehouse_stock?.Product
+                                  ?.Image_products[0]?.img_product
+                                  ? `${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products[0]?.img_product}`
+                                  : emptyImage
+                              }
+                              alt="product"
                               className="w-full"
                             />
                           </div>
@@ -301,13 +306,15 @@ const CheckOut = () => {
                             )}
 
                             <h1 className="">
-                              {toRupiah(item.Warehouse_stock?.Product?.price)} x{" "}
-                              {item.quantity}{" "}
+                              {rupiahFormat(
+                                item.Warehouse_stock?.Product?.price
+                              )}{" "}
+                              x {item.quantity}{" "}
                               {item.quantity > 1 ? "units" : "unit"}
                             </h1>
                             <h1 className="font-bold text-right">
                               total:{" "}
-                              {toRupiah(
+                              {rupiahFormat(
                                 item.Warehouse_stock?.Product?.price *
                                   item.quantity
                               )}
@@ -335,9 +342,11 @@ const CheckOut = () => {
                 </div>
                 <div className="text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 space-y-2">
                   <h1 className="font-bold">purchase summary</h1>
-                  <h1 className="">Subtotal price: {toRupiah(totalCart)} </h1>
                   <h1 className="">
-                    Shipping price: {toRupiah(chosenCourierPrice)}
+                    Subtotal price: {rupiahFormat(totalCart)}{" "}
+                  </h1>
+                  <h1 className="">
+                    Shipping price: {rupiahFormat(chosenCourierPrice)}
                   </h1>
                   <h1 className="">Courier : {chosenCourier}</h1>
                   <h1 className="">Service : {chosenCourierService}</h1>
@@ -346,7 +355,7 @@ const CheckOut = () => {
                     delivering from: {closestWarehouse.warehouse_name}
                   </h1>
                   <h1 className="font-bold text-base">
-                    Total Payment: {toRupiah(totalPrice)}
+                    Total Payment: {rupiahFormat(totalPrice)}
                   </h1>
                   <button
                     onClick={handlePaymentClick}

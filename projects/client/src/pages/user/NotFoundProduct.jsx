@@ -28,7 +28,11 @@ const NotFoundProduct = () => {
           <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
             <div className="w-full h-full mt-10 flex flex-col justify-center items-center ">
               <AlertWithIcon errMsg={`product not found`} />
-              <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
+              <img
+                src={productNotFound}
+                alt="product not found"
+                className="w-1/2 lg:w-2/3"
+              />
             </div>
           </div>
 

@@ -29,11 +29,12 @@ const SettingAddress = () => {
   const dispatch = useDispatch();
   const addressData = useSelector((state) => state.addresser.value);
   const [loading, setLoading] = useState(true);
+  const userData = useSelector((state) => state.profiler.value);
 
   console.log(addressData);
 
   useEffect(() => {
-    if (!access_token && refresh_token) {
+    if (!access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
@@ -43,29 +44,33 @@ const SettingAddress = () => {
           setCookie("access_token", newAccessToken, 1);
         });
     }
-  }, [access_token, newAccessToken, refresh_token]);
+  }, [access_token, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/profile", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(profileUser(res.data?.result));
-        setLoading(false);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(profileUser(res.data?.result));
+          setLoading(false);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/profile/address", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(addressUser(res.data?.result));
-        setLoading(false);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/profile/address", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(addressUser(res.data?.result));
+          setLoading(false);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   if (loading) {
     return (

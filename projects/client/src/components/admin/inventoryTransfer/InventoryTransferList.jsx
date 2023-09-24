@@ -54,6 +54,7 @@ const InventoryTransferList = () => {
     ];
   };
 
+
   const fetchTransfers = async () => {
     try {
       const status = selectedStatus.value;

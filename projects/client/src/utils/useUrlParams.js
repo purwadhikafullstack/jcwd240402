@@ -30,9 +30,6 @@ function useURLParams(defaultValues = {}) {
       console.log(`Deleted param: key=${key}`);
     }
     setSearchParams(searchParams, { replace: true });
-
-
-    
   };
 
   const syncStateWithParams = (key, defaultValue) => {
@@ -50,6 +47,7 @@ function useURLParams(defaultValues = {}) {
       };
       return { value, label: statusLabels[value] };
     }
+
 
     return value;
   };

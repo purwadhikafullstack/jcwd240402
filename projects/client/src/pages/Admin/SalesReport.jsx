@@ -9,6 +9,9 @@ import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import toRupiah from "@develoka/angka-rupiah-js";
 import AsyncSelect from "react-select/async";
+import dayjs from "dayjs";
+import { rupiahFormat } from "../../utils/formatter";
+
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
@@ -86,6 +89,11 @@ const SalesReport = () => {
   }, []);
 
   useEffect(() => {
+
+      if (adminData.role_id === 2) {
+        setWarehouseId(adminData?.warehouse_id);
+      }
+
     axios
       .get(
         `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
@@ -271,6 +279,8 @@ const SalesReport = () => {
           <TableComponent
             headers={[
               "Month",
+              "Year",
+              "Warehouse",
               "Category",
               "Product",
               "Price",
@@ -278,17 +288,19 @@ const SalesReport = () => {
               "Sub Total",
             ]}
             data={orderSalesList.map((sales) => ({
-              Month: sales?.Order?.delivery_time || "",
+              Month: dayjs(sales?.Order?.delivery_time).format("MMMM") || "",
+              Year: dayjs(sales?.Order?.delivery_time).format("YYYY") || "",
+              "Warehouse": sales?.Order?.Warehouse?.warehouse_name || "",
               Category: sales?.Warehouse_stock?.Product?.category?.name || "",
               Product: sales?.Warehouse_stock?.Product?.name || "",
-              Price: sales?.Warehouse_stock?.Product?.price || "",
+              Price: rupiahFormat(sales?.Warehouse_stock?.Product?.price) || "",
               Quantity: sales?.quantity || "",
               "Sub Total":
-                sales?.Warehouse_stock?.Product?.price * sales?.quantity || 0,
+              rupiahFormat(sales?.Warehouse_stock?.Product?.price * sales?.quantity) || 0,
             }))}
             showIcon={false}
           />
-          <div>Total: {salesReport}</div>
+          <div className="p-4 font-bold">Total: {rupiahFormat(salesReport)}</div>
         </div>
       </div>
     </div>

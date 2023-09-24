@@ -115,6 +115,11 @@ const UserOrder = () => {
   };
 
   useEffect(() => {
+
+    if (adminData.role_id === 2) {
+      setWarehouseId(adminData?.warehouse_id);
+    }
+
     axios
       .get(
         `/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}&month=${month}&year=${year}`,
@@ -131,7 +136,7 @@ const UserOrder = () => {
       .catch((err) => {
         setError(err.response);
       });
-  }, [warehouseId, orderStatusId, currentPage, month, year]);
+  }, [warehouseId, orderStatusId, currentPage, month, year, adminData]);
 
   const handleChangeStatus = (status) => {
     setOrderStatusId(status.value);
@@ -386,7 +391,7 @@ const UserOrder = () => {
               Image: order?.img_payment || "",
               Status: order?.Order_status?.name || "",
               invoiceId: order?.no_invoice,
-              "Delivering From": order?.Warehouse?.address_warehouse || "",
+              "Delivering From": order?.Warehouse?.warehouse_name || "",
               "Delivering to": order?.Address_user?.address_details || "",
               "Delivery Time": order?.delivery_time || "not yet delivered",
               order_status_id: order.order_status_id,

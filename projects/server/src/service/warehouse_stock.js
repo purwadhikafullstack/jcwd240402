@@ -181,6 +181,7 @@ module.exports = {
       where: filter,
       include: [
         { model: db.Admin, attributes: ["username"], as: "Admin" },
+        { model: db.Warehouse, attributes: ["warehouse_name", "address_warehouse", "warehouse_contact"],},
         {
           model: db.Warehouse_stock,
           attributes: ["product_stock"],

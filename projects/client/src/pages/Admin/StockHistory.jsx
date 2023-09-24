@@ -14,7 +14,6 @@ const StockHistory = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-  const [roleId, setRoleId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [stockHistoryList, setStockHistoryList] = useState([]);
@@ -83,21 +82,6 @@ const StockHistory = () => {
     }
   };
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/admin/checkrole`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setRoleId(response?.data?.role);
-      })
-      .catch((err) => {
-        setError(err.response.message);
-      });
-  }, []);
-
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
@@ -121,6 +105,11 @@ const StockHistory = () => {
   };
 
   useEffect(() => {
+
+    if (adminData.role_id === 2) {
+      setWarehouseId(adminData?.warehouse_id);
+    }
+
     axios
       .get(
         `http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
@@ -191,6 +180,7 @@ const StockHistory = () => {
             headers={[
               "Product",
               "Admin Username",
+              "Warehouse",
               "Stock Before",
               "Stock After",
               "Increment/Decrement",
@@ -201,6 +191,7 @@ const StockHistory = () => {
             data={stockHistoryList.map((history) => ({
               Product: history?.Warehouse_stock?.Product?.name || "",
               "Admin Username": history?.Admin?.username || "",
+              "Warehouse": history?.Warehouse?.warehouse_name || "",
               "Stock Before": history?.stock_before_transfer || "0",
               "Stock After": history?.stock_after_transfer || "",
               "Increment/Decrement": history?.increment_decrement || "",

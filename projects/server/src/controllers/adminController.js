@@ -11,6 +11,7 @@ const { getAllUsers } = require("../service/user");
 const { autoStockTransfer } = require("../utils/index");
 const { getAllUserOrder, getAllUserOrderDetails } = require("../service/order");
 const { newStockHistory } = require("../service/warehouse_stock");
+const { Op } = require("sequelize");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -1059,10 +1060,12 @@ module.exports = {
     const month = req.query.month;
 
     let options = {
-      where: { order_status_id: 3 },
+      where: {},
     };
 
     const filter3 = {};
+
+    options.where.order_status_id = 3;
 
     if (product_id) {
       filter3.id = product_id;
@@ -1142,4 +1145,36 @@ module.exports = {
       });
     }
   },
+
+  async getAvailableYear(req, res) {
+    
+    try {
+
+      const response = await db.Order.findAll({
+        where: {
+          delivery_time: {[Op.not]: null},
+        }
+      });
+
+      const availableYear = response.map((year) => {
+        if(year.delivery_time){
+          return year.delivery_time.getFullYear()
+        }
+      })
+
+      const uniqueYear = [...new Set(availableYear)]
+
+       res.json({
+        ok: true,
+        year: uniqueYear,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
 };

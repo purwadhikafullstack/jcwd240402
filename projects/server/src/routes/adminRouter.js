@@ -94,6 +94,12 @@ router.get(
   adminController.salesReport
 );
 
+router.get(
+  "/year",
+  authMiddleware.verifyAccessTokenAdmin,
+  adminController.getAvailableYear
+);
+
 router.delete(
   "/:adminId",
   authMiddleware.verifyAccessTokenSuperAdmin,

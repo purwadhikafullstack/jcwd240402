@@ -56,7 +56,7 @@ const InventoryTransferList = () => {
 
   const fetchTransfers = async () => {
     try {
-      const status = selectedStatus ? selectedStatus.value : "";
+      const status = selectedStatus.value;
       const warehouseId = selectedWarehouse ? selectedWarehouse.value : ""
       const response = await axios.get(`/admin/transfers?page=${currentPage}&status=${status}&warehouseId=${warehouseId}&productName=${searchProductName}&year=${selectedYear}&month=${selectedMonth}`, {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -71,8 +71,6 @@ const InventoryTransferList = () => {
       console.error("Error fetching transfers:", error);
     }
   };
-
-  console.log("test",selectedStatus);
 
   return (
     <div className="container mx-auto pt-1">
@@ -89,8 +87,8 @@ const InventoryTransferList = () => {
           cacheOptions
           defaultOptions
           loadOptions={loadStatusOptions}
-          onChange={(option) => setSelectedStatus(option || null)} 
-          value={selectedStatus}
+          onChange={setSelectedStatus} 
+          value={selectedStatus} 
           placeholder="Select a status"
           className={`flex-1 ${adminData.role_id === 1 ? "ml-4" : ""}`}
           isSearchable={false}

@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import { useWarehouseOptions } from "../utils/loadWarehouseOptions";
 
 function useURLParams(defaultValues = {}) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,13 +30,27 @@ function useURLParams(defaultValues = {}) {
       console.log(`Deleted param: key=${key}`);
     }
     setSearchParams(searchParams, { replace: true });
+
+
+    
   };
 
   const syncStateWithParams = (key, defaultValue) => {
     const value = getParam(key, defaultValue);
-    if (key === "warehouse" || key === "category" || key === "status") {
+    if (key === "warehouse" || key === "category") {
       return { value, label: value };
     }
+
+    if (key === "status") {
+      const statusLabels = {
+        "": "All Status",
+        "approve": "Approved",
+        "reject": "Rejected",
+        "pending": "Pending"
+      };
+      return { value, label: statusLabels[value] };
+    }
+
     return value;
   };
 

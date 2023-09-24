@@ -1146,7 +1146,7 @@ module.exports = {
     }
   },
 
-  async getAvailableYear(req, res) {
+  async getAvailableYearOrder(req, res) {
     
     try {
 
@@ -1166,7 +1166,42 @@ module.exports = {
 
        res.json({
         ok: true,
-        year: uniqueYear,
+        year: uniqueYear.sort(function(a, b) {
+          return b - a;
+        })
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({
+        message: "Fatal error on server",
+        errors: error.message,
+      });
+    }
+  },
+
+  async getAvailableYearHistory(req, res) {
+    
+    try {
+
+      const response = await db.History_stock.findAll({
+        where: {
+          timestamp: {[Op.not]: null},
+        }
+      });
+
+      const availableYear = response.map((year) => {
+        if(year.timestamp){
+          return year.timestamp.getFullYear()
+        }
+      })
+
+      const uniqueYear = [...new Set(availableYear)]
+
+       res.json({
+        ok: true,
+        year: uniqueYear.sort(function(a, b) {
+          return b - a;
+        })
       });
     } catch (error) {
       console.error(error);

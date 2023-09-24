@@ -5,7 +5,8 @@ const validatorMiddlewareProduct = require("../middleware/validator/product");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const inventoryController = require("../controllers/inventoryTransferController");
-const multerCategory = require("../middleware/multer/category/category");
+const handleImageCategoryUpload = require("../middleware/multer/category/category");
+const handleImageProductUpload = require("../middleware/multer/product/product");
 const multerProduct = require("../middleware/multer/product/product");
 const stockController = require("../controllers/warehouseStockController");
 const statisticController = require("../controllers/statisticController");
@@ -106,7 +107,7 @@ router.get("/categories", adminController.getCategories);
 router.post(
   "/category",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerCategory.single("category_img"),
+  handleImageCategoryUpload,
   validatorMiddlewareCategory.validateCategory,
   categoryController.createCategory
 );
@@ -114,7 +115,7 @@ router.post(
 router.patch(
   "/category/img/:id",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerCategory.single("category_img"),
+  handleImageCategoryUpload,
   categoryController.updateCategoryImage
 );
 router.patch(
@@ -137,14 +138,15 @@ router.get("/single-product/", productController.getSingleProduct);
 router.post(
   "/product",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerProduct.array("images", 5),
+  handleImageProductUpload,
   validatorMiddlewareProduct.validateProduct,
   productController.createProduct
 );
+
 router.post(
   "/product/:id/image",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerProduct.single("image"),
+  handleImageProductUpload,
   productController.addImageToProduct
 );
 
@@ -155,12 +157,14 @@ router.patch(
   validatorMiddlewareProduct.validateUpdateProduct,
   productController.updateProductDetails
 );
+
 router.patch(
   "/product/image/:id",
   authMiddleware.verifyAccessTokenSuperAdmin,
-  multerProduct.single("image"),
+  handleImageProductUpload,
   productController.updateProductImage
 );
+
 router.patch(
   "/product/status/:name",
   authMiddleware.verifyAccessTokenSuperAdmin,
@@ -172,6 +176,7 @@ router.delete(
   authMiddleware.verifyAccessTokenSuperAdmin,
   productController.deleteProductImage
 );
+
 router.delete(
   "/products/:id",
   authMiddleware.verifyAccessTokenSuperAdmin,

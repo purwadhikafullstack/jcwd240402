@@ -18,23 +18,22 @@ const InventoryTransferList = () => {
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [showApproveRejectModal, setShowApproveRejectModal] = useState(false);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState({value: "",label: "All Status",
-  });
+  const [selectedStatus, setSelectedStatus] = useState({value: "",label: "All Status",});
   const [searchProductName, setSearchProductName] = useState("");
-  const [sortOrder, setSortOrder] = useState("latest");
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const loadWarehouses = useWarehouseOptions();
 
   useEffect(() => {
     fetchTransfers();
-  }, [currentPage,selectedWarehouse,selectedStatus,searchProductName,sortOrder,]);
-
-  useEffect(() => {}, [selectedTransfer]);
+  }, [currentPage, selectedWarehouse, selectedStatus, selectedYear, selectedMonth,searchProductName]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedWarehouse]);
+  }, [selectedWarehouse, selectedStatus, searchProductName, selectedYear, selectedMonth]);
+  
 
   const loadStatusOptions = async () => {
     return [
@@ -45,24 +44,11 @@ const InventoryTransferList = () => {
     ];
   };
 
-  const loadSortOrderOptions = async () => {
-    return [
-      { value: "latest", label: "Latest" },
-      { value: "oldest", label: "Oldest" },
-    ];
-  };
-
   const fetchTransfers = async () => {
     try {
-      const warehouseId = selectedWarehouse ? selectedWarehouse.value : null;
-      const response = await axios.get(`/admin/transfers`, {
-        params: {
-          warehouseId: warehouseId,
-          status: selectedStatus ? selectedStatus.value : "",
-          productName: searchProductName,
-          sort: sortOrder === "latest" ? "desc" : "asc",
-          page: currentPage,
-        },
+      const status = selectedStatus ? selectedStatus.value : "";
+      const warehouseId = selectedWarehouse ? selectedWarehouse.value : ""
+      const response = await axios.get(`/admin/transfers?page=${currentPage}&status=${status}&warehouseId=${warehouseId}&productName=${searchProductName}&year=${selectedYear}&month=${selectedMonth}`, {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (response.data && response.data.transfers) {
@@ -75,6 +61,7 @@ const InventoryTransferList = () => {
       console.error("Error fetching transfers:", error);
     }
   };
+  
 
   return (
     <div className="container mx-auto pt-1">
@@ -104,18 +91,26 @@ const InventoryTransferList = () => {
           onChange={(e) => setSearchProductName(e.target.value)}
           className="flex-1 border rounded text-base bg-white border-gray-300 shadow-sm ml-4"
         />
-        <AsyncSelect
-          cacheOptions
-          defaultOptions
-          loadOptions={loadSortOrderOptions}
-          onChange={(option) => setSortOrder(option.value)}
-          value={{
-            value: sortOrder,
-            label: sortOrder === "latest" ? "Latest" : "Oldest",
-          }}
-          className="flex-1 ml-4"
-          isSearchable={false}
-        />
+        <div className="ml-4 flex items-center">
+          <label className="mr-2">Year:</label>
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="border rounded px-2 py-1 w-20 text-base bg-white border-gray-300 shadow-sm ml-4"
+          />
+        </div>
+        <div className="ml-4 flex items-center">
+          <label className="mr-2">Month:</label>
+          <input
+            type="number"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            className="flex-1 border px-2 py-1 w-20 rounded text-base bg-white border-gray-300 shadow-sm ml-4"
+            min="1"
+            max="12"
+          />
+        </div>
       </div>
       <div className="py-4">
         <TableComponent
@@ -129,18 +124,20 @@ const InventoryTransferList = () => {
             "Response Date",
           ]}
           data={transfers.map((transfer) => {
-            const shouldShow = 
+            const shouldShow =
               transfer.status === "Pending" &&
               (adminData.role_id === 1 ||
-              (adminData.role_id === 2 && 
-              transfer.to_warehouse_id === adminData?.warehouse_id));
+                (adminData.role_id === 2 &&
+                  transfer.to_warehouse_id === adminData?.warehouse_id));
             return {
               "Transfer ID": transfer.id,
               "From Warehouse": transfer.FromWarehouse.fromWarehouseName,
               "To Warehouse": transfer.ToWarehouse.toWarehouseName,
               "Product Name": transfer.Warehouse_stock.Product.name,
               Quantity: transfer.quantity,
-              "Request Date": moment(transfer.createdAt).format("DD/MM/YY HH:mm"),
+              "Request Date": moment(transfer.createdAt).format(
+                "DD/MM/YY HH:mm"
+              ),
               "Response Date":
                 transfer.status !== "Pending"
                   ? moment(transfer.updatedAt).format("DD/MM/YY HH:mm")

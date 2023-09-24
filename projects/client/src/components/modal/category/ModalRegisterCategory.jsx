@@ -6,6 +6,7 @@ import axios from "../../../api/axios";
 import Button from "../../Button";
 import InputForm from "../../InputForm";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon"
 
 const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
   const access_token = getCookie("access_token");
@@ -37,11 +38,9 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
         if (categoryImg) {
           formData.append("category_img", categoryImg);
         }
-
         const response = await axios.post("/admin/category", formData, {
           headers: { Authorization: `Bearer ${access_token}` },
         });
-
         if (response.status === 201) {
           formik.resetForm();
           setCategoryImg(null);
@@ -72,11 +71,6 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p>{errMsg}</p>
-            </div>
-          )}
           <div className="px-6 grid gap-y-3">
             <InputForm
               label="Category Name"

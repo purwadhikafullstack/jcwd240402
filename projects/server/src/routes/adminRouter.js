@@ -214,8 +214,6 @@ router.patch(
   inventoryController.rejectStockTransfer
 );
 
-//
-router.patch("/auto-transfer", stockController.test);
 
 // List Routes
 

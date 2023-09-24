@@ -457,6 +457,7 @@ module.exports = {
     try {
       const isAllowed = await db.Order.findOne({
         where: { id: orderId },
+        transaction: t 
       });
 
       if (isAllowed.order_status_id === 4) {
@@ -489,7 +490,7 @@ module.exports = {
 
       const updatedOrder = await db.Order.update(
         { order_status_id: 4 },
-        { where: { id: orderId } }
+        { where: { id: orderId }, transaction: t }
       );
 
       if (updatedOrder[0] === 0) {
@@ -512,16 +513,6 @@ module.exports = {
       }
 
       for (let reservedStock of reservedStocks) {
-
-        // console.log(
-        //   "test",
-        //   reservedStock.WarehouseProductReservation.warehouse_id
-        // );
-        // console.log(
-        //   "test",
-        //   reservedStock.WarehouseProductReservation.product_id
-        // );
-
         const warehouseStock = await db.Warehouse_stock.findOne({
           where: {
             warehouse_id:
@@ -545,7 +536,7 @@ module.exports = {
             adminData,
           );
 
-          if (stockTransferResult.status !== "success") {
+          if (stockTransferResult.status === "error") {
             throw new Error(
               "Failed to transfer stock for product " +
                 reservedStock.product_id +
@@ -572,7 +563,7 @@ module.exports = {
       console.error(error);
       res.status(500).json({
         ok: false,
-        message: "An error occurred while accepting payment",
+        message: error.message,
         error: error.message,
       });
     }
@@ -995,6 +986,7 @@ module.exports = {
       });
     }
   },
+  
   async getUserOrderDetails(req, res) {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.size) || 10;

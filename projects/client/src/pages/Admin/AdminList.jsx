@@ -31,6 +31,11 @@ const AdminList = () => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouseId", ""));
   const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
 
+  useEffect(() => {
+    const pageParam = syncStateWithParams("page", null);
+    setCurrentPage(pageParam !== null ? parseInt(pageParam) : 1);
+  }, []);
+
   const handleWarehouseChange = (selectedOption) => {
     setSelectedWarehouse(selectedOption.value);
     resetPage();
@@ -44,7 +49,7 @@ const AdminList = () => {
     setParam("searchName", searchName);
     setParam("warehouseId", selectedWarehouse);
     setParam("page", currentPage);
-    refreshAdminList();
+    fetchAdmins()
   }, [searchName, selectedWarehouse, currentPage]);
 
 
@@ -79,9 +84,6 @@ const AdminList = () => {
 
   const refreshAdminList = async () => {
     await fetchAdmins();
-    if (formattedAdmins.length === 0 && currentPage > 1) {
-      setCurrentPage(1);
-    }
   };
 
   return (

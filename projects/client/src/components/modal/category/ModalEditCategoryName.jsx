@@ -45,9 +45,6 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
           }
         });
       }
-      if (!displayedError) {
-        setErrMsg(err.response?.data?.msg || "An unexpected error occurred. Please try again.");
-      }
     }
   };
 
@@ -57,7 +54,7 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
     },
     onSubmit: editCategoryName,
     validationSchema: yup.object().shape({
-      categoryName: yup.string().required("Category Name is required"),
+      categoryName: yup.string()
     }),
     validateOnChange: false,
     validateOnBlur: false,

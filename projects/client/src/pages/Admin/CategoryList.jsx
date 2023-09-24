@@ -7,18 +7,29 @@ import AdminCategoryCard from "../../components/admin/card/AdminCardCategory";
 import RegisterCategoryModal from "../../components/modal/category/ModalRegisterCategory";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { useSelector } from "react-redux";
+import useURLParams from "../../utils/useUrlParams";
 
 const CategoryList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
+  const [searchName, setSearchName] = useState(
+    syncStateWithParams("searchName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
+
   const [categories, setCategories] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+
   const [totalPages, setTotalPages] = useState(1);
-  const [searchName, setSearchName] = useState("");
+
   const [showModal, setShowModal] = useState(false);
   const adminData = useSelector((state) => state.profilerAdmin.value);
 
   useEffect(() => {
+    setParam("searchName", searchName);
+    setParam("page", currentPage);
     fetchCategories();
-  }, [currentPage, searchName]);
+  }, [searchName, currentPage]);
 
   const fetchCategories = async () => {
     try {

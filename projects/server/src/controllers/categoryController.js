@@ -14,13 +14,13 @@ module.exports = {
     const t = await db.sequelize.transaction();
 
     try {
-      if (!req.file) {
+      if (!req.file?.filename) {
         return res.status(400).send({
-          message: "Image is required for category creation",
+          message: "Image is required",
         });
       }
 
-      const category_img = createCategoryImageDBPath(req.file.filename);
+      const category_img = createCategoryImageDBPath(req.file?.filename);
 
       const newCategory = await db.Category.create(
         {

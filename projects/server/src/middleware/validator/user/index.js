@@ -39,12 +39,12 @@ module.exports = {
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
     body("phone", "phone cannot be empty")
       .notEmpty()
       .withMessage("phone is required")
       .isMobilePhone()
-      .withMessage("must to in valid phone number"),
+      .withMessage("must be valid phone number"),
     body("img_profile").optional(),
     body("password", "password cannot be empty")
       .notEmpty()
@@ -65,6 +65,7 @@ module.exports = {
       .custom((value, { req }) => value === req.body.password)
       .withMessage("The passwords do not match"),
   ]),
+
   registrationByOAuth: validate([
     body("fullname")
       .notEmpty()
@@ -75,7 +76,7 @@ module.exports = {
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
     body("phone").optional(),
     body("img_profile").optional(),
   ]),
@@ -100,6 +101,7 @@ module.exports = {
         "password have to contains 8 character with lowercase, uppercase, number, dan special character"
       ),
   ]),
+
   loginByOAuth: validate([
     body("email")
       .notEmpty()
@@ -113,7 +115,7 @@ module.exports = {
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
   ]),
 
   resetPassword: validate([
@@ -152,7 +154,6 @@ module.exports = {
       .optional()
       .isLength({ max: 10 })
       .withMessage("Maximum character is 10"),
-
     body("first_name")
       .optional()
       .isLength({ max: 50 })
@@ -165,7 +166,7 @@ module.exports = {
     body("phone")
       .optional()
       .isMobilePhone()
-      .withMessage("must to in valid phone number"),
+      .withMessage("must be valid phone number"),
     body("password")
       .optional()
       .isStrongPassword({

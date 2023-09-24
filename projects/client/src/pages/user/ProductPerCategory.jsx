@@ -21,6 +21,7 @@ import AlertWithIcon from "../../components/AlertWithIcon";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import productpercategorynotfound from "../../assets/images/productpercategorynotfound.png";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const ProductPerCategory = () => {
   const { categoryName } = useParams();
@@ -129,7 +130,9 @@ const ProductPerCategory = () => {
 
   const imageDisplay = display.map((item) => {
     return {
-      banner: item?.Image_products[2]?.img_product,
+      banner: item?.Image_products[2]?.img_product
+        ? item?.Image_products[2]?.img_product
+        : emptyImage,
       name: item?.name,
       price: item?.price,
       category: item?.category?.name,
@@ -161,7 +164,9 @@ const ProductPerCategory = () => {
   }
 
   return (
-    <div id="back-to-the-top">
+    <div
+    // id="back-to-the-top"
+    >
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb
@@ -174,16 +179,24 @@ const ProductPerCategory = () => {
         ]}
       />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        {errMsg ? (
+        {productData.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-screen">
-            <img src={productpercategorynotfound} alt="" className="w-96" />
+            <img
+              src={productpercategorynotfound}
+              alt="product not found"
+              className="w-96"
+            />
             <h1 className="font-bold text-grayText text-xs">
               product not found
             </h1>
           </div>
         ) : imageDisplay.length === 0 && errMsg ? (
           <div className="w-full h-full flex flex-col justify-center items-center ">
-            <img src={productNotFound} alt="" className="w-1/2 lg:w-1/3" />
+            <img
+              src={productNotFound}
+              alt="product not found"
+              className="w-1/2 lg:w-1/3"
+            />
             <p>{errMsg}</p>
           </div>
         ) : (
@@ -193,32 +206,51 @@ const ProductPerCategory = () => {
               <div className="flex flex-col justify-center items-center md:gap-4 md:grid md:grid-cols-2 lg:gap-4 lg:grid lg:grid-cols-2">
                 <div className="mb-4 lg:mb-0 md:mb-0 lg:col-span-1">
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}${categoryImage}`}
-                    alt=""
+                    src={
+                      categoryImage
+                        ? `${process.env.REACT_APP_API_BASE_URL}${categoryImage}`
+                        : emptyImage
+                    }
+                    alt="category"
                     className="md:w-full"
-                    d
                   />
                 </div>
                 <div className="lg:col-span-1 grid grid-cols-2 grid-rows-1">
                   <>
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[7]?.banner}`}
-                      alt=""
+                      src={
+                        imageDisplay[7]?.banner
+                          ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[7]?.banner}`
+                          : emptyImage
+                      }
+                      alt="display product"
                       className="row-span-1 col-span-1"
                     />
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[5]?.banner}`}
-                      alt=""
+                      src={
+                        imageDisplay[5]?.banner
+                          ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[5]?.banner}`
+                          : emptyImage
+                      }
+                      alt="display product"
                       className="row-span-1 col-span-1"
                     />
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[10]?.banner}`}
-                      alt=""
+                      src={
+                        imageDisplay[10]?.banner
+                          ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[10]?.banner}`
+                          : emptyImage
+                      }
+                      alt="display product"
                       className="row-span-1 col-span-1"
                     />
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[6]?.banner}`}
-                      alt=""
+                      src={
+                        imageDisplay[6]?.banner
+                          ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[6]?.banner}`
+                          : emptyImage
+                      }
+                      alt="display product"
                       className="row-span-1 col-span-1"
                     />
                   </>
@@ -234,24 +266,36 @@ const ProductPerCategory = () => {
               </h4>
               <div className="grid grid-cols-4">
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[8]?.banner}`}
-                  alt=""
-                  className=""
+                  src={
+                    imageDisplay[8]?.banner
+                      ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[8]?.banner}`
+                      : emptyImage
+                  }
+                  alt="display product"
                 />
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[11]?.banner}`}
-                  alt=""
-                  className=""
+                  src={
+                    imageDisplay[11]?.banner
+                      ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[11]?.banner}`
+                      : emptyImage
+                  }
+                  alt="display product"
                 />
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[2]?.banner}`}
-                  alt=""
-                  className=""
+                  src={
+                    imageDisplay[2]?.banner
+                      ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[2]?.banner}`
+                      : emptyImage
+                  }
+                  alt="display product"
                 />
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}${imageDisplay[10]?.banner}`}
-                  alt=""
-                  className=""
+                  src={
+                    imageDisplay[10]?.banner
+                      ? `${process.env.REACT_APP_API_BASE_URL}${imageDisplay[10]?.banner}`
+                      : emptyImage
+                  }
+                  alt="display product"
                 />
               </div>
               <h2 className="font-bold">Colors for your comfort in life</h2>
@@ -295,7 +339,11 @@ const ProductPerCategory = () => {
                     <div className="flex flex-wrap justify-center">
                       {productData.map((productItem) => (
                         <CardProduct
-                          src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`}
+                          src={
+                            productItem?.Image_products[0]?.img_product
+                              ? `${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`
+                              : emptyImage
+                          }
                           category={productItem?.category?.name}
                           name={productItem?.name}
                           desc={productItem?.description}
@@ -307,12 +355,12 @@ const ProductPerCategory = () => {
                   )}
                 </div>
 
-                <a
+                {/* <a
                   href="#back-to-the-top"
                   className="fixed bottom-16 right-4 bg-gray-300 w-16 h-16 flex justify-center items-center rounded-full"
                 >
                   <GrLinkTop />
-                </a>
+                </a> */}
               </div>
             </div>
           </div>

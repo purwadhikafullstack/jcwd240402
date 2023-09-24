@@ -88,7 +88,7 @@ export default function SlideOverFilter({
                         <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                           <img
                             src={logo}
-                            alt=""
+                            alt="logo"
                             className=" h-8 md:h-10 lg:h-8"
                           />
                         </Dialog.Title>

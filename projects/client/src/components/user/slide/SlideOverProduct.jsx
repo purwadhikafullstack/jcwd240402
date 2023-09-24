@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ShareButton from "../ShareButton";
 import Wishlist from "../Wishlist";
 import Loading from "../../Loading";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
@@ -106,7 +107,9 @@ export default function SlideOverProduct({ name }) {
   const product = dataImage?.map((item) => {
     let image;
     image = {
-      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
+      image: item?.img_product
+        ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
+        : emptyImage,
     };
     return image;
   });
@@ -175,7 +178,7 @@ export default function SlideOverProduct({ name }) {
                         <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                           <img
                             src={logo}
-                            alt=""
+                            alt="logo"
                             className=" h-8 md:h-10 lg:h-8"
                           />
                         </Dialog.Title>

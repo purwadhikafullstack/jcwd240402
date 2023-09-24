@@ -92,7 +92,7 @@ const ModalUploadProfileImage = () => {
                     ? showImage
                     : `${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`
                 }
-                alt=""
+                alt="upload profile"
               />
               <input
                 type="file"

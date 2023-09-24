@@ -7,6 +7,7 @@ import AlertWithIcon from "../AlertWithIcon";
 import NavbarFilterPagination from "./navbar/NavbarFilterPagination";
 import productNotFound from "../../assets/images/productNotFound.png";
 import Loading from "../Loading";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const ShowCaseProduct = ({ perPage }) => {
   const [productData, setProductData] = useState([]);
@@ -23,14 +24,18 @@ const ShowCaseProduct = ({ perPage }) => {
   const [rangeWeightMin, setRangeWeightMin] = useState(0);
   const [rangeWeightMax, setRangeWeightMax] = useState(0);
 
-  const [countDown, setCountDown] = useState(4);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPagination = searchParams.get("page");
   const currentPriceMax = searchParams.get("priceMax") || limitPrice;
   const currentPriceMin = searchParams.get("priceMin") || 0;
   const currentWeightMax = searchParams.get("weightMax") || limitWeight;
   const currentWeightMin = searchParams.get("weightMin") || 0;
+
+  console.log(currentPagination);
+  console.log(currentPriceMax);
+  console.log(currentPriceMin);
+  console.log(currentWeightMax);
+  console.log(currentWeightMin);
 
   useEffect(() => {
     axios
@@ -117,7 +122,11 @@ const ShowCaseProduct = ({ perPage }) => {
         {errMsg ? (
           <div className="mb-4 flex flex-col justify-center items-center">
             <AlertWithIcon errMsg={errMsg} />
-            <img src={productNotFound} alt="" className="w-96" />
+            <img
+              src={productNotFound}
+              alt="product not found"
+              className="w-96"
+            />
             <h1 className="text-xs font-bold text-grayText">
               you will be redirect soon
             </h1>
@@ -126,7 +135,11 @@ const ShowCaseProduct = ({ perPage }) => {
           <div className="flex flex-wrap justify-center">
             {productData.map((productItem) => (
               <CardProduct
-                src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`}
+                src={
+                  productItem?.Image_products[0]?.img_product
+                    ? `${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`
+                    : emptyImage
+                }
                 category={productItem?.category?.name}
                 name={productItem?.name}
                 desc={productItem?.description}

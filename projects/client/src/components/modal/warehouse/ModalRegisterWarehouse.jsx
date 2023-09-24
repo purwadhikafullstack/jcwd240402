@@ -185,7 +185,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
               <div className="flex flex-col flex-wrap justify-center items-center mt-2 w-fit">
                 <img
                   src={showImage ? showImage : emptyImage}
-                  alt=""
+                  alt="warehouse"
                   className="w-52 md:w-full lg:w-full"
                 />
                 <input

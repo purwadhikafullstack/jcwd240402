@@ -86,7 +86,7 @@ const SignUp = () => {
                       type="button"
                     >
                       <div className="flex justify-start">
-                        <img src={google} alt="" className="w-10 " />
+                        <img src={google} alt="google" className="w-10 " />
                       </div>
                       <div>
                         <h1 className="text-sm">Sign up with Google </h1>

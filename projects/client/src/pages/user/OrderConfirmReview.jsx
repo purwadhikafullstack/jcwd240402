@@ -19,6 +19,9 @@ import pos from "../../assets/icons/pos.png";
 import jne from "../../assets/icons/jne.png";
 import { OrderButton } from "../../components/user/OrderButton";
 import { rupiahFormat } from "../../utils/formatter";
+import { profileUser } from "../../features/userDataSlice";
+import datanofound from "../../assets/images/productpercategorynotfound.png";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const OrderConfirmReview = () => {
   const { invoiceId } = useParams();
@@ -43,27 +46,41 @@ const OrderConfirmReview = () => {
   const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
-    setLoadingOrder(true);
-    setTimeout(() => {
-      axios
-        .get(`/user/order/${invoiceId}`, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          console.log(res.data);
-          setYourOrder(res.data?.order);
-          setLoadingOrder(false);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-          setLoadingOrder(false);
-        });
-    }, 1000);
-  }, [access_token, invoiceId]);
+    axios
+      .get("/user/profile", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(profileUser(res.data?.result));
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+      });
+  }, [access_token, dispatch]);
 
-  console.log("your order", yourOrder);
+  useEffect(() => {
+    if (access_token && refresh_token && userData.role_id === 3) {
+      setLoadingOrder(true);
+      setTimeout(() => {
+        axios
+          .get(`/user/order/${invoiceId}`, {
+            headers: { Authorization: `Bearer ${access_token}` },
+          })
+          .then((res) => {
+            console.log(res.data);
+            setYourOrder(res.data?.order);
+            setLoadingOrder(false);
+            setLoading(false);
+          })
+          .catch((error) => {
+            console.log(error);
+            setLoading(false);
+            setLoadingOrder(false);
+          });
+      }, 1000);
+    }
+  }, [access_token, invoiceId, refresh_token, userData.role_id]);
 
   /* 
 1 = payment pending
@@ -82,6 +99,7 @@ const OrderConfirmReview = () => {
       </div>
     );
   }
+  console.log(!yourOrder);
 
   return (
     <div>
@@ -99,9 +117,16 @@ const OrderConfirmReview = () => {
       />
       <div>
         <div className="min-h-screen mx-6 space-y-4 md:space-y-4 lg:space-y-4 lg:mx-32 mb-10">
-          {yourOrder.order_status_id === 1 ||
-          yourOrder.order_status_id === 7 ||
-          yourOrder.order_status_id === 6 ? (
+          {!yourOrder ? (
+            <div className="flex flex-col justify-center items-center h-screen">
+              <img src={datanofound} alt="data not found" className="w-96" />
+              <h1 className="font-bold text-grayText text-xs">
+                Order confirm data not found
+              </h1>
+            </div>
+          ) : yourOrder.order_status_id === 1 ||
+            yourOrder.order_status_id === 7 ||
+            yourOrder.order_status_id === 6 ? (
             <>
               <Link
                 to="/user/setting/order"
@@ -129,9 +154,12 @@ const OrderConfirmReview = () => {
                             (image, idx) => (
                               <div key={idx} className=" ">
                                 <img
-                                  src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
-                                  alt=""
-                                  className=""
+                                  src={
+                                    image.img_product
+                                      ? `${process.env.REACT_APP_API_BASE_URL}${image.img_product}`
+                                      : emptyImage
+                                  }
+                                  alt="product"
                                 />
                               </div>
                             )
@@ -180,17 +208,17 @@ const OrderConfirmReview = () => {
                 {yourOrder.delivery_courier === "jne" ? (
                   <div className="font-bold text-sm">
                     <h4>Courier:</h4>
-                    <img src={jne} alt="" className="w-52" />
+                    <img src={jne} alt="jne" className="w-52" />
                   </div>
                 ) : yourOrder.delivery_courier === "pos" ? (
                   <div className="font-bold text-sm">
                     <h4>Courier:</h4>
-                    <img src={pos} alt="" className="w-52" />
+                    <img src={pos} alt="pos" className="w-52" />
                   </div>
                 ) : yourOrder.delivery_courier === "tiki" ? (
                   <div className="font-bold text-sm">
                     <h4>Courier:</h4>
-                    <img src={tiki} alt="" className="w-52" />
+                    <img src={tiki} alt="tiki" className="w-52" />
                   </div>
                 ) : (
                   <div className="font-bold text-sm">
@@ -256,9 +284,12 @@ const OrderConfirmReview = () => {
                             (image, idx) => (
                               <div key={idx} className=" ">
                                 <img
-                                  src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
-                                  alt=""
-                                  className=""
+                                  src={
+                                    image.img_product
+                                      ? `${process.env.REACT_APP_API_BASE_URL}${image.img_product}`
+                                      : emptyImage
+                                  }
+                                  alt="product"
                                 />
                               </div>
                             )

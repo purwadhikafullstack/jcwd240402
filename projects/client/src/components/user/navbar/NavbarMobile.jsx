@@ -32,7 +32,6 @@ const NavbarMobile = () => {
 
   const dispatch = useDispatch();
   const { logOutAuth } = UserAuth();
-
   useEffect(() => {
     if (access_token && refresh_token && userData.role_id === 3) {
       axios
@@ -77,9 +76,8 @@ const NavbarMobile = () => {
 
   let Links = [
     { name: "HOME", to: "/" },
-    { name: "PROFILE", to: "/user/setting" },
-    { name: "CART", to: "/cart" },
-    { name: "ORDER", to: "/user/setting/order" },
+    { name: "CATEGORIES", to: "/product-category" },
+    { name: "PRODUCTS", to: "/all-products" },
   ];
 
   const handleLogOut = () => {
@@ -90,7 +88,7 @@ const NavbarMobile = () => {
     <div className="sticky top-0 w-full z-20">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
         <Link to="/" className="ml-4 w-12">
-          <img src={logo} alt="" className="w-full " />
+          <img src={logo} alt="logo" className="w-full " />
         </Link>
         <div className="w-full">
           <SearchBar

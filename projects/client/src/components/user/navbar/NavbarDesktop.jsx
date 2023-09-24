@@ -20,6 +20,7 @@ import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
 import { UserAuth } from "../../../context/AuthContext";
 import { wishlistUser } from "../../../features/wishlistDataSlice";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -111,7 +112,7 @@ const NavbarDesktop = () => {
     >
       <div className="flex w-[1200px] justify-evenly items-center h-16">
         <Link to="/" className="">
-          <img src={logo} alt="" className=" h-10" />
+          <img src={logo} alt="logo" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
           <Link to="/product-category">Categories</Link>
@@ -163,8 +164,12 @@ const NavbarDesktop = () => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={`${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`}
-                      alt=""
+                      src={
+                        userData.User_detail?.img_profile
+                          ? `${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`
+                          : emptyImage
+                      }
+                      alt="profile"
                     />
                   </Menu.Button>
                 </div>

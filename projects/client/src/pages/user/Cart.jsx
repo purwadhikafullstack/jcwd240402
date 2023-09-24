@@ -118,7 +118,11 @@ const Cart = () => {
             </div>
             {productsData.length === 0 ? (
               <div className="flex flex-col justify-center items-center w-[21rem] md:w-[47rem] lg:w-[79rem]">
-                <img src={addtocart} alt="" className="w-56 md:w-96" />
+                <img
+                  src={addtocart}
+                  alt="add to cart"
+                  className="w-56 md:w-96"
+                />
                 <h1 className="text-gray-400 text-center text-xs md:text-sm lg:text-sm mt-2">
                   Your Shopping Cart is empty. You do not have any products in
                   your shopping list

@@ -127,13 +127,15 @@ const Home = () => {
   }
 
   return (
-    <div id="back-to-the-top">
+    <div
+    // id="back-to-the-top"
+    >
       <NavbarDesktop />
       <NavbarMobile />
       <BreadCrumb />
 
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center w-full">
           <CarouselBanner imageUrls={imageUrls} carouselSize="home" />
         </div>
         <StaticBanner />
@@ -181,12 +183,12 @@ const Home = () => {
           <ServiceCard services={services} />
         </div>
       </div>
-      <a
+      {/* <a
         href="#back-to-the-top"
         className="fixed bottom-16 right-4 bg-gray-300 w-16 h-16 flex justify-center items-center rounded-full"
       >
         <GrLinkTop />
-      </a>
+      </a> */}
       <FooterDesktop />
       <NavigatorMobile />
     </div>

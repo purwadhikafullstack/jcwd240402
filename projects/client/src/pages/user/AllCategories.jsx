@@ -7,6 +7,7 @@ import axios from "../../api/axios";
 import { Link } from "react-router-dom";
 import Loading from "../../components/Loading";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const AllCategories = () => {
   const [loading, setLoading] = useState(true);
@@ -49,8 +50,12 @@ const AllCategories = () => {
                   to={`/product/product-category/${categoryProduct.category}`}
                 >
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}${categoryProduct.category_img}`}
-                    alt=""
+                    src={
+                      categoryProduct.category_img
+                        ? `${process.env.REACT_APP_API_BASE_URL}${categoryProduct.category_img}`
+                        : emptyImage
+                    }
+                    alt="category"
                     className="w-full h-full object-cover"
                   />
                 </Link>

@@ -14,6 +14,7 @@ import {
 import { useSelector } from "react-redux";
 import addressEmpty from "../../assets/images/addressEmpty.png";
 import Loading from "../../components/Loading";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const AllWarehouse = () => {
   const access_token = getCookie("access_token");
@@ -97,8 +98,12 @@ const AllWarehouse = () => {
               <div className="grid md:grid-cols-12 lg:grid-cols-12">
                 <div className="md:col-span-8 lg:col-span-8 h-80 w-full">
                   <img
-                    src={`${process.env.REACT_APP_API_BASE_URL}${closestWarehouse.warehouse_img}`}
-                    alt=""
+                    src={
+                      closestWarehouse.warehouse_img
+                        ? `${process.env.REACT_APP_API_BASE_URL}${closestWarehouse.warehouse_img}`
+                        : emptyImage
+                    }
+                    alt="warehouse"
                     className="object-cover h-full w-full"
                   />
                 </div>
@@ -142,7 +147,7 @@ const AllWarehouse = () => {
             <div>
               <div className="grid md:grid-cols-12 lg:grid-cols-12">
                 <div className="md:col-span-8 lg:col-span-8 flex justify-center mt-4">
-                  <img src={addressEmpty} alt="" />
+                  <img src={addressEmpty} alt="address empty" />
                 </div>
                 <div className="md:col-span-4 space-y-2 lg:col-span-4 text-white bg-blue2 text-xs p-4 md:p-8 lg:p-8">
                   <p>
@@ -170,8 +175,12 @@ const AllWarehouse = () => {
                   <div className="h-40">
                     <Link to={``}>
                       <img
-                        src={`${process.env.REACT_APP_API_BASE_URL}${warehouse.warehouse_img}`}
-                        alt=""
+                        src={
+                          warehouse.warehouse_img
+                            ? `${process.env.REACT_APP_API_BASE_URL}${warehouse.warehouse_img}`
+                            : emptyImage
+                        }
+                        alt="warehouse"
                         className="w-full h-full object-cover"
                       />
                     </Link>

@@ -25,7 +25,7 @@ const FooterDesktop = () => {
       <div className="w-full lg:px-16 md:px-16">
         <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <div className="w-20 lg:w-96 md:w-96 lg:mr-4 md:mr-4 m-auto ">
-            <img src={logo} alt="" />
+            <img src={logo} alt="logo" />
           </div>
           <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6">
             <div>

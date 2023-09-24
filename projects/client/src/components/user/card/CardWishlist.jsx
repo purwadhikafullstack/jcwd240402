@@ -4,6 +4,7 @@ import { Badge } from "flowbite-react";
 
 import { rupiahFormat } from "../../../utils/formatter";
 import { weightFormat } from "../../../utils/formatter";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 const CardWishlist = ({ item }) => {
   return (
@@ -17,8 +18,12 @@ const CardWishlist = ({ item }) => {
         <div className="md:grid lg:grid md:grid-cols-4 lg:grid-cols-4  ">
           <div className="flex p-2 justify-center md:justify-center lg:justify-center md:items-center lg:items-center">
             <img
-              src={`${process.env.REACT_APP_API_BASE_URL}${item?.src}`}
-              alt=""
+              src={
+                item?.src
+                  ? `${process.env.REACT_APP_API_BASE_URL}${item?.src}`
+                  : emptyImage
+              }
+              alt={`wishlist ${item.name}`}
               className="w-40 object-cover"
             />
           </div>

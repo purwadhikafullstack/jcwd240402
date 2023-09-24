@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { BiSearch } from "react-icons/bi";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
-import AlertWithIcon from "./AlertWithIcon";
 import { Badge } from "flowbite-react";
+
+import emptyImage from "../assets/images/emptyImage.jpg";
 
 const SearchBar = ({
   width = "w-full",
@@ -103,8 +104,12 @@ const SearchBar = ({
                     onClick={() => setSearchProduct("")}
                   >
                     <img
-                      src={`${process.env.REACT_APP_API_BASE_URL}${item.img}`}
-                      alt=""
+                      src={
+                        item.img
+                          ? `${process.env.REACT_APP_API_BASE_URL}${item.img}`
+                          : emptyImage
+                      }
+                      alt={`search product ${item.name}`}
                       className="w-20 rounded-md"
                     />
                     <div className="flex flex-col">

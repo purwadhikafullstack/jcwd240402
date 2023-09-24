@@ -187,7 +187,7 @@ const Login = () => {
                   type="button"
                 >
                   <div className="flex justify-center items-center w-full">
-                    <img src={google} alt="" className="w-10 " />
+                    <img src={google} alt="google" className="w-10 " />
                     <h1 className="text-sm">Login with Google </h1>
                   </div>
                 </button>

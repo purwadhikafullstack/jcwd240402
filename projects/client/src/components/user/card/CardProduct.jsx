@@ -16,7 +16,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
         >
           <img
             src={src}
-            alt=""
+            alt="product"
             className="w-full h-full object-center object-cover"
           />
         </Link>

@@ -11,6 +11,7 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import CarouselBanner from "../../components/user/carousel/CarouselBanner";
 import allproductbanner1 from "../../assets/images/allproductsbanner1.jpeg";
 import allproductbanner2 from "../../assets/images/allproductsbanner2.jpeg";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const AllProducts = () => {
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,9 @@ const AllProducts = () => {
   }, []);
 
   const imageUrls = category.map((item) => {
-    return `${process.env.REACT_APP_API_BASE_URL}${item.category_img}`;
+    return item.category_img
+      ? `${process.env.REACT_APP_API_BASE_URL}${item.category_img}`
+      : emptyImage;
   });
 
   if (loading) {
@@ -74,12 +77,12 @@ const AllProducts = () => {
               <div className="grid grid-cols-2 mt-2">
                 <img
                   src={allproductbanner1}
-                  alt=""
+                  alt="product banner"
                   className="object-cover h-full"
                 />
                 <img
                   src={allproductbanner2}
-                  alt=""
+                  alt="product banner"
                   className="object-cover h-full"
                 />
               </div>

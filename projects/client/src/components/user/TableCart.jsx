@@ -6,6 +6,7 @@ import { CiMenuKebab } from "react-icons/ci";
 
 import { Badge } from "flowbite-react";
 import SlideOverCart from "./slide/SlideOverCart";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -87,8 +88,10 @@ const TableCart = ({
       <div className="col-span-2 md:col-span-3 lg:col-span-3 ">
         <div className="flex gap-2 h-full justify-center items-center md:justify-start lg:justify-start mt-2 md:mt-0 lg:mt-0">
           <img
-            src={`${process.env.REACT_APP_API_BASE_URL}${img}`}
-            alt=""
+            src={
+              img ? `${process.env.REACT_APP_API_BASE_URL}${img}` : emptyImage
+            }
+            alt={`cart product ${name}`}
             className="w-16 h-16 md:w-36 md:h-36 lg:w-40 lg:h-40"
           />
           <Link

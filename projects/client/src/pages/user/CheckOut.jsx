@@ -22,6 +22,7 @@ import { cartsUser } from "../../features/cartSlice";
 import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptycheckout from "../../assets/images/emptycheckout.png";
 import { rupiahFormat } from "../../utils/formatter";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -222,7 +223,7 @@ const CheckOut = () => {
             <div className="w-full h-screen text-xs text-grayText space-y-2 flex flex-col justify-center items-center">
               <img
                 src={emptycheckout}
-                alt=""
+                alt="empty checkout"
                 className="w-1/2 md:w-1/2 lg:w-1/3"
               />
               <p className="font-semibold">
@@ -269,8 +270,13 @@ const CheckOut = () => {
                         >
                           <div className="col-span-4 md:col-span-2 lg:col-span-2 w-full  flex flex-col justify-center items-center">
                             <img
-                              src={`${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products[0]?.img_product}`}
-                              alt=""
+                              src={
+                                item?.Warehouse_stock?.Product
+                                  ?.Image_products[0]?.img_product
+                                  ? `${process.env.REACT_APP_API_BASE_URL}${item?.Warehouse_stock?.Product?.Image_products[0]?.img_product}`
+                                  : emptyImage
+                              }
+                              alt="product"
                               className="w-full"
                             />
                           </div>

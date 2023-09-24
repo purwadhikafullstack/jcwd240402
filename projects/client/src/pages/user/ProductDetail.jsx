@@ -33,6 +33,7 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import ShareButton from "../../components/user/ShareButton";
 import Wishlist from "../../components/user/Wishlist";
 import { rupiahFormat } from "../../utils/formatter";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const ProductDetail = () => {
   const { name } = useParams();
@@ -135,14 +136,6 @@ const ProductDetail = () => {
     }
   };
 
-  const product = dataImage?.map((item) => {
-    let image;
-    image = {
-      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
-    };
-    return image;
-  });
-
   if (loading) {
     return (
       <div className="border-2 w-full h-screen flex justify-center items-center">
@@ -170,22 +163,23 @@ const ProductDetail = () => {
               openAlert={openAlert}
               errMsg={errMsg}
             />
-            {product.length === 0 ? (
+            {dataImage.length === 0 ? (
               <div className="w-full h-full mt-10 flex flex-col justify-center items-center ">
                 <AlertWithIcon errMsg={errMsg} />
                 <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
               </div>
             ) : (
-              // <CarouselProductDetail data={product} />
               <div className="w-full md:w-96 lg:w-96 h-full mt-10 flex flex-col justify-center items-center">
                 <Carousel>
                   {dataImage.map((item, idx) => (
                     <div key={idx}>
-                      {" "}
-                      {/* Tambahkan key untuk setiap elemen dalam daftar */}
                       <img
-                        src={`${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`}
-                        alt=""
+                        src={
+                          item?.img_product
+                            ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
+                            : emptyImage
+                        }
+                        alt="product"
                         className=""
                       />
                     </div>
@@ -194,7 +188,7 @@ const ProductDetail = () => {
               </div>
             )}
             <div className="hidden lg:block md:hidden w-full">
-              {product.length === 0 ? null : (
+              {dataImage.length === 0 ? null : (
                 <AccordionProduct
                   desc={detailProduct.description}
                   name={detailProduct.name}
@@ -205,7 +199,7 @@ const ProductDetail = () => {
             </div>
           </div>
           <div className="lg:col-span-1 lg:sticky lg:top-16 lg:h-fit p-4 lg:p-4 ">
-            {product.length === 0 ? null : (
+            {dataImage.length === 0 ? null : (
               <>
                 <h1 className="font-bold lg:text-4xl">{detailProduct.name}</h1>
                 <h1 className="font-bold text-xl">
@@ -290,7 +284,7 @@ const ProductDetail = () => {
               </div>
             </div>
             <div className="lg:hidden">
-              {product.length === 0 ? null : (
+              {dataImage.length === 0 ? null : (
                 <AccordionProduct
                   desc={detailProduct.description}
                   name={detailProduct.name}

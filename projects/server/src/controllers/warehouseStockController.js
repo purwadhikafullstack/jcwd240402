@@ -238,6 +238,9 @@ module.exports = {
         rangePriceMax: Number(req.query.priceMax) || maxPrice,
       };
 
+      console.log("price min:", pagination.rangePriceMin);
+      console.log("price min type:", typeof pagination.rangePriceMin);
+
       const result = await db.Product.findAll({
         attributes: { exclude: ["updatedAt", "createdAt", "deletedAt"] },
         where: pagination.searchProduct
@@ -326,9 +329,17 @@ module.exports = {
         offset: (pagination.page - 1) * pagination.perPage,
       });
 
+      if (totalCount === 0) {
+        return res.json({
+          ok: true,
+          data: result,
+        });
+      }
+
       const totalPage = Math.ceil(totalCount / pagination.perPage);
       if (pagination.page > totalPage) {
         return res.status(400).send({
+          ok: false,
           message: "Page number exceeds total pages",
         });
       }

@@ -60,8 +60,8 @@ const OrderModal = ({
         <Modal.Header />
         <Modal.Body>
           <div className="space-y-6">
-            <h1 className="text-xl font-bold  text-blue3 lg:rounded-xl">
-              confirm payment : {row.invoiceId}
+            <h1 className="text-base font-bold  text-blue3 lg:rounded-xl">
+              Confirm Payment : {row.invoiceId}
             </h1>
             <div className="flex flex-wrap md:flex-nowrap lg:flex-nowrap justify-around">
               <div className="w-full  flex flex-col justify-center items-center">

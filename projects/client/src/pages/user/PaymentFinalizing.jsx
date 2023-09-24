@@ -31,6 +31,7 @@ import orderwaitingpayment from "../../assets/images/orderwaitingpayment.png";
 import orderinprocess from "../../assets/images/orderinprocess.png";
 import { rupiahFormat } from "../../utils/formatter";
 import datanofound from "../../assets/images/productpercategorynotfound.png";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const PaymentFinalizing = () => {
   const [totalCart, setTotalCart] = useState(0);
@@ -364,4 +365,4 @@ const PaymentFinalizing = () => {
   );
 };
 
-export default PaymentFinalizing;
+export default withAuthUser(PaymentFinalizing);

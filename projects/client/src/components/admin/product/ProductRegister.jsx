@@ -37,7 +37,7 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
       console.error("Error creating product:", error.response.data);
 
       if (error.response && error.response.data && error.response.data.error) {
-          setErrorMessage(error.response.data.error);
+        setErrorMessage(error.response.data.error);
       } else if (
         error.response &&
         error.response.data &&
@@ -51,7 +51,7 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
             formikErrors[err.path] = err.msg;
           }
         });
-        formik.setErrors(formikErrors)
+        formik.setErrors(formikErrors);
       }
     }
   };
@@ -80,13 +80,13 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="flex-1 flex items-center justify-center">
+    <div className=" lg:flex lg:h-screen">
+      <div className="lg:flex-1 lg:flex lg:items-center lg:justify-center">
         <div className="text-gray-700 body-font bg-white">
-          <div className="container mx-auto">
+          <div className="container lg:mx-auto">
             <form onSubmit={formik.handleSubmit}>
-              <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
-                <div className="w-full flex flex-col justify-center items-center mt-6">
+              <div className="lg:flex flex-col lg:flex-row justify-center items-start lg:p-10 border-rounded">
+                <div className="w-full flex flex-col justify-center items-center lg:mt-6">
                   <ImageGallery
                     images={uploadedImages}
                     onUpload={updateImages}
@@ -98,7 +98,7 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                     handleInputChange={formik.handleChange}
                     formik={formik}
                   />
-                  <div className="flex justify-center w-full">
+                  <div className="flex my-4 justify-center w-full">
                     <Button
                       type="submit"
                       buttonText={isEditMode ? "Update Product" : "Add Product"}

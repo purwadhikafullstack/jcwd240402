@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
 import login from "../assets/images/furnifor.png";
@@ -23,7 +23,7 @@ function handleLogout() {
 }
 
 function SidebarAdminDesktop() {
-  const navigate = useNavigate();
+  const location = useLocation();
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const adminRoutes = [
     { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
@@ -57,7 +57,7 @@ function SidebarAdminDesktop() {
   ];
 
   return (
-    <Sidebar className="text-black font-poppins ">
+    <Sidebar className="text-black font-poppins hidden lg:block">
       <Sidebar.Logo
         href="#"
         img={loginSideBar}
@@ -113,9 +113,16 @@ function SidebarAdminDesktop() {
                 ) : (
                   <Link
                     to={route.to}
-                    className="flowbite-sidebar-link text-base_grey"
+                    className="flowbite-sidebar-link text-base_grey "
                   >
-                    <Sidebar.Item icon={route.icon}>{route.label}</Sidebar.Item>
+                    <Sidebar.Item
+                      icon={route.icon}
+                      className={`${
+                        location.pathname === route.to ? "bg-blue-200" : null
+                      } hover:bg-blue-100`}
+                    >
+                      {route.label}
+                    </Sidebar.Item>
                   </Link>
                 )}
               </div>

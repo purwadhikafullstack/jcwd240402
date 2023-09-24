@@ -22,6 +22,7 @@ import { rupiahFormat } from "../../utils/formatter";
 import { profileUser } from "../../features/userDataSlice";
 import datanofound from "../../assets/images/productpercategorynotfound.png";
 import emptyImage from "../../assets/images/emptyImage.jpg";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const OrderConfirmReview = () => {
   const { invoiceId } = useParams();
@@ -335,4 +336,4 @@ const OrderConfirmReview = () => {
   );
 };
 
-export default OrderConfirmReview;
+export default withAuthUser(OrderConfirmReview);

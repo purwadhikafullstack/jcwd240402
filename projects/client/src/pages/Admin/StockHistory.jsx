@@ -14,7 +14,6 @@ const StockHistory = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-  const [roleId, setRoleId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [stockHistoryList, setStockHistoryList] = useState([]);
@@ -24,6 +23,7 @@ const StockHistory = () => {
   const [error, setError] = useState("");
   const access_token = getCookie("access_token");
   const adminData = useSelector((state) => state.profilerAdmin.value);
+  const [defaultYear, setDefaultYear] = useState([]);
 
   const getCookieValue = (name) =>
     document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
@@ -46,13 +46,17 @@ const StockHistory = () => {
     { value: 12, label: "December" },
   ];
 
-  const yearOptions = [
-    { value: "", label: "any year" },
-    { value: 2020, label: "2020" },
-    { value: 2021, label: "2021" },
-    { value: 2022, label: "2022" },
-    { value: 2023, label: "2023" },
-  ];
+  useEffect(() => {
+    const fetchDefaultYear = async () => {
+      try {
+        const year = await loadYearOptions('');
+        setDefaultYear(year);
+      } catch (error) {
+        console.error("Error fetching default year:", error);
+      }
+    };
+    fetchDefaultYear();
+  }, []);
 
   const loadWarehouseOptions = async (inputValue) => {
     try {
@@ -78,22 +82,34 @@ const StockHistory = () => {
     }
   };
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/admin/checkrole`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((response) => {
-        setRoleId(response?.data?.role);
-      })
-      .catch((err) => {
-        setError(err.response.message);
-      });
-  }, []);
+  const loadYearOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/year?db=history`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const yearOptions = [
+        { value: "", label: "All Year" },
+        ...response.data.year.map((year) => ({
+          value: year,
+          label: year,
+        })),
+      ];
+      return yearOptions
+    } catch (error) {
+      console.error("Error loading year:", error);
+      return [];
+    }
+  };
 
   useEffect(() => {
+
+    if (adminData.role_id === 2) {
+      setWarehouseId(adminData?.warehouse_id);
+    }
+
     axios
       .get(
         `http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
@@ -137,11 +153,14 @@ const StockHistory = () => {
             placeholder={<div>month</div>}
             onChange={handleChangeMonth}
           />
-          <Select
-            options={yearOptions}
-            placeholder={<div>year</div>}
-            onChange={handleChangeYear}
-          />
+          <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultYear}
+          loadOptions={loadYearOptions}
+          value={year || null}
+          onChange={handleChangeYear}
+          placeholder="Select year"
+        />
           {adminData.role_id == 1 && (
             <AsyncSelect
               cacheOptions
@@ -161,6 +180,7 @@ const StockHistory = () => {
             headers={[
               "Product",
               "Admin Username",
+              "Warehouse",
               "Stock Before",
               "Stock After",
               "Increment/Decrement",
@@ -171,6 +191,7 @@ const StockHistory = () => {
             data={stockHistoryList.map((history) => ({
               Product: history?.Warehouse_stock?.Product?.name || "",
               "Admin Username": history?.Admin?.username || "",
+              "Warehouse": history?.Warehouse?.warehouse_name || "",
               "Stock Before": history?.stock_before_transfer || "0",
               "Stock After": history?.stock_after_transfer || "",
               "Increment/Decrement": history?.increment_decrement || "",

@@ -1,4 +1,4 @@
-import axios from "axios";
+
 import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import Select from "react-select";
@@ -11,6 +11,7 @@ import toRupiah from "@develoka/angka-rupiah-js";
 import AsyncSelect from "react-select/async";
 import dayjs from "dayjs";
 import { rupiahFormat } from "../../utils/formatter";
+import axios from "../../api/axios";
 
 
 const SalesReport = () => {
@@ -96,7 +97,7 @@ const SalesReport = () => {
 
     axios
       .get(
-        `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
+        `/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -115,7 +116,7 @@ const SalesReport = () => {
   const loadCategoryOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/categories`,
+        `/admin/categories`,
         {
           params: { name: inputValue },
         },
@@ -140,7 +141,7 @@ const SalesReport = () => {
   const loadProductOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/products`,
+        `/admin/products`,
         {
           params: { name: inputValue },
         },
@@ -165,7 +166,7 @@ const SalesReport = () => {
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/year?db=order`,
+        `/admin/year?db=order`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
@@ -207,7 +208,7 @@ const SalesReport = () => {
   const loadWarehouseOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        `/warehouse/warehouse-list?searchName=${inputValue}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,

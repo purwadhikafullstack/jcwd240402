@@ -15,18 +15,10 @@ import  useURLParams  from "../../../utils/useUrlParams";
 
 const StockList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
-  const [selectedWarehouse, setSelectedWarehouse] = useState(
-    syncStateWithParams("warehouse", null)
-  );
-  const [selectedCategory, setSelectedCategory] = useState(
-    syncStateWithParams("category", null)
-  );
-  const [searchProductName, setSearchProductName] = useState(
-    syncStateWithParams("productName", "")
-  );
-  const [currentPage, setCurrentPage] = useState(
-    syncStateWithParams("page", 1)
-  );
+  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", ""));
+  const [selectedCategory, setSelectedCategory] = useState(syncStateWithParams("category", ""));
+  const [searchProductName, setSearchProductName] = useState(syncStateWithParams("productName", "") );
+  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
   const [stocks, setStocks] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -42,8 +34,8 @@ const StockList = () => {
   const loadCategories = useCategoryOptions();
 
   useEffect(() => {
-    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : null);
-    setParam("category", selectedCategory ? selectedCategory.value : null);
+    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : "");
+    setParam("category", selectedCategory ? selectedCategory.value : "");
     setParam("productName", searchProductName);
     setParam("page", currentPage);
   }, [selectedWarehouse, selectedCategory, searchProductName, currentPage]);

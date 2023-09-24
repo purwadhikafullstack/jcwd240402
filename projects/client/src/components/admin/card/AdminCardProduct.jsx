@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Badge } from "flowbite-react";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import noimage from "../../../assets/images/noimagefound.jpg"
 
 const AdminCardProduct = ({ product, onEdit, onDelete, setActive }) => {
   const access_token = getCookie("access_token");
@@ -46,8 +47,8 @@ const AdminCardProduct = ({ product, onEdit, onDelete, setActive }) => {
   return (
     <div className="bg-white flex flex-col justify-between items-start w-48 h-60 p-6 rounded-lg shadow-card-1 m-3 relative">
       <img
-        src={`${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`}
-        alt={`${product.name} product`}
+        src={ product.Image_products[0]?.img_product ? `${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`: noimage }
+        alt={`${product.name} product` }
         className="w-full h-24 object-cover mb-2"
       />
       <button className="absolute top-2 right-2 z-0" onClick={handleMenuToggle}>

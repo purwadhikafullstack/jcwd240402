@@ -13,8 +13,8 @@ import moment from "moment";
 
 const InventoryTransferList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
-  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", null));
-  const [selectedStatus, setSelectedStatus] = useState(syncStateWithParams("status", {value: "",label: "All Status",}));
+  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", ""));
+  const [selectedStatus, setSelectedStatus] = useState(syncStateWithParams("status", ""));
   const [searchProductName, setSearchProductName] = useState(syncStateWithParams("productName", ""));
   const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
   const [selectedYear, setSelectedYear] = useState(syncStateWithParams("year", new Date().getFullYear()));
@@ -29,14 +29,14 @@ const InventoryTransferList = () => {
   const loadWarehouses = useWarehouseOptions();
 
   useEffect(() => {
-    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : null);
+    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : "");
     setParam("status", selectedStatus ? selectedStatus.value : "");
     setParam("productName", searchProductName);
     setParam("page", currentPage);
     setParam("year", selectedYear);
     setParam("month", selectedMonth);
   }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
-
+  
   useEffect(() => {
     fetchTransfers();
   }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
@@ -71,7 +71,8 @@ const InventoryTransferList = () => {
       console.error("Error fetching transfers:", error);
     }
   };
-  
+
+  console.log("test",selectedStatus);
 
   return (
     <div className="container mx-auto pt-1">
@@ -88,7 +89,7 @@ const InventoryTransferList = () => {
           cacheOptions
           defaultOptions
           loadOptions={loadStatusOptions}
-          onChange={(option) => setSelectedStatus(option)}
+          onChange={(option) => setSelectedStatus(option || null)} 
           value={selectedStatus}
           placeholder="Select a status"
           className={`flex-1 ${adminData.role_id === 1 ? "ml-4" : ""}`}

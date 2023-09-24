@@ -12,26 +12,24 @@ import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useWarehouseOptions } from "../../utils/loadWarehouseOptions";
+import useURLParams from "../../utils/useUrlParams";
 
 const AdminList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
   const [admins, setAdmins] = useState([]);
-  const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [searchName, setSearchName] = useState("");
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedAdminId, setSelectedAdminId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
   const loadWarehouseOptions = useWarehouseOptions();
-
-  useEffect(() => {
-    refreshAdminList();
-  }, [searchName, selectedWarehouse, currentPage]);
+  const [searchName, setSearchName] = useState(syncStateWithParams("searchName", ""));
+  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouseId", ""));
+  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
 
   const handleWarehouseChange = (selectedOption) => {
     setSelectedWarehouse(selectedOption.value);
@@ -41,6 +39,14 @@ const AdminList = () => {
   const resetPage = () => {
     setCurrentPage(1);
   };
+
+  useEffect(() => {
+    setParam("searchName", searchName);
+    setParam("warehouseId", selectedWarehouse);
+    setParam("page", currentPage);
+    refreshAdminList();
+  }, [searchName, selectedWarehouse, currentPage]);
+
 
   const fetchAdmins = async () => {
     try {

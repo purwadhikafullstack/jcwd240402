@@ -11,13 +11,23 @@ import ProductDetailsModal from "../../modal/stock/ModalProductDetails";
 import axios from "../../../api/axios";
 import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
 import { useCategoryOptions } from "../../../utils/loadCategoryOptions";
+import  useURLParams  from "../../../utils/useUrlParams";
 
 const StockList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouse", null)
+  );
+  const [selectedCategory, setSelectedCategory] = useState(
+    syncStateWithParams("category", null)
+  );
+  const [searchProductName, setSearchProductName] = useState(
+    syncStateWithParams("productName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
   const [stocks, setStocks] = useState([]);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [searchProductName, setSearchProductName] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -31,6 +41,12 @@ const StockList = () => {
   const loadWarehouses = useWarehouseOptions();
   const loadCategories = useCategoryOptions();
 
+  useEffect(() => {
+    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : null);
+    setParam("category", selectedCategory ? selectedCategory.value : null);
+    setParam("productName", searchProductName);
+    setParam("page", currentPage);
+  }, [selectedWarehouse, selectedCategory, searchProductName, currentPage]);
 
   useEffect(() => {
     fetchStocks();
@@ -41,7 +57,12 @@ const StockList = () => {
       const warehouseId = selectedWarehouse ? selectedWarehouse.value : null;
       const categoryId = selectedCategory ? selectedCategory.value : null;
       const response = await axios.get(`/warehouse-stock`, {
-        params: {warehouseId: warehouseId,categoryId: categoryId,productName: searchProductName,page: currentPage,},
+        params: {
+          warehouseId: warehouseId,
+          categoryId: categoryId,
+          productName: searchProductName,
+          page: currentPage,
+        },
         headers: { Authorization: `Bearer ${access_token}` },
       });
       if (response.data && response.data.stocks) {

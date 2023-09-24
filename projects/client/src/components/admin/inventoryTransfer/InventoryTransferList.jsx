@@ -8,33 +8,43 @@ import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
+import  useURLParams  from "../../../utils/useUrlParams";
 import moment from "moment";
 
 const InventoryTransferList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
+  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", null));
+  const [selectedStatus, setSelectedStatus] = useState(syncStateWithParams("status", {value: "",label: "All Status",}));
+  const [searchProductName, setSearchProductName] = useState(syncStateWithParams("productName", ""));
+  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
+  const [selectedYear, setSelectedYear] = useState(syncStateWithParams("year", new Date().getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState(syncStateWithParams("month", new Date().getMonth() + 1));
   const [transfers, setTransfers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [selectedTransfer, setSelectedTransfer] = useState(null);
   const [showApproveRejectModal, setShowApproveRejectModal] = useState(false);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState({value: "",label: "All Status",});
-  const [searchProductName, setSearchProductName] = useState("");
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const access_token = getCookie("access_token");
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const loadWarehouses = useWarehouseOptions();
 
   useEffect(() => {
+    setParam("warehouse", selectedWarehouse ? selectedWarehouse.value : null);
+    setParam("status", selectedStatus ? selectedStatus.value : "");
+    setParam("productName", searchProductName);
+    setParam("page", currentPage);
+    setParam("year", selectedYear);
+    setParam("month", selectedMonth);
+  }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
+
+  useEffect(() => {
     fetchTransfers();
-  }, [currentPage, selectedWarehouse, selectedStatus, selectedYear, selectedMonth,searchProductName]);
+  }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedWarehouse, selectedStatus, searchProductName, selectedYear, selectedMonth]);
   
-
   const loadStatusOptions = async () => {
     return [
       { value: "", label: "All Status" },

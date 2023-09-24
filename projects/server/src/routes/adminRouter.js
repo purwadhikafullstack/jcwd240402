@@ -95,15 +95,9 @@ router.get(
 );
 
 router.get(
-  "/year-order",
+  "/year",
   authMiddleware.verifyAccessTokenAdmin,
-  adminController.getAvailableYearOrder
-);
-
-router.get(
-  "/year-history",
-  authMiddleware.verifyAccessTokenAdmin,
-  adminController.getAvailableYearHistory
+  adminController.getAvailableYear
 );
 
 router.delete(

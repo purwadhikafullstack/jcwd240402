@@ -157,7 +157,7 @@ const SalesReport = () => {
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/year-order`,
+        `http://localhost:8000/api/admin/year?db=order`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }

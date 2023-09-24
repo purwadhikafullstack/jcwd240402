@@ -27,6 +27,8 @@ const UserOrder = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
 
+  const [defaultYear, setDefaultYear] = useState([]);
+
   const orderStatusOptions = [
     { value: "", label: "all status" },
     { value: 1, label: "Pending Payment" },
@@ -54,13 +56,39 @@ const UserOrder = () => {
     { value: 12, label: "December" },
   ];
 
-  const yearOptions = [
-    { value: "", label: "any year" },
-    { value: 2020, label: "2020" },
-    { value: 2021, label: "2021" },
-    { value: 2022, label: "2022" },
-    { value: 2023, label: "2023" },
-  ];
+  useEffect(() => {
+    const fetchDefaultYear = async () => {
+      try {
+        const year = await loadYearOptions('');
+        setDefaultYear(year);
+      } catch (error) {
+        console.error("Error fetching default year:", error);
+      }
+    };
+    fetchDefaultYear();
+  }, []);
+  
+  const loadYearOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/year?db=order&timeColumn=created`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const yearOptions = [
+        { value: "", label: "All Year" },
+        ...response.data.year.map((year) => ({
+          value: year,
+          label: year,
+        })),
+      ];
+      return yearOptions
+    } catch (error) {
+      console.error("Error loading year:", error);
+      return [];
+    }
+  };
 
   const loadWarehouseOptions = async (inputValue) => {
     try {
@@ -329,11 +357,14 @@ const UserOrder = () => {
             placeholder={<div>month</div>}
             onChange={handleChangeMonth}
           />
-          <Select
-            options={yearOptions}
-            placeholder={<div>year</div>}
-            onChange={handleChangeYear}
-          />
+          <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultYear}
+          loadOptions={loadYearOptions}
+          value={year || null}
+          onChange={handleChangeYear}
+          placeholder="Select year"
+        />
         </div>
         <div className="pt-4">
           <TableComponent

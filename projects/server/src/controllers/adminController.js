@@ -1146,23 +1146,23 @@ module.exports = {
     }
   },
 
-  async getAvailableYearOrder(req, res) {
+  async getAvailableYear(req, res) {
+    const dbChoice = req.query.db || "";
+    const timeColumn = req.query.timeColumn || "";
     
     try {
 
-      const response = await db.Order.findAll({
-        where: {
-          delivery_time: {[Op.not]: null},
-        }
-      });
+      if(dbChoice == "order" && timeColumn == "created"){
+        const response = await db.Order.findAll({
+        });
+        
+        const availableYear = response.map((year) => {
+          if(year.createdAt){
+            return year.createdAt.getFullYear()
+          }
+        })
 
-      const availableYear = response.map((year) => {
-        if(year.delivery_time){
-          return year.delivery_time.getFullYear()
-        }
-      })
-
-      const uniqueYear = [...new Set(availableYear)]
+        const uniqueYear = [...new Set(availableYear)]
 
        res.json({
         ok: true,
@@ -1170,32 +1170,18 @@ module.exports = {
           return b - a;
         })
       });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({
-        message: "Fatal error on server",
-        errors: error.message,
-      });
-    }
-  },
 
-  async getAvailableYearHistory(req, res) {
-    
-    try {
+      }else if(dbChoice == "history"){
+        const response = await db.History_stock.findAll({
+        });
+        
+        const availableYear = response.map((year) => {
+          if(year.timestamp){
+            return year.timestamp.getFullYear()
+          }
+        })
 
-      const response = await db.History_stock.findAll({
-        where: {
-          timestamp: {[Op.not]: null},
-        }
-      });
-
-      const availableYear = response.map((year) => {
-        if(year.timestamp){
-          return year.timestamp.getFullYear()
-        }
-      })
-
-      const uniqueYear = [...new Set(availableYear)]
+        const uniqueYear = [...new Set(availableYear)]
 
        res.json({
         ok: true,
@@ -1203,6 +1189,28 @@ module.exports = {
           return b - a;
         })
       });
+      }else{
+          const response = await db.Order.findAll({
+            where: {
+              delivery_time: {[Op.not]: null},
+            }
+          });
+          
+          const availableYear = response.map((year) => {
+            if(year.delivery_time){
+              return year.delivery_time.getFullYear()
+            }
+          })
+  
+          const uniqueYear = [...new Set(availableYear)]
+
+       res.json({
+        ok: true,
+        year: uniqueYear.sort(function(a, b) {
+          return b - a;
+        })
+      });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).send({

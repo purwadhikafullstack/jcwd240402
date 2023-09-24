@@ -101,7 +101,7 @@ const StockHistory = () => {
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/year-history`,
+        `http://localhost:8000/api/admin/year?db=history`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }

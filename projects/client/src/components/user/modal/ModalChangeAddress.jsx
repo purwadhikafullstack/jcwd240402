@@ -35,6 +35,7 @@ const ModalChangeAddress = ({ idAddress }) => {
     postal_code: "",
     address_title: "",
   });
+  const [successMsg, setSuccessMsg] = useState("");
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -105,25 +106,18 @@ const ModalChangeAddress = ({ idAddress }) => {
             .then((res) => {
               dispatch(addressUser(res.data?.result));
             });
-          setErrMsg(null);
-          props.setOpenModal(undefined);
+          setErrMsg("");
+          setSuccessMsg(res.data.message);
+          setTimeout(() => {
+            props.setOpenModal(undefined);
+          }, 3000);
         })
         .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
+          setSuccessMsg("");
+          setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -175,7 +169,11 @@ const ModalChangeAddress = ({ idAddress }) => {
               Change Address
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon errMsg={successMsg} color="success" />
+              ) : null}
 
               {/* drop down province */}
               <div className="flex flex-col gap-y-2 mb-3">

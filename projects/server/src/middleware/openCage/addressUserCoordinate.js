@@ -21,7 +21,7 @@ const addressUserCoordinate = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(500).send({
-      message: "Error fetching coordinates",
+      message: "Please input valid address",
       errors: error.message,
     });
   }

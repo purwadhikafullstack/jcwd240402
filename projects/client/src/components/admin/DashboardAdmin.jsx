@@ -63,32 +63,33 @@ const DashboardAdmin = ({ adminData }) => {
     return <p></p>;
   }
   console.log(labelsChart);
-  const data = {
-    labels: labelsChart,
-    datasets: [
-      {
-        label: "user amount",
-        data: dataChart,
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  console.log(dataChart);
+  // const data = {
+  //   labels: labelsChart,
+  //   datasets: [
+  //     {
+  //       label: "user amount",
+  //       data: dataChart,
+  //       backgroundColor: [
+  //         "rgba(255, 99, 132, 0.2)",
+  //         "rgba(54, 162, 235, 0.2)",
+  //         "rgba(255, 206, 86, 0.2)",
+  //         "rgba(75, 192, 192, 0.2)",
+  //         "rgba(153, 102, 255, 0.2)",
+  //         "rgba(255, 159, 64, 0.2)",
+  //       ],
+  //       borderColor: [
+  //         "rgba(255, 99, 132, 1)",
+  //         "rgba(54, 162, 235, 1)",
+  //         "rgba(255, 206, 86, 1)",
+  //         "rgba(75, 192, 192, 1)",
+  //         "rgba(153, 102, 255, 1)",
+  //         "rgba(255, 159, 64, 1)",
+  //       ],
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
 
   return (
     <div className="text-black lg:grid lg:grid-cols-12 lg:grid-rows-6 h-full w-full">
@@ -167,7 +168,7 @@ const DashboardAdmin = ({ adminData }) => {
         <div className="bg-white w-full h-full flex flex-col justify-center items-center rounded-md shadow-card-1 ">
           <h1 className="font-bold">user most location</h1>
 
-          <Doughnut data={data} />
+          {/* <Doughnut data={data} /> */}
         </div>
       </div>
       <div className="col-span-4 row-span-2 p-4">

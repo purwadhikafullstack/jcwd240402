@@ -44,14 +44,14 @@ function SidebarAdminDesktop() {
       label: "Category",
       icon: AiOutlineAppstoreAdd,
     },
-    { to: "/order", label: "Order", icon: AiOutlineOrderedList },
+    { to: "/admin/order", label: "Order", icon: AiOutlineOrderedList },
     { to: "/admin/stock", label: "Stock Management", icon: AiFillDatabase },
     {
       label: "Report",
       icon: AiOutlineBarChart,
       subRoutes: [
-        { to: "/sales-report", label: "Sales Report" },
-        { to: "/stock-history", label: "Stock History" },
+        { to: "/admin/sales-report", label: "Sales Report" },
+        { to: "/admin/stock-history", label: "Stock History" },
       ],
     },
   ];

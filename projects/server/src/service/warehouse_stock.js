@@ -179,8 +179,12 @@ module.exports = {
 
     const queryOptions = {
       where: filter,
+      paranoid: false,
       include: [
-        { model: db.Admin, attributes: ["username"], as: "Admin" },
+        { model: db.Admin, attributes: ["username"], as: "Admin", paranoid: false, },
+        { model: db.Warehouse, 
+          attributes: ["warehouse_name", "address_warehouse", "warehouse_contact"], 
+          paranoid: false,},
         {
           model: db.Warehouse_stock,
           attributes: ["product_stock"],

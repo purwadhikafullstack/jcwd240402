@@ -9,13 +9,14 @@ import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import toRupiah from "@develoka/angka-rupiah-js";
 import AsyncSelect from "react-select/async";
+import dayjs from "dayjs";
+import { rupiahFormat } from "../../utils/formatter";
+
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
-  const [productId, setProductId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [orderSalesList, setOrderSalesList] = useState([]);
@@ -24,6 +25,11 @@ const SalesReport = () => {
   const [error, setError] = useState("");
   const access_token = getCookie("access_token");
   const adminData = useSelector((state) => state.profilerAdmin.value);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [defaultCategories, setDefaultCategories] = useState([]);
+  const [defaultProducts, setDefaultProducts] = useState([]);
+  const [defaultYear, setDefaultYear] = useState([]);
 
   const getCookieValue = (name) =>
     document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
@@ -46,40 +52,51 @@ const SalesReport = () => {
     { value: 12, label: "December" },
   ];
 
-  const yearOptions = [
-    { value: "", label: "any year" },
-    { value: 2020, label: "2020" },
-    { value: 2021, label: "2021" },
-    { value: 2022, label: "2022" },
-    { value: 2023, label: "2023" },
-  ];
-  
-  const productOptions = [
-    { value: "", label: "any product" },
-    { value: 1, label: "ANTILOP" },
-    { value: 2, label: "BUSUNGE" },
-    { value: 3, label: "FLISAT" },
-    { value: 4, label: "INGOLF" },
-    { value: 4, label: "LATTJO" },
-  ];
-
-  const categoryOptions = [
-    { value: "", label: "any category" },
-    { value: 1, label: "Baby Room" },
-    { value: 2, label: "Bed Room" },
-    { value: 3, label: "Kitchen" },
-    { value: 4, label: "Lamp and Electronic" },
-    { value: 5, label: "Living Room" },
-    { value: 6, label: "Outdoor Space" },
-    { value: 7, label: "Toilet" },
-    { value: 8, label: "Working Room" },
-    { value: 9, label: "Uncategorized" },
-  ];
+  useEffect(() => {
+    const fetchDefaultCategories = async () => {
+      try {
+        const categories = await loadCategoryOptions('');
+        setDefaultCategories(categories);
+      } catch (error) {
+        console.error("Error fetching default categories:", error);
+      }
+    };
+    fetchDefaultCategories();
+  }, []);
 
   useEffect(() => {
+    const fetchDefaultProducts = async () => {
+      try {
+        const products = await loadProductOptions('');
+        setDefaultProducts(products);
+      } catch (error) {
+        console.error("Error fetching default products:", error);
+      }
+    };
+    fetchDefaultProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchDefaultYear = async () => {
+      try {
+        const year = await loadYearOptions('');
+        setDefaultYear(year);
+      } catch (error) {
+        console.error("Error fetching default year:", error);
+      }
+    };
+    fetchDefaultYear();
+  }, []);
+
+  useEffect(() => {
+
+      if (adminData.role_id === 2) {
+        setWarehouseId(adminData?.warehouse_id);
+      }
+
     axios
       .get(
-        `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${categoryId}&productId=${productId}`,
+        `http://localhost:8000/api/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,20 +110,96 @@ const SalesReport = () => {
       .catch((err) => {
         setError(err.response.message);
       });
-  }, [month, year, warehouseId, productId, categoryId, currentPage]);
+  }, [month, year, warehouseId, selectedProduct, selectedCategory, currentPage]);
+
+  const loadCategoryOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/categories`,
+        {
+          params: { name: inputValue },
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const categoryOptions = [
+        { value: "", label: "All Category" },
+        ...response.data.data.map((category) => ({
+          value: category.id,
+          label: category.name,
+        })),
+      ];
+      return categoryOptions
+    } catch (error) {
+      console.error("Error loading categories:", error);
+      return [];
+    }
+  };
+
+  const loadProductOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/products`,
+        {
+          params: { name: inputValue },
+        },
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const productOptions = [
+        { value: "", label: "All Product" },
+        ...response.data.data.map((product) => ({
+          value: product.id,
+          label: product.name,
+        })),
+      ];
+      return productOptions
+    } catch (error) {
+      console.error("Error loading products:", error);
+      return [];
+    }
+  };
+
+  const loadYearOptions = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/admin/year?db=order`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
+      const yearOptions = [
+        { value: "", label: "All Year" },
+        ...response.data.year.map((year) => ({
+          value: year,
+          label: year,
+        })),
+      ];
+      return yearOptions
+    } catch (error) {
+      console.error("Error loading year:", error);
+      return [];
+    }
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category.value);
+  };
+
+  const handleProductChange = (product) => {
+    setSelectedProduct(product.value);
+  };
+
+  const handleChangeYear = (year) => {
+    setYear(year.value);
+  };
 
   const handleChangeMonth = (month) => {
     setMonth(month.value);
   };
-  const handleChangeProduct = (product) => {
-    setProductId(product.value);
-  };
-  const handleChangeCategory = (category) => {
-    setCategoryId(category.value);
-  };
-  const handleChangeYear = (year) => {
-    setYear(year.value);
-  };
+
   const handleChangeWarehouseId = (warehouseId) => {
     setWarehouseId(warehouseId.value);
   };
@@ -144,24 +237,33 @@ const SalesReport = () => {
         <div className="flex items-center gap-4">
           <Select
             options={monthOptions}
-            placeholder={<div>month</div>}
+            placeholder={<div>select month</div>}
             onChange={handleChangeMonth}
           />
-          <Select
-            options={yearOptions}
-            placeholder={<div>year</div>}
-            onChange={handleChangeYear}
-          />
-          <Select
-            options={categoryOptions}
-            placeholder={<div>category</div>}
-            onChange={handleChangeCategory}
-          />
-          <Select
-            options={productOptions}
-            placeholder={<div>product</div>}
-            onChange={handleChangeProduct}
-          />
+          <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultYear}
+          loadOptions={loadYearOptions}
+          value={year || null}
+          onChange={handleChangeYear}
+          placeholder="Select year"
+        />
+          <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultCategories}
+          loadOptions={loadCategoryOptions}
+          value={selectedCategory || null}
+          onChange={handleCategoryChange}
+          placeholder="Select a category"
+        />
+          <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultProducts}
+          loadOptions={loadProductOptions}
+          value={selectedProduct || null}
+          onChange={handleProductChange}
+          placeholder="Select a product"
+        />
           {adminData.role_id == 1 && (
             <AsyncSelect
               cacheOptions
@@ -177,6 +279,8 @@ const SalesReport = () => {
           <TableComponent
             headers={[
               "Month",
+              "Year",
+              "Warehouse",
               "Category",
               "Product",
               "Price",
@@ -184,17 +288,19 @@ const SalesReport = () => {
               "Sub Total",
             ]}
             data={orderSalesList.map((sales) => ({
-              Month: sales?.Order?.delivery_time || "",
+              Month: dayjs(sales?.Order?.delivery_time).format("MMMM") || "",
+              Year: dayjs(sales?.Order?.delivery_time).format("YYYY") || "",
+              "Warehouse": sales?.Order?.Warehouse?.warehouse_name || "",
               Category: sales?.Warehouse_stock?.Product?.category?.name || "",
               Product: sales?.Warehouse_stock?.Product?.name || "",
-              Price: sales?.Warehouse_stock?.Product?.price || "",
+              Price: rupiahFormat(sales?.Warehouse_stock?.Product?.price) || "",
               Quantity: sales?.quantity || "",
               "Sub Total":
-                sales?.Warehouse_stock?.Product?.price * sales?.quantity || 0,
+              rupiahFormat(sales?.Warehouse_stock?.Product?.price * sales?.quantity) || 0,
             }))}
             showIcon={false}
           />
-          <div>Total: {salesReport}</div>
+          <div className="p-4 font-bold">Total: {rupiahFormat(salesReport)}</div>
         </div>
       </div>
     </div>

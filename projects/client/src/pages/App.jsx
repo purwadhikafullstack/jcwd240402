@@ -60,9 +60,9 @@ function App() {
             <Route path="/admin-dashboard" element={<AdminHome />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/admin" element={<AdminList />} />
-            <Route path="/stock-history" element={<StockHistory />} />
-            <Route path="/sales-report" element={<SalesReport />} />
-            <Route path="/order" element={<UserOrder />} />
+            <Route path="/admin/stock-history" element={<StockHistory />} />
+            <Route path="/admin/sales-report" element={<SalesReport />} />
+            <Route path="/admin/order" element={<UserOrder />} />
             <Route path="admin/warehouses" element={<WarehouseList />} />
             <Route path="admin/users" element={<UserList />} />
 

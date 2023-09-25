@@ -23,10 +23,7 @@ const AdminLogin = () => {
     removeCookie("access_token");
     removeLocalStorage("refresh_token");
     try {
-      const response = await axios.post(
-        "/admin/login",
-        values
-      );
+      const response = await axios.post("/admin/login", values);
       if (response.status === 200) {
         const accessToken = response.data?.accessToken;
         const refreshToken = response.data?.refreshToken;
@@ -78,7 +75,7 @@ const AdminLogin = () => {
   return (
     <div className="bg-white h-full lg:h-full lg:mt-32 lg:w-full lg:item-center lg:justify-center lg:grid lg:grid-cols-2 lg:items-center ">
       <div className="hidden lg:flex lg:flex-col lg:items-center lg:justify-center">
-        <img src={login} alt="" className="lg:w-1/2" />
+        <img src={login} alt="logo" className="lg:w-1/2" />
         <div className="text-center">
           <p className="font-bold">Admin Portal</p>
           <p>Login to access the administration dashboard.</p>
@@ -112,7 +109,17 @@ const AdminLogin = () => {
                     isError={!!formik.errors.password}
                     errorMessage={formik.errors.password}
                   />
-                  {errMsg ? <div style={{ color: 'red', marginTop: '8px', textAlign: 'center' }}>{errMsg}</div> : null}
+                  {errMsg ? (
+                    <div
+                      style={{
+                        color: "red",
+                        marginTop: "8px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {errMsg}
+                    </div>
+                  ) : null}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
                       buttonSize="medium"

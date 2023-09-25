@@ -62,8 +62,7 @@ const DashboardAdmin = ({ adminData }) => {
   if (loading) {
     return <p></p>;
   }
-  console.log(labelsChart);
-  console.log(dataChart);
+
   const data = {
     labels: labelsChart,
     datasets: [
@@ -77,6 +76,34 @@ const DashboardAdmin = ({ adminData }) => {
           "rgba(75, 192, 192, 0.2)",
           "rgba(153, 102, 255, 0.2)",
           "rgba(255, 159, 64, 0.2)",
+          "rgba(255, 0, 0, 0.2)",
+          "rgba(0, 255, 0, 0.2)",
+          "rgba(0, 0, 255, 0.2)",
+          "rgba(255, 255, 0, 0.2)",
+          "rgba(255, 0, 255, 0.2)",
+          "rgba(0, 255, 255, 0.2)",
+          "rgba(128, 0, 0, 0.2)",
+          "rgba(0, 128, 0, 0.2)",
+          "rgba(0, 0, 128, 0.2)",
+          "rgba(128, 128, 0, 0.2)",
+          "rgba(128, 0, 128, 0.2)",
+          "rgba(0, 128, 128, 0.2)",
+          "rgba(128, 64, 0, 0.2)",
+          "rgba(64, 128, 0, 0.2)",
+          "rgba(0, 128, 64, 0.2)",
+          "rgba(64, 0, 128, 0.2)",
+          "rgba(128, 0, 64, 0.2)",
+          "rgba(64, 128, 128, 0.2)",
+          "rgba(128, 128, 64, 0.2)",
+          "rgba(64, 64, 128, 0.2)",
+          "rgba(192, 64, 0, 0.2)",
+          "rgba(0, 192, 64, 0.2)",
+          "rgba(64, 0, 192, 0.2)",
+          "rgba(192, 0, 64, 0.2)",
+          "rgba(64, 192, 0, 0.2)",
+          "rgba(0, 64, 192, 0.2)",
+          "rgba(192, 192, 64, 0.2)",
+          "rgba(64, 192, 192, 0.2)",
         ],
         borderColor: [
           "rgba(255, 99, 132, 1)",
@@ -85,17 +112,71 @@ const DashboardAdmin = ({ adminData }) => {
           "rgba(75, 192, 192, 1)",
           "rgba(153, 102, 255, 1)",
           "rgba(255, 159, 64, 1)",
+          "rgba(255, 0, 0, 1)",
+          "rgba(0, 255, 0, 1)",
+          "rgba(0, 0, 255, 1)",
+          "rgba(255, 255, 0, 1)",
+          "rgba(255, 0, 255, 1)",
+          "rgba(0, 255, 255, 1)",
+          "rgba(128, 0, 0, 1)",
+          "rgba(0, 128, 0, 1)",
+          "rgba(0, 0, 128, 1)",
+          "rgba(128, 128, 0, 1)",
+          "rgba(128, 0, 128, 1)",
+          "rgba(0, 128, 128, 1)",
+          "rgba(128, 64, 0, 1)",
+          "rgba(64, 128, 0, 1)",
+          "rgba(0, 128, 64, 1)",
+          "rgba(64, 0, 128, 1)",
+          "rgba(128, 0, 64, 1)",
+          "rgba(64, 128, 128, 1)",
+          "rgba(128, 128, 64, 1)",
+          "rgba(64, 64, 128, 1)",
+          "rgba(192, 64, 0, 1)",
+          "rgba(0, 192, 64, 1)",
+          "rgba(64, 0, 192, 1)",
+          "rgba(192, 0, 64, 1)",
+          "rgba(64, 192, 0, 1)",
+          "rgba(0, 64, 192, 1)",
+          "rgba(192, 192, 64, 1)",
+          "rgba(64, 192, 192, 1)",
         ],
         borderWidth: 1,
       },
     ],
   };
 
+  const options = {
+    plugins: {
+      tooltip: {
+        titleFont: {
+          size: 10,
+        },
+        bodyFont: {
+          size: 8,
+        },
+      },
+      legend: {
+        display: true,
+        responsive: true,
+        position: "bottom",
+        labels: {
+          boxWidth: 10,
+          padding: 2,
+          font: {
+            size: 8,
+          },
+        },
+        align: "center",
+      },
+    },
+  };
+
   return (
     <div className="text-black lg:grid lg:grid-cols-12 lg:grid-rows-6 h-full w-full">
-      <div className="col-span-6 row-span-2 p-4">
-        <div className="bg-white w-full h-full rounded-md grid grid-cols-12 shadow-card-1">
-          <div className="col-span-7 p-4 flex flex-col justify-between">
+      <div className="col-span-6 h-full row-span-2 p-4">
+        <div className="bg-white w-full h-full rounded-md lg:grid grid-cols-12 shadow-card-1">
+          <div className="col-span-7 p-4 flex flex-col gap-4 justify-between">
             <div>
               <h1>
                 Welcome,{" "}
@@ -114,7 +195,7 @@ const DashboardAdmin = ({ adminData }) => {
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex h-full gap-2">
               <img src={calendarlogo} alt="" className="w-10 h-10 md:w-10" />
               <div className="font-semibold text-sm">
                 <p>{currentTime}</p>
@@ -130,45 +211,48 @@ const DashboardAdmin = ({ adminData }) => {
               </p>
             </div>
           </div>
-          <div className="w-full h-full col-span-5 flex flex-col justify-end">
-            <img src={welcomeadmin} alt="" className="object-cover w-full" />
+          <div className="w-full h-full col-span-5 flex flex-col justify-end items-center">
+            <img
+              src={welcomeadmin}
+              alt=""
+              className="object-cover w-full md:w-1/2 lg:w-full"
+            />
           </div>
         </div>
       </div>
-      <div className="col-span-3 row-span-1 p-4 ">
+      <div className="h-32 col-span-3 lg:h-full lg:row-span-1 p-4 ">
         <div className="bg-white w-full h-full rounded-md flex justify-evenly items-center shadow-card-1">
           <FaUsers className="font-bold text-4xl" />
           <h1>Total User {totalUser}</h1>
         </div>
       </div>
-      <div className="col-span-3 row-span-1 p-4">
+      <div className="h-32 col-span-3 lg:h-full lg:row-span-1 p-4 ">
         <div className="bg-white w-full h-full rounded-md flex justify-evenly items-center shadow-card-1">
           <BsFillBox2HeartFill className="font-bold text-4xl" />
           <h1>Total Product {totalProduct}</h1>
         </div>
       </div>
-      <div className="col-span-3 row-span-1 p-4">
+      <div className="h-32 col-span-3 lg:h-full lg:row-span-1 p-4 ">
         <div className="bg-white w-full h-full rounded-md flex justify-evenly items-center shadow-card-1">
           <BiSolidCategoryAlt className="font-bold text-4xl" />
           <h1>Total Category {totalCategory}</h1>
         </div>
       </div>
-      <div className="col-span-3 row-span-1 p-4">
+      <div className="h-32 col-span-3 lg:h-full lg:row-span-1 p-4 ">
         <div className="bg-white w-full h-full rounded-md flex justify-evenly items-center shadow-card-1">
           <FaWarehouse className="font-bold text-4xl" />
           <h1>Total Warehouse {totalWarehouse}</h1>
         </div>
       </div>
-      <div className="col-span-8 row-span-4 p-4">
+      <div className="col-span-8 h-full row-span-4 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1">
           <h1>graphic income</h1>
         </div>
       </div>
-      <div className="col-span-4 row-span-2 p-4 flex flex-col justify-center items-center border-2">
-        <div className="bg-white w-full h-full flex flex-col justify-center items-center rounded-md shadow-card-1 ">
-          <h1 className="font-bold">user most location</h1>
-
-          <Doughnut data={data} />
+      <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">
+        <div className="bg-white w-full h-full p-4 flex flex-col justify-center items-center rounded-md shadow-card-1 ">
+          <h1 className="text-xs font-bold mb-2">user amount per province</h1>
+          <Doughnut data={data} options={options} />
         </div>
       </div>
       <div className="col-span-4 row-span-2 p-4">

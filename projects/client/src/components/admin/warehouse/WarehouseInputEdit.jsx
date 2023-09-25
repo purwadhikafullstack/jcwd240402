@@ -11,6 +11,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Button from "../../Button";
 import AlertWithIcon from "../../AlertWithIcon";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import SidebarAdminMobile from "../../SidebarAdminMobile";
 
 const WarehouseInputsEdit = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -193,110 +194,113 @@ const WarehouseInputsEdit = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 px-6">
-        <h2 className="text-xl font-semibold mb-5">Edit Warehouse</h2>
-        {successMsg ? (
-          <div className="bg-green-200 text-green-700 h-10 flex justify-center items-center mt-2">
-            <p>{successMsg}</p>
-          </div>
-        ) : errMsg ? (
-          <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-            <p>{errMsg}</p>
-          </div>
-        ) : null}
-        <div className="md:grid lg:grid md:grid-cols-2 lg:grid-cols-2 w-full">
-          <div className="md:col-span-1 lg:col-span-1">
-            <form onSubmit={formik.handleSubmit}>
-              <InputForm
-                label="Warehouse Name"
-                name="warehouse_name"
-                value={formik.values.warehouse_name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                errorMessage={formik.errors.warehouse_name}
-                width="w-full"
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 px-6">
+          <h2 className="text-xl font-semibold mb-5">Edit Warehouse</h2>
+          {successMsg ? (
+            <div className="bg-green-200 text-green-700 h-10 flex justify-center items-center mt-2">
+              <p>{successMsg}</p>
+            </div>
+          ) : errMsg ? (
+            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
+              <p>{errMsg}</p>
+            </div>
+          ) : null}
+          <div className="md:grid lg:grid md:grid-cols-2 lg:grid-cols-2 w-full">
+            <div className="md:col-span-1 lg:col-span-1">
+              <form onSubmit={formik.handleSubmit}>
+                <InputForm
+                  label="Warehouse Name"
+                  name="warehouse_name"
+                  value={formik.values.warehouse_name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  errorMessage={formik.errors.warehouse_name}
+                  width="w-full"
+                />
+                <TextAreaForm
+                  label="Address"
+                  name="address_warehouse"
+                  value={formik.values.address_warehouse}
+                  rows={3}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  errorMessage={formik.errors.address_warehouse}
+                  width="w-full"
+                />
+                <InputForm
+                  label="Contact Number"
+                  name="warehouse_contact"
+                  value={formik.values.warehouse_contact}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  errorMessage={formik.errors.warehouse_contact}
+                  width="w-full"
+                />
+                <label className="block font-poppins mb-1 text-gray-700">
+                  City
+                </label>
+                <AsyncSelect
+                  cacheOptions
+                  value={selectedCity}
+                  defaultOptions
+                  loadOptions={loadCities}
+                  onChange={(selectedOption) => {
+                    setSelectedCity(selectedOption);
+                    formik.setFieldValue("city_id", selectedOption.value);
+                  }}
+                  placeholder="Select a city"
+                />
+                <div className="flex mt-4 justify-center gap-2">
+                  <Button
+                    type="button"
+                    buttonText="Cancel"
+                    bgColor="bg-gray-300"
+                    colorText="text-black"
+                    fontWeight="font-bold"
+                    buttonSize="medium"
+                    onClick={handleCancel}
+                  />
+                  <Button
+                    type="submit"
+                    buttonText="Save"
+                    bgColor="bg-blue3"
+                    colorText="text-white"
+                    fontWeight="font-bold"
+                    buttonSize="medium"
+                  />
+                </div>
+              </form>
+            </div>
+            <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center mt-10">
+              <img
+                src={
+                  showImage
+                    ? showImage
+                    : `${process.env.REACT_APP_API_BASE_URL}${currentImage}`
+                }
+                alt=""
+                className="w-1/2"
               />
-              <TextAreaForm
-                label="Address"
-                name="address_warehouse"
-                value={formik.values.address_warehouse}
-                rows={3}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                errorMessage={formik.errors.address_warehouse}
-                width="w-full"
-              />
-              <InputForm
-                label="Contact Number"
-                name="warehouse_contact"
-                value={formik.values.warehouse_contact}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                errorMessage={formik.errors.warehouse_contact}
-                width="w-full"
-              />
-              <label className="block font-poppins mb-1 text-gray-700">
-                City
-              </label>
-              <AsyncSelect
-                cacheOptions
-                value={selectedCity}
-                defaultOptions
-                loadOptions={loadCities}
-                onChange={(selectedOption) => {
-                  setSelectedCity(selectedOption);
-                  formik.setFieldValue("city_id", selectedOption.value);
-                }}
-                placeholder="Select a city"
-              />
-              <div className="flex mt-4 justify-center gap-2">
-                <Button
-                  type="button"
-                  buttonText="Cancel"
-                  bgColor="bg-gray-300"
-                  colorText="text-black"
-                  fontWeight="font-bold"
-                  buttonSize="medium"
-                  onClick={handleCancel}
+              <div className="flex flex-col items-center">
+                <input
+                  type="file"
+                  onChange={handleFile}
+                  name="image"
+                  accept="image/png, image/jpg, image/jpeg"
+                  className="rounded-full m-4 border-2"
                 />
                 <Button
                   type="submit"
-                  buttonText="Save"
+                  buttonText="change image"
                   bgColor="bg-blue3"
                   colorText="text-white"
                   fontWeight="font-bold"
                   buttonSize="medium"
+                  onClick={handleUpdateImage}
                 />
               </div>
-            </form>
-          </div>
-          <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center mt-10">
-            <img
-              src={
-                showImage
-                  ? showImage
-                  : `${process.env.REACT_APP_API_BASE_URL}${currentImage}`
-              }
-              alt=""
-              className="w-1/2"
-            />
-            <div className="flex flex-col items-center">
-              <input
-                type="file"
-                onChange={handleFile}
-                name="image"
-                accept="image/png, image/jpg, image/jpeg"
-                className="rounded-full m-4 border-2"
-              />
-              <Button
-                type="submit"
-                buttonText="change image"
-                bgColor="bg-blue3"
-                colorText="text-white"
-                fontWeight="font-bold"
-                buttonSize="medium"
-                onClick={handleUpdateImage}
-              />
             </div>
           </div>
         </div>

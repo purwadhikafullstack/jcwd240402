@@ -89,13 +89,13 @@ const ProductEdit = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex lg:h-screen">
       <div className="flex-1 flex items-center justify-center">
         <div className="text-gray-700 body-font bg-white">
           <div className="container mx-auto">
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
-                <div className="w-full flex flex-col justify-center items-center mt-6">
+              <div className="flex flex-col lg:flex-row justify-center items-start  lg:p-10 border-rounded">
+                <div className="w-full flex flex-col justify-center items-center lg:mt-6">
                   <ImageGalleryEdit
                     productData={product}
                     onImagesChange={setUploadedImages}
@@ -107,7 +107,7 @@ const ProductEdit = () => {
                     handleInputChange={handleInputChange}
                     errors={serverErrors}
                   />
-                  <div className="flex mt-6 justify-center w-full gap-4">
+                  <div className="flex my-4 lg:mt-6 justify-center w-full gap-4">
                     <Button
                       onClick={handleCancel}
                       buttonText="Cancel"

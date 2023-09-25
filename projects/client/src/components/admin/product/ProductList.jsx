@@ -80,8 +80,8 @@ const ProductList = () => {
   };
 
   return (
-    <div className="h-full lg:h-screen lg:w-full lg:grid">
-      <div className="px-8 pt-1">
+    <div className="h-full w-full lg:h-screen lg:w-full lg:grid">
+      <div className="px-4 mr-8 lg:mr-0 lg:px-8 pt-1">
         <div className="flex relative mb-5">
           <input
             type="text"

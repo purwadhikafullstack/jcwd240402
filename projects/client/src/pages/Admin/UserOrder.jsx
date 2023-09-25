@@ -130,8 +130,8 @@ const UserOrder = () => {
         }
       )
       .then((response) => {
-        setUserOrderList(response.data.orders);
-        setTotalPages(response.pagination.totalPages);
+        setUserOrderList(response?.data?.orders);
+        setTotalPages(response?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response);

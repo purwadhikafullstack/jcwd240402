@@ -118,11 +118,11 @@ const StockHistory = () => {
         }
       )
       .then((response) => {
-        setStockHistoryList(response.data.history);
-        setTotalLastStock(response.data.total_last_stock);
-        setTotalIncrement(response.data.total_increment);
-        setTotalDecrement(response.data.total_decrement);
-        setTotalPages(response.pagination.totalPages);
+        setStockHistoryList(response?.data.history);
+        setTotalLastStock(response?.data?.total_last_stock);
+        setTotalIncrement(response?.data?.total_increment);
+        setTotalDecrement(response?.data?.total_decrement);
+        setTotalPages(response?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response.message);

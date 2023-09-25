@@ -9,7 +9,7 @@ function withOutAuth(Component) {
     console.log(token);
 
     if (token) {
-      navigate("/admin-dashboard");
+      navigate("/admin/admin-dashboard");
       return null;
     }
     return <Component {...props} />;
@@ -17,4 +17,3 @@ function withOutAuth(Component) {
 }
 
 export default withOutAuth;
-

@@ -76,8 +76,8 @@ export default function SlideOverCart({ name, quantity }) {
 
   useEffect(() => {
     axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result.Product);
-      setDataImage(res.data?.result.Product.Image_products);
+      setDetailProduct(res.data?.result);
+      setDataImage(res.data?.result?.Image_products);
       setStock(res.data?.result?.product_stock);
     });
   }, [name]);
@@ -214,7 +214,11 @@ export default function SlideOverCart({ name, quantity }) {
                               onClick={() => setQty(qty + 1)}
                               className="px-1"
                             >
-                              <AiFillPlusSquare className="text-blue3 text-2xl" />
+                              <AiFillPlusSquare
+                                className={` ${
+                                  qty === stock ? "text-gray-400" : "text-blue3"
+                                } text-2xl`}
+                              />
                             </button>
                           </div>
                         </div>
@@ -229,7 +233,9 @@ export default function SlideOverCart({ name, quantity }) {
                             </h1>
                           ) : (
                             <button
-                              onClick={() => handleAddProductToCart(name, qty)}
+                              onClick={() => {
+                                handleAddProductToCart(name, qty);
+                              }}
                               className={` ${
                                 stock === 0 || qty === 0
                                   ? "bg-gray-400 cursor-not-allowed"

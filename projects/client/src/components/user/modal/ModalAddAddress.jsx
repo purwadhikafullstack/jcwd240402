@@ -19,6 +19,7 @@ import { addressUser } from "../../../features/userAddressSlice";
 const ModalAddAddress = () => {
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
+  const [isLoading, setIsLoading] = useState(false);
   const [newAccessToken, setNewAccessToken] = useState("");
 
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const ModalAddAddress = () => {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(0);
   const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -79,12 +81,15 @@ const ModalAddAddress = () => {
           setErrMsg("");
           setTimeout(() => {
             props.setOpenModal(undefined);
+            setSuccessMsg("");
           }, 3000);
         })
         .catch((error) => {
+          setSuccessMsg("");
           setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -118,6 +123,12 @@ const ModalAddAddress = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
+  };
   return (
     <>
       <button
@@ -136,7 +147,8 @@ const ModalAddAddress = () => {
         popup
         onClose={() => {
           props.setOpenModal(undefined);
-          setErrMsg(false);
+          setErrMsg("");
+          setSuccessMsg("");
         }}
       >
         <Modal.Header />
@@ -237,12 +249,21 @@ const ModalAddAddress = () => {
 
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

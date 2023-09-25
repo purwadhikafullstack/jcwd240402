@@ -21,6 +21,7 @@ module.exports = {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 2,
@@ -30,6 +31,7 @@ module.exports = {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 3,
@@ -39,6 +41,7 @@ module.exports = {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 4,
@@ -48,6 +51,7 @@ module.exports = {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 5,
@@ -57,6 +61,7 @@ module.exports = {
         status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
     ]);
   },

@@ -270,7 +270,7 @@ const OrderConfirmReview = () => {
               </Link>
               <div>
                 <h1>Order Status : {yourOrder.Order_status?.name}</h1>
-                <h1>Invoice id : {invoiceId}</h1>
+                <h1>Invoice ID : {invoiceId}</h1>
               </div>
               <div className=" md:grid md:grid-cols-2 lg:grid lg:grid-cols-2 md:gap-8 lg:gap-8 space-y-4 md:space-y-0 lg:space-y-0">
                 {yourOrder.Order_details?.map((item) => (

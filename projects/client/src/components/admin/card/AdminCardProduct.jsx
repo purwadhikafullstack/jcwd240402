@@ -7,6 +7,7 @@ import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import noimage from "../../../assets/images/noimagefound.jpg";
 import { useSelector } from "react-redux";
+import { rupiahFormat } from "../../../utils/formatter";
 
 const AdminCardProduct = ({ product, onEdit, onDelete, setActive }) => {
   const access_token = getCookie("access_token");
@@ -100,12 +101,7 @@ const AdminCardProduct = ({ product, onEdit, onDelete, setActive }) => {
         </div>
         <h2 className="text-xs font-bold py-1 truncate">{product.name}</h2>
         <div className="text-sm font-semibold py-1">
-          {product.price.toLocaleString("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          })}
+          {rupiahFormat(product.price)}
         </div>
         <div className="text-xs font-semibold py-1">
           Status:{" "}

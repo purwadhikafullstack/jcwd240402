@@ -1,7 +1,14 @@
 const nodemailer = require("nodemailer");
 
 module.exports = {
-  sendEmail: ({ recipient_email, link, subject, receiver, message }) => {
+  sendEmail: ({
+    recipient_email,
+    link,
+    subject,
+    receiver,
+    message,
+    redirect = true,
+  }) => {
     return new Promise((resolve, reject) => {
       var transporter = nodemailer.createTransport({
         service: "gmail",
@@ -30,7 +37,11 @@ module.exports = {
     </div>
     <p style="font-size:1.1em">Hi, ${receiver}</p>
     <p>${message}</p>
-    <a href=${link} style="background: #187BCD;margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px;text-decoration:none;">verify your account</a>
+    ${
+      redirect
+        ? `<a href=${link} style="background: #187BCD;margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px;text-decoration:none;">verify your account</a>`
+        : null
+    }
     <p style="font-size:0.9em;">Regards,<br />FURNITURE FORTUNE</p>
     <hr style="border:none;border-top:1px solid #eee" />
     <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">

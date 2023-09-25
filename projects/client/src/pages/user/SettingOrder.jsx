@@ -219,14 +219,14 @@ const SettingOrder = () => {
                           <h4>
                             {dayjs(order.createdAt).format("D MMMM YYYY")}
                           </h4>
-                          <h4>invoice id: {order?.no_invoice?.substr(-8)}</h4>
+                          <h4>Invoice ID: {order?.no_invoice?.substr(-8)}</h4>
                         </div>
                         <div
                           key={order.id}
-                          className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-  lg p-2 shadow-card-1 border-2"
+                          className="grid grid-cols-12 mx-6 md:mx-10 lg:mx-10 rounded-b-sm  lg p-2 shadow-card-1 border-2"
                         >
                           <div className="text-xs h-fit rounded-lg col-span-12 md:col-span-12 lg:col-span-12 ">
-                            <div className="flex flex-row-reverse justify-between">
+                            <div className="flex  flex-col-reverse flex-none md:flex-row-reverse lg:flex-row-reverse md:justify-between lg:justify-between">
                               <div>
                                 <div>
                                   <h1>

@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import Select from "react-select";
@@ -10,6 +9,8 @@ import AsyncSelect from "react-select/async";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
+import dayjs from "dayjs";
+import axios from "../../api/axios";
 
 const StockHistory = () => {
   const [month, setMonth] = useState("");
@@ -62,7 +63,7 @@ const StockHistory = () => {
   const loadWarehouseOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/warehouse/warehouse-list?searchName=${inputValue}`,
+        `/warehouse/warehouse-list?searchName=${inputValue}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,
@@ -85,12 +86,9 @@ const StockHistory = () => {
 
   const loadYearOptions = async (inputValue) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8000/api/admin/year?db=history`,
-        {
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
+      const response = await axios.get(`/admin/year?db=history`, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       const yearOptions = [
         { value: "", label: "All Year" },
         ...response.data.year.map((year) => ({
@@ -112,7 +110,7 @@ const StockHistory = () => {
 
     axios
       .get(
-        `http://localhost:8000/api/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
+        `/warehouse/stock-history?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

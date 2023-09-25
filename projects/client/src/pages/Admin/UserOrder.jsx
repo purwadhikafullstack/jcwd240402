@@ -72,7 +72,7 @@ const UserOrder = () => {
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/admin/year?db=order&timeColumn=created`,
+        `/admin/year?db=order&timeColumn=created`,
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
@@ -149,7 +149,7 @@ const UserOrder = () => {
   const refetch = async () => {
     await axios
       .get(
-        `http://localhost:8000/api/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}&month=${month}&year=${year}`,
+        `/admin/order-list?page=${currentPage}&orderStatusId=${orderStatusId}&warehouseId=${warehouseId}&month=${month}&year=${year}`,
         {
           headers: {
             Authorization: `Bearer ${access_token}`,

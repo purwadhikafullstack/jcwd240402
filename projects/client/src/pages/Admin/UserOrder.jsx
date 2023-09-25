@@ -130,8 +130,8 @@ const UserOrder = () => {
         }
       )
       .then((response) => {
-        setUserOrderList(response.data.orders);
-        setTotalPages(response.pagination.totalPages);
+        setUserOrderList(response?.data?.orders);
+        setTotalPages(response?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response);
@@ -363,6 +363,7 @@ const UserOrder = () => {
               options={monthOptions}
               placeholder={<div>month</div>}
               onChange={handleChangeMonth}
+              className="flex-1  rounded text-base bg-white  shadow-sm pl-4 pr-2"
             />
             <AsyncSelect
               cacheOptions
@@ -371,6 +372,7 @@ const UserOrder = () => {
               value={year || null}
               onChange={handleChangeYear}
               placeholder="Select year"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
             />
           </div>
           <div className="pt-4">
@@ -396,7 +398,7 @@ const UserOrder = () => {
                 "Delivering From": order?.Warehouse?.warehouse_name || "",
                 "Delivering to": order?.Address_user?.address_details || "",
                 "Delivery Time": order?.delivery_time || "not yet delivered",
-                order_status_id: order.order_status_id,
+                order_status_id: order?.order_status_id,
                 Order_details: order?.Order_details,
               }))}
               showIcon={false}
@@ -416,12 +418,16 @@ const UserOrder = () => {
               color="failure"
             />
           </div>
-          <div className="flex justify-center items-center mt-4">
-            {/* <DefaultPagination
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+          <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          /> */}
-          </div>
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

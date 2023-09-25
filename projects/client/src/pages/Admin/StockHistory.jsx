@@ -118,11 +118,11 @@ const StockHistory = () => {
         }
       )
       .then((response) => {
-        setStockHistoryList(response.data.history);
-        setTotalLastStock(response.data.total_last_stock);
-        setTotalIncrement(response.data.total_increment);
-        setTotalDecrement(response.data.total_decrement);
-        setTotalPages(response.pagination.totalPages);
+        setStockHistoryList(response?.data.history);
+        setTotalLastStock(response?.data?.total_last_stock);
+        setTotalIncrement(response?.data?.total_increment);
+        setTotalDecrement(response?.data?.total_decrement);
+        setTotalPages(response?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -207,11 +207,15 @@ const StockHistory = () => {
           </div>
           {error && <div className="text-red-500">{error}</div>}
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-            {/* <DefaultPagination
+          <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          /> */}
-          </div>
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

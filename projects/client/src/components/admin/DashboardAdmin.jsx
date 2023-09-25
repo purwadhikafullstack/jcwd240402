@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { BiSolidCategoryAlt } from "react-icons/bi";
 import { BsFillBox2HeartFill } from "react-icons/bs";
 import { FaUsers, FaWarehouse } from "react-icons/fa";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend,
+  CategoryScale, LinearScale, PointElement, LineElement, Title, Filler} from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import BarChart from "./Top10Products";
+import { Line } from 'react-chartjs-2';
+import { rupiahFormat } from "../../utils/formatter";
 
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
@@ -12,7 +15,9 @@ import calendarlogo from "../../assets/icons/calendarlogo.png";
 import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement,
+  Title, Tooltip, Filler, Legend);
+
 
 const DashboardAdmin = ({ adminData }) => {
   const [currentTime, setCurrentTime] = useState("");
@@ -22,6 +27,11 @@ const DashboardAdmin = ({ adminData }) => {
   const [totalProduct, setTotalProduct] = useState(0);
   const [totalWarehouse, setTotalWarehouse] = useState(0);
   const [totalCategory, setTotalCategory] = useState(0);
+  const [labelsChart, setLabelsChart] = useState([]);
+  const [labelsIncome, setLabelsIncome] = useState([]);
+  const [incomeTotalYear, setIncomeTotalYear] = useState(0);
+  const [dataIncome, setDataIncome] = useState([]);
+  const [dataChart, setDataChart] = useState([]);
 
   useEffect(() => {
     axios.get("/admin/statistic").then((res) => {
@@ -31,6 +41,26 @@ const DashboardAdmin = ({ adminData }) => {
       setTotalCategory(res.data.totalCategory);
     });
   }, []);
+
+  useEffect(() => {
+    axios.get("/admin/statistic/income-graph").then((res) => {
+      console.log(res.data);
+      setLabelsIncome(res.data.monthyear);
+      setDataIncome(res.data.total_per_month);
+      setIncomeTotalYear(res.data.total);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get("/admin/statistic/pie-chart").then((res) => {
+      console.log(res);
+      setLabelsChart(res.data.labels);
+      setDataChart(res.data.data);
+      setLoading(false);
+    });
+  }, []);
+  console.log(labelsChart);
+  console.log(dataChart);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -45,6 +75,145 @@ const DashboardAdmin = ({ adminData }) => {
       clearInterval(timer);
     };
   }, []);
+
+  if (loading) {
+    return <p></p>;
+  }
+
+  const incomeOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Income in the Past Year',
+      },
+    },
+  };
+
+  const incomeData = {
+    labels: labelsIncome,
+    datasets: [
+      {
+        fill: true,
+        label: 'Income (in Rupiah)',
+        data: dataIncome,
+        borderColor: 'rgb(53, 162, 235)',
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
+
+  const data = {
+    labels: labelsChart,
+    datasets: [
+      {
+        label: "user amount",
+        data: dataChart,
+        backgroundColor: [
+          "rgba(255, 99, 132, 0.2)",
+          "rgba(54, 162, 235, 0.2)",
+          "rgba(255, 206, 86, 0.2)",
+          "rgba(75, 192, 192, 0.2)",
+          "rgba(153, 102, 255, 0.2)",
+          "rgba(255, 159, 64, 0.2)",
+          "rgba(255, 0, 0, 0.2)",
+          "rgba(0, 255, 0, 0.2)",
+          "rgba(0, 0, 255, 0.2)",
+          "rgba(255, 255, 0, 0.2)",
+          "rgba(255, 0, 255, 0.2)",
+          "rgba(0, 255, 255, 0.2)",
+          "rgba(128, 0, 0, 0.2)",
+          "rgba(0, 128, 0, 0.2)",
+          "rgba(0, 0, 128, 0.2)",
+          "rgba(128, 128, 0, 0.2)",
+          "rgba(128, 0, 128, 0.2)",
+          "rgba(0, 128, 128, 0.2)",
+          "rgba(128, 64, 0, 0.2)",
+          "rgba(64, 128, 0, 0.2)",
+          "rgba(0, 128, 64, 0.2)",
+          "rgba(64, 0, 128, 0.2)",
+          "rgba(128, 0, 64, 0.2)",
+          "rgba(64, 128, 128, 0.2)",
+          "rgba(128, 128, 64, 0.2)",
+          "rgba(64, 64, 128, 0.2)",
+          "rgba(192, 64, 0, 0.2)",
+          "rgba(0, 192, 64, 0.2)",
+          "rgba(64, 0, 192, 0.2)",
+          "rgba(192, 0, 64, 0.2)",
+          "rgba(64, 192, 0, 0.2)",
+          "rgba(0, 64, 192, 0.2)",
+          "rgba(192, 192, 64, 0.2)",
+          "rgba(64, 192, 192, 0.2)",
+        ],
+        borderColor: [
+          "rgba(255, 99, 132, 1)",
+          "rgba(54, 162, 235, 1)",
+          "rgba(255, 206, 86, 1)",
+          "rgba(75, 192, 192, 1)",
+          "rgba(153, 102, 255, 1)",
+          "rgba(255, 159, 64, 1)",
+          "rgba(255, 0, 0, 1)",
+          "rgba(0, 255, 0, 1)",
+          "rgba(0, 0, 255, 1)",
+          "rgba(255, 255, 0, 1)",
+          "rgba(255, 0, 255, 1)",
+          "rgba(0, 255, 255, 1)",
+          "rgba(128, 0, 0, 1)",
+          "rgba(0, 128, 0, 1)",
+          "rgba(0, 0, 128, 1)",
+          "rgba(128, 128, 0, 1)",
+          "rgba(128, 0, 128, 1)",
+          "rgba(0, 128, 128, 1)",
+          "rgba(128, 64, 0, 1)",
+          "rgba(64, 128, 0, 1)",
+          "rgba(0, 128, 64, 1)",
+          "rgba(64, 0, 128, 1)",
+          "rgba(128, 0, 64, 1)",
+          "rgba(64, 128, 128, 1)",
+          "rgba(128, 128, 64, 1)",
+          "rgba(64, 64, 128, 1)",
+          "rgba(192, 64, 0, 1)",
+          "rgba(0, 192, 64, 1)",
+          "rgba(64, 0, 192, 1)",
+          "rgba(192, 0, 64, 1)",
+          "rgba(64, 192, 0, 1)",
+          "rgba(0, 64, 192, 1)",
+          "rgba(192, 192, 64, 1)",
+          "rgba(64, 192, 192, 1)",
+        ],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    plugins: {
+      tooltip: {
+        titleFont: {
+          size: 10,
+        },
+        bodyFont: {
+          size: 8,
+        },
+      },
+      legend: {
+        display: true,
+        responsive: true,
+        position: "bottom",
+        labels: {
+          boxWidth: 10,
+          padding: 2,
+          font: {
+            size: 8,
+          },
+        },
+        align: "center",
+      },
+    },
+  };
 
   return (
     <div className="text-black lg:grid lg:grid-cols-12 lg:grid-rows-6 h-full w-full">
@@ -120,7 +289,8 @@ const DashboardAdmin = ({ adminData }) => {
       </div>
       <div className="col-span-8 h-full row-span-4 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1">
-          <h1>graphic income</h1>
+        <Line options={incomeOptions} data={incomeData} />
+        <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>
       </div>
       <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">

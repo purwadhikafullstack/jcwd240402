@@ -1208,6 +1208,7 @@ module.exports = {
         message: "successfully get sales report",
         sales_report: totalPrice,
         order_details: availableWarehouseStock,
+        pagination: response.pagination
       });
     } catch (error) {
       res.status(500).send({

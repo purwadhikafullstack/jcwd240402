@@ -190,6 +190,7 @@ module.exports = {
           attributes: ["product_stock"],
           as: "Warehouse_stock",
           include: [{ model: db.Product, attributes: ["name"], as: "Product" }],
+          paranoid: false,
         },
       ],
       offset: (page - 1) * pageSize,

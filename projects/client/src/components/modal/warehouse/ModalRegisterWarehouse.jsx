@@ -9,11 +9,12 @@ import axios from "../../../api/axios";
 import TextAreaForm from "../../TextAreaForm";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import emptyImage from "../../../assets/images/emptyImage.jpg";
-import AlertWithIcon from "../../AlertWithIcon"
+import AlertWithIcon from "../../AlertWithIcon";
 
 const RegisterWarehouseModal = ({ show, onClose }) => {
   const access_token = getCookie("access_token");
   const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedProvince, setSelectedProvince] = useState(null);
   const [errMsg, setErrMsg] = useState("");
   const [image, setImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
@@ -100,6 +101,21 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
     }
   };
 
+  const loadProvinces = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `/admin/province/?searchName=${inputValue}&page=1`
+      );
+      return response.data.provinces.map((province) => ({
+        value: province.id,
+        label: province.name,
+      }));
+    } catch (error) {
+      console.error("Error loading provinces:", error);
+      return [];
+    }
+  };
+
   const handleFile = (e) => {
     const selectedImage = e.target.files[0];
     setShowImage(URL.createObjectURL(selectedImage));
@@ -161,6 +177,22 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                   onChange={formik.handleChange}
                   isError={formik.errors.warehouse_contact}
                   errorMessage={formik.errors.warehouse_contact}
+                />
+                <AsyncSelect
+                  classNamePrefix="react-select"
+                  loadOptions={loadProvinces}
+                  value={selectedProvince}
+                  onChange={setSelectedProvince}
+                  placeholder="Select Province"
+                  defaultOptions
+                  menuPortalTarget={document.body}
+                  styles={{
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 999,
+                      position: "fixed",
+                    }),
+                  }}
                 />
                 <AsyncSelect
                   classNamePrefix="react-select"

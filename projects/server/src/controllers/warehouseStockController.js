@@ -5,7 +5,6 @@ const {
   getAllStockHistory,
 } = require("../service/warehouse_stock");
 const { Sequelize } = require("sequelize");
-const { autoStockTransfer } = require("../utils");
 
 module.exports = {
   async createStockForWarehouse(req, res) {

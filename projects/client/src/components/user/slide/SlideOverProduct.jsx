@@ -89,8 +89,8 @@ export default function SlideOverProduct({ name }) {
     axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
-        setDetailProduct(res.data?.result.Product);
-        setDataImage(res.data?.result.Product.Image_products);
+        setDetailProduct(res.data?.result);
+        setDataImage(res.data?.result.Image_products);
 
         setStock(res.data?.remainingStock);
         setLoading(false);

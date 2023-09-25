@@ -34,7 +34,7 @@ const ProductEdit = () => {
         });
         const productData = response.data;
         const imagesURL = productData.Image_products.map(
-          (img) => `http://localhost:8000${img.img_product}`
+          (img) => `${process.env.REACT_APP_API_BASE_URL}${img.img_product}`
         );
         setProduct({ ...productData, images: imagesURL });
         dispatch({ type: "UPDATE_PRODUCT_DETAILS", payload: productData });
@@ -59,6 +59,7 @@ const ProductEdit = () => {
       setServerErrors([]);
       setChangedFields({});
     } catch (error) {
+      setSuccessMessage("");
       setServerErrors(error.response.data.errors);
       console.error("Error updating product:", error.response.data);
     }

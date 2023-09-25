@@ -105,7 +105,7 @@ module.exports = {
     };
 
     try {
-      const { count: totalItems, rows: results } = await db.Inventory_transfer.findAndCountAll(queryOptions);
+       const { count: totalItems, rows: results } = await db.Inventory_transfer.findAndCountAll(queryOptions);
 
       return {
         success: true,

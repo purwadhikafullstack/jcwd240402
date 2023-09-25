@@ -5,6 +5,7 @@ import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon"
 
 
 const UpdateStock = ({
@@ -90,11 +91,7 @@ const UpdateStock = ({
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={formik.handleSubmit}>
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p className="bg-inherit">{errMsg}</p>
-            </div>
-          )}
+        {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
           <div className="mt-5 px-6 grid gap-y-3">
             <input
               label="Product Stock"

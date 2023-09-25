@@ -2,6 +2,7 @@ import React from "react";
 import { Modal } from "flowbite-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import noimage from "../../../assets/images/noimagefound.jpg"
 
 const ProductDetailsModal = ({ show, onClose, product }) => {
   if (!product) {
@@ -51,30 +52,37 @@ const ProductDetailsModal = ({ show, onClose, product }) => {
                 <img
                   className="object-cover w-60 h-60"
                   alt={`Product Image ${index}`}
-                  src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
+                  src={image.img_product ? `${process.env.REACT_APP_API_BASE_URL}${image.img_product}`: noimage}
                 />
               </div>
             ))}
           </Carousel>
-          <div className="mx-auto w-full max-w-md"></div>
-          <p>
-            <strong>Name:</strong> {product.name}
+          <div className="mx-auto w-full max-w-md p-4">
+          <p className="my-2">
+            <span className="font-bold text-gray-700">Name:</span>
+            <span className="ml-2 text-gray-600">{product.name}</span>
           </p>
-          <p>
-            <strong>Category:</strong> {product.category?.name || "N/A"}
+          <p className="my-2">
+            <span className="font-bold text-gray-700">Category:</span>
+            <span className="ml-2 text-gray-600">{product.category?.name || "N/A"}</span>
           </p>
-          <p>
-            <strong>Description:</strong> {product.description}
+          <p className="my-2">
+            <span className="font-bold text-gray-700">Description:</span>
+            <span className="ml-2 text-gray-600">{product.description}</span>
           </p>
-          <p>
-            <strong>Price:</strong> {formattedPrice}
+          <p className="my-2">
+            <span className="font-bold text-gray-700">Price:</span>
+            <span className="ml-2 text-gray-600">{formattedPrice}</span>
           </p>
-          <p>
-            <strong>Weight:</strong> {formattedWeight.toFixed(2)} kg
+          <p className="my-2">
+            <span className="font-bold text-gray-700">Weight:</span>
+            <span className="ml-2 text-gray-600">{formattedWeight.toFixed(2)} kg</span>
           </p>
         </div>
-      </Modal.Body>
-    </Modal>
+      </div>
+    </Modal.Body>
+  </Modal>
+
   );
 };
 

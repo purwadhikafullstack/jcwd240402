@@ -153,13 +153,24 @@ module.exports = {
         const transferableStock =
           sourceWarehouseStock.product_stock - totalReservedSource;
         const stockToTransfer = Math.min(transferableStock, remainingDeficit);
+
+        const newInventoryTransfer = await db.Inventory_transfer.create(
+          {
+            warehouse_stock_id: sourceWarehouseStock.id,
+            from_warehouse_id: sourceWarehouseStock.warehouse_id,
+            to_warehouse_id: currentWarehouseStock.warehouse_id,
+            product_id: product_id,
+            quantity: stockToTransfer,
+            status: "Approve",
+            transaction_code: "TRX" + Date.now(),
+            timestamp: db.Sequelize.fn("NOW")
+          },
+          { transaction: t }
+        );
   
         sourceWarehouseStock.product_stock -= stockToTransfer;
         currentWarehouseStock.product_stock += stockToTransfer;
         remainingDeficit -= stockToTransfer;
-  
-        // "inventory transferlist catat",
-        //
 
         const stockHistoryFrom = newStockHistory(
           sourceWarehouseStock.id,
@@ -195,11 +206,7 @@ module.exports = {
         await t.rollback();
       }
       console.error(error);
-      return {
-        status: "error",
-        message: "An error occurred during stock transfer.",
-        detail: error.message,
-      };
+      throw new Error(error.message);
     }
   }
 };

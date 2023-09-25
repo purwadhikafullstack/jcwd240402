@@ -3,6 +3,7 @@ import { Table } from "flowbite-react";
 import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import Button from "./Button";
 import OrderModal from "./modal/orderList/OrderModal";
+import noimage from "../../src/assets/images/noimagefound.jpg"
 
 const TableComponent = ({
   headers,
@@ -81,7 +82,7 @@ const TableComponent = ({
                 {header === "Image" ? (
                   <img
                     className="mx-auto"
-                    src={`${process.env.REACT_APP_API_BASE_URL}${row[header]}`}
+                    src={row[header] ? ` ${process.env.REACT_APP_API_BASE_URL}${row[header]}` : noimage }
                     alt="Product"
                     width="60"
                     height="60"

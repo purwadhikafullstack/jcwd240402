@@ -4,12 +4,27 @@ import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon";
 
 const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [quantity, setQuantity] = useState("1");
   const access_token = getCookie("access_token");
   const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => {
+    let timeoutId;
+    if (errorMessage) {
+      timeoutId = setTimeout(() => {
+        setErrorMessage(null);
+      }, 3000);
+    }
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [errorMessage])
 
   useEffect(() => {
     if (!show) {
@@ -68,10 +83,8 @@ const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
         </div>
       </Modal.Header>
       <Modal.Body>
-        {errorMessage && (
-          <div className="text-red-500 mb-4">{errorMessage}</div>
-        )}
-        <div className="px-6 grid gap-y-3">
+      {errorMessage && <AlertWithIcon errMsg={errorMessage} color="failure" />}
+        <div className="px-6 grid gap-y-3 pt-2">
           <div className="flex-1">
             <AsyncSelect
               classNamePrefix="react-select"

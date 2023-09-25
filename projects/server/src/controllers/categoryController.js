@@ -132,6 +132,7 @@ module.exports = {
   async deleteCategory(req, res) {
     const categoryId = req.params.id;
     const t = await db.sequelize.transaction();
+    
     try {
       const category = await db.Category.findByPk(categoryId);
       if (!category) {
@@ -140,8 +141,30 @@ module.exports = {
           message: "Category not found",
         });
       }
+
+      if (parseInt(categoryId) === 9) {
+        await t.rollback();
+        return res.status(400).send({
+          message: "Uncategorized cannot be deleted.",
+        });
+      }
+      
+      const productsToUpdate = await db.Product.findAll({
+        where: {
+          category_id: categoryId,
+        },
+        transaction: t,
+      });
+
+      for (const product of productsToUpdate) {
+        product.category_id = 9;
+        await product.save({ transaction: t });
+      }
+
       await category.destroy({ transaction: t });
+      
       await t.commit();
+      
       return res.status(200).send({
         message: "Category deleted successfully",
         data: category,
@@ -154,6 +177,7 @@ module.exports = {
       });
     }
   },
+  
 
   getAllCategory: async (req, res) => {
     try {

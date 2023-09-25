@@ -18,8 +18,8 @@ const setCoordinates = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(500).send({
-      message: "Error fetching coordinates",
-      errors: error.message,
+      error: "Error invalid address",
+      details: error.message, 
     });
   }
 };

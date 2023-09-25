@@ -8,6 +8,10 @@ const DefaultPagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   const adjustedTotalPages = totalPages || 1;
+  
+  if (currentPage > adjustedTotalPages && adjustedTotalPages > 1) {
+    onPageChange(adjustedTotalPages);
+  }
 
   return (
     <div className='shadow-lg'>

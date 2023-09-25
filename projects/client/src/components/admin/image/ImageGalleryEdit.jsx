@@ -5,6 +5,7 @@ import axios from "../../../api/axios";
 import { fetchProductDetails } from "../../../features/actions/productActions";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
+import noimage from "../../../assets/images/noimagefound.jpg"
 
 function ImageGalleryEdit() {
   const access_token = getCookie("access_token");
@@ -110,7 +111,7 @@ function ImageGalleryEdit() {
           <div className="sub-image-preview">
             <img
               className="w-20 h-20"
-              src={`${process.env.REACT_APP_API_BASE_URL}${image.img_product}`}
+              src={ image.img_product ? `${process.env.REACT_APP_API_BASE_URL}${image.img_product}`: noimage}
               alt="Product Preview"
               onMouseOver={() => onHover(image.img_product)}
             />
@@ -172,9 +173,9 @@ function ImageGalleryEdit() {
       <div className="main-image-container flex items-center justify-center w-80 h-80 relative overflow-hidden">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover"
-          src={`${process.env.REACT_APP_API_BASE_URL}${
+          src={ productImages[0]?.img_product ? `${process.env.REACT_APP_API_BASE_URL}${
             mainImage || productImages[0]?.img_product
-          }`}
+          }` : noimage}
           alt="Main Preview"
         />
       </div>

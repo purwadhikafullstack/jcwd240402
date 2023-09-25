@@ -52,27 +52,6 @@ module.exports = {
     }
   },
 
-  async test(req, res) {
-    try {
-      const warehouse_id = req.query.warehouseId;
-      const product_id = req.query.productId;
-      const requiredStock = req.query.requiredStock;
-      const orderId = req.query.orderId;
-
-      const result = await autoStockTransfer(
-        warehouse_id,
-        product_id,
-        requiredStock,
-        orderId
-      );
-
-      res.status(200).json(result);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  },
-
   async updateStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
@@ -103,7 +82,7 @@ module.exports = {
           if (existingStock.product_stock < 0) {
             await t.rollback();
             return res.status(400).send({
-              message: "Operation would result in negative stock.",
+              message: "Unable to reduce stock to negative value",
             });
           }
           break;

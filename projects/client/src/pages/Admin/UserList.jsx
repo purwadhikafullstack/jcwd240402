@@ -5,18 +5,30 @@ import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import { getCookie } from "../../utils/tokenSetterGetter";
+import useURLParams from "../../utils/useUrlParams";
 import axios from "../../api/axios";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const UserList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
   const [users, setUsers] = useState([]);
-  const [searchName, setSearchName] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchName, setSearchName] = useState(
+    syncStateWithParams("searchName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
   const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
 
+  const resetPage = () => {
+    setCurrentPage(1);
+  };
+
   useEffect(() => {
-    fetchUsers();
+    setParam("searchName", searchName);
+    setParam("page", currentPage);
+    refreshUserList();
   }, [searchName, currentPage]);
 
   const fetchUsers = async () => {
@@ -39,9 +51,16 @@ const UserList = () => {
     id: user.id,
     username: user.username,
     email: user.email,
-    is_verify: user.is_verify === 1 ? "Yes" : "No",
+    verified: user.is_verify === 1 ? "Yes" : "No",
     "Created at": moment(user.createdAt).format("MMMM D, YYYY"),
   }));
+
+  const refreshUserList = async () => {
+    await fetchUsers();
+    if (formattedUsers.length === 0 && currentPage > 1) {
+      resetPage();
+    }
+  };
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">

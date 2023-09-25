@@ -91,7 +91,7 @@ const OrderModal = ({
                       onClick={downloadImage}
                       className="bg-green-700 flex gap-4 justify-center items-center px-4 py-1 rounded-lg"
                     >
-                      <FaDownload /> download
+                      <FaDownload /> Download
                     </button>{" "}
                   </div>
                 ) : null}
@@ -143,23 +143,23 @@ const OrderModal = ({
                   </div>
                   <div className="border-y-2 p-2 text-xs">
                     <h1>
-                      <span className="font-semibold">username :</span>{" "}
+                      <span className="font-semibold">Username :</span>{" "}
                       {row.Username}
                     </h1>
                     <h1>
-                      <span className="font-semibold">address :</span>{" "}
+                      <span className="font-semibold">Address :</span>{" "}
                       {row["Delivering to"]}
                     </h1>
                     <h1>
-                      <span className="font-semibold">status :</span>{" "}
+                      <span className="font-semibold">Status :</span>{" "}
                       {row.Status}
                     </h1>
                     <h1>
-                      <span className="font-semibold">total transaction :</span>{" "}
+                      <span className="font-semibold">Delivery Cost :</span>{" "}
                       {row["Delivery Cost"]}
                     </h1>
                     <h1>
-                      <span className="font-semibold">total transaction :</span>{" "}
+                      <span className="font-semibold">Total Transaction :</span>{" "}
                       {row["Total Transaction"]}
                     </h1>
                   </div>

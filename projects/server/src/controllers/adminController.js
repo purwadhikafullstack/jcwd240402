@@ -12,6 +12,7 @@ const { autoStockTransfer } = require("../utils/index");
 const { getAllUserOrder, getAllUserOrderDetails } = require("../service/order");
 const { newStockHistory } = require("../service/warehouse_stock");
 const { Op } = require("sequelize");
+const Mailer = require("../utils/mailer");
 
 // move to utility later
 const generateAccessToken = (user) => {
@@ -565,9 +566,39 @@ module.exports = {
 
       await t.commit();
 
-      res
-        .status(200)
-        .json({ ok: true, message: "Payment accepted, order is in process" });
+      const user = await db.User.findOne({
+        where: { id: isAllowed.user_id },
+      });
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      const user_email = user.email;
+  
+      const notificationMessage = `
+        Your payment has been successfully accepted. 
+        Invoice Number: ${isAllowed.no_invoice}
+        Thank you for your order!
+      `;
+  
+      const mailData = {
+        recipient_email: user_email,
+        subject: "Payment Accepted",
+        receiver: user.username, 
+        message: notificationMessage,
+      };
+  
+      Mailer.sendEmail(mailData)
+        .then(() => {
+          res
+            .status(200)
+            .json({ ok: true, message: "Payment accepted, order is in process" });
+        })
+        .catch((emailError) => {
+          throw new Error(emailError.message);
+        });
+  
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -639,9 +670,43 @@ module.exports = {
 
       await t.commit();
 
+      const user = await db.User.findOne({
+        where: { id: isAllowed.user_id },
+      });
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      const user_email = user.email;
+      
+      const notificationMessage = `
+        Your payment has been rejected. 
+        Invoice Number: ${isAllowed.no_invoice}
+        Please contact customer service for more details.
+      `;
+  
+      const mailData = {
+        recipient_email: user_email,
+        subject: "Payment Rejected",
+        receiver: user.username, 
+        message: notificationMessage,
+      };
+  
+  
+      Mailer.sendEmail(mailData)
+        .then(() => {
+          res
+            .status(200)
+            .json({ ok: true, message: "Payment rejected" });
+        })
+        .catch((emailError) => {
+          throw new Error(emailError.message);
+        });
+
       res
         .status(200)
-        .json({ ok: true, message: "Payment rejected, order is cancelled" });
+        .json({ ok: true, message: "Payment rejected" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();

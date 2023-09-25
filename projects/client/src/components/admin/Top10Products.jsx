@@ -62,7 +62,7 @@ export function BarChart() {
         labels,
         datasets: [
           {
-            label: 'Total Quantity',
+            label: '',
             data,
             backgroundColor: backgroundColors, 
           },

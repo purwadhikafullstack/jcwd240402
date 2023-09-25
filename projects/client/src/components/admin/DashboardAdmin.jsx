@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import { BiSolidCategoryAlt } from "react-icons/bi";
 import { BsFillBox2HeartFill } from "react-icons/bs";
 import { FaUsers, FaWarehouse } from "react-icons/fa";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend,
+  CategoryScale, LinearScale, PointElement, LineElement, Title, Filler} from "chart.js";
 import { Doughnut } from "react-chartjs-2";
+import { Line } from 'react-chartjs-2';
+import { rupiahFormat } from "../../utils/formatter";
 
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
 import calendarlogo from "../../assets/icons/calendarlogo.png";
 import dayjs from "dayjs";
 import axios from "../../api/axios";
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement,
+  Title, Tooltip, Filler, Legend);
+
 
 const DashboardAdmin = ({ adminData }) => {
   const [currentTime, setCurrentTime] = useState("");
@@ -23,6 +28,9 @@ const DashboardAdmin = ({ adminData }) => {
   const [totalWarehouse, setTotalWarehouse] = useState(0);
   const [totalCategory, setTotalCategory] = useState(0);
   const [labelsChart, setLabelsChart] = useState([]);
+  const [labelsIncome, setLabelsIncome] = useState([]);
+  const [incomeTotalYear, setIncomeTotalYear] = useState(0);
+  const [dataIncome, setDataIncome] = useState([]);
   const [dataChart, setDataChart] = useState([]);
 
   useEffect(() => {
@@ -32,6 +40,15 @@ const DashboardAdmin = ({ adminData }) => {
       setTotalProduct(res.data.totalProduct);
       setTotalWarehouse(res.data.totalWarehouse);
       setTotalCategory(res.data.totalCategory);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get("/admin/statistic/income-graph").then((res) => {
+      console.log(res.data);
+      setLabelsIncome(res.data.monthyear);
+      setDataIncome(res.data.total_per_month);
+      setIncomeTotalYear(res.data.total);
     });
   }, []);
 
@@ -62,6 +79,32 @@ const DashboardAdmin = ({ adminData }) => {
   if (loading) {
     return <p></p>;
   }
+
+  const incomeOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Income in the Past Year',
+      },
+    },
+  };
+
+  const incomeData = {
+    labels: labelsIncome,
+    datasets: [
+      {
+        fill: true,
+        label: 'Income (in Rupiah)',
+        data: dataIncome,
+        borderColor: 'rgb(53, 162, 235)',
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
 
   const data = {
     labels: labelsChart,
@@ -246,7 +289,8 @@ const DashboardAdmin = ({ adminData }) => {
       </div>
       <div className="col-span-8 h-full row-span-4 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1">
-          <h1>graphic income</h1>
+        <Line options={incomeOptions} data={incomeData} />
+        <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>
       </div>
       <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">

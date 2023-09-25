@@ -9,18 +9,18 @@ const AdminStockPage = () => {
   const tabData = [
     {
       label: "Stock Overview",
-      isActive: window.location.pathname === "/admin/stock",
-      to: "/admin/stock",
+      isActive: window.location.pathname === "/admin/stock-list",
+      to: "/admin/stock-list",
     },
     {
       label: "Manage Stock",
-      isActive: window.location.pathname === "/admin/stock/management",
-      to: "/admin/stock/management",
+      isActive: window.location.pathname === "/admin/stock-list/management",
+      to: "/admin/stock-list/management",
     },
     {
       label: "Inventory Transfer",
-      isActive: window.location.pathname === "/admin/stock/inventory-transfers",
-      to: "/admin/stock/inventory-transfers",
+      isActive: window.location.pathname === "/admin/stock-list/inventory-transfers",
+      to: "/admin/stock-list/inventory-transfers",
     },
   ];
 

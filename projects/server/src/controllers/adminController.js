@@ -866,11 +866,44 @@ module.exports = {
 
       await t.commit();
 
-      res.status(200).json({
-        ok: true,
-        message: "order has been shipped",
-        test: reservedStocks,
+      const user = await db.User.findOne({
+        where: { id: isAllowed.user_id },
       });
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      const user_email = user.email;
+  
+      const notificationMessage = `
+        Your order has been shipped. 
+        Invoice Number: ${isAllowed.no_invoice}
+        Thank you for your order!
+      `;
+  
+      const mailData = {
+        recipient_email: user_email,
+        subject: "Order Shipped",
+        receiver: user.username, 
+        message: notificationMessage,
+        redirect:false
+      };
+  
+      Mailer.sendEmail(mailData)
+        .then(() => {
+          res
+            .status(200)
+            .json({
+              ok: true,
+              message: "order has been shipped",
+              test: reservedStocks,
+            });
+        })
+        .catch((emailError) => {
+          throw new Error(emailError.message);
+        });
+
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -941,11 +974,46 @@ module.exports = {
 
       await t.commit();
 
-      res.status(200).json({
-        ok: true,
-        message: "order canceled successful",
-        test: updatedOrder,
+
+      
+      const user = await db.User.findOne({
+        where: { id: isAllowed.user_id },
       });
+  
+      if (!user) {
+        throw new Error("User not found");
+      }
+  
+      const user_email = user.email;
+  
+      const notificationMessage = `
+        Your order has been cancelled
+        Invoice Number: ${isAllowed.no_invoice}
+        Please contact customer service for more details.
+      `;
+  
+      const mailData = {
+        recipient_email: user_email,
+        subject: "Order Cancelled",
+        receiver: user.username, 
+        message: notificationMessage,
+        redirect:false
+      };
+  
+      Mailer.sendEmail(mailData)
+        .then(() => {
+          res
+            .status(200)
+            .json({
+              ok: true,
+              message: "order canceled successful",
+              test: reservedStocks,
+            });
+        })
+        .catch((emailError) => {
+          throw new Error(emailError.message);
+        });
+
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();

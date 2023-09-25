@@ -371,7 +371,7 @@ module.exports = {
   findClosestWarehouseByAddressId: async (req, res) => {
     const userData = req.user;
 
-    const primary_address = req.body.primary_address_id || "ehehe";
+    const primary_address = req.body.primary_address_id;
 
     try {
       const userAddressData = await db.User_detail.findOne({

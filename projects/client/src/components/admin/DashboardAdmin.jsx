@@ -22,7 +22,7 @@ ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineEleme
 const DashboardAdmin = ({ adminData }) => {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
-
+  const [loading, setLoading] =  useState(true)
   const [totalUser, setTotalUser] = useState(0);
   const [totalProduct, setTotalProduct] = useState(0);
   const [totalWarehouse, setTotalWarehouse] = useState(0);

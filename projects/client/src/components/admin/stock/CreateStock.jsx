@@ -113,7 +113,7 @@ const CreateStock = () => {
   return (
     <div className="container mx-auto p-4 space-y-4">
       <h1 className="text-2xl mb-4 text-center">Stock Management</h1>
-      <div className="w-1/3 mx-auto">
+      <div className="lg:w-1/3 mx-auto">
         <AsyncSelect
           cacheOptions
           defaultOptions
@@ -128,7 +128,7 @@ const CreateStock = () => {
           }
         />
       </div>
-      <div className="w-1/3 mx-auto mt-4">
+      <div className="lg:w-1/3  mx-auto mt-4">
         <AsyncSelect
           cacheOptions
           defaultOptions

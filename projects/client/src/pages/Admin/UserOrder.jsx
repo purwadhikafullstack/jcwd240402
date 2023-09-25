@@ -4,12 +4,12 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import DefaultPagination from "../../components/Pagination";
-import toRupiah from "@develoka/angka-rupiah-js";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import axios from "../../api/axios";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
+import { rupiahFormat } from "../../utils/formatter";
 
 const UserOrder = () => {
   const [userOrderList, setUserOrderList] = useState([]);
@@ -388,8 +388,8 @@ const UserOrder = () => {
               data={userOrderList.map((order) => ({
                 id: order?.id || "",
                 Username: order?.User?.username || "",
-                "Total Transaction": toRupiah(order?.total_price) || "",
-                "Delivery Cost": toRupiah(order?.delivery_price) || "0",
+                "Total Transaction": rupiahFormat(order?.total_price) || "",
+                "Delivery Cost": rupiahFormat(order?.delivery_price) || "0",
                 Image: order?.img_payment || "",
                 Status: order?.Order_status?.name || "",
                 invoiceId: order?.no_invoice,

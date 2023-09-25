@@ -41,7 +41,7 @@ const WarehouseList = () => {
   };
 
   const handleEdit = (warehouse) => {
-    navigate(`/edit/${warehouse["Warehouse Name"]}`);
+    navigate(`/admin/edit/${warehouse["Warehouse Name"]}`);
   };
 
   useEffect(() => {

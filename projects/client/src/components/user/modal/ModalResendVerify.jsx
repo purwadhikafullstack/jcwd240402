@@ -22,7 +22,16 @@ const ModalResendVerify = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+  const [dissabledButton, setDissabledButton] = useState(false);
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
+  };
 
   const resendVerify = async (values, { setStatus, setValues }) => {
     try {
@@ -46,13 +55,14 @@ const ModalResendVerify = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
+          setSuccessMsg("Email already sent! Please check your email");
           setErrMsg(null);
-          props.setOpenModal(undefined);
           setTimeout(() => {
+            props.setOpenModal(undefined);
             removeCookie("access_token");
             removeLocalStorage("refresh_token");
             navigate("/verify");
-          }, 3000);
+          }, 2000);
         });
     } catch (err) {
       if (!err.response) {
@@ -103,7 +113,11 @@ const ModalResendVerify = () => {
               email
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon errMsg={successMsg} color="success" />
+              ) : null}
 
               <div className="flex flex-col gap-y-2 mb-3">
                 <p className="text-justify text-xs text-gray-500">
@@ -127,12 +141,21 @@ const ModalResendVerify = () => {
               </div>
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

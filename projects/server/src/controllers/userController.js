@@ -626,6 +626,7 @@ module.exports = {
         subject: "RESET PASSWORD",
         receiver: isUserExist.username,
         message,
+        buttonText: "Reset Password",
       };
       await transaction.commit();
       Mailer.sendEmail(mailing)

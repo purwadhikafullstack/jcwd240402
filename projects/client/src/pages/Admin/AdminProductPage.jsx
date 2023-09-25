@@ -7,6 +7,7 @@ import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { profileAdmin } from "../../features/adminDataSlice";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const AdminProductPage = () => {
   const access_token = getCookie("access_token");
@@ -19,11 +20,15 @@ const AdminProductPage = () => {
       isActive: window.location.pathname === "/admin/products",
       to: "/admin/products",
     },
-    ...(adminData.role_id === 1 ? [{
-      label: "Create Product",
-      isActive: window.location.pathname === "/admin/products/create",
-      to: "/admin/products/create",
-    }] : [])
+    ...(adminData.role_id === 1
+      ? [
+          {
+            label: "Create Product",
+            isActive: window.location.pathname === "/admin/products/create",
+            to: "/admin/products/create",
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {
@@ -44,12 +49,15 @@ const AdminProductPage = () => {
       <div className="lg:flex lg:flex-col lg:justify-start lg:h-screen ">
         <SidebarAdminDesktop adminData={adminData} />
       </div>
-      <div className="flex flex-col h-full">
-        <div className="border-b p-4">
-          <Tabs tabData={tabData} />
-        </div>
-        <div className="flex-1 overflow-auto px-8 pt-8">
-          <Outlet />
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="lg:flex lg:flex-col lg:h-full lg:w-full">
+          <div className="lg:border-b lg:p-4">
+            <Tabs tabData={tabData} />
+          </div>
+          <div className="flex-1 overflow-auto px-1 pt-2 lg:px-8 lg:pt-8">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

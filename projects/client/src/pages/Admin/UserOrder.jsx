@@ -9,6 +9,7 @@ import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehous
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import axios from "../../api/axios";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const UserOrder = () => {
   const [userOrderList, setUserOrderList] = useState([]);
@@ -59,7 +60,7 @@ const UserOrder = () => {
   useEffect(() => {
     const fetchDefaultYear = async () => {
       try {
-        const year = await loadYearOptions('');
+        const year = await loadYearOptions("");
         setDefaultYear(year);
       } catch (error) {
         console.error("Error fetching default year:", error);
@@ -67,7 +68,7 @@ const UserOrder = () => {
     };
     fetchDefaultYear();
   }, []);
-  
+
   const loadYearOptions = async (inputValue) => {
     try {
       const response = await axios.get(
@@ -83,7 +84,7 @@ const UserOrder = () => {
           label: year,
         })),
       ];
-      return yearOptions
+      return yearOptions;
     } catch (error) {
       console.error("Error loading year:", error);
       return [];
@@ -115,7 +116,6 @@ const UserOrder = () => {
   };
 
   useEffect(() => {
-
     if (adminData.role_id === 2) {
       setWarehouseId(adminData?.warehouse_id);
     }
@@ -339,86 +339,89 @@ const UserOrder = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="container mx-auto p-4">
-        <div className="flex items-center">
-          {adminData.role_id == 1 && (
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="lg:container lg:mx-auto lg:p-4 lg:w-full p-4">
+          <div className="flex items-center">
+            {adminData.role_id == 1 && (
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                loadOptions={loadWarehouseOptions}
+                onChange={handleChangeWarehouseId}
+                placeholder="All Warehouses"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              />
+            )}
+            <Select
+              options={orderStatusOptions}
+              placeholder="Order Status"
+              onChange={handleChangeStatus}
+              className="flex-1 rounded text-base bg-white  shadow-sm"
+            />
+            <Select
+              options={monthOptions}
+              placeholder={<div>month</div>}
+              onChange={handleChangeMonth}
+            />
             <AsyncSelect
               cacheOptions
-              defaultOptions
-              loadOptions={loadWarehouseOptions}
-              onChange={handleChangeWarehouseId}
-              placeholder="All Warehouses"
-              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              defaultOptions={defaultYear}
+              loadOptions={loadYearOptions}
+              value={year || null}
+              onChange={handleChangeYear}
+              placeholder="Select year"
             />
-          )}
-          <Select
-            options={orderStatusOptions}
-            placeholder="Order Status"
-            onChange={handleChangeStatus}
-            className="flex-1 rounded text-base bg-white  shadow-sm"
-          />
-          <Select
-            options={monthOptions}
-            placeholder={<div>month</div>}
-            onChange={handleChangeMonth}
-          />
-          <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultYear}
-          loadOptions={loadYearOptions}
-          value={year || null}
-          onChange={handleChangeYear}
-          placeholder="Select year"
-        />
-        </div>
-        <div className="pt-4">
-          <TableComponent
-            headers={[
-              "Username",
-              "Total Transaction",
-              "Delivery Cost",
+          </div>
+          <div className="pt-4">
+            <TableComponent
+              headers={[
+                "Username",
+                "Total Transaction",
+                "Delivery Cost",
 
-              "Status",
-              "Delivering to",
-              "Delivering From",
-              "Delivery Time",
-            ]}
-            data={userOrderList.map((order) => ({
-              id: order?.id || "",
-              Username: order?.User?.username || "",
-              "Total Transaction": toRupiah(order?.total_price) || "",
-              "Delivery Cost": toRupiah(order?.delivery_price) || "0",
-              Image: order?.img_payment || "",
-              Status: order?.Order_status?.name || "",
-              invoiceId: order?.no_invoice,
-              "Delivering From": order?.Warehouse?.warehouse_name || "",
-              "Delivering to": order?.Address_user?.address_details || "",
-              "Delivery Time": order?.delivery_time || "not yet delivered",
-              order_status_id: order.order_status_id,
-              Order_details: order?.Order_details,
-            }))}
-            showIcon={false}
-            showApprove={true}
-            showReject={true}
-            showSend={true}
-            showCancel={true}
-            showAsyncAction={true}
-            onCancel={(row) => handleCancelOrder(row)}
-            onApprove={(row) => handleAcceptPayment(row)}
-            onReject={(row) => handleRejectPayment(row)}
-            onSend={(row) => handleSendOrder(row)}
-            successMsg={successMsg}
-            errMsg={errMsg}
-            openAlert={openAlert}
-            setOpenAlert={setOpenAlert}
-            color="failure"
-          />
-        </div>
-        <div className="flex justify-center items-center mt-4">
-          {/* <DefaultPagination
+                "Status",
+                "Delivering to",
+                "Delivering From",
+                "Delivery Time",
+              ]}
+              data={userOrderList.map((order) => ({
+                id: order?.id || "",
+                Username: order?.User?.username || "",
+                "Total Transaction": toRupiah(order?.total_price) || "",
+                "Delivery Cost": toRupiah(order?.delivery_price) || "0",
+                Image: order?.img_payment || "",
+                Status: order?.Order_status?.name || "",
+                invoiceId: order?.no_invoice,
+                "Delivering From": order?.Warehouse?.warehouse_name || "",
+                "Delivering to": order?.Address_user?.address_details || "",
+                "Delivery Time": order?.delivery_time || "not yet delivered",
+                order_status_id: order.order_status_id,
+                Order_details: order?.Order_details,
+              }))}
+              showIcon={false}
+              showApprove={true}
+              showReject={true}
+              showSend={true}
+              showCancel={true}
+              showAsyncAction={true}
+              onCancel={(row) => handleCancelOrder(row)}
+              onApprove={(row) => handleAcceptPayment(row)}
+              onReject={(row) => handleRejectPayment(row)}
+              onSend={(row) => handleSendOrder(row)}
+              successMsg={successMsg}
+              errMsg={errMsg}
+              openAlert={openAlert}
+              setOpenAlert={setOpenAlert}
+              color="failure"
+            />
+          </div>
+          <div className="flex justify-center items-center mt-4">
+            {/* <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           /> */}
+          </div>
         </div>
       </div>
     </div>

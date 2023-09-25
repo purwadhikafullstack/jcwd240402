@@ -7,13 +7,18 @@ import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import useURLParams from "../../utils/useUrlParams";
 import axios from "../../api/axios";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const UserList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
   const [users, setUsers] = useState([]);
-  const [searchName, setSearchName] = useState(syncStateWithParams("searchName", ""));
-  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
-  const [totalPages, setTotalPages] = useState(1)
+  const [searchName, setSearchName] = useState(
+    syncStateWithParams("searchName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
+  const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
 
   const resetPage = () => {
@@ -24,8 +29,7 @@ const UserList = () => {
     setParam("searchName", searchName);
     setParam("page", currentPage);
     refreshUserList();
-  }, [searchName, currentPage])
-
+  }, [searchName, currentPage]);
 
   const fetchUsers = async () => {
     try {
@@ -63,29 +67,32 @@ const UserList = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="px-8 pt-8">
-        <div className="flex items-center">
-        <input
-            type="text"
-            placeholder="Search User name"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
-          />
-        </div>
-        <div className="py-4">
-        <TableComponent
-            headers={["username", "email", "verified", "Created at"]}
-            data={formattedUsers}
-            showIcon={false}
-          />
-        </div>
-        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-        <DefaultPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="lg:px-8 lg:pt-8 lg:w-full mt-4 mx-4">
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Search User name"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
+            />
+          </div>
+          <div className="py-4 mr-4">
+            <TableComponent
+              headers={["username", "email", "is_verify", "Created at"]}
+              data={formattedUsers}
+              showIcon={false}
+            />
+          </div>
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       </div>
     </div>

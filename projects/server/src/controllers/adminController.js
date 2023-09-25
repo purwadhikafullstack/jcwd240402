@@ -587,6 +587,7 @@ module.exports = {
         subject: "Payment Accepted",
         receiver: user.username, 
         message: notificationMessage,
+        redirect:false
       };
   
       Mailer.sendEmail(mailData)
@@ -691,6 +692,7 @@ module.exports = {
         subject: "Payment Rejected",
         receiver: user.username, 
         message: notificationMessage,
+        redirect:false
       };
   
   

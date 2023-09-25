@@ -126,7 +126,9 @@ function SidebarAdminDesktop() {
                     <Sidebar.Item
                       icon={route.icon}
                       className={`${
-                        location.pathname === route.to ? "bg-blue-200" : null
+                        location.pathname.includes(route.to)
+                          ? "bg-blue-200"
+                          : null
                       } hover:bg-blue-100`}
                     >
                       {route.label}

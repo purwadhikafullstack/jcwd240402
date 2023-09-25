@@ -77,7 +77,7 @@ function App() {
               <Route path="create" element={<ProductRegister />} />
               <Route path="edit/:productName" element={<ProductEdit />} />
             </Route>
-            <Route path="/admin/stock-list" element={<AdminStockPage />}>
+            <Route path="/admin/stock-list/*" element={<AdminStockPage />}>
               <Route index element={<StockList />} />
               <Route path="management" element={<CreateStock />} />
               <Route path="edit/:productName" element={<ProductEdit />} />

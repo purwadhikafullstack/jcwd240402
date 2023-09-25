@@ -12,6 +12,7 @@ import calendarlogo from "../../assets/icons/calendarlogo.png";
 import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
+import withAuthAdmin from "./withAuthAdmin";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const DashboardAdmin = ({ adminData }) => {
@@ -136,4 +137,4 @@ const DashboardAdmin = ({ adminData }) => {
   );
 };
 
-export default DashboardAdmin;
+export default withAuthAdmin(DashboardAdmin);

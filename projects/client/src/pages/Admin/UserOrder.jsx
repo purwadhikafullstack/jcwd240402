@@ -418,12 +418,16 @@ const UserOrder = () => {
               color="failure"
             />
           </div>
-          <div className="flex justify-center items-center mt-4">
-            {/* <DefaultPagination
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+          <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          /> */}
-          </div>
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

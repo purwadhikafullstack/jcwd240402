@@ -312,6 +312,16 @@ const SalesReport = () => {
               Total: {rupiahFormat(salesReport)}
             </div>
           </div>
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+          <DefaultPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

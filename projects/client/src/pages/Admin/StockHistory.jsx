@@ -207,11 +207,15 @@ const StockHistory = () => {
           </div>
           {error && <div className="text-red-500">{error}</div>}
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-            {/* <DefaultPagination
+          <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          /> */}
-          </div>
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

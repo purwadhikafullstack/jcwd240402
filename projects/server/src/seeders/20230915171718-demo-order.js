@@ -55,8 +55,8 @@ module.exports = {
         total_price: 40000,
         delivery_price: 4000,
         delivery_courier: "pos",
-        delivery_time: null,
-        tracking_code: null,
+        delivery_time: new Date(),
+        tracking_code: "1234qwerty",
         no_invoice:
           `FF${new Date().toLocaleString().replace(/\W/g, "")}` +
           `${crypto.randomBytes(4).toString("hex").toUpperCase()}`,

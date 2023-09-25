@@ -73,7 +73,7 @@ function withAuthAdmin(Component) {
 
     if (!adminData) {
       if (access_token) {
-        navigate("/admin/dashboard");
+        navigate("/admin/admin-dashboard");
       } else {
         navigate("/admin/login");
       }
@@ -81,7 +81,7 @@ function withAuthAdmin(Component) {
     }
 
     if (adminData.role_id !== 1) {
-      navigate("/admin/dashboard");
+      navigate("/admin/admin-dashboard");
       return null;
     }
 

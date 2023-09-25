@@ -12,26 +12,26 @@ module.exports = {
       warehouse_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Warehouses',
-          key: 'id',
+          model: "Warehouses",
+          key: "id",
         },
-        onUpdate: 'CASCADE', 
-        onDelete: 'SET NULL',
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
       product_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'Products', 
-          key: 'id',
+          model: "Products",
+          key: "id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
       product_stock: {
         type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.ENUM('Empty', 'In Stock'),
+        type: Sequelize.ENUM("Empty", "In Stock"),
         defaultValue: null,
       },
       createdAt: {

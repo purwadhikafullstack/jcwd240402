@@ -214,7 +214,11 @@ export default function SlideOverCart({ name, quantity }) {
                               onClick={() => setQty(qty + 1)}
                               className="px-1"
                             >
-                              <AiFillPlusSquare className="text-blue3 text-2xl" />
+                              <AiFillPlusSquare
+                                className={` ${
+                                  qty === stock ? "text-gray-400" : "text-blue3"
+                                } text-2xl`}
+                              />
                             </button>
                           </div>
                         </div>

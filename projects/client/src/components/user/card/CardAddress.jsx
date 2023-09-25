@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CiMenuKebab } from "react-icons/ci";
 
@@ -13,6 +13,7 @@ import {
 } from "../../../utils/tokenSetterGetter";
 import axios from "../../../api/axios";
 import { addressUser } from "../../../features/userAddressSlice";
+import useClickOutside from "../../../utils/useClickOutSide";
 
 const CardAddress = ({ address_title, address_details, city, idAddress }) => {
   const dispatch = useDispatch();
@@ -72,6 +73,12 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
     }
   };
 
+  const clickClose = () => {
+    setShowMenu(false);
+  };
+
+  const domNode = useClickOutside(clickClose);
+
   return (
     <div className="w-full pb-4">
       <div
@@ -94,7 +101,10 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
             <CiMenuKebab className="text-xl" />
           </button>
           {showMenu ? (
-            <div className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20">
+            <div
+              // ref={domNode}
+              className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20"
+            >
               <ul className="list-none">
                 {location.pathname === "/user/setting/address" ? (
                   <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
@@ -111,6 +121,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
                       errMsg={errMsg}
                       topic="address"
                       deleteFor="Delete Address"
+                      styleConfirmButton="bg-red-500 px-3 py-1 rounded-md text-white font-semibold hover:bg-red-400"
                     />
                   </li>
                 ) : null}

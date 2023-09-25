@@ -1,17 +1,16 @@
 import { Modal } from "flowbite-react";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+
 import { saveAs } from "file-saver";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaDownload } from "react-icons/fa";
 import { HiMiniClipboardDocumentCheck } from "react-icons/hi2";
 
-import { getCookie } from "../../../utils/tokenSetterGetter";
-import Button from "../../Button";
 import ConfirmationPaymentModal from "./ConfirmationPaymentModal";
 import waitingpayment from "../../../assets/images/waitingpayment.png";
 import DismissableAlert from "../../DismissableAlert";
+import { rupiahFormat } from "../../../utils/formatter";
 
 const OrderModal = ({
   row,
@@ -25,23 +24,14 @@ const OrderModal = ({
   color,
   errMsg,
 }) => {
-  console.log(row.id);
-  const access_token = getCookie("access_token");
-  const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const imgPayment = `${process.env.REACT_APP_API_BASE_URL}${row.Image}`;
 
-  console.log(row);
-
-  console.log(row);
-
   const downloadImage = () => {
     saveAs(imgPayment, `payment-proof/${row.invoiceId}-${row.Username}`);
   };
-  console.log(row.Image);
-  console.log(successMsg);
-  console.log(errMsg);
+
   return (
     <>
       <button
@@ -91,7 +81,7 @@ const OrderModal = ({
                       onClick={downloadImage}
                       className="bg-green-700 flex gap-4 justify-center items-center px-4 py-1 rounded-lg"
                     >
-                      <FaDownload /> download
+                      <FaDownload /> Download
                     </button>{" "}
                   </div>
                 ) : null}
@@ -134,8 +124,8 @@ const OrderModal = ({
                         <div className="col-span-1 shadow-card-1 mt-2 rounded-md p-2 text-xs">
                           <h1>{item.Warehouse_stock?.Product?.name}</h1>
                           <h1>
-                            {item.Warehouse_stock?.Product?.price} x{" "}
-                            {item?.quantity} unit
+                            {rupiahFormat(item.Warehouse_stock?.Product?.price)}{" "}
+                            x {item?.quantity} unit
                           </h1>
                         </div>
                       ))}
@@ -143,23 +133,23 @@ const OrderModal = ({
                   </div>
                   <div className="border-y-2 p-2 text-xs">
                     <h1>
-                      <span className="font-semibold">username :</span>{" "}
+                      <span className="font-semibold">Username :</span>{" "}
                       {row.Username}
                     </h1>
                     <h1>
-                      <span className="font-semibold">address :</span>{" "}
+                      <span className="font-semibold">Address :</span>{" "}
                       {row["Delivering to"]}
                     </h1>
                     <h1>
-                      <span className="font-semibold">status :</span>{" "}
+                      <span className="font-semibold">Status :</span>{" "}
                       {row.Status}
                     </h1>
                     <h1>
-                      <span className="font-semibold">total transaction :</span>{" "}
+                      <span className="font-semibold">Total transaction :</span>{" "}
                       {row["Delivery Cost"]}
                     </h1>
                     <h1>
-                      <span className="font-semibold">total transaction :</span>{" "}
+                      <span className="font-semibold">Total transaction :</span>{" "}
                       {row["Total Transaction"]}
                     </h1>
                   </div>

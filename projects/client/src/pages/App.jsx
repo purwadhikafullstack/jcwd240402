@@ -57,21 +57,21 @@ function App() {
         <AuthContextProvider>
           <Routes>
             {/* ADMIN */}
-            <Route path="/admin-dashboard" element={<AdminHome />} />
+            <Route path="/admin/admin-dashboard" element={<AdminHome />} />
             <Route path="/admin/login" element={<AdminLoginPage />} />
-            <Route path="/admin" element={<AdminList />} />
+            <Route path="/admin/admin-list" element={<AdminList />} />
             <Route path="/admin/stock-history" element={<StockHistory />} />
             <Route path="/admin/sales-report" element={<SalesReport />} />
             <Route path="/admin/order" element={<UserOrder />} />
-            <Route path="admin/warehouses" element={<WarehouseList />} />
-            <Route path="admin/users" element={<UserList />} />
+            <Route path="/admin/warehouses" element={<WarehouseList />} />
+            <Route path="/admin/user-list" element={<UserList />} />
 
             <Route
-              path="/edit/:warehouseName"
+              path="/admin/edit/:warehouseName"
               element={<WarehouseInputsEdit />}
             />
 
-            <Route path="admin/categories" element={<CategoryList />} />
+            <Route path="/admin/categories" element={<CategoryList />} />
             <Route path="/admin/products/*" element={<AdminProductPage />}>
               <Route index element={<ProductList />} />
               <Route path="create" element={<ProductRegister />} />
@@ -94,7 +94,7 @@ function App() {
               path="/admin/*"
               element={
                 <NotFound
-                  to="/admin/stock"
+                  to="/admin/admin-dashboard"
                   buttonText="back"
                   toPage="dashboard"
                 />

@@ -379,27 +379,19 @@ module.exports = {
         });
       }
 
-      const result = await db.Warehouse_stock.findOne({
+      const result = await db.Product.findOne({
         attributes: { exclude: ["updatedAt", "createdAt"] },
         include: [
           {
-            model: db.Product,
-            as: "Product",
-            attributes: { exclude: ["updatedAt"] },
-            where: { name, is_active: true },
-            include: [
-              {
-                model: db.Category,
-                as: "category",
-                attributes: {
-                  exclude: ["updatedAt", "deletedAt", "createdAt"],
-                },
-              },
-              {
-                model: db.Image_product,
-                attributes: { exclude: ["updatedAt", "createdAt"] },
-              },
-            ],
+            model: db.Category,
+            as: "category",
+            attributes: {
+              exclude: ["updatedAt", "deletedAt", "createdAt"],
+            },
+          },
+          {
+            model: db.Image_product,
+            attributes: { exclude: ["updatedAt", "createdAt"] },
           },
         ],
       });

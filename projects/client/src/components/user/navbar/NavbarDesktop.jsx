@@ -115,8 +115,26 @@ const NavbarDesktop = () => {
           <img src={logo} alt="logo" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
-          <Link to="/product-category">Categories</Link>
-          <Link to="/all-products">Products</Link>
+          <Link
+            to="/product-category"
+            className={`${
+              location.pathname === "/product-category"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-500"
+            }`}
+          >
+            Categories
+          </Link>
+          <Link
+            to="/all-products"
+            className={`${
+              location.pathname === "/all-products"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-500"
+            }`}
+          >
+            Products
+          </Link>
         </div>
         <div className="w-96">
           <SearchBar
@@ -130,7 +148,13 @@ const NavbarDesktop = () => {
         <div className="flex justify-between w-20 items-center cursor-pointer">
           {cartsData ? (
             <Link to="/cart" className="relative">
-              <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+              <BsFillCartFill
+                className={`w-7 h-7 text-base_grey hover:text-blue3 transition-all ${
+                  location.pathname === "/cart"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                }`}
+              />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
                 {cartsData.length === 0 ? null : cartsData.length}
               </span>
@@ -143,7 +167,13 @@ const NavbarDesktop = () => {
 
           {wishlistData && access_token && refresh_token ? (
             <Link to="/all-wishlist" className="relative">
-              <RiBookmark3Fill className="w-7 h-7 hover:text-blue3 text-base_grey transition-all" />
+              <RiBookmark3Fill
+                className={`w-7 h-7 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/all-wishlist"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                } `}
+              />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
                 {wishlistData.length === 0 ? null : wishlistData.length}
               </span>

@@ -8,7 +8,7 @@ function withOutAuth(Component) {
     const token = getCookie("access_token");
 
     if (token) {
-      navigate("/admin/dashboard");
+      navigate("/admin/admin-dashboard");
       return null;
     }
     return <Component {...props} />;
@@ -16,4 +16,3 @@ function withOutAuth(Component) {
 }
 
 export default withOutAuth;
-

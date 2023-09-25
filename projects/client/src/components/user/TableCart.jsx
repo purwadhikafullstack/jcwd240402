@@ -18,6 +18,7 @@ import axios from "../../api/axios";
 import { cartsUser } from "../../features/cartSlice";
 import ModalConfirmationDelete from "./modal/ModalConfirmationDelete";
 import { Link } from "react-router-dom";
+import useClickOutside from "../../utils/useClickOutSide";
 
 const TableCart = ({
   img,
@@ -83,6 +84,12 @@ const TableCart = ({
     }
   };
 
+  const clickClose = () => {
+    setShowMenu(false);
+  };
+
+  const domNode = useClickOutside(clickClose);
+
   return (
     <>
       <div className="col-span-2 md:col-span-3 lg:col-span-3 ">
@@ -128,7 +135,10 @@ const TableCart = ({
               <CiMenuKebab className="text-xl" />
             </button>
             {showMenu ? (
-              <div className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20">
+              <div
+                // ref={domNode}
+                className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20"
+              >
                 <ul className="list-none">
                   <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
                     <SlideOverCart name={name} quantity={quantity} />
@@ -140,6 +150,7 @@ const TableCart = ({
                       errMsg={errMsg}
                       topic="cart"
                       deleteFor="Delete Cart"
+                      styleConfirmButton="bg-red-500 px-3 py-1 rounded-md text-white font-semibold hover:bg-red-400"
                     />
                   </li>
                 </ul>

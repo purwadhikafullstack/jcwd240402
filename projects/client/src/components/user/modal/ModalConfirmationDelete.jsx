@@ -15,10 +15,19 @@ export default function ModalConfirmationDelete({
   setErrMsg,
   setSuccessMsg,
   successMsg,
+  styleConfirmButton = " px-3 py-1 rounded-md text-white font-semibold hover:bg-blue-400",
 }) {
   const [openModal, setOpenModal] = useState();
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal };
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 4000);
+  };
 
   return (
     <>
@@ -45,14 +54,18 @@ export default function ModalConfirmationDelete({
               {purpose} this {topic}?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button
-                color="failure"
+              <button
+                className={`${styleConfirmButton} ${
+                  dissabledButton ? "bg-gray-500 hover:bg-gray-500" : "bg-blue3"
+                }`}
                 onClick={() => {
                   handleDelete();
+                  handleDissabled();
                 }}
+                disabled={dissabledButton}
               >
                 Yes, I'm sure
-              </Button>
+              </button>
               <Button
                 color="gray"
                 onClick={() => {

@@ -27,7 +27,6 @@ const DashboardAdmin = ({ adminData }) => {
 
   useEffect(() => {
     axios.get("/admin/statistic").then((res) => {
-      console.log(res.data);
       setTotalUser(res.data.totalUser);
       setTotalProduct(res.data.totalProduct);
       setTotalWarehouse(res.data.totalWarehouse);
@@ -37,14 +36,12 @@ const DashboardAdmin = ({ adminData }) => {
 
   useEffect(() => {
     axios.get("/admin/statistic/pie-chart").then((res) => {
-      console.log(res);
       setLabelsChart(res.data.labels);
       setDataChart(res.data.data);
       setLoading(false);
     });
   }, []);
-  console.log(labelsChart);
-  console.log(dataChart);
+
   useEffect(() => {
     const timer = setInterval(() => {
       const now = dayjs();

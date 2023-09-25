@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
@@ -21,6 +21,7 @@ import { UserAuth } from "../../../context/AuthContext";
 import { wishlistUser } from "../../../features/wishlistDataSlice";
 
 const NavbarMobile = () => {
+  const location = useLocation();
   const cartsData = useSelector((state) => state.carter.value);
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
@@ -102,7 +103,13 @@ const NavbarMobile = () => {
         <div className="flex w-24 justify-evenly gap-2 items-center">
           {cartsData && access_token && refresh_token ? (
             <Link to="/cart" className="relative">
-              <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+              <BsFillCartFill
+                className={`w-6 h-6 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/cart"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                }`}
+              />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
                 {cartsData.length === 0 ? null : cartsData.length}
               </span>
@@ -115,7 +122,13 @@ const NavbarMobile = () => {
 
           {wishlistData && access_token && refresh_token ? (
             <Link to="/all-wishlist" className="relative">
-              <RiBookmark3Fill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+              <RiBookmark3Fill
+                className={`w-6 h-6 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/all-wishlist"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                }`}
+              />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
                 {wishlistData.length === 0 ? null : wishlistData.length}
               </span>
@@ -139,7 +152,11 @@ const NavbarMobile = () => {
               <li className="my-4 font-semibold text-sm" key={idx}>
                 <Link
                   to={link.to}
-                  className="text-gray-800 hover:text-blue-400 duration-500 "
+                  className={`text-gray-800 hover:text-blue-400 duration-500 ${
+                    location.pathname === link.to
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-500"
+                  }`}
                 >
                   {link.name}
                 </Link>

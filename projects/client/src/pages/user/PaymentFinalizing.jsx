@@ -38,7 +38,6 @@ const PaymentFinalizing = () => {
   const [paymentProofData, setPaymentProofData] = useState("");
   const [yourOrder, setYourOrder] = useState([]);
   const refresh_token = getLocalStorage("refresh_token");
-  const [newAccessToken, setNewAccessToken] = useState("");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -48,8 +47,8 @@ const PaymentFinalizing = () => {
   const [loading, setLoading] = useState(true);
   const [loadingOrder, setLoadingOrder] = useState(true);
   const [errMsg, setErrMsg] = useState("");
-  const [openAlert, setOpenAlert] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
+
   const userData = useSelector((state) => state.profiler.value);
 
   const { invoiceId } = useParams();
@@ -162,7 +161,6 @@ const PaymentFinalizing = () => {
       </div>
     );
   }
-  console.log(yourOrder);
 
   return (
     <div>
@@ -310,15 +308,9 @@ const PaymentFinalizing = () => {
                   topic="Payment Proof"
                   deleteFor="Upload"
                   purpose="upload"
+                  styleConfirmButton="px-3 py-1 rounded-md text-white font-semibold hover:bg-blue-400"
                   styling="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
                 />
-                {/* <button
-                  className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
-                  onClick={handleSubmit}
-                  type="submit"
-                >
-                  Upload
-                </button> */}
               </div>
             </div>
           </div>
@@ -333,7 +325,7 @@ const PaymentFinalizing = () => {
               </span>{" "}
               <h1>Back To Order List</h1>
             </Link>
-            <h1 className="font-bold">Invoice id : {invoiceId}</h1>
+            <h1 className="font-bold">Invoice ID : {invoiceId}</h1>
             <div className="flex flex-col justify-center items-center">
               <img
                 src={

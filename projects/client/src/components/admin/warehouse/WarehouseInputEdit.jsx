@@ -291,15 +291,13 @@ const WarehouseInputsEdit = () => {
                   accept="image/png, image/jpg, image/jpeg"
                   className="rounded-full m-4 border-2"
                 />
-                <Button
-                  type="submit"
-                  buttonText="change image"
-                  bgColor="bg-blue3"
-                  colorText="text-white"
-                  fontWeight="font-bold"
-                  buttonSize="medium"
+
+                <button
                   onClick={handleUpdateImage}
-                />
+                  className="bg-blue3 text-white text-sm font-bold px-4 py-2 rounded-lg"
+                >
+                  Change Image
+                </button>
               </div>
             </div>
           </div>

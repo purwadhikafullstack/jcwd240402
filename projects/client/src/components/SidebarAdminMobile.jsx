@@ -10,18 +10,22 @@ import {
   AiOutlineShopping,
   AiFillDatabase,
 } from "react-icons/ai";
-import { FaUserAlt, FaWarehouse } from "react-icons/fa";
-import { MdDashboard } from "react-icons/md";
 import { BsGraphUpArrow } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { logout } from "../utils/tokenSetterGetter";
 import logo from "../assets/images/furniforLogo.webp";
 
 const SidebarAdminMobile = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const adminRoutes = [
-    { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
-    { to: "/admin/users", label: "Users", icon: AiOutlineTeam, roles: [1] },
+    {
+      to: "/admin/admin-list",
+      label: "Admin",
+      icon: AiOutlineUser,
+      roles: [1],
+    },
+    { to: "/admin/user-list", label: "Users", icon: AiOutlineTeam, roles: [1] },
     {
       to: "/admin/warehouses",
       label: "Warehouse",
@@ -51,31 +55,35 @@ const SidebarAdminMobile = () => {
       to: "/admin/stock-history",
     },
   ];
+
   function handleLogout() {
     logout();
+    navigate("/admin/login");
   }
-  console.log(location.pathname);
 
   return (
     <div className="w-16 h-screen sticky z-30 top-0 lg:hidden bg-blue3 shadow-card-1">
       <div className="h-full w-full p-2 flex flex-col justify-evenly">
         <div
           className={`flex flex-col justify-center items-center ${
-            location.pathname === "/admin-dashboard"
+            location.pathname === "/admin/admin-dashboard"
               ? "bg-yellow2"
               : "bg-gray-200 "
           } rounded-lg p-1`}
         >
-          <Link to="/admin-dashboard">
-            <img src={logo} alt="" />
+          <Link to="/admin/admin-dashboard">
+            <img src={logo} alt="logo" />
           </Link>
         </div>
         {adminRoutes.map((item, idx) => (
           <Link
             to={item.to}
             className={`text-[9px] ${
-              location.pathname === item.to ? "bg-yellow2" : "bg-gray-200 "
+              location.pathname.includes(item.to)
+                ? "bg-yellow2"
+                : "bg-gray-200 "
             } rounded-lg p-2`}
+            key={idx}
           >
             <div
               key={idx}

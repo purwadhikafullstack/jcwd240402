@@ -26,8 +26,13 @@ function SidebarAdminDesktop() {
   const location = useLocation();
   const adminData = useSelector((state) => state.profilerAdmin.value);
   const adminRoutes = [
-    { to: "/admin", label: "Admin", icon: AiOutlineUser, roles: [1] },
-    { to: "/admin/users", label: "Users", icon: AiOutlineTeam, roles: [1] },
+    {
+      to: "/admin/admin-list",
+      label: "Admin",
+      icon: AiOutlineUser,
+      roles: [1],
+    },
+    { to: "/admin/user-list", label: "Users", icon: AiOutlineTeam, roles: [1] },
     {
       to: "/admin/warehouses",
       label: "Warehouse",
@@ -81,7 +86,7 @@ function SidebarAdminDesktop() {
       <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Link
-            to="/admin-dashboard"
+            to="/admin/admin-dashboard"
             className="flowbite-sidebar-link text-base_grey hover:text-blue4 text-center"
           >
             <Sidebar.Item className=" hover:border hover-bg-blue3 hover:border-black hover:text-blue1 bg-blue2 text-white">

@@ -85,8 +85,8 @@ const ProductDetail = () => {
     axios
       .get(`/user/warehouse-stock/product/${name}`)
       .then((res) => {
-        setDetailProduct(res.data?.result?.Product);
-        setDataImage(res.data?.result?.Product?.Image_products);
+        setDetailProduct(res.data?.result);
+        setDataImage(res.data?.result?.Image_products);
         setStock(res.data?.remainingStock);
         setLoading(false);
       })
@@ -156,7 +156,7 @@ const ProductDetail = () => {
       />
       <div className="min-h-screen mx-6 mb-8 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
         <div className="lg:grid lg:grid-cols-3 gap-4 flex flex-col">
-          <div className="md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
+          <div className=" md:flex md:items-center  lg:flex lg:flex-col lg:items-center lg:col-span-2 lg:w-full lg:h-full">
             <Alert
               successMsg={successMsg}
               setOpenAlert={setOpenAlert}
@@ -169,23 +169,26 @@ const ProductDetail = () => {
                 <img src={productNotFound} alt="" className="w-1/2 lg:w-2/3" />
               </div>
             ) : (
-              <div className="w-full md:w-96 lg:w-96 h-full mt-10 flex flex-col justify-center items-center">
-                <Carousel>
-                  {dataImage.map((item, idx) => (
-                    <div key={idx}>
-                      <img
-                        src={
-                          item?.img_product
-                            ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
-                            : emptyImage
-                        }
-                        alt="product"
-                        className=""
-                      />
-                    </div>
-                  ))}
-                </Carousel>
-              </div>
+              // <div className="md:w-96 lg:w-96 mt-10 flex flex-col justify-center items-center">
+              <Carousel className=" mx-auto  md:w-96 md:h-full lg:w-96 lg:h-full mt-10 flex flex-col justify-center items-center">
+                {dataImage.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col justify-center items-center h-full"
+                  >
+                    <img
+                      src={
+                        item?.img_product
+                          ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
+                          : emptyImage
+                      }
+                      alt="product"
+                      className=""
+                    />
+                  </div>
+                ))}
+              </Carousel>
+              // </div>
             )}
             <div className="hidden lg:block md:hidden w-full">
               {dataImage.length === 0 ? null : (

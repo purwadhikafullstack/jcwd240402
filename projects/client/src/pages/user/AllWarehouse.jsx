@@ -30,44 +30,36 @@ const AllWarehouse = () => {
   const primaryAddress = userData.User_detail?.address_user_id;
 
   useEffect(() => {
-    if (access_token && refresh_token && userData.role_id === 3) {
-      axios
-        .post(
-          "/user/warehouse-closest",
-          {
-            primary_address_id: primaryAddress,
-          },
-          { headers: { Authorization: `Bearer ${access_token}` } }
-        )
-        .then((res) => {
-          setClosestWarehouse(res.data?.closest_warehouse);
-          setCurrentPrimaryAddress(res.data?.address?.Address_user);
-          setLoading(false);
-        })
-        .catch((error) => {
-          setLoading(false);
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
-        });
-    }
-  }, [
-    access_token,
-    newAccessToken,
-    primaryAddress,
-    refresh_token,
-    userData.role_id,
-  ]);
+    axios
+      .post(
+        "/user/warehouse-closest",
+        {
+          primary_address_id: primaryAddress,
+        },
+        { headers: { Authorization: `Bearer ${access_token}` } }
+      )
+      .then((res) => {
+        setClosestWarehouse(res.data?.closest_warehouse);
+        setCurrentPrimaryAddress(res.data?.address?.Address_user);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        if (
+          error.response?.data?.message === "Invalid token" &&
+          error.response?.data?.error?.name === "TokenExpiredError"
+        ) {
+          axios
+            .get("/user/auth/keep-login", {
+              headers: { Authorization: `Bearer ${refresh_token}` },
+            })
+            .then((res) => {
+              setNewAccessToken(res.data?.accessToken);
+              setCookie("access_token", newAccessToken, 1);
+            });
+        }
+      });
+  }, [access_token, newAccessToken, primaryAddress, refresh_token]);
 
   useEffect(() => {
     axios.get("/user/all-warehouse").then((res) => {

@@ -8,6 +8,7 @@ import RegisterCategoryModal from "../../components/modal/category/ModalRegister
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import { useSelector } from "react-redux";
 import useURLParams from "../../utils/useUrlParams";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const CategoryList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
@@ -66,51 +67,54 @@ const CategoryList = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="px-8 pt-8">
-        <div className="flex items-center space-x-4">
-          <div className="flex-grow">
-            <input
-              type="text"
-              placeholder="Search Category Name"
-              className="w-full p-2 border rounded text-base bg-white border-gray-300 shadow-sm"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="px-8 pt-8 w-full">
+          <div className="flex items-center space-x-4">
+            <div className="flex-grow">
+              <input
+                type="text"
+                placeholder="Search Category Name"
+                className="w-full p-2 border rounded text-base bg-white border-gray-300 shadow-sm"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+              />
+            </div>
+            <Button
+              buttonSize="medium"
+              buttonText="Register"
+              onClick={() => setShowModal(true)}
+              bgColor="bg-blue3"
+              colorText="text-white"
+              fontWeight="font-semibold"
+              isVisible={adminData.role_id !== 1}
             />
           </div>
-          <Button
-            buttonSize="medium"
-            buttonText="Register"
-            onClick={() => setShowModal(true)}
-            bgColor="bg-blue3"
-            colorText="text-white"
-            fontWeight="font-semibold"
-            isVisible={adminData.role_id !== 1}
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
-          {categories.map((category) => (
-            <AdminCategoryCard
-              key={category.id}
-              src={category.category_img}
-              name={category.name}
-              createdAt={category.createdAt}
-              id={category.id}
-              handleSuccessfulEdit={handleSuccessfulEdit}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-4">
+            {categories.map((category) => (
+              <AdminCategoryCard
+                key={category.id}
+                src={category.category_img}
+                name={category.name}
+                createdAt={category.createdAt}
+                id={category.id}
+                handleSuccessfulEdit={handleSuccessfulEdit}
+              />
+            ))}
+          </div>
+          <div className="flex justify-center items-center w-full my-4">
+            <DefaultPagination
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
             />
-          ))}
-        </div>
-        <div className="flex justify-center items-center w-full my-4">
-          <DefaultPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
+          </div>
+          <RegisterCategoryModal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            onSuccessfulRegister={handleRegisterSuccess}
           />
         </div>
-        <RegisterCategoryModal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          onSuccessfulRegister={handleRegisterSuccess}
-        />
       </div>
     </div>
   );

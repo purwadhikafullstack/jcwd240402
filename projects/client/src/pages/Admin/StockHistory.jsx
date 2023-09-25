@@ -9,6 +9,7 @@ import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehous
 import AsyncSelect from "react-select/async";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const StockHistory = () => {
   const [month, setMonth] = useState("");
@@ -49,7 +50,7 @@ const StockHistory = () => {
   useEffect(() => {
     const fetchDefaultYear = async () => {
       try {
-        const year = await loadYearOptions('');
+        const year = await loadYearOptions("");
         setDefaultYear(year);
       } catch (error) {
         console.error("Error fetching default year:", error);
@@ -97,7 +98,7 @@ const StockHistory = () => {
           label: year,
         })),
       ];
-      return yearOptions
+      return yearOptions;
     } catch (error) {
       console.error("Error loading year:", error);
       return [];
@@ -105,7 +106,6 @@ const StockHistory = () => {
   };
 
   useEffect(() => {
-
     if (adminData.role_id === 2) {
       setWarehouseId(adminData?.warehouse_id);
     }
@@ -146,71 +146,74 @@ const StockHistory = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="px-8 pt-8">
-        <div className="flex items-center gap-4">
-          <Select
-            options={monthOptions}
-            placeholder={<div>month</div>}
-            onChange={handleChangeMonth}
-          />
-          <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultYear}
-          loadOptions={loadYearOptions}
-          value={year || null}
-          onChange={handleChangeYear}
-          placeholder="Select year"
-        />
-          {adminData.role_id == 1 && (
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="lg:px-8 lg:pt-8 lg:w-full p-4">
+          <div className="flex items-center gap-4">
+            <Select
+              options={monthOptions}
+              placeholder={<div>month</div>}
+              onChange={handleChangeMonth}
+            />
             <AsyncSelect
               cacheOptions
-              defaultOptions
-              loadOptions={loadWarehouseOptions}
-              onChange={handleChangeWarehouseId}
-              placeholder="All Warehouses"
-              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              defaultOptions={defaultYear}
+              loadOptions={loadYearOptions}
+              value={year || null}
+              onChange={handleChangeYear}
+              placeholder="Select year"
             />
-          )}
-          <div>Last Stock: {totalLastStock}</div>
-          <div>Total Increment: {totalIncrement}</div>
-          <div>Total Decrement: {totalDecrement}</div>
-        </div>
-        <div className="py-4">
-          <TableComponent
-            headers={[
-              "Product",
-              "Admin Username",
-              "Warehouse",
-              "Stock Before",
-              "Stock After",
-              "Increment/Decrement",
-              "Quantity",
-              "Journal",
-              "Timestamp",
-            ]}
-            data={stockHistoryList.map((history) => ({
-              Product: history?.Warehouse_stock?.Product?.name || "",
-              "Admin Username": history?.Admin?.username || "",
-              "Warehouse": history?.Warehouse?.warehouse_name || "",
-              "Stock Before": history?.stock_before_transfer || "0",
-              "Stock After": history?.stock_after_transfer || "",
-              "Increment/Decrement": history?.increment_decrement || "",
-              Quantity: history?.quantity || "",
-              Journal: history?.journal || "",
-              Timestamp:
-                history?.timestamp.slice(0, 10) +
-                  ", " +
-                  history?.timestamp.slice(11, 19) || "",
-            }))}
-            showIcon={false}
-          />
-        </div>
-        {error && <div className="text-red-500">{error}</div>}
-        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          {/* <DefaultPagination
+            {adminData.role_id == 1 && (
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                loadOptions={loadWarehouseOptions}
+                onChange={handleChangeWarehouseId}
+                placeholder="All Warehouses"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              />
+            )}
+            <div>Last Stock: {totalLastStock}</div>
+            <div>Total Increment: {totalIncrement}</div>
+            <div>Total Decrement: {totalDecrement}</div>
+          </div>
+          <div className="py-4">
+            <TableComponent
+              headers={[
+                "Product",
+                "Admin Username",
+                "Warehouse",
+                "Stock Before",
+                "Stock After",
+                "Increment/Decrement",
+                "Quantity",
+                "Journal",
+                "Timestamp",
+              ]}
+              data={stockHistoryList.map((history) => ({
+                Product: history?.Warehouse_stock?.Product?.name || "",
+                "Admin Username": history?.Admin?.username || "",
+                Warehouse: history?.Warehouse?.warehouse_name || "",
+                "Stock Before": history?.stock_before_transfer || "0",
+                "Stock After": history?.stock_after_transfer || "",
+                "Increment/Decrement": history?.increment_decrement || "",
+                Quantity: history?.quantity || "",
+                Journal: history?.journal || "",
+                Timestamp:
+                  history?.timestamp.slice(0, 10) +
+                    ", " +
+                    history?.timestamp.slice(11, 19) || "",
+              }))}
+              showIcon={false}
+            />
+          </div>
+          {error && <div className="text-red-500">{error}</div>}
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+            {/* <DefaultPagination
             totalPages={totalPages}
             onPageChange={setCurrentPage}
           /> */}
+          </div>
         </div>
       </div>
     </div>

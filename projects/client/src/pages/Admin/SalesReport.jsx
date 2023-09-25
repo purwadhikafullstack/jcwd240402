@@ -11,7 +11,7 @@ import toRupiah from "@develoka/angka-rupiah-js";
 import AsyncSelect from "react-select/async";
 import dayjs from "dayjs";
 import { rupiahFormat } from "../../utils/formatter";
-
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
@@ -55,7 +55,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchDefaultCategories = async () => {
       try {
-        const categories = await loadCategoryOptions('');
+        const categories = await loadCategoryOptions("");
         setDefaultCategories(categories);
       } catch (error) {
         console.error("Error fetching default categories:", error);
@@ -67,7 +67,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchDefaultProducts = async () => {
       try {
-        const products = await loadProductOptions('');
+        const products = await loadProductOptions("");
         setDefaultProducts(products);
       } catch (error) {
         console.error("Error fetching default products:", error);
@@ -79,7 +79,7 @@ const SalesReport = () => {
   useEffect(() => {
     const fetchDefaultYear = async () => {
       try {
-        const year = await loadYearOptions('');
+        const year = await loadYearOptions("");
         setDefaultYear(year);
       } catch (error) {
         console.error("Error fetching default year:", error);
@@ -89,10 +89,9 @@ const SalesReport = () => {
   }, []);
 
   useEffect(() => {
-
-      if (adminData.role_id === 2) {
-        setWarehouseId(adminData?.warehouse_id);
-      }
+    if (adminData.role_id === 2) {
+      setWarehouseId(adminData?.warehouse_id);
+    }
 
     axios
       .get(
@@ -110,7 +109,14 @@ const SalesReport = () => {
       .catch((err) => {
         setError(err.response.message);
       });
-  }, [month, year, warehouseId, selectedProduct, selectedCategory, currentPage]);
+  }, [
+    month,
+    year,
+    warehouseId,
+    selectedProduct,
+    selectedCategory,
+    currentPage,
+  ]);
 
   const loadCategoryOptions = async (inputValue) => {
     try {
@@ -130,7 +136,7 @@ const SalesReport = () => {
           label: category.name,
         })),
       ];
-      return categoryOptions
+      return categoryOptions;
     } catch (error) {
       console.error("Error loading categories:", error);
       return [];
@@ -155,7 +161,7 @@ const SalesReport = () => {
           label: product.name,
         })),
       ];
-      return productOptions
+      return productOptions;
     } catch (error) {
       console.error("Error loading products:", error);
       return [];
@@ -177,7 +183,7 @@ const SalesReport = () => {
           label: year,
         })),
       ];
-      return yearOptions
+      return yearOptions;
     } catch (error) {
       console.error("Error loading year:", error);
       return [];
@@ -233,74 +239,82 @@ const SalesReport = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="px-8 pt-8">
-        <div className="flex items-center gap-4">
-          <Select
-            options={monthOptions}
-            placeholder={<div>select month</div>}
-            onChange={handleChangeMonth}
-          />
-          <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultYear}
-          loadOptions={loadYearOptions}
-          value={year || null}
-          onChange={handleChangeYear}
-          placeholder="Select year"
-        />
-          <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultCategories}
-          loadOptions={loadCategoryOptions}
-          value={selectedCategory || null}
-          onChange={handleCategoryChange}
-          placeholder="Select a category"
-        />
-          <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultProducts}
-          loadOptions={loadProductOptions}
-          value={selectedProduct || null}
-          onChange={handleProductChange}
-          placeholder="Select a product"
-        />
-          {adminData.role_id == 1 && (
+      <div className="flex lg:flex-none">
+        <SidebarAdminMobile />
+        <div className="lg:px-8 lg:pt-8 lg:w-full p-4">
+          <div className="flex items-center gap-4">
+            <Select
+              options={monthOptions}
+              placeholder={<div>select month</div>}
+              onChange={handleChangeMonth}
+            />
             <AsyncSelect
               cacheOptions
-              defaultOptions
-              loadOptions={loadWarehouseOptions}
-              onChange={handleChangeWarehouseId}
-              placeholder="All Warehouses"
-              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              defaultOptions={defaultYear}
+              loadOptions={loadYearOptions}
+              value={year || null}
+              onChange={handleChangeYear}
+              placeholder="Select year"
             />
-          )}
-        </div>
-        <div className="py-4">
-          <TableComponent
-            headers={[
-              "Month",
-              "Year",
-              "Warehouse",
-              "Category",
-              "Product",
-              "Price",
-              "Quantity",
-              "Sub Total",
-            ]}
-            data={orderSalesList.map((sales) => ({
-              Month: dayjs(sales?.Order?.delivery_time).format("MMMM") || "",
-              Year: dayjs(sales?.Order?.delivery_time).format("YYYY") || "",
-              "Warehouse": sales?.Order?.Warehouse?.warehouse_name || "",
-              Category: sales?.Warehouse_stock?.Product?.category?.name || "",
-              Product: sales?.Warehouse_stock?.Product?.name || "",
-              Price: rupiahFormat(sales?.Warehouse_stock?.Product?.price) || "",
-              Quantity: sales?.quantity || "",
-              "Sub Total":
-              rupiahFormat(sales?.Warehouse_stock?.Product?.price * sales?.quantity) || 0,
-            }))}
-            showIcon={false}
-          />
-          <div className="p-4 font-bold">Total: {rupiahFormat(salesReport)}</div>
+            <AsyncSelect
+              cacheOptions
+              defaultOptions={defaultCategories}
+              loadOptions={loadCategoryOptions}
+              value={selectedCategory || null}
+              onChange={handleCategoryChange}
+              placeholder="Select a category"
+            />
+            <AsyncSelect
+              cacheOptions
+              defaultOptions={defaultProducts}
+              loadOptions={loadProductOptions}
+              value={selectedProduct || null}
+              onChange={handleProductChange}
+              placeholder="Select a product"
+            />
+            {adminData.role_id == 1 && (
+              <AsyncSelect
+                cacheOptions
+                defaultOptions
+                loadOptions={loadWarehouseOptions}
+                onChange={handleChangeWarehouseId}
+                placeholder="All Warehouses"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              />
+            )}
+          </div>
+          <div className="py-4">
+            <TableComponent
+              headers={[
+                "Month",
+                "Year",
+                "Warehouse",
+                "Category",
+                "Product",
+                "Price",
+                "Quantity",
+                "Sub Total",
+              ]}
+              data={orderSalesList.map((sales) => ({
+                Month: dayjs(sales?.Order?.delivery_time).format("MMMM") || "",
+                Year: dayjs(sales?.Order?.delivery_time).format("YYYY") || "",
+                Warehouse: sales?.Order?.Warehouse?.warehouse_name || "",
+                Category: sales?.Warehouse_stock?.Product?.category?.name || "",
+                Product: sales?.Warehouse_stock?.Product?.name || "",
+                Price:
+                  rupiahFormat(sales?.Warehouse_stock?.Product?.price) || "",
+                Quantity: sales?.quantity || "",
+                "Sub Total":
+                  rupiahFormat(
+                    sales?.Warehouse_stock?.Product?.price * sales?.quantity
+                  ) || 0,
+              }))}
+              showIcon={false}
+            />
+            <div className="p-4 font-bold">
+              Total: {rupiahFormat(salesReport)}
+            </div>
+          </div>
         </div>
       </div>
     </div>

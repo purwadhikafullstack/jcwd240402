@@ -82,7 +82,7 @@ module.exports = {
           if (existingStock.product_stock < 0) {
             await t.rollback();
             return res.status(400).send({
-              message: "Operation would result in negative stock.",
+              message: "Unable to reduce stock to negative value",
             });
           }
           break;

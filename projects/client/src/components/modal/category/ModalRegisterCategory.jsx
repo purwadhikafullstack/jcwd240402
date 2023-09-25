@@ -70,6 +70,7 @@ const RegisterCategoryModal = ({ show, onClose, onSuccessfulRegister }) => {
         </div>
       </Modal.Header>
       <Modal.Body>
+      {errMsg && <AlertWithIcon errMsg={errMsg} />}
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
           <div className="px-6 grid gap-y-3">
             <InputForm

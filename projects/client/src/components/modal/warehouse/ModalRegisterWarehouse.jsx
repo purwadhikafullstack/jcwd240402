@@ -9,6 +9,7 @@ import axios from "../../../api/axios";
 import TextAreaForm from "../../TextAreaForm";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import emptyImage from "../../../assets/images/emptyImage.jpg";
+import AlertWithIcon from "../../AlertWithIcon"
 
 const RegisterWarehouseModal = ({ show, onClose }) => {
   const access_token = getCookie("access_token");
@@ -124,12 +125,8 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
         </div>
       </Modal.Header>
       <Modal.Body>
+        {errMsg && <AlertWithIcon errMsg={errMsg} />}
         <form onSubmit={formik.handleSubmit}>
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p>{errMsg}</p>
-            </div>
-          )}
           <div className="">
             <div className="md:flex lg:flex md:justify-between lg:justify-between justify-center items-center">
               <form

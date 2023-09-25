@@ -142,10 +142,10 @@ module.exports = {
         });
       }
 
-      if (categoryId === 9) {
+      if (parseInt(categoryId) === 9) {
         await t.rollback();
         return res.status(400).send({
-          message: "Category with ID 9 cannot be deleted.",
+          message: "Uncategorized cannot be deleted.",
         });
       }
       

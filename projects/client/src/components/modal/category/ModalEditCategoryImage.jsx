@@ -5,6 +5,7 @@ import { Modal } from "flowbite-react";
 import Button from "../../Button";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon"
 
 const EditCategoryImageModal = ({
   show,
@@ -83,13 +84,9 @@ const EditCategoryImageModal = ({
         </div>
       </Modal.Header>
       <Modal.Body>
+      {errMsg && <AlertWithIcon errMsg={errMsg}/>}
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center my-2">
-              <p>{errMsg}</p>
-            </div>
-          )}
-          <div className="px-6 grid gap-y-3">
+          <div className="px-6 grid gap-y-3 pt-2">
             <div className="relative">
               <input
                 id="categoryImageInput"

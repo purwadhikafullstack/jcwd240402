@@ -6,6 +6,7 @@ const {
 } = require("../service/warehouse_stock");
 const { Sequelize } = require("sequelize");
 const { autoStockTransfer } = require("../utils");
+const { newStockHistory } = require("../service/warehouse_stock");
 
 module.exports = {
   async createStockForWarehouse(req, res) {
@@ -56,6 +57,7 @@ module.exports = {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
     const { productStock, operation } = req.body;
+    const adminData = req.user;
 
     const t = await db.sequelize.transaction();
 
@@ -76,9 +78,31 @@ module.exports = {
       switch (operation) {
         case "increase":
           existingStock.product_stock += parseInt(productStock, 10);
+
+          const stockHistoryFrom = newStockHistory(
+            existingStock.id,
+            warehouseId,
+            adminData.id,
+            existingStock.product_stock,
+            existingStock.product_stock + parseInt(productStock, 10),
+            parseInt(productStock, 10),
+            "Stock Update"
+          );
+
           break;
         case "decrease":
           existingStock.product_stock -= parseInt(productStock, 10);
+
+          const stockHistoryFrom2 = newStockHistory(
+            existingStock.id,
+            warehouseId,
+            adminData.id,
+            existingStock.product_stock,
+            existingStock.product_stock - parseInt(productStock, 10),
+            parseInt(productStock, 10),
+            "Stock Update"
+          );
+
           if (existingStock.product_stock < 0) {
             await t.rollback();
             return res.status(400).send({
@@ -87,7 +111,9 @@ module.exports = {
           }
           break;
       }
+      
       await existingStock.save({ transaction: t });
+
       await t.commit();
 
       res.status(200).send({
@@ -450,6 +476,8 @@ module.exports = {
   async deleteStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
+    const adminData = req.user;
+
     const t = await db.sequelize.transaction();
     try {
       const existingStock = await db.Warehouse_stock.findOne({
@@ -464,10 +492,22 @@ module.exports = {
             "Stock does not exist for the selected product in this warehouse.",
         });
       }
+
       await db.Warehouse_stock.destroy({
         where: { warehouse_id: warehouseId, product_id: productId },
         transaction: t,
       });
+
+      const stockHistoryFrom = newStockHistory(
+        existingStock.id,
+        warehouseId,
+        adminData.id,
+        existingStock.product_stock,
+        existingStock.product_stock - existingStock.product_stock,
+        existingStock.product_stock,
+        "Stock Destroy"
+      );
+
       await t.commit();
       res.status(200).send({
         message: "Stock deleted successfully.",

@@ -87,7 +87,6 @@ module.exports = {
   },
 
   topTenProduct: async (req, res) => {
-    // Set default date range to the current month
     const currentDate = moment();
     const startOfMonth = currentDate.clone().startOf('month').format('YYYY-MM-DD HH:mm:ss');
     const endOfMonth = currentDate.clone().endOf('month').format('YYYY-MM-DD HH:mm:ss');
@@ -115,17 +114,25 @@ module.exports = {
             ],
             paranoid: false,
           },
-        ],
-        where: {
-          createdAt: {
-            [db.Sequelize.Op.between]: [startOfMonth, endOfMonth],
+          {
+            model: db.Order, 
+            attributes: [],
+            where: {
+              order_status_id: 3,
+              createdAt: {
+                [db.Sequelize.Op.between]: [startOfMonth, endOfMonth],
+              },
+            },
+            paranoid: false,
           },
-        },
+        ],
         group: ["Warehouse_stock.Product.id", "Warehouse_stock.product_id"],
         order: [[db.Sequelize.fn("SUM", db.Sequelize.col("quantity")), "DESC"]],
         limit: 10,
         paranoid: false,
       });
+
+      const totalSold = topProducts.reduce((total, product) => total + parseInt(product.dataValues.total_quantity, 10), 0);
   
       const formattedData = topProducts.map((product) => ({
         name: product.dataValues.name,
@@ -133,7 +140,10 @@ module.exports = {
         total_quantity: product.dataValues.total_quantity,
       }));
   
-      res.status(200).json(formattedData);
+      res.status(200).json({
+        totalSold,
+        products: formattedData,
+      });
     } catch (error) {
       res.status(500).json({
         message: "Fatal error on server",
@@ -141,6 +151,7 @@ module.exports = {
       });
     }
   },
+  
 
   incomeGraph: async (req, res) => {
     try {

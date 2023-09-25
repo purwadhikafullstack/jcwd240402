@@ -8,6 +8,7 @@ module.exports = {
     receiver,
     message,
     redirect = true,
+    buttonText = "Verify Your Account",
   }) => {
     return new Promise((resolve, reject) => {
       var transporter = nodemailer.createTransport({
@@ -39,7 +40,7 @@ module.exports = {
     <p>${message}</p>
     ${
       redirect
-        ? `<a href=${link} style="background: #187BCD;margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px;text-decoration:none;">verify your account</a>`
+        ? `<a href=${link} style="background: #187BCD;margin: 0 auto;width: max-content;padding: 5px 10px;color: #fff;border-radius: 4px;text-decoration:none;">${buttonText}</a>`
         : null
     }
     <p style="font-size:0.9em;">Regards,<br />FURNITURE FORTUNE</p>

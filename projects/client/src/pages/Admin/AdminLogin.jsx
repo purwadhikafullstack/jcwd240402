@@ -37,7 +37,7 @@ const AdminLogin = () => {
         setStatus({
           success: true,
         });
-        navigate("/admin-dashboard");
+        navigate("/admin/admin-dashboard");
       } else {
         throw new Error("Login Failed");
       }

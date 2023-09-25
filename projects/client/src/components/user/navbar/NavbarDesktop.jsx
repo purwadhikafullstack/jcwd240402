@@ -152,7 +152,7 @@ const NavbarDesktop = () => {
                 className={`w-7 h-7 text-base_grey hover:text-blue3 transition-all ${
                   location.pathname === "/cart"
                     ? "text-blue-500 font-semibold"
-                    : "text-gray-500"
+                    : "text-base_grey"
                 }`}
               />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
@@ -171,7 +171,7 @@ const NavbarDesktop = () => {
                 className={`w-7 h-7 hover:text-blue3 text-base_grey transition-all ${
                   location.pathname === "/all-wishlist"
                     ? "text-blue-500 font-semibold"
-                    : "text-gray-500"
+                    : "text-base_grey"
                 } `}
               />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">

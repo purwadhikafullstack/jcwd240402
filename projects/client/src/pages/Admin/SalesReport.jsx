@@ -6,7 +6,6 @@ import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
-import toRupiah from "@develoka/angka-rupiah-js";
 import AsyncSelect from "react-select/async";
 import dayjs from "dayjs";
 import { rupiahFormat } from "../../utils/formatter";

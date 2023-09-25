@@ -3,7 +3,8 @@ import { BiSolidCategoryAlt } from "react-icons/bi";
 import { BsFillBox2HeartFill } from "react-icons/bs";
 import { FaUsers, FaWarehouse } from "react-icons/fa";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
+import BarChart from "./Top10Products";
 
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
@@ -254,7 +255,7 @@ const DashboardAdmin = ({ adminData }) => {
       </div>
       <div className="col-span-4 row-span-2 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1">
-          <h1>8. pie chart</h1>
+          <BarChart/>
         </div>
       </div>
     </div>

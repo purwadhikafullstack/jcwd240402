@@ -20,6 +20,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
 
@@ -181,6 +182,13 @@ const Register = () => {
     },
   ];
 
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
+  };
+
   return (
     <div className="bg-white h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />
@@ -264,12 +272,21 @@ const Register = () => {
                   ))}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
+                      onClick={() => {
+                        formik.handleSubmit();
+                        handleDissabled();
+                      }}
                       buttonSize="medium"
                       buttonText="Register"
                       type="submit"
-                      bgColor="bg-blue3"
+                      bgColor={`${
+                        dissabledButton
+                          ? "bg-gray-500 hover:bg-gray-500"
+                          : "bg-blue3"
+                      }`}
                       colorText="text-white"
                       fontWeight="font-semibold"
+                      disabled={dissabledButton}
                     />
 
                     <h1 className="mt-2 lg:my-4">

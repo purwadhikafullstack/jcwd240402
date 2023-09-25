@@ -5,6 +5,7 @@ import EditCategoryNameModal from "../../modal/category/ModalEditCategoryName";
 import EditCategoryImageModal from "../../modal/category/ModalEditCategoryImage";
 import ConfirmDeleteModal from "../../modal/category/ModalDeleteCategory";
 import noimage from "../../../assets/images/noimagefound.jpg"
+import { useSelector } from 'react-redux';
 
 const AdminCategoryCard = ({
   src,
@@ -17,6 +18,8 @@ const AdminCategoryCard = ({
   const [showEditNameModal, setShowEditNameModal] = useState(false);
   const [showEditImageModal, setShowEditImageModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const role_id = useSelector((state) => state.profilerAdmin.value.role_id);
+  console.log(role_id)
 
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
@@ -61,10 +64,11 @@ const AdminCategoryCard = ({
         Created: {moment(createdAt).format("MMMM D, YYYY")}
       </p>
       <div className="absolute top-1 right-2">
-        <button className="p-2 rounded-full" onClick={handleMenuToggle}>
-          <IoEllipsisHorizontalCircle />
-        </button>
-
+      {role_id === 1 && (
+          <button className="p-2 rounded-full" onClick={handleMenuToggle}>
+            <IoEllipsisHorizontalCircle />
+          </button>
+        )}
         {showMenu && (
           <div className="absolute top-full right-0  bg-white rounded-lg shadow-card-1 border border-gray-200 z-20 w-48 max-h-40 overflow-y-auto">
             <ul className="list-none">

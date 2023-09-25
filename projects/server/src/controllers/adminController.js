@@ -405,26 +405,38 @@ module.exports = {
   async deleteAdmin(req, res) {
     try {
       const adminId = req.params.adminId;
-
+  
       const admin = await db.Admin.findOne({
         where: { id: adminId },
       });
-
+  
       if (!admin) {
-        return res.status(404).json({ message: "Admin not found" });
+        return res.status(404).send({
+          message: "Admin not found"
+        });
       }
-
+  
+      if (admin.role_id === 1) {
+        return res.status(403).send({
+          message: "Cannot delete Super Admin"
+        });
+      }
+  
       await admin.destroy();
-
-      res.status(200).json({ message: "Admin deleted successfully" });
+  
+      res.status(200).send({
+        message: "Admin deleted successfully"
+      });
     } catch (error) {
       console.error(error);
-      res.status(500).json({
+      res.status(500).send({
         message: "An error occurred while deleting admin",
-        error: error.message,
+        error: error.message
       });
     }
   },
+  
+  
 
   /* 
 1 = payment pending

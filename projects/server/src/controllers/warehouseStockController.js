@@ -381,6 +381,7 @@ module.exports = {
 
       const result = await db.Product.findOne({
         attributes: { exclude: ["updatedAt", "createdAt"] },
+        where: { name, is_active: true },
         include: [
           {
             model: db.Category,

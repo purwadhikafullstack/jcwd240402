@@ -95,7 +95,7 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
           <h4>{userData.User_detail?.phone}</h4>
           <h4>{address_details}</h4>
         </div>
-        <div className="flex flex-col items-end">
+        <div className="flex flex-col items-end w-52">
           {/* <BurgerSettingAddress idAddress={idAddress} /> */}
           <button onClick={() => setShowMenu(!showMenu)}>
             <CiMenuKebab className="text-xl" />
@@ -103,19 +103,23 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
           {showMenu ? (
             <div
               // ref={domNode}
-              className="absolute mt-5 bg-white rounded-lg shadow-card-1 border-gray-200 z-20"
+              className={`${
+                location.pathname === "/user/setting/address"
+                  ? "absolute mt-5 z-10"
+                  : "relative"
+              } bg-white rounded-lg shadow-card-1  border-gray-200 z-20`}
             >
               <ul className="list-none">
                 {location.pathname === "/user/setting/address" ? (
-                  <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
+                  <li className="py-2 px-4 cursor-pointer hover:bg-gray-100 hover:rounded-lg">
                     <ModalChangeAddress idAddress={idAddress} />
                   </li>
                 ) : null}
-                <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
+                <li className="py-2 px-4 cursor-pointer hover:bg-gray-100 hover:rounded-lg">
                   <ModalConfirmationPrimaryAddress idAddress={idAddress} />
                 </li>
                 {location.pathname === "/user/setting/address" ? (
-                  <li className="py-2 px-4 cursor-pointer hover:bg-gray-100">
+                  <li className="py-2 px-4 cursor-pointer hover:bg-gray-100 hover:rounded-lg">
                     <ModalConfirmationDelete
                       handleDelete={deleteAddress}
                       errMsg={errMsg}

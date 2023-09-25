@@ -49,7 +49,7 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
   return (
     <>
       <button onClick={() => setOpenModal(true)}>
-        <p className="text-xs">Set as Primary Address</p>
+        <p className="text-xs  rounded-lg">Set as Primary Address</p>
       </button>
       <Modal
         show={openModal}

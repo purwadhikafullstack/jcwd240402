@@ -14,14 +14,10 @@ const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId
       const response = await axios.patch(`/admin/category/${categoryId}`, {}, {
         headers: { Authorization: `Bearer ${access_token}` }
       });
-
       if (response.status === 200) {
-        alert('Category deleted successfully!');
         onClose();
         handleSuccessfulEdit();
-      } else {
-        alert(`Error deleting category: ${response.data.message}`);
-      }
+      } 
     } catch (error) {
       if (error.response && error.response.data) {
         setErrMsg(error.response.data.message);

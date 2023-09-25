@@ -324,28 +324,28 @@ const CheckOut = () => {
                       ))}
                     </div>
                     <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 flex flex-col gap-4">
-                    {userData.User_detail?.Address_user?.id ? (
-                              <div className="">
-                                <h1>Choose Courier</h1>
-                                  <Select
-                                    options={courierOptions}
-                                    placeholder={<div>courier</div>}
-                                    onChange={handleCourier}
-                                  />
-                                  {chosenCourier && (
-                                    <Select
-                                      options={serviceOptions}
-                                      placeholder={<div>courier service</div>}
-                                      onChange={handleCourierService}
-                                    />
-                                  )}
-                              </div>
-                            ) : (
-                              <h1 className="">
-                                address still empty! please set your delivery address first
-                              </h1>
-                            )}
-                      
+                      {userData.User_detail?.Address_user?.id ? (
+                        <div className="">
+                          <h1>Choose Courier</h1>
+                          <Select
+                            options={courierOptions}
+                            placeholder={<div>courier</div>}
+                            onChange={handleCourier}
+                          />
+                          {chosenCourier && (
+                            <Select
+                              options={serviceOptions}
+                              placeholder={<div>courier service</div>}
+                              onChange={handleCourierService}
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <h1 className="text-center text-gray-400 font-semibold">
+                          Address still empty! Please set your delivery address
+                          first
+                        </h1>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -367,21 +367,21 @@ const CheckOut = () => {
                     Total Payment: {rupiahFormat(totalPrice)}
                   </h1>
                   {chosenCourierService ? (
-                              <button
-                              onClick={handlePaymentClick}
-                              className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
-                            >
-                              Proceed to Payment
-                            </button>
-                            ) : (
-                              <button
-                              onClick={handlePaymentClick}
-                              className="w-full bg-danger3 p-2 font-semibold text-white rounded-md"
-                              disabled="true"
-                            >
-                              Proceed to Payment
-                            </button>
-                          )}
+                    <button
+                      onClick={handlePaymentClick}
+                      className="w-full bg-blue3 p-2 font-semibold text-white rounded-md"
+                    >
+                      Proceed to Payment
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handlePaymentClick}
+                      className="w-full bg-danger3 p-2 font-semibold text-white rounded-md"
+                      disabled="true"
+                    >
+                      Proceed to Payment
+                    </button>
+                  )}
                 </div>
               </div>
             </>

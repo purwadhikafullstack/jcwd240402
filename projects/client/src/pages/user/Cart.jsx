@@ -97,9 +97,11 @@ const Cart = () => {
             <h1 className="text-xs">{productsData.length} products:</h1>
             <h1>{rupiahFormat(total)}</h1>
           </div>
-          <button className="w-36 h-12 text-sm rounded-full font-bold text-white bg-blue3">
-            Checkout
-          </button>
+          <Link to="/checkout">
+            <button className="w-36 h-12 text-sm rounded-full font-bold text-white bg-blue3">
+              Checkout
+            </button>
+          </Link>
         </div>
         {/* TAB AND DESKTOP */}
         <div className="h-full py-4 border-b-2">

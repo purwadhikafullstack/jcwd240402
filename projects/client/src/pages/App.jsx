@@ -62,7 +62,7 @@ function App() {
             <Route path="/admin/admin-list" element={<AdminList />} />
             <Route path="/admin/stock-history" element={<StockHistory />} />
             <Route path="/admin/sales-report" element={<SalesReport />} />
-            <Route path="/admin/order" element={<UserOrder />} />
+            <Route path="/admin/order-list" element={<UserOrder />} />
             <Route path="/admin/warehouses" element={<WarehouseList />} />
             <Route path="/admin/user-list" element={<UserList />} />
 
@@ -77,7 +77,7 @@ function App() {
               <Route path="create" element={<ProductRegister />} />
               <Route path="edit/:productName" element={<ProductEdit />} />
             </Route>
-            <Route path="/admin/stock/" element={<AdminStockPage />}>
+            <Route path="/admin/stock-list" element={<AdminStockPage />}>
               <Route index element={<StockList />} />
               <Route path="management" element={<CreateStock />} />
               <Route path="edit/:productName" element={<ProductEdit />} />

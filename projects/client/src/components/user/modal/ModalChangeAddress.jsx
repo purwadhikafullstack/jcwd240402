@@ -17,7 +17,6 @@ import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalChangeAddress = ({ idAddress }) => {
   const dispatch = useDispatch();
-  console.log(idAddress);
 
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
@@ -36,6 +35,7 @@ const ModalChangeAddress = ({ idAddress }) => {
     address_title: "",
   });
   const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -110,6 +110,7 @@ const ModalChangeAddress = ({ idAddress }) => {
           setSuccessMsg(res.data.message);
           setTimeout(() => {
             props.setOpenModal(undefined);
+            setSuccessMsg("");
           }, 3000);
         })
         .catch((error) => {
@@ -125,8 +126,6 @@ const ModalChangeAddress = ({ idAddress }) => {
       }
     }
   };
-
-  console.log(initialFormValues);
 
   const formik = useFormik({
     initialValues: initialFormValues,
@@ -145,6 +144,13 @@ const ModalChangeAddress = ({ idAddress }) => {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
+  };
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
   };
 
   return (
@@ -267,12 +273,21 @@ const ModalChangeAddress = ({ idAddress }) => {
 
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

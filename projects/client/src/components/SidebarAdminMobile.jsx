@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import logo from '../assets/images/furniforLogo.webp';
 import { logout } from '../utils/tokenSetterGetter';
+import { BsGraphUpArrow } from "react-icons/bs";
 
 const SidebarAdminMobile = () => {
   const location = useLocation();
@@ -36,6 +37,16 @@ const SidebarAdminMobile = () => {
       to: '/admin/categories',
       label: 'Category',
       icon: AiOutlineAppstoreAdd,
+    },
+    {
+      label: "Sales Report",
+      icon: BsGraphUpArrow,
+      to: "/admin/sales-report",
+    },
+    {
+      label: "Stock History",
+      icon: AiOutlineBarChart,
+      to: "/admin/stock-history",
     },
     { to: '/admin/order', label: 'Order', icon: AiOutlineOrderedList },
     { to: '/admin/stock', label: 'Stock', icon: AiFillDatabase },

@@ -1,33 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
 import { Modal } from "flowbite-react";
 import Button from "../../Button";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon"
 
 const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId }) => {
   const access_token = getCookie("access_token");
+  const [errMsg, setErrMsg] = useState("");
 
   const handleDelete = async () => {
     try {
       const response = await axios.delete(`/admin/${adminId}`, {
         headers: { Authorization: `Bearer ${access_token}` }
       });
-
       if (response.status === 200) {
-        alert('Admin deleted successfully!');
         handleSuccessfulDelete();
         onClose();
       }
     } catch (error) {
-      console.error("Failed to delete admin:", error);
-      const errorMessage = error.response?.data?.message || "An error occurred. Please try again.";
-      alert(errorMessage);
+      if (error.response && error.response.data) {
+        setErrMsg(error.response.data.message);
+      } else {
+        setErrMsg(error.message);
+      }
+      setTimeout(() => {
+        setErrMsg('');
+      }, 3000);
     }
   };
 
   return (
     <Modal show={show} size="sm" popup onClose={onClose}>
       <Modal.Header>
+      {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
             Confirm Deletion

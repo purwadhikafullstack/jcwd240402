@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Sidebar } from "flowbite-react";
-import login from "../assets/images/furnifor.png";
 import loginSideBar from "../assets/images/furniforNav.png";
 import { logout } from "../utils/tokenSetterGetter";
 import {
@@ -128,7 +127,6 @@ function SidebarAdminDesktop() {
               </div>
             );
           })}
-
           <Link
             to="/admin/login"
             className="flowbite-sidebar-link text-base_grey hover:border hover:border-black   hover:text-black"

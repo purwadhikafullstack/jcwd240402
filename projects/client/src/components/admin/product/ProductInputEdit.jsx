@@ -9,11 +9,13 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const access_token = getCookie("access_token");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [defaultCategories, setDefaultCategories] = useState([]);
+  const [displayedCategory, setDisplayedCategory] = useState(null);
+  const [actualCategory, setActualCategory] = useState(null);
 
   useEffect(() => {
     const fetchDefaultCategories = async () => {
       try {
-        const categories = await loadCategoryOptions('');
+        const categories = await loadCategoryOptions("");
         setDefaultCategories(categories);
       } catch (error) {
         console.error("Error fetching default categories:", error);
@@ -61,6 +63,8 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const handleCategoryChange = (selectedOption) => {
     handleInputChange("category_id", selectedOption.value);
     setSelectedCategory(selectedOption);
+    setDisplayedCategory(selectedOption); 
+    setActualCategory(selectedOption.value); 
   };
 
   const getErrorMessage = (field) => {
@@ -114,13 +118,13 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           Category
         </label>
         <AsyncSelect
-  cacheOptions
-  defaultOptions={defaultCategories}
-  loadOptions={loadCategoryOptions}
-  value={selectedCategory || null}
-  onChange={handleCategoryChange}
-  placeholder="Select a category"
-/>
+          cacheOptions
+          defaultOptions={defaultCategories}
+          loadOptions={loadCategoryOptions}
+          value={displayedCategory || null}
+          onChange={handleCategoryChange}
+          placeholder="Select a category"
+        />
         {getErrorMessage("category_id") && (
           <p className="text-red-500 mt-2">{getErrorMessage("category_id")}</p>
         )}

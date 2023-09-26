@@ -16,33 +16,29 @@ const job = schedule.scheduleJob("*/15 * * * *", async () => {
       },
     });
 
+    const t = await db.sequelize.transaction();
+
     for (let order of unpaidOrders) {
-      const t = await db.sequelize.transaction();
-      try {
-        await db.Order.update(
-          { order_status_id: 5 },
-          { where: { id: order.id } },
-          { transaction: t }
-        );
+      await db.Order.update(
+        { order_status_id: 5 },
+        { where: { id: order.id } },
+        { transaction: t }
+      );
 
-        await db.Reserved_stock.destroy({
-          where: { order_id: order.id },
-          transaction: t,
-        });
-
-        await t.commit();
-      } catch (error) {
-        if (t && !t.finished) {
-          await t.rollback();
-        }
-        console.error("Error processing order:", order.id, error);
-      }
+      await db.Reserved_stock.destroy({
+        where: { order_id: order.id },
+        transaction: t,
+      });
     }
 
+    await t.commit();
     console.log(
       `Cancelled ${unpaidOrders.length} unpaid orders older than 7 days`
     );
   } catch (error) {
+    if (t && !t.finished) {
+      await t.rollback();
+    }
     console.error("Error in the scheduled job:", error);
   }
 });

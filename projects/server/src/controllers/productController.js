@@ -213,7 +213,7 @@ module.exports = {
 
       return res.status(200).send({
         message: "Product image updated successfully",
-        data: updatedImage, // Use the updatedImage variable instead of 'product'
+        data: updatedImage,
       });
     } catch (error) {
       await t.rollback();

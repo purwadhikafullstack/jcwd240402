@@ -40,7 +40,6 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   };
 
   const handleErrors = (error) => {
-    console.log(error);
     const serverErrors = error.response?.data?.errors;
     if (serverErrors) {
       serverErrors.forEach((err) => formik.setFieldError(err.path, err.msg));
@@ -79,7 +78,6 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
         throw new Error("Warehouse Registration Failed");
       }
     } catch (error) {
-      console.log(error);
       setErrMsg(error.response.data.error);
       handleErrors(error);
     }

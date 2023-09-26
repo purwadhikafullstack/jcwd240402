@@ -25,7 +25,6 @@ const AdminList = () => {
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedAdminId, setSelectedAdminId] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
   const loadWarehouseOptions = useWarehouseOptions();

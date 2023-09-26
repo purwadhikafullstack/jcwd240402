@@ -41,11 +41,9 @@ const WarehouseList = () => {
       },
     });
     setWarehouses(response.data.warehouses);
-    const { totalPages } = response.data.pagination || {};
-    if (totalPages) {
-      setTotalPages(totalPages);
-      if (currentPage > totalPages) setCurrentPage(totalPages);
-    }
+    const { totalPages = 1 } = response.data.pagination || {}; 
+    setTotalPages(totalPages);
+    if (currentPage > totalPages) setCurrentPage(totalPages);
   };
 
   const handleEdit = (warehouse) => {

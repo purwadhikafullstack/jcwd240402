@@ -37,12 +37,12 @@ const ConfirmDeleteStock = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Confirm Deletion {productName}
+            Confirm Deletion
           </h3>
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this stock?</p>
+        <p>Are you sure you want to delete  <strong>{productName}</strong> stock?</p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"

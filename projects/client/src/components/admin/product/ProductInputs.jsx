@@ -54,7 +54,7 @@ const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
       />
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
-          label="Weight"
+          label="Weight(Grams)"
           placeholder="Enter product weight"
           value={formik.values.weight}
           name="weight"
@@ -64,7 +64,7 @@ const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
           width="w-full"
         />
         <InputForm
-          label="Price"
+          label="Price(Rp)"
           placeholder="Enter product price"
           value={formik.values.price}
           name="price"

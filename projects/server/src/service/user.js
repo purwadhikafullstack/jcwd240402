@@ -23,9 +23,14 @@ module.exports = {
 
   getAllUsers: async (options = {}, page = 1, pageSize = 10) => {
     const filter = options.where || {};
-    const include = options.include || [{
-      model: db.User_detail,
-    }];
+    const include = options.include || [
+      {
+        model: db.User_detail,
+      },
+      {
+        model: db.Address_user,
+      }
+    ];
   
     const queryOptions = {
       where: filter,

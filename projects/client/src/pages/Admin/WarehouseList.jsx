@@ -10,18 +10,37 @@ import DefaultPagination from "../../components/Pagination";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import ConfirmDeleteWarehouse from "../../components/modal/warehouse/ModalDeleteWarehouse";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
+import useURLParams from "../../utils/useUrlParams"; // Import your custom hook
 
 const WarehouseList = () => {
   const navigate = useNavigate();
   const [warehouses, setWarehouses] = useState([]);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Use the custom useURLParams hook
+  const { syncStateWithParams, setParam } = useURLParams();
+
+  // Use syncStateWithParams to initialize your state based on URL parameters
+  const [selectedCity, setSelectedCity] = useState(
+    syncStateWithParams("city", null)
+  );
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouse", null)
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
+
+  useEffect(() => {
+    const pageParam = syncStateWithParams("page", null);
+    setCurrentPage(pageParam !== null ? parseInt(pageParam) : 1);
+  }, []);
+
+  // Function to fetch warehouses based on filters and pagination
   const fetchWarehouses = async () => {
     const { value: cityId = "" } = selectedCity || {};
     const response = await axios.get(`/warehouse/warehouse-list`, {
@@ -40,8 +59,24 @@ const WarehouseList = () => {
     }
   };
 
+  // Function to handle editing a warehouse
   const handleEdit = (warehouse) => {
     navigate(`/admin/edit/${warehouse["Warehouse Name"]}`);
+  };
+
+  // Use this function to update URL parameters and state when the user selects a city
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    setCurrentPage(1);
+    setParam("city", city);
+  };
+
+  // Use this function to update URL parameters and state when the user enters a warehouse name
+  const handleWarehouseNameChange = (event) => {
+    const warehouseName = event.target.value;
+    setSelectedWarehouse(warehouseName ? { label: warehouseName } : null);
+    setCurrentPage(1);
+    setParam("warehouse", warehouseName);
   };
 
   useEffect(() => {
@@ -51,7 +86,7 @@ const WarehouseList = () => {
   const formattedWarehouses = warehouses.map((warehouse) => ({
     id: warehouse.id,
     city: warehouse.City?.name || "",
-    province:warehouse.City?.Province.name,
+    province: warehouse.City?.Province.name,
     "Warehouse Name": warehouse.warehouse_name || "",
     "Warehouse Address": warehouse.address_warehouse || "",
     "Warehouse Contact": warehouse.warehouse_contact || "",
@@ -86,10 +121,8 @@ const WarehouseList = () => {
                     callback([]);
                   });
               }}
-              onChange={(city) => {
-                setSelectedCity(city);
-                setCurrentPage(1);
-              }}
+              onChange={handleCityChange}
+              value={selectedCity}
               placeholder="All Cities"
               className="flex-1"
             />
@@ -97,7 +130,7 @@ const WarehouseList = () => {
               type="text"
               placeholder="Search Warehouse name"
               value={selectedWarehouse?.label || ""}
-              onChange={(e) => setSelectedWarehouse({ label: e.target.value })}
+              onChange={handleWarehouseNameChange}
               className="flex-1 mx-4 p-2 border rounded text-base bg-white border-gray-300 shadow-sm"
             />
             <Button

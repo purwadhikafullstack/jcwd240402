@@ -1,5 +1,5 @@
 import React from "react";
-import Tabs from "../../components/Tab/TabContainer";
+import Tabs from "../../components/tabs/TabContainer";
 import { Outlet } from "react-router-dom";
 import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
@@ -19,7 +19,8 @@ const AdminStockPage = () => {
     },
     {
       label: "Inventory Transfer",
-      isActive: window.location.pathname === "/admin/stock-list/inventory-transfers",
+      isActive:
+        window.location.pathname === "/admin/stock-list/inventory-transfers",
       to: "/admin/stock-list/inventory-transfers",
     },
   ];

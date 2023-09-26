@@ -15,6 +15,7 @@ import { useWarehouseOptions } from "../../utils/loadWarehouseOptions";
 import useURLParams from "../../utils/useUrlParams";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
+
 const AdminList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
   const [admins, setAdmins] = useState([]);

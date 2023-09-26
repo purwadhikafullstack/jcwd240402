@@ -13,7 +13,6 @@ import AlertWithIcon from "../../AlertWithIcon";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import SidebarAdminMobile from "../../SidebarAdminMobile";
 import ImageUpload from "./WarehouseImageUpdate";
-import { fetchWarehouseData, loadCities, loadProvinces } from "../../../utils/warehouseUtils";
 
 const WarehouseInputsEdit = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -28,29 +27,26 @@ const WarehouseInputsEdit = () => {
   const [errMsg, setErrMsg] = useState("");
   const { warehouseName } = useParams();
   const access_token = getCookie("access_token");
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchWarehouseData(
-      warehouseName,
-      formik.setValues,
-      setCurrentImage,
-      setInitialWarehouseData,
-      setSelectedCity,
-      setSelectedProvince,
-      setProvinceChanged,
-      setLoading
-      );
-    }, [warehouseName]);
-    
-    const validationSchema = Yup.object().shape({
-      warehouse_name: Yup.string().required("Required"),
-      address_warehouse: Yup.string().required("Required"),
-      warehouse_contact: Yup.string().required("Required"),
-      city_id: Yup.number().required("Required"),
-      province_id: Yup.number(),
-    });
+    if (
+      selectedProvince &&
+      initialWarehouseData &&
+      selectedProvince.value !== initialWarehouseData.province_id
+    ) {
+      setProvinceChanged(true);
+      setSelectedCity(null);
+    }
+  }, [selectedProvince, initialWarehouseData]);
+
+  const validationSchema = Yup.object().shape({
+    warehouse_name: Yup.string().required("Required"),
+    address_warehouse: Yup.string().required("Required"),
+    warehouse_contact: Yup.string().required("Required"),
+    city_id: Yup.number().required("Required"),
+    province_id: Yup.number(),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -81,13 +77,15 @@ const WarehouseInputsEdit = () => {
         });
         if (response.status === 200) {
           setSuccessMsg("Updated successfully!");
-          setIsSubmitted(true);
-          setErrMsg("");
           formik.setErrors({});
-          setTimeout(() => {
-            console.log('This should be logged after 5 seconds');
-            navigate("/admin/warehouses");
-          }, 5000);
+          if (
+            changes.warehouse_name &&
+            changes.warehouse_name !== formik.initialValues.warehouse_name
+          ) {
+            setTimeout(() => {
+              navigate("/warehouse");
+            }, 5000);
+          }
         } else {
           throw new Error("Warehouse update failed");
         }
@@ -96,7 +94,7 @@ const WarehouseInputsEdit = () => {
           setErrMsg(error.response.data.error);
           setTimeout(() => {
             setErrMsg("");
-          }, 3000);
+          }, 5000);
         }
         if (error.response && error.response.data.errors) {
           const errorMessages = error.response.data.errors.reduce(
@@ -106,19 +104,90 @@ const WarehouseInputsEdit = () => {
             },
             {}
           );
-        const ErrorMessage = errorMessages["province_id"]; 
-        if (ErrorMessage) {
-          setErrMsg(ErrorMessage);
-        }
           formik.setErrors(errorMessages);
         }
       }
     },
   });
 
+  useEffect(() => {
+    const fetchWarehouseData = async () => {
+      try {
+        const response = await axios.get(`/warehouse/${warehouseName}`);
+        if (response.data && response.data.warehouse) {
+          setCurrentImage(response.data?.warehouse?.warehouse_img);
+          const { warehouse } = response.data;
+          const initialData = {
+            id: warehouse.id,
+            warehouse_name: warehouse.warehouse_name,
+            address_warehouse: warehouse.address_warehouse,
+            warehouse_contact: warehouse.warehouse_contact,
+            city_id: warehouse.city_id,
+            province_id: warehouse.province_id,
+          };
+          formik.setValues(initialData);
+          setInitialWarehouseData(initialData);
+          setSelectedCity({
+            value: warehouse.city_id,
+            label: warehouse.City.name,
+          });
+          setSelectedProvince({
+            value: warehouse.province_id,
+            label: warehouse.City.Province.name,
+          });
+          setProvinceChanged(true);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching warehouse data", error);
+        setLoading(false);
+      }
+    };
+
+    fetchWarehouseData();
+  }, [warehouseName]);
+
   const handleCancel = () => {
     navigate("/admin/warehouses");
   };
+
+  const loadProvinces = async (inputValue) => {
+    try {
+      const response = await axios.get(
+        `/admin/province/?searchName=${inputValue}&page=1`
+      );
+      return response.data.provinces.map((province) => ({
+        value: province.id,
+        label: province.name,
+      }));
+    } catch (error) {
+      console.error("Error loading provinces:", error);
+      return [];
+    }
+  };
+
+  const loadCities = async (inputValue = "", provinceId) => {
+    try {
+      const response = await axios.get(
+        `/admin/city/?searchName=${inputValue}&page=1&provinceId=${provinceId}`
+      );
+      const cities = response.data.cities.map((city) => ({
+        value: city.id,
+        label: city.name,
+      }));
+      setCities(cities);
+      return cities;
+    } catch (error) {
+      console.error("Error loading cities:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    if (selectedProvince) {
+      loadCities("", selectedProvince.value);
+    }
+  }, [selectedProvince]);
 
   if (loading) return <div>Loading...</div>;
 
@@ -186,6 +255,13 @@ const WarehouseInputsEdit = () => {
                     setSelectedCity(null);
                   }}
                   placeholder="Select a province"
+                  components={{
+                    NoOptionsMessage: () => (
+                      <div style={{ padding: "8px" }}>
+                        Start typing to search for cities.
+                      </div>
+                    ),
+                  }}
                 />
                 <label className="block font-poppins mb-1 text-gray-700">
                   City
@@ -206,13 +282,6 @@ const WarehouseInputsEdit = () => {
                     );
                   }}
                   placeholder="Select a city"
-                  components={{
-                    NoOptionsMessage: () => (
-                      <div style={{ padding: "8px" }}>
-                        Start typing to search for cities.
-                      </div>
-                    ),
-                  }}
                 />
                 <div className="flex mt-4 justify-center gap-2">
                   <Button
@@ -231,7 +300,6 @@ const WarehouseInputsEdit = () => {
                     colorText="text-white"
                     fontWeight="font-bold"
                     buttonSize="medium"
-                    disabled={isSubmitted}
                   />
                 </div>
               </form>

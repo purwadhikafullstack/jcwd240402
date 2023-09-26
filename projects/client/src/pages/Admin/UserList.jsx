@@ -53,6 +53,10 @@ const UserList = () => {
     email: user.email,
     verified: user.is_verify === 1 ? "Yes" : "No",
     "Created at": moment(user.createdAt).format("MMMM D, YYYY"),
+    "First Name": user.User_detail.first_name,
+    "Last Name": user.User_detail.last_name,
+    "Phone": user.User_detail.phone,
+    "Address": user.Address_users[0].address_details,
   }));
 
   const refreshUserList = async () => {
@@ -81,7 +85,16 @@ const UserList = () => {
           </div>
           <div className="py-4 mx-4">
             <TableComponent
-              headers={["username", "email", "verified", "Created at"]}
+              headers={[
+                "username",
+                "First Name",
+                "Last Name",
+                "email",
+                "Address",
+                "verified",
+                "Created at",
+                "Phone",
+              ]}
               data={formattedUsers}
               showIcon={false}
             />

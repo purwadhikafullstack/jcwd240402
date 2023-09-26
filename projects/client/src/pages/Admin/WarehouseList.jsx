@@ -22,6 +22,7 @@ const WarehouseList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
   const [selectedCity, setSelectedCity] = useState(syncStateWithParams("city", null));
   const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", null));
+  const [deleteWarehouseName, setDeleteWarehouseName] = useState(null);
   const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
 
   useEffect(() => {
@@ -142,6 +143,7 @@ const WarehouseList = () => {
               onEdit={handleEdit}
               onDelete={(warehouse) => {
                 setDeleteWarehouseId(warehouse.id);
+                setDeleteWarehouseName(warehouse["Warehouse Name"]);
                 setDeleteModalOpen(true);
               }}
             />
@@ -156,6 +158,7 @@ const WarehouseList = () => {
           <ConfirmDeleteWarehouse
             show={isDeleteModalOpen}
             warehouseId={deleteWarehouseId}
+            warehouseName={deleteWarehouseName}
             onClose={() => setDeleteModalOpen(false)}
             handleSuccessfulDelete={() => {
               fetchWarehouses();

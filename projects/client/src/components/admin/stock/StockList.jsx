@@ -88,6 +88,7 @@ const StockList = () => {
     const product = {
       warehouseId: row["Warehouse ID"],
       productId: row["Product ID"],
+      productName: row.Product
     };
     setSelectedProduct(product);
     switch (action) {
@@ -121,6 +122,7 @@ const StockList = () => {
     setProductToTransfer({
       fromWarehouseId: row["Warehouse ID"],
       productId: row["Product ID"],
+      productName: row.Product
     });
     setShowTransferModal(true);
   };
@@ -187,6 +189,7 @@ const StockList = () => {
         onClose={() => setShowUpdateModal(false)}
         warehouseId={selectedProduct?.warehouseId}
         productId={selectedProduct?.productId}
+        productName={selectedProduct?.productName}
         handleSuccessfulEdit={handleSuccessfulEdit}
       />
       <ConfirmDeleteStock
@@ -194,6 +197,7 @@ const StockList = () => {
         onClose={() => setShowDeleteModal(false)}
         warehouseId={selectedProduct?.warehouseId}
         productId={selectedProduct?.productId}
+        productName={selectedProduct?.productName} 
         onSuccessfulDelete={handleSuccessfulDelete}
       />
       <TransferStockModal

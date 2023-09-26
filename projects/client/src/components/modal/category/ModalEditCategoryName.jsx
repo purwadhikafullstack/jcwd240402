@@ -7,7 +7,7 @@ import InputForm from "../../InputForm";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit }) => {
+const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit,categoryName }) => {
   const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
@@ -74,7 +74,8 @@ const EditCategoryNameModal = ({ show, onClose, categoryId, handleSuccessfulEdit
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category Name
+            Edit Category Name{" "}
+          <strong>{categoryName}</strong>
           </h3>
         </div>
       </Modal.Header>

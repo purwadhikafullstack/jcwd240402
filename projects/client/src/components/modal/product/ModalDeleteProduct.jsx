@@ -4,7 +4,7 @@ import Button from "../../Button";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const ConfirmDeleteProduct = ({ show, onClose, handleSuccessfulDelete, productId }) => {
+const ConfirmDeleteProduct = ({ show, onClose, handleSuccessfulDelete, productId,productName }) => {
   const access_token = getCookie("access_token");
   
   const handleDelete = async () => {
@@ -36,7 +36,8 @@ const ConfirmDeleteProduct = ({ show, onClose, handleSuccessfulDelete, productId
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this product?</p>
+        <p>   Are you sure you want to delete the product{" "}
+          <strong>{productName}</strong>?</p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"

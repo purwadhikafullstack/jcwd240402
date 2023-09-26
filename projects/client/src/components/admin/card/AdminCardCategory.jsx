@@ -98,18 +98,21 @@ const AdminCategoryCard = ({
         show={showEditNameModal}
         onClose={handleEditNameModalClose}
         categoryId={id}
+        categoryName={name}
         handleSuccessfulEdit={handleSuccessfulEdit}
       />
       <EditCategoryImageModal
         show={showEditImageModal}
         onClose={handleEditImageModalClose}
         categoryId={id}
+        categoryName={name}
         handleSuccessfulEdit={handleSuccessfulEdit}
       />
       <ConfirmDeleteModal
         show={showDeleteModal}
         onClose={handleDeleteModalClose}
         categoryId={id}
+        categoryName={name}
         handleSuccessfulEdit={handleSuccessfulEdit}
       />
     </div>

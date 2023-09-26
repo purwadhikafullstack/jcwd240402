@@ -486,6 +486,7 @@ module.exports = {
   async deleteStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
+    const adminData = req.user
 
     if (req.user.role_id === 2) {
       if (req.user.warehouse_id !== warehouseId) {
@@ -494,6 +495,7 @@ module.exports = {
         });
       }
     }
+
     const t = await db.sequelize.transaction();
     try {
       const existingStock = await db.Warehouse_stock.findOne({

@@ -5,7 +5,7 @@ import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon"
 
-const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId }) => {
+const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId,categoryName }) => {
   const access_token = getCookie("access_token");
   const [errMsg, setErrMsg] = useState("");
   
@@ -41,7 +41,8 @@ const ConfirmDeleteCategory = ({ show, onClose, handleSuccessfulEdit, categoryId
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this category?</p>
+      <p>   Are you sure you want to delete the category{" "}
+          <strong>{categoryName}</strong>?</p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"

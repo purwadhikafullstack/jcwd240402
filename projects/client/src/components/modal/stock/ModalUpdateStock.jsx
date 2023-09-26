@@ -14,6 +14,7 @@ const UpdateStock = ({
   warehouseId,
   productId,
   handleSuccessfulEdit,
+  productName,
 }) => {
   const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
@@ -85,7 +86,7 @@ const UpdateStock = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Update Stock
+            Update Stock {productName}
           </h3>
         </div>
       </Modal.Header>

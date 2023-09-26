@@ -10,6 +10,7 @@ const ConfirmDeleteStock = ({
   warehouseId,
   productId,
   onSuccessfulDelete,
+  productName,
 }) => {
   const handleDelete = async () => {
     const access_token = getCookie("access_token");
@@ -36,7 +37,7 @@ const ConfirmDeleteStock = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Confirm Deletion
+            Confirm Deletion {productName}
           </h3>
         </div>
       </Modal.Header>

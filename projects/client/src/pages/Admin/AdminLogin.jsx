@@ -87,7 +87,7 @@ const AdminLogin = () => {
           <div className="shadow-2xl w-64 lg:w-80 rounded-xl p-6 ">
             <div className="flex mt-4 px-3 justify-between items-end ">
               <h1 className="text-3xl font-bold mx-3 text-blue3 lg:rounded-xl">
-                Login
+                Login Admin
               </h1>
             </div>
             <div className="lg:rounded-lg">

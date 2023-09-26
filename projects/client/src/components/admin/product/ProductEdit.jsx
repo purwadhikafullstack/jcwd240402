@@ -15,6 +15,7 @@ const ProductEdit = () => {
   const [changedFields, setChangedFields] = useState({});
   const [serverErrors, setServerErrors] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -56,6 +57,10 @@ const ProductEdit = () => {
         headers: { Authorization: `Bearer ${access_token}` },
       });
       setSuccessMessage("Product updated successfully");
+      setIsSubmitted(true); 
+      setTimeout(() => {
+        navigate("/admin/products");
+      }, 5000);
       setServerErrors([]);
       setChangedFields({});
     } catch (error) {

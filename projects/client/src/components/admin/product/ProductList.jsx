@@ -124,6 +124,7 @@ const ProductList = () => {
             onClose={() => setShowDeleteModal(false)}
             handleSuccessfulDelete={handleSuccessfulDelete}
             productId={productToDelete ? productToDelete.id : null}
+            productName={productToDelete ? productToDelete.name : null} 
           />
         )}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">

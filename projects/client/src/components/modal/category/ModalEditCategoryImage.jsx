@@ -12,6 +12,7 @@ const EditCategoryImageModal = ({
   onClose,
   categoryId,
   handleSuccessfulEdit,
+  categoryName,
 }) => {
   const hasResetForm = useRef(false);
   const access_token = getCookie("access_token");
@@ -79,7 +80,7 @@ const EditCategoryImageModal = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category Image
+            Edit Category Image {categoryName}
           </h3>
         </div>
       </Modal.Header>

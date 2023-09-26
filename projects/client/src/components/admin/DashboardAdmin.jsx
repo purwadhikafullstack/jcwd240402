@@ -306,4 +306,4 @@ const DashboardAdmin = ({ adminData }) => {
   );
 };
 
-export default DashboardAdmin;
+export default withAuthAdmin(DashboardAdmin);

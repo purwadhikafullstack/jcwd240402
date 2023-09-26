@@ -943,42 +943,6 @@ module.exports = {
       });
 
       await t.commit();
-
-      const user = await db.User.findOne({
-        where: { id: isAllowed.user_id },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      const user_email = user.email;
-
-      const notificationMessage = `
-        Your order has been cancelled
-        Invoice Number: ${isAllowed.no_invoice}
-        Please contact customer service for more details.
-      `;
-
-      const mailData = {
-        recipient_email: user_email,
-        subject: "Order Cancelled",
-        receiver: user.username,
-        message: notificationMessage,
-        redirect: false,
-      };
-
-      Mailer.sendEmail(mailData)
-        .then(() => {
-          res.status(200).json({
-            ok: true,
-            message: "order canceled successful",
-            test: reservedStocks,
-          });
-        })
-        .catch((emailError) => {
-          throw new Error(emailError.message);
-        });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();

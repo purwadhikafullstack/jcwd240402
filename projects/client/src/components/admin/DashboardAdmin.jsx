@@ -19,14 +19,14 @@ import BarChart from "./Top10Products";
 import { Line } from "react-chartjs-2";
 import { rupiahFormat } from "../../utils/formatter";
 
-import withAuthAdmin from "./withAuthAdmin";
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
 import calendarlogo from "../../assets/icons/calendarlogo.png";
 import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
-
+import withAuthAdmin from "./withAuthAdmin";
+ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(
   ArcElement,
   CategoryScale,
@@ -307,8 +307,8 @@ const DashboardAdmin = ({ adminData }) => {
           <h1>Total Warehouse {totalWarehouse}</h1>
         </div>
       </div>
-      <div className="col-span-8 h-full row-span-4 p-4">
-        <div className="bg-white w-full h-full rounded-md shadow-card-1">
+      <div className="col-span-8 h-full row-span-4 p-7">
+        <div className="bg-white w-full h-full rounded-md shadow-card-1 p-4">
           <Line options={incomeOptions} data={incomeData} />
           <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>

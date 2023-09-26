@@ -9,6 +9,14 @@ module.exports = {
     try {
       const { fromWarehouseId, toWarehouseId, productId, quantity } = req.body;
 
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== fromWarehouseId) {
+          return res.status(403).send({
+            message: "You are not authorized to transfer stock from this warehouse.",
+          });
+        }
+      }
+
       if (!fromWarehouseId || !toWarehouseId || !productId || !quantity) {
         return res.status(400).json({
           success: false,
@@ -91,6 +99,14 @@ module.exports = {
         ],
         transaction: t,
       });
+
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== transfer.to_warehouse_id) {
+          return res.status(403).send({
+            message: "You are not authorized to approve transfer stock from this warehouse.",
+          });
+        }
+      }
 
       if (!transfer || transfer.status !== "Pending") {
         await t.rollback();
@@ -210,6 +226,14 @@ module.exports = {
         ],
         transaction: t,
       });
+
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== transfer.to_warehouse_id) {
+          return res.status(403).send({
+            message: "You are not authorized to reject transfer stock from this warehouse.",
+          });
+        }
+      }
 
       if (!transfer || transfer.status !== "Pending") {
         await t.rollback();

@@ -10,37 +10,25 @@ import DefaultPagination from "../../components/Pagination";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import ConfirmDeleteWarehouse from "../../components/modal/warehouse/ModalDeleteWarehouse";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
-import useURLParams from "../../utils/useUrlParams"; // Import your custom hook
+import useURLParams from "../../utils/useUrlParams"; 
 
 const WarehouseList = () => {
   const navigate = useNavigate();
   const [warehouses, setWarehouses] = useState([]);
-
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
-
-  // Use the custom useURLParams hook
   const { syncStateWithParams, setParam } = useURLParams();
-
-  // Use syncStateWithParams to initialize your state based on URL parameters
-  const [selectedCity, setSelectedCity] = useState(
-    syncStateWithParams("city", null)
-  );
-  const [selectedWarehouse, setSelectedWarehouse] = useState(
-    syncStateWithParams("warehouse", null)
-  );
-  const [currentPage, setCurrentPage] = useState(
-    syncStateWithParams("page", 1)
-  );
+  const [selectedCity, setSelectedCity] = useState(syncStateWithParams("city", null));
+  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", null));
+  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
 
   useEffect(() => {
     const pageParam = syncStateWithParams("page", null);
     setCurrentPage(pageParam !== null ? parseInt(pageParam) : 1);
   }, []);
 
-  // Function to fetch warehouses based on filters and pagination
   const fetchWarehouses = async () => {
     const { value: cityId = "" } = selectedCity || {};
     const response = await axios.get(`/warehouse/warehouse-list`, {
@@ -59,19 +47,16 @@ const WarehouseList = () => {
     }
   };
 
-  // Function to handle editing a warehouse
   const handleEdit = (warehouse) => {
     navigate(`/admin/edit/${warehouse["Warehouse Name"]}`);
   };
 
-  // Use this function to update URL parameters and state when the user selects a city
   const handleCityChange = (city) => {
     setSelectedCity(city);
     setCurrentPage(1);
     setParam("city", city);
   };
 
-  // Use this function to update URL parameters and state when the user enters a warehouse name
   const handleWarehouseNameChange = (event) => {
     const warehouseName = event.target.value;
     setSelectedWarehouse(warehouseName ? { label: warehouseName } : null);
@@ -94,7 +79,9 @@ const WarehouseList = () => {
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
-      <Sidebar />
+      <div className="lg:flex lg:flex-col lg:justify-start">
+        <Sidebar />
+      </div>
       <div className="flex lg:flex-none">
         <SidebarAdminMobile />
         <div className="lg:px-8 lg:pt-8 lg:w-full mt-4 mx-4">

@@ -99,7 +99,6 @@ const AdminList = () => {
       </div>
       <div className="flex lg:flex-none ">
         <SidebarAdminMobile />
-
         <div className="lg:px-8 lg:pt-8 lg:w-full mt-4 mx-4">
           <div className="flex items-center">
             <AsyncSelect

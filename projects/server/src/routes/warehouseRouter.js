@@ -8,7 +8,7 @@ const authMiddleware = require("../middleware/auth");
 const router = require("express").Router();
 
 router.post(
-  "/register",
+  "/register",authMiddleware.verifyAccessTokenSuperAdmin,
   handleImageWarehouseUpload,
   coordinatesMiddleware,
   validatorMiddleware.validateRegisterWarehouse,
@@ -16,7 +16,7 @@ router.post(
 );
 
 router.patch(
-  "/:id",
+  "/:id",authMiddleware.verifyAccessTokenSuperAdmin,
   handleImageWarehouseUpload,
   coordinatesMiddleware,
   validatorMiddleware.removeEmptyFields,
@@ -25,7 +25,7 @@ router.patch(
 );
 
 router.patch(
-  "/image/:warehouse_name",
+  "/image/:warehouse_name",authMiddleware.verifyAccessTokenSuperAdmin,
   handleImageWarehouseUpload,
   warehouseController.updateWarehouseImage
 );
@@ -38,6 +38,6 @@ router.get(
 );
 router.get("/:name", warehouseController.getWarehouseByName);
 
-router.delete("/:warehouseId", warehouseController.deleteWarehouse);
+router.delete("/:warehouseId",authMiddleware.verifyAccessTokenSuperAdmin, warehouseController.deleteWarehouse);
 
 module.exports = router;

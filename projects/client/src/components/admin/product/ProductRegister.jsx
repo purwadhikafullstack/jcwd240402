@@ -8,7 +8,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import AlertWithIcon from "../../AlertWithIcon";
 
-const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
+const ProductRegister = ({ initialData, isEditMode = false }) => {
   const access_token = getCookie("access_token");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
@@ -115,7 +115,7 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                     product={formik.values}
                     handleInputChange={formik.handleChange}
                     formik={formik}
-                    setSelectedCategory={setSelectedCategory} // pass setSelectedCategory as prop
+                    setSelectedCategory={setSelectedCategory}
                     selectedCategory={selectedCategory}
                   />
                   <div className="flex my-4 justify-center w-full">

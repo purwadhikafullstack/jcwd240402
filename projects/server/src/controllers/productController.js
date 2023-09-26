@@ -214,7 +214,7 @@ module.exports = {
 
       return res.status(200).send({
         message: "Product image updated successfully",
-        data: updatedImage, // Use the updatedImage variable instead of 'product'
+        data: updatedImage,
       });
     } catch (error) {
       await t.rollback();
@@ -468,7 +468,6 @@ module.exports = {
       res.json({
         success: true,
         result: formattedData,
-        // productsByCategory: productsByCategory,
       });
     } catch (error) {
       console.error(error);

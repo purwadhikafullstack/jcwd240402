@@ -7,7 +7,6 @@ function withOutAuth(Component) {
   return (props) => {
     const navigate = useNavigate();
     const token = getCookie("access_token");
-    console.log(token);
 
     if (token) {
       useEffect(() => {

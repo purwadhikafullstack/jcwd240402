@@ -14,7 +14,6 @@ const { newStockHistory } = require("../service/warehouse_stock");
 const { Op } = require("sequelize");
 const Mailer = require("../utils/mailer");
 
-// move to utility later
 const generateAccessToken = (user) => {
   const token = jwt.sign(
     {
@@ -436,28 +435,6 @@ module.exports = {
       });
     }
   },
-  
-  
-
-  /* 
-1 = payment pending
-2 = awaiting payment confirmation
-3 = completed   
-4 = In Process
-5 = cancelled
-6 = shipped
-7 = rejected
-*/
-
-  /* 
-  yang sudah awaiting payment confirmation (2) user tidak bisa cancel (5)
-  yang sudah awaiting payment confirmation (2) admin bisa bisa cancel (5)
-  yang rejected user boleh payment pending - awaiting payment confirmatoin 
-  yang shipped (6) admin tidak boleh cancel (5) dan reject (7)
-  yang in process (4) admin tidak boleh cancel (5) dan reject (7)
-  yang completed tidak boleh diapa apain
-
-  */
 
   async acceptPayment(req, res) {
     const orderId = req.params.id;

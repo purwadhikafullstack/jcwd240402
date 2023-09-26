@@ -53,10 +53,10 @@ const UserList = () => {
     email: user.email,
     verified: user.is_verify === 1 ? "Yes" : "No",
     "Created at": moment(user.createdAt).format("MMMM D, YYYY"),
-    "First Name": user.User_detail.first_name,
-    "Last Name": user.User_detail.last_name,
-    "Phone": user.User_detail.phone,
-    "Address": user.Address_users[0].address_details,
+    "First Name": user.User_detail?.first_name,
+    "Last Name": user.User_detail?.last_name,
+    Phone: user.User_detail?.phone,
+    Address: user.Address_users[0]?.address_details,
   }));
 
   const refreshUserList = async () => {

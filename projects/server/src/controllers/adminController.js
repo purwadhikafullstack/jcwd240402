@@ -827,7 +827,7 @@ module.exports = {
 
         const stockHistory = newStockHistory(
           reservedStock.WarehouseProductReservation.id,
-          adminData.warehouse_id,
+          reservedStock.WarehouseProductReservation.warehouse_id,
           adminData.id,
           reservedStock.WarehouseProductReservation.product_stock,
           reservedStock.WarehouseProductReservation.product_stock -

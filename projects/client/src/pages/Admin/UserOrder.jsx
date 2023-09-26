@@ -398,7 +398,7 @@ const UserOrder = () => {
                 invoiceId: order?.no_invoice,
                 "Delivering From": order?.Warehouse?.warehouse_name || "",
                 "Delivering to": order?.Address_user?.address_details || "",
-                "Delivery Time": dayjs(order.delivery_time).format("D MMMM YYYY HH:mm:ss") || "not yet delivered",
+                "Delivery Time": (order?.delivery_time ? dayjs(order?.delivery_time).format("D MMMM YYYY HH:mm:ss") : "not yet delivered"),
                 order_status_id: order?.order_status_id,
                 Order_details: order?.Order_details,
               }))}

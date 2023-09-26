@@ -298,20 +298,6 @@ module.exports = {
 
     try {
       for (const i in cart_data.cart_data) {
-        // newAutoStockTransfer.push(
-        //   await autoStockTransfer(
-        //     warehouse_id,
-        //     cart_data.cart_data[i]?.Warehouse_stock?.product_id,
-        //     cart_data.cart_data[i]?.quantity
-        //   )
-        // );
-
-        // let transferedWarehouseStock = await db.Warehouse_stock.findOne({
-        //   where: {
-        //     warehouse_id: warehouse_id,
-        //     product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
-        //   },
-        // });
 
         let closestWarehouseStock = await db.Warehouse_stock.findOne(
           {
@@ -366,7 +352,6 @@ module.exports = {
       res.status(200).json({
         ok: true,
         order: newOrderDetails,
-        // reserved_stock: newReservedStock,
         new_stock: newWarehouseStockArr,
       });
     } catch (error) {

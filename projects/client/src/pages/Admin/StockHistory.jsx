@@ -147,7 +147,7 @@ const StockHistory = () => {
           <div className="flex items-center gap-4">
             <Select
               options={monthOptions}
-              placeholder={<div>month</div>}
+              placeholder={<div>select a month</div>}
               onChange={handleChangeMonth}
             />
             <AsyncSelect

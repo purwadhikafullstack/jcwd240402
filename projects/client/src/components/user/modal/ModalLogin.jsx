@@ -129,7 +129,7 @@ export default function ModalLogin({
     try {
       await googleSignIn();
     } catch (error) {
-      console.log(error);
+      setErrMsg(error.response?.data?.message);
     }
   };
 

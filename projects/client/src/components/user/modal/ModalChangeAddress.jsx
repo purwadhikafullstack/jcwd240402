@@ -54,7 +54,7 @@ const ModalChangeAddress = ({ idAddress }) => {
         .then((res) => {
           setSelectedCity(res.data?.result?.city_id);
           setSelectedProvince(res.data?.result?.city_id);
-          console.log(res.data.result);
+
           const addressData = res.data?.result;
 
           const InitialFormValues = {

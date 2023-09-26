@@ -50,7 +50,6 @@ const NotifVerifiedByPassword = () => {
         setErrMsg(response.data.message);
       }
     } catch (err) {
-      console.log(err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {

@@ -14,7 +14,8 @@ module.exports = {
     if (req.user.role_id === 2) {
       if (req.user.warehouse_id !== warehouseId) {
         return res.status(403).send({
-          message: "You are not authorized to update stock from this warehouse.",
+          message:
+            "You are not authorized to update stock from this warehouse.",
         });
       }
     }
@@ -63,16 +64,16 @@ module.exports = {
     const warehouseId = parseInt(req.params.warehouseId);
     const productId = parseInt(req.params.productId);
     const { productStock, operation } = req.body;
-    const adminData = req.user
+    const adminData = req.user;
 
     if (req.user.role_id === 2) {
       if (req.user.warehouse_id !== warehouseId) {
         return res.status(403).send({
-          message: "You are not authorized to update stock from this warehouse.",
+          message:
+            "You are not authorized to update stock from this warehouse.",
         });
       }
     }
-
 
     const t = await db.sequelize.transaction();
 
@@ -92,33 +93,31 @@ module.exports = {
 
       switch (operation) {
         case "increase":
-
-        const stockHistoryFrom = newStockHistory(
-          existingStock.id,
-          warehouseId,
-          adminData.id,
-          existingStock.product_stock,
-          existingStock.product_stock + parseInt(productStock, 10),
-          parseInt(productStock, 10),
-          "Stock Update"
-        );
+          const stockHistoryFrom = newStockHistory(
+            existingStock.id,
+            warehouseId,
+            adminData.id,
+            existingStock.product_stock,
+            existingStock.product_stock + parseInt(productStock, 10),
+            parseInt(productStock, 10),
+            "Stock Update"
+          );
 
           existingStock.product_stock += parseInt(productStock, 10);
 
           break;
         case "decrease":
+          const stockHistoryFrom2 = newStockHistory(
+            existingStock.id,
+            warehouseId,
+            adminData.id,
+            existingStock.product_stock,
+            existingStock.product_stock - parseInt(productStock, 10),
+            parseInt(productStock, 10),
+            "Stock Update"
+          );
 
-        const stockHistoryFrom2 = newStockHistory(
-          existingStock.id,
-          warehouseId,
-          adminData.id,
-          existingStock.product_stock,
-          existingStock.product_stock - parseInt(productStock, 10),
-          parseInt(productStock, 10),
-          "Stock Update"
-        );
-
-          existingStock.product_stock -= parseInt(productStock, 10);       
+          existingStock.product_stock -= parseInt(productStock, 10);
 
           if (existingStock.product_stock < 0) {
             await t.rollback();
@@ -260,9 +259,6 @@ module.exports = {
         rangePriceMax: Number(req.query.priceMax) || maxPrice,
       };
 
-      console.log("price min:", pagination.rangePriceMin);
-      console.log("price min type:", typeof pagination.rangePriceMin);
-
       const result = await db.Product.findAll({
         attributes: { exclude: ["updatedAt", "createdAt", "deletedAt"] },
         where: pagination.searchProduct
@@ -394,8 +390,6 @@ module.exports = {
         attributes: ["id"],
       });
 
-      console.log("product data", productData);
-
       if (!productData) {
         return res
           .status(404)
@@ -486,12 +480,13 @@ module.exports = {
   async deleteStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
-    const adminData = req.user
+    const adminData = req.user;
 
     if (req.user.role_id === 2) {
       if (req.user.warehouse_id !== warehouseId) {
         return res.status(403).send({
-          message: "You are not authorized to delete stock from this warehouse.",
+          message:
+            "You are not authorized to delete stock from this warehouse.",
         });
       }
     }

@@ -78,8 +78,6 @@ const ModalEditLastName = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
-  console.log(formik.values.last_name);
-
   return (
     <>
       <button

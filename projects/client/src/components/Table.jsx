@@ -61,7 +61,7 @@ const TableComponent = ({
 
   return (
     <Table className="custom-table bg-white rounded-lg shadow-lg">
-      <Table.Head className="sticky -top-0.5 z-50">
+      <Table.Head className="sticky -top-0.5 z-10">
         {headers.map((header) => (
           <Table.HeadCell className="bg-blue5 text-center" key={header}>
             {header}

@@ -57,7 +57,6 @@ const ModalEditUsername = () => {
           setErrMsg(err.response?.data?.message);
         });
     } catch (err) {
-      console.log(err);
       setErrMsg(err.response?.data?.message);
     }
   };

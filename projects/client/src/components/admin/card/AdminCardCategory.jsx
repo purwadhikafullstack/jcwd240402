@@ -4,8 +4,8 @@ import { IoEllipsisHorizontalCircle } from "react-icons/io5";
 import EditCategoryNameModal from "../../modal/category/ModalEditCategoryName";
 import EditCategoryImageModal from "../../modal/category/ModalEditCategoryImage";
 import ConfirmDeleteModal from "../../modal/category/ModalDeleteCategory";
-import noimage from "../../../assets/images/noimagefound.jpg"
-import { useSelector } from 'react-redux';
+import noimage from "../../../assets/images/noimagefound.jpg";
+import { useSelector } from "react-redux";
 
 const AdminCategoryCard = ({
   src,
@@ -19,7 +19,6 @@ const AdminCategoryCard = ({
   const [showEditImageModal, setShowEditImageModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const role_id = useSelector((state) => state.profilerAdmin.value.role_id);
-  console.log(role_id)
 
   const handleMenuToggle = () => {
     setShowMenu(!showMenu);
@@ -55,7 +54,7 @@ const AdminCategoryCard = ({
   return (
     <div className="p-4 border rounded shadow-lg relative h-72 pt-8">
       <img
-        src={ src ? `${process.env.REACT_APP_API_BASE_URL}${src}` : noimage}
+        src={src ? `${process.env.REACT_APP_API_BASE_URL}${src}` : noimage}
         alt={name}
         className="w-full h-48 object-cover"
       />
@@ -64,7 +63,7 @@ const AdminCategoryCard = ({
         Created: {moment(createdAt).format("MMMM D, YYYY")}
       </p>
       <div className="absolute top-1 right-2">
-      {role_id === 1 && (
+        {role_id === 1 && (
           <button className="p-2 rounded-full" onClick={handleMenuToggle}>
             <IoEllipsisHorizontalCircle />
           </button>

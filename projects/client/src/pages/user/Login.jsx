@@ -49,7 +49,6 @@ const Login = () => {
         navigate("/");
       });
     } catch (err) {
-      console.log(err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -119,7 +118,7 @@ const Login = () => {
     try {
       await googleSignIn();
     } catch (error) {
-      console.log(error);
+      setErrMsg(error.response?.data?.message);
     }
   };
 

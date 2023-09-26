@@ -22,7 +22,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   useEffect(() => {
     setSelectedCity(null);
   }, [selectedProvince]);
-  
+
   const handleModalClose = () => {
     formik.resetForm();
     setErrMsg("");
@@ -74,7 +74,6 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
         setShowImage(false);
         setImage(null);
       } else {
-        console.log(response);
         throw new Error("Warehouse Registration Failed");
       }
     } catch (error) {
@@ -139,7 +138,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
     setShowImage(URL.createObjectURL(selectedImage));
     setImage(selectedImage);
   };
-  console.log(errMsg);
+
   return (
     <Modal
       show={show}
@@ -235,7 +234,11 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                   }}
                   defaultOptions
                   components={{
-                    NoOptionsMessage: () => <div style={{padding: '8px'}}>Start typing to search for cities.</div>,
+                    NoOptionsMessage: () => (
+                      <div style={{ padding: "8px" }}>
+                        Start typing to search for cities.
+                      </div>
+                    ),
                   }}
                 />
                 {formik.errors.city_id && (

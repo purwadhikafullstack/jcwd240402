@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const db = require("../models")
+const db = require("../models");
 const { newStockHistory } = require("../service/warehouse_stock");
 
 const distanceKm = (lat1, lon1, lat2, lon2) => {
@@ -36,18 +36,22 @@ module.exports = {
     });
     return token;
   },
-  
-  autoStockTransfer: async (warehouse_id, product_id, requiredStock, orderId, adminData) => {
 
-    console.log(warehouse_id,product_id,requiredStock,orderId)
+  autoStockTransfer: async (
+    warehouse_id,
+    product_id,
+    requiredStock,
+    orderId,
+    adminData
+  ) => {
     const t = await db.sequelize.transaction();
-  
+
     try {
       let currentWarehouseStock = await db.Warehouse_stock.findOne({
         where: { warehouse_id, product_id },
         transaction: t,
       });
-  
+
       if (!currentWarehouseStock) {
         currentWarehouseStock = await db.Warehouse_stock.create({
           warehouse_id,
@@ -56,21 +60,21 @@ module.exports = {
           transaction: t,
         });
       }
-  
+
       const totalReservedInCurrentWarehouse = await db.Reserved_stock.sum(
         "reserve_quantity",
         {
-          where: { 
+          where: {
             warehouse_stock_id: currentWarehouseStock.id,
-            order_id: { [db.Sequelize.Op.ne]: orderId } 
-        },
+            order_id: { [db.Sequelize.Op.ne]: orderId },
+          },
           transaction: t,
         }
       );
-  
+
       const availableStockInCurrentWarehouse =
         currentWarehouseStock.product_stock - totalReservedInCurrentWarehouse;
-  
+
       if (availableStockInCurrentWarehouse >= requiredStock) {
         await t.commit();
         return {
@@ -80,12 +84,12 @@ module.exports = {
         };
       }
       let remainingDeficit = requiredStock - availableStockInCurrentWarehouse;
-  
+
       const currentWarehouse = await db.Warehouse.findOne({
         where: { id: warehouse_id },
         transaction: t,
       });
-  
+
       while (remainingDeficit > 0) {
         const warehousesWithStock = await db.Warehouse_stock.findAll({
           where: {
@@ -107,19 +111,17 @@ module.exports = {
           ],
           transaction: t,
         });
-  
-        console.log("Warehouses before filtering:", warehousesWithStock);
-  
+
         const sortedWarehouses = warehousesWithStock
-        .filter((warehouse) => {
-          const totalReserved = warehouse.Reservations.reduce(
-            (acc, curr) => acc + curr.reserve_quantity,
-            0
-          );
-          
-          const availableStock = warehouse.product_stock - totalReserved;
-          console.log(`Warehouse ID: ${warehouse.id}, Total Stock: ${warehouse.product_stock}, Total Reserved: ${totalReserved}`);
-          return availableStock > 0;
+          .filter((warehouse) => {
+            const totalReserved = warehouse.Reservations.reduce(
+              (acc, curr) => acc + curr.reserve_quantity,
+              0
+            );
+
+            const availableStock = warehouse.product_stock - totalReserved;
+
+            return availableStock > 0;
           })
           .sort((a, b) => {
             const distanceA = distanceKm(
@@ -136,15 +138,13 @@ module.exports = {
             );
             return distanceA - distanceB;
           });
-  
+
         if (sortedWarehouses.length === 0) {
           await t.rollback();
-          console.log("Warehouses with stock:", warehousesWithStock);
-          console.log("Sorted warehouses:", sortedWarehouses);
-          console.log("Remaining deficit:", remainingDeficit);
+
           throw new Error("No available stocks in other warehouses.");
         }
-  
+
         const sourceWarehouseStock = sortedWarehouses[0];
         const totalReservedSource = sourceWarehouseStock.Reservations.reduce(
           (acc, curr) => acc + curr.reserve_quantity,
@@ -163,7 +163,7 @@ module.exports = {
             quantity: stockToTransfer,
             status: "Approve",
             transaction_code: "TRX" + Date.now(),
-            timestamp: db.Sequelize.fn("NOW")
+            timestamp: db.Sequelize.fn("NOW"),
           },
           { transaction: t }
         );
@@ -175,8 +175,9 @@ module.exports = {
           sourceWarehouseStock.product_stock,
           sourceWarehouseStock.product_stock - stockToTransfer,
           stockToTransfer,
-          "Stock Transfer")
-        
+          "Stock Transfer"
+        );
+
         const stockHistoryTo = newStockHistory(
           currentWarehouseStock.id,
           currentWarehouseStock.warehouse_id,
@@ -184,16 +185,16 @@ module.exports = {
           currentWarehouseStock.product_stock,
           currentWarehouseStock.product_stock + stockToTransfer,
           stockToTransfer,
-          "Stock Transfer")
-  
+          "Stock Transfer"
+        );
+
         sourceWarehouseStock.product_stock -= stockToTransfer;
         currentWarehouseStock.product_stock += stockToTransfer;
         remainingDeficit -= stockToTransfer;
 
         await sourceWarehouseStock.save({ transaction: t });
-
       }
-  
+
       await currentWarehouseStock.save({ transaction: t });
       await t.commit();
       return {
@@ -208,5 +209,5 @@ module.exports = {
       console.error(error);
       throw new Error(error.message);
     }
-  }
+  },
 };

@@ -11,7 +11,6 @@ const CreateStock = () => {
   const [stockQuantity, setStockQuantity] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const adminData = useSelector((state) => state.profilerAdmin.value);
-  console.log(adminData?.warehouse?.warehouse_name)
 
   useEffect(() => {
     if (adminData.role_id === 2) {
@@ -39,17 +38,14 @@ const CreateStock = () => {
 
   const loadProducts = async (inputValue) => {
     try {
-      const response = await axios.get(
-        `/admin/products`,
-        {
-          params: {
-            product_name: inputValue,
-            page: 1,
-            pageSize: 10
-          },
-          headers: { Authorization: `Bearer ${access_token}` },
-        }
-      );
+      const response = await axios.get(`/admin/products`, {
+        params: {
+          product_name: inputValue,
+          page: 1,
+          pageSize: 10,
+        },
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       return response.data.data.map((product) => ({
         value: product.id,
         label: product.name,
@@ -59,7 +55,6 @@ const CreateStock = () => {
       return [];
     }
   };
-
 
   const handleStockCreation = async () => {
     if (!selectedWarehouse) {
@@ -89,7 +84,7 @@ const CreateStock = () => {
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
-      console.log("Stock creation response:", response.data);
+
       alert("Stock created successfully!");
       setErrorMessage("");
     } catch (error) {
@@ -123,7 +118,10 @@ const CreateStock = () => {
           isDisabled={adminData.role_id === 2}
           value={
             adminData.role_id === 2
-              ? { value: adminData.warehouse_id, label: adminData?.warehouse?.warehouse_name }
+              ? {
+                  value: adminData.warehouse_id,
+                  label: adminData?.warehouse?.warehouse_name,
+                }
               : selectedWarehouse
           }
         />

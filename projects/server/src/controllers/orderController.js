@@ -300,7 +300,6 @@ module.exports = {
 
     try {
       for (const i in cart_data.cart_data) {
-
         let closestWarehouseStock = await db.Warehouse_stock.findOne(
           {
             where: {
@@ -452,7 +451,7 @@ module.exports = {
   uploadPaymentProof: async (req, res) => {
     const userId = req.user.id;
     const id = req.params.id;
-    console.log(id);
+
     const paymentImage = req.file?.filename;
     const transaction = await db.sequelize.transaction();
     try {
@@ -466,7 +465,6 @@ module.exports = {
           exclude: ["createdAt", "updatedAt", "user_id"],
         },
       });
-      console.log("order data", orderData);
 
       if (!orderData) {
         return res.status(404).json({
@@ -607,8 +605,6 @@ module.exports = {
       const isAllowed = await db.Order.findOne({
         where: { id: id },
       });
-
-      console.log(isAllowed);
 
       if (isAllowed.order_status_id === statusId) {
         await transaction.rollback();

@@ -268,7 +268,7 @@ module.exports = {
       }
 
       const match = await bcrypt.compare(password, isVerifyTokenExist.password);
-      console.log(match);
+
       if (!match) {
         await transaction.rollback();
         return res.status(400).json({
@@ -535,7 +535,6 @@ module.exports = {
         });
       }
 
-      console.log(isUserExist);
       if (!isUserExist.by_form) {
         await transaction.rollback();
         return res.status(400).json({

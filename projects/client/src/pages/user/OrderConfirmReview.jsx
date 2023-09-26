@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -26,25 +26,18 @@ import withAuthUser from "../../components/user/withAuthUser";
 
 const OrderConfirmReview = () => {
   const { invoiceId } = useParams();
-  const location = useLocation();
-  console.log(invoiceId);
 
   const [yourOrder, setYourOrder] = useState([]);
-  const [orderProduct, setOrderProduct] = useState([]);
+
   const refresh_token = getLocalStorage("refresh_token");
-  const [newAccessToken, setNewAccessToken] = useState("");
+
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [loadingOrder, setLoadingOrder] = useState(true);
 
   const userData = useSelector((state) => state.profiler.value);
-
-  const [orderStatus, setOrderStatus] = useState([]);
-
-  const [errMsg, setErrMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
 
   useEffect(() => {
     axios
@@ -69,13 +62,11 @@ const OrderConfirmReview = () => {
             headers: { Authorization: `Bearer ${access_token}` },
           })
           .then((res) => {
-            console.log(res.data);
             setYourOrder(res.data?.order);
             setLoadingOrder(false);
             setLoading(false);
           })
           .catch((error) => {
-            console.log(error);
             setLoading(false);
             setLoadingOrder(false);
           });
@@ -100,7 +91,6 @@ const OrderConfirmReview = () => {
       </div>
     );
   }
-  console.log(!yourOrder);
 
   return (
     <div>

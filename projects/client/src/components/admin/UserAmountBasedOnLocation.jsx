@@ -129,6 +129,7 @@ const UserAmountBasedOnLocation = () => {
   };
   return (
     <div className="bg-white w-full h-full p-4 flex flex-col justify-center items-center rounded-md shadow-card-1 ">
+      <h1 className="text-xs font-bold mb-2">user amount per province</h1>
       {labelsChart.length !== 0 || dataChart.length !== 0 ? (
         <Doughnut data={data} options={options} />
       ) : null}

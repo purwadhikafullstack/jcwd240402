@@ -378,7 +378,6 @@ module.exports = {
   getProductByProductName: async (req, res) => {
     const { name } = req.params;
     try {
-      console.log(name);
       const productById = await db.Product.findOne({
         where: { name },
         attributes: { exclude: ["createdAt", "updatedAt"] },

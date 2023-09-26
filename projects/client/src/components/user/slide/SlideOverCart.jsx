@@ -37,7 +37,6 @@ export default function SlideOverCart({ name, quantity }) {
   const [openAlert, setOpenAlert] = useState(false);
 
   const handleAddProductToCart = async (name, qty) => {
-    console.log(qty);
     try {
       await axios
         .patch(
@@ -58,7 +57,6 @@ export default function SlideOverCart({ name, quantity }) {
             .then((res) => dispatch(cartsUser(res.data?.result)));
         })
         .catch((error) => {
-          console.log(error.response?.data?.message);
           setErrMsg(error.response?.data?.message);
           setOpenAlert(true);
           setQty(0);
@@ -95,8 +93,6 @@ export default function SlideOverCart({ name, quantity }) {
     };
     return image;
   });
-
-  console.log(errMsg);
 
   return (
     <>

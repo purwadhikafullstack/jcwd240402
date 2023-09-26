@@ -27,41 +27,44 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      await axios.post("/user/auth/register", values).then((res) => {
-        setStatus({ success: true });
-        setValues({
-          first_name: "",
-          last_name: "",
-          phone: "",
-          username: "",
-          email: "",
-          password: "",
-          confirm_password: "",
-        });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
-        });
-        setErrMsg("");
-        setSuccessMsg("Register successful");
-        setDissabledButton(true);
-        setTimeout(() => {
+      await axios
+        .post("/user/auth/register", values)
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            first_name: "",
+            last_name: "",
+            phone: "",
+            username: "",
+            email: "",
+            password: "",
+            confirm_password: "",
+          });
+          setStatus({
+            success: true,
+            message:
+              "Sign up successful. Please check your email for verification.",
+          });
+          setErrMsg("");
+          setSuccessMsg("Register successful");
           setDissabledButton(true);
-          navigate("/verify");
-        }, 2000);
-      });
+          setTimeout(() => {
+            setDissabledButton(true);
+            navigate("/verify");
+          }, 2000);
+        })
+        .catch((err) => {
+          setErrMsg(err.response?.data?.message);
+        });
     } catch (err) {
       setDissabledButton(false);
-      console.log(err.response?.data?.errors[0]?.msg);
-      if (err.response?.data?.errors[0]?.msg) {
-        setErrMsg(err.response?.data?.errors[0].msg);
+      if (!err.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(err.response?.data?.message);
       }
-
-      setErrMsg(err.response?.data?.message);
     }
   };
-  console.log(errMsg);
 
   const formik = useFormik({
     initialValues: {

@@ -41,7 +41,6 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(error.response?.data?.message);
-        console.log(error.response?.data?.message);
       }
     }
   };

@@ -28,7 +28,6 @@ const SearchBar = ({
         .then((res) => {
           setSearchProduct("");
           if (searchProduct) {
-            console.log(searchProduct);
             setSearchProduct("");
             navigate(`/product/${searchProduct}`);
             return;

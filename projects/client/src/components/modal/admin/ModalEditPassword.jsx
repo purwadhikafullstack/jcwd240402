@@ -25,7 +25,7 @@ const ChangePasswordModal = ({
         values,
         { headers: { Authorization: `Bearer ${access_token}` } }
       );
-      console.log("Response from server:", response);
+
       if (response.status === 200) {
         onClose();
         formik.resetForm();
@@ -34,7 +34,6 @@ const ChangePasswordModal = ({
         throw new Error("Change Password Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {

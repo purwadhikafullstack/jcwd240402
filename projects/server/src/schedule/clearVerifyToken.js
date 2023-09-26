@@ -31,11 +31,7 @@ const job = schedule.scheduleJob("*/20 * * * * *", async () => {
     }
 
     await transaction.commit();
-    console.log("Scheduled job completed.");
   } catch (error) {
     await transaction.rollback();
-    console.error("Error in the scheduled job:", error);
   }
 });
-
-console.log("Scheduler initialized for cancelling unpaid orders");

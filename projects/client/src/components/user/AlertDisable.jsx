@@ -7,7 +7,6 @@ const AlertDisable = ({
   setOpenAlert,
   errMsg,
 }) => {
-  console.log(errMsg);
   return (
     <>
       <div>

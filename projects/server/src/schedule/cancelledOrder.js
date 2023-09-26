@@ -1,7 +1,6 @@
 const schedule = require("node-schedule");
 const dayjs = require("dayjs");
 const db = require("../models");
-const { Op } = require("sequelize");
 
 const job = schedule.scheduleJob("*/15 * * * *", async () => {
   try {
@@ -32,15 +31,9 @@ const job = schedule.scheduleJob("*/15 * * * *", async () => {
     }
 
     await t.commit();
-    console.log(
-      `Cancelled ${unpaidOrders.length} unpaid orders older than 7 days`
-    );
   } catch (error) {
     if (t && !t.finished) {
       await t.rollback();
     }
-    console.error("Error in the scheduled job:", error);
   }
 });
-
-console.log("Scheduler initialized for cancelling unpaid orders");

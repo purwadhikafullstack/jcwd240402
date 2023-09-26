@@ -11,7 +11,6 @@ const ApproveRejectModal = ({
   onSuccessfulAction,
 }) => {
   const access_token = getCookie("access_token");
-  console.log(transfer)
 
   const handleApprove = async () => {
     try {
@@ -67,10 +66,21 @@ const ApproveRejectModal = ({
       <Modal.Body>
         {transfer && (
           <div className="mb-4">
-            <p><strong>From Warehouse:</strong> {transfer.FromWarehouse.fromWarehouseName}</p>
-            <p><strong>To Warehouse:</strong> {transfer.ToWarehouse.toWarehouseName}</p>
-            <p><strong>Product Name:</strong> {transfer.Warehouse_stock.Product.name}</p>
-            <p><strong>Quantity:</strong> {transfer.quantity}</p>
+            <p>
+              <strong>From Warehouse:</strong>{" "}
+              {transfer.FromWarehouse.fromWarehouseName}
+            </p>
+            <p>
+              <strong>To Warehouse:</strong>{" "}
+              {transfer.ToWarehouse.toWarehouseName}
+            </p>
+            <p>
+              <strong>Product Name:</strong>{" "}
+              {transfer.Warehouse_stock.Product.name}
+            </p>
+            <p>
+              <strong>Quantity:</strong> {transfer.quantity}
+            </p>
           </div>
         )}
         <div className="flex justify-center gap-4">

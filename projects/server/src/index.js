@@ -119,14 +119,4 @@ app.get("*", (req, res) => {
   res.sendFile(join(__dirname, clientPath, "index.html"));
 });
 
-//#endregion
-
-app.listen(PORT, (err) => {
-  if (err) {
-    console.log(`ERROR: ${err}`);
-  } else {
-    console.log(`APP RUNNING at ${PORT} ✅`);
-  }
-});
-
 module.exports = app;

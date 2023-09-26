@@ -13,7 +13,12 @@ import AlertWithIcon from "../../AlertWithIcon";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import SidebarAdminMobile from "../../SidebarAdminMobile";
 import ImageUpload from "./WarehouseImageUpdate";
-import { fetchWarehouseData, loadCities, loadProvinces } from "../../../utils/warehouseUtils";
+import {
+  fetchWarehouseData,
+  loadCities,
+  loadProvinces,
+} from "../../../utils/warehouseUtils";
+import Loading from "../../Loading";
 
 const WarehouseInputsEdit = () => {
   const [selectedCity, setSelectedCity] = useState(null);
@@ -41,16 +46,16 @@ const WarehouseInputsEdit = () => {
       setSelectedProvince,
       setProvinceChanged,
       setLoading
-      );
-    }, [warehouseName]);
-    
-    const validationSchema = Yup.object().shape({
-      warehouse_name: Yup.string().required("Required"),
-      address_warehouse: Yup.string().required("Required"),
-      warehouse_contact: Yup.string().required("Required"),
-      city_id: Yup.number().required("Required"),
-      province_id: Yup.number(),
-    });
+    );
+  }, [warehouseName]);
+
+  const validationSchema = Yup.object().shape({
+    warehouse_name: Yup.string().required("Required"),
+    address_warehouse: Yup.string().required("Required"),
+    warehouse_contact: Yup.string().required("Required"),
+    city_id: Yup.number().required("Required"),
+    province_id: Yup.number(),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -85,7 +90,6 @@ const WarehouseInputsEdit = () => {
           setErrMsg("");
           formik.setErrors({});
           setTimeout(() => {
-            console.log('This should be logged after 5 seconds');
             navigate("/admin/warehouses");
           }, 5000);
         } else {
@@ -106,10 +110,10 @@ const WarehouseInputsEdit = () => {
             },
             {}
           );
-        const ErrorMessage = errorMessages["province_id"]; 
-        if (ErrorMessage) {
-          setErrMsg(ErrorMessage);
-        }
+          const ErrorMessage = errorMessages["province_id"];
+          if (ErrorMessage) {
+            setErrMsg(ErrorMessage);
+          }
           formik.setErrors(errorMessages);
         }
       }
@@ -119,8 +123,13 @@ const WarehouseInputsEdit = () => {
   const handleCancel = () => {
     navigate("/admin/warehouses");
   };
-
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">

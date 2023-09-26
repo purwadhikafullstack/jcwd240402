@@ -30,10 +30,10 @@ const SignUp = () => {
     try {
       await googleSignIn();
     } catch (error) {
-      console.log(error);
+      setErrMsg(error?.response?.data?.message);
     }
   };
-  console.log(user);
+
   useEffect(() => {
     if (user != null && Object.keys(user).length !== 0) {
       axios

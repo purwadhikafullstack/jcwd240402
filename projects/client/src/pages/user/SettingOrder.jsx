@@ -79,7 +79,6 @@ const SettingOrder = () => {
       setHasMore(response.data.hasMore);
     } catch (error) {
       setErrMsg(error.response.data.message);
-      console.log(error.response.data);
     }
   };
 
@@ -132,8 +131,6 @@ const SettingOrder = () => {
       </div>
     );
   }
-
-  console.log(list);
 
   /* 
 1 = payment pending

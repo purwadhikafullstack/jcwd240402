@@ -21,7 +21,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
       .then((res) => {
-        console.log(res.data?.result);
         if (res.data?.result === null) {
           setIsAdded(false);
         } else {
@@ -97,7 +96,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
           })
           .catch((error) => {
             setErrMsg(error.response?.data?.message);
-            console.log(error.response?.data?.message);
           });
       }
     } catch (error) {

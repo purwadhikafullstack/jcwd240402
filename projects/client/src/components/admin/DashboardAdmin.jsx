@@ -68,31 +68,28 @@ const DashboardAdmin = ({ adminData }) => {
   }, []);
 
   useEffect(() => {
-    
     if (adminData.role_id === 2) {
       setWarehouseId(adminData?.warehouse_id);
     }
 
-    axios.get(`/admin/statistic/income-graph?warehouseId=${warehouseId}`,{
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => {
-      console.log(res.data);
-      setLabelsIncome(res.data.monthyear);
-      setDataIncome(res.data.total_per_month);
-      setIncomeTotalYear(res.data.total);
-    });
+    axios
+      .get(`/admin/statistic/income-graph?warehouseId=${warehouseId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        setLabelsIncome(res.data.monthyear);
+        setDataIncome(res.data.total_per_month);
+        setIncomeTotalYear(res.data.total);
+      });
   }, []);
 
   useEffect(() => {
     axios.get("/admin/statistic/pie-chart").then((res) => {
-      console.log(res);
       setLabelsChart(res.data.labels);
       setDataChart(res.data.data);
       setLoading(false);
     });
   }, []);
-  console.log(labelsChart);
-  console.log(dataChart);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -319,14 +316,13 @@ const DashboardAdmin = ({ adminData }) => {
           <h1>Total Warehouse {totalWarehouse}</h1>
         </div>
       </div>
-      <div className="col-span-8 h-full row-span-4 p-7">
+      <div className="col-span-8 h-full row-span-4 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1 p-4">
           <Line options={incomeOptions} data={incomeData} />
           <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>
       </div>
       <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">
-        <h1 className="text-xs font-bold mb-2">user amount per province</h1>
         <UserAmountBasedOnLocation />
       </div>
       <div className="col-span-4 row-span-2 p-4">

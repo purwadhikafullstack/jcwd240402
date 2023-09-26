@@ -452,8 +452,6 @@ module.exports = {
     const orderId = req.params.id;
     const adminData = req.user;
 
-    console.log("Extracted Order ID:", orderId);
-
     const t = await db.sequelize.transaction();
 
     try {
@@ -704,7 +702,6 @@ module.exports = {
   async sendUserOrder(req, res) {
     const orderId = req.params.id;
     const adminData = req.user;
-    console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
 
@@ -720,7 +717,6 @@ module.exports = {
           message: "Order not found",
         });
       }
-      console.log(isAllowed);
 
       if (isAllowed.order_status_id === 6) {
         await t.rollback();
@@ -894,7 +890,6 @@ module.exports = {
 
   async CancelUserOrder(req, res) {
     const orderId = req.params.id;
-    console.log("Extracted Order ID:", orderId);
 
     const t = await db.sequelize.transaction();
 

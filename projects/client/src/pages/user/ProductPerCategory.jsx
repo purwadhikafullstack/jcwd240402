@@ -98,7 +98,6 @@ const ProductPerCategory = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error.response);
         setErrMsg("product not found");
         setLoading(false);
         setTimeout(() => {
@@ -122,7 +121,6 @@ const ProductPerCategory = () => {
         setDisplay(res.data?.data);
       })
       .catch((error) => {
-        console.log(error.response);
         setErrMsg("Category Product is not found");
       });
   }, [categoryName, currentPagination]);
@@ -161,7 +159,7 @@ const ProductPerCategory = () => {
       </div>
     );
   }
-  console.log(imageDisplay);
+
   return (
     <div
     // id="back-to-the-top"

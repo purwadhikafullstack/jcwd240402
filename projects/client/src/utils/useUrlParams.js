@@ -14,20 +14,21 @@ function useURLParams(defaultValues = {}) {
   };
 
   const setParam = (key, value) => {
-    console.log(`Setting param: key=${key}, value=${JSON.stringify(value)}`);
-    if (key === 'status' && value === undefined) {
-      console.trace('status set to undefined');
+    if (key === "status" && value === undefined) {
+      console.trace("status set to undefined");
     }
-    const actualValue = value && typeof value === "object" && value.value ? value.value : value;
-    if (actualValue !== undefined && actualValue !== null && actualValue !== "") {
+    const actualValue =
+      value && typeof value === "object" && value.value ? value.value : value;
+    if (
+      actualValue !== undefined &&
+      actualValue !== null &&
+      actualValue !== ""
+    ) {
       searchParams.set(key, String(actualValue));
-      console.log(`Set param: key=${key}, value=${String(actualValue)}`);
     } else if (actualValue === "") {
       searchParams.set(key, "");
-      console.log(`Set empty param: key=${key}`);
     } else {
       searchParams.delete(key);
-      console.log(`Deleted param: key=${key}`);
     }
     setSearchParams(searchParams, { replace: true });
   };
@@ -41,19 +42,17 @@ function useURLParams(defaultValues = {}) {
     if (key === "status") {
       const statusLabels = {
         "": "All Status",
-        "approve": "Approved",
-        "reject": "Rejected",
-        "pending": "Pending"
+        approve: "Approved",
+        reject: "Rejected",
+        pending: "Pending",
       };
       return { value, label: statusLabels[value] };
     }
 
-
     return value;
   };
 
-  return { getParam, setParam, syncStateWithParams};
+  return { getParam, setParam, syncStateWithParams };
 }
 
 export default useURLParams;
-

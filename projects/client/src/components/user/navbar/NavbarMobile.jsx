@@ -28,6 +28,7 @@ const NavbarMobile = () => {
   const [newAccessToken, setNewAccessToken] = useState("");
   let [open, setOpen] = useState(false);
   const userData = useSelector((state) => state.profiler.value);
+  const [errMsg, setErrMsg] = useState("");
 
   const wishlistData = useSelector((state) => state.wishlister.value);
 
@@ -70,7 +71,7 @@ const NavbarMobile = () => {
           dispatch(wishlistUser(res.data?.result));
         })
         .catch((error) => {
-          console.log(error.response?.data?.message);
+          setErrMsg(error.response?.data?.message);
         });
     }
   }, [access_token, dispatch, refresh_token, userData.role_id]);

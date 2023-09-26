@@ -10,9 +10,6 @@ export default function ModalNotification({ is_verify, address_user }) {
 
   const props = { openModal, setOpenModal };
 
-  console.log(is_verify);
-  console.log(address_user);
-
   return (
     <>
       <Modal

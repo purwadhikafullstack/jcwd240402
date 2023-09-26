@@ -52,7 +52,7 @@ const PaymentFinalizing = () => {
   const userData = useSelector((state) => state.profiler.value);
 
   const { invoiceId } = useParams();
-  console.log(invoiceId);
+
   const inputPhotoRef = useRef();
 
   useEffect(() => {
@@ -138,16 +138,14 @@ const PaymentFinalizing = () => {
       .then((res) => {
         setErrMsg("");
         setSuccessMsg(res.data?.message);
-        console.log(res.data?.message);
+
         setPaymentProofData(res.data?.order);
         setLoading(false);
         setTimeout(() => {
           navigate(`/user/setting/order`);
         }, 3000);
-        console.log(res);
       })
       .catch((error) => {
-        console.log(error);
         setSuccessMsg("");
         setErrMsg(error.response.data.error);
         setLoading(false);

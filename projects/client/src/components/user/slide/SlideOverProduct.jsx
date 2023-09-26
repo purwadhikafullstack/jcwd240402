@@ -68,13 +68,12 @@ export default function SlideOverProduct({ name }) {
         })
         .catch((error) => {
           setLoading(false);
-          console.log(error.response?.data?.message);
+
           setErrMsg(error.response?.data?.message);
           setOpenAlert(true);
           setQty(0);
         });
     } catch (error) {
-      console.log(error);
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {

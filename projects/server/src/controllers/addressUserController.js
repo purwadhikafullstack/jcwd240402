@@ -283,7 +283,7 @@ module.exports = {
   getAddressById: async (req, res) => {
     const userData = req.user;
     const { address_id } = req.params;
-    console.log(userData);
+
     try {
       const userAddressData = await db.Address_user.findOne({
         where: { user_id: userData.id, id: address_id },

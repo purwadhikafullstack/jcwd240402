@@ -82,8 +82,6 @@ const ModalEditFirstName = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
-  console.log(formik.values);
-  console.log(formik.errors);
   return (
     <>
       <button

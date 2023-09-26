@@ -31,19 +31,12 @@ const ShowCaseProduct = ({ perPage }) => {
   const currentWeightMax = searchParams.get("weightMax") || limitWeight;
   const currentWeightMin = searchParams.get("weightMin") || 0;
 
-  console.log(currentPagination);
-  console.log(currentPriceMax);
-  console.log(currentPriceMin);
-  console.log(currentWeightMax);
-  console.log(currentWeightMin);
-
   useEffect(() => {
     axios
       .get(
         `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
-        console.log(res.data);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -56,7 +49,6 @@ const ShowCaseProduct = ({ perPage }) => {
         setLoading(false);
       })
       .catch((error) => {
-        console.log(error);
         setErrMsg("product not found");
         setLoading(false);
         setTimeout(() => {
@@ -88,8 +80,6 @@ const ShowCaseProduct = ({ perPage }) => {
     setSearchParams({});
     setCurrentPage(1);
   }
-
-  console.log(errMsg);
 
   if (loading) {
     return (

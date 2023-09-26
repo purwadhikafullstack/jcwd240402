@@ -19,7 +19,6 @@ const ModalEditPhone = () => {
   const [errMsg, setErrMsg] = useState("");
 
   const userData = useSelector((state) => state.profiler.value);
-  console.log(userData);
 
   useEffect(() => {
     formik.setValues({

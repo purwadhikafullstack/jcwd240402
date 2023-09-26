@@ -44,8 +44,8 @@ const CheckOut = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [invoiceUniqCode, setInvoiceUniqCode] = useState("");
-  console.log(!access_token && !refresh_token && userData.role_id !== 3);
 
   useEffect(() => {
     axios
@@ -176,9 +176,11 @@ const CheckOut = () => {
             }
           )
           .then((res) => {
-            console.log(res?.data);
+            setSuccessMsg(res?.data?.message);
           })
-          .catch(() => {});
+          .catch((error) => {
+            setErrMsg(error.response?.data?.message);
+          });
         axios
           .delete("/user/cart-order", {
             headers: {
@@ -189,10 +191,10 @@ const CheckOut = () => {
             },
           })
           .then((res) => {
-            console.log(res);
+            setSuccessMsg(res?.data?.message);
           })
           .catch((error) => {
-            console.log(error.response?.data?.message);
+            setErrMsg(error.response?.data?.message);
           });
 
         navigate(`/payment/${res.data?.order?.no_invoice.substr(-8)}`);

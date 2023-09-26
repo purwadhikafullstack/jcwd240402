@@ -36,7 +36,6 @@ export const OrderButton = ({ statusBefore, orderId }) => {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
-          console.log(res.data);
           setYourOrder(res.data?.order);
           setSuccessMsg("process successful");
           setTimeout(() => {
@@ -52,7 +51,6 @@ export const OrderButton = ({ statusBefore, orderId }) => {
   };
 
   const handleDeleteReserved = (orderId) => {
-    console.log(orderId);
     axios
       .delete(`/user/reserved-order/${orderId}`, {
         headers: { Authorization: `Bearer ${access_token}` },

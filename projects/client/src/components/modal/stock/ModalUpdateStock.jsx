@@ -5,8 +5,7 @@ import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
-import AlertWithIcon from "../../AlertWithIcon"
-
+import AlertWithIcon from "../../AlertWithIcon";
 
 const UpdateStock = ({
   show,
@@ -32,7 +31,7 @@ const UpdateStock = ({
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
-      console.log("Response from server:", response);
+
       if (response.status === 200) {
         onClose();
         formik.resetForm();
@@ -42,7 +41,6 @@ const UpdateStock = ({
         throw new Error("Update Stock Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -74,7 +72,7 @@ const UpdateStock = ({
   useEffect(() => {
     if (!show && !hasResetForm.current) {
       formik.resetForm();
-      setErrMsg(""); 
+      setErrMsg("");
       hasResetForm.current = true;
     } else if (show) {
       hasResetForm.current = false;
@@ -92,7 +90,7 @@ const UpdateStock = ({
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={formik.handleSubmit}>
-        {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
+          {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
           <div className="mt-5 px-6 grid gap-y-3">
             <input
               label="Product Stock"

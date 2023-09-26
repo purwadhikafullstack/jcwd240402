@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "flowbite-react";
 import AsyncSelect from "react-select/async";
 import Button from "../../Button";
@@ -19,11 +19,26 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   const [image, setImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
 
+  useEffect(() => {
+    setSelectedCity(null);
+  }, [selectedProvince]);
+  
   const handleModalClose = () => {
     formik.resetForm();
     setSelectedCity(null);
+    setSelectedProvince(null);
     setErrMsg("");
     onClose();
+  };
+
+  const setSelectedProvinceAndForm = (selected) => {
+    setSelectedProvince(selected);
+    formik.setFieldValue("province_id", selected?.value || "");
+  };
+
+  const setSelectedCityAndForm = (selected) => {
+    setSelectedCity(selected);
+    formik.setFieldValue("city_id", selected?.value || "");
   };
 
   const handleErrors = (error) => {
@@ -47,6 +62,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
       formData.append("address_warehouse", values.address_warehouse);
       formData.append("warehouse_contact", values.warehouse_contact);
       formData.append("city_id", selectedCity.value);
+      formData.append("province_id", selectedProvince.value);
       formData.append("file", image);
 
       const response = await axios.post("/warehouse/register", formData, {
@@ -75,6 +91,8 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
       warehouse_name: "",
       address_warehouse: "",
       warehouse_contact: "",
+      province_id: "",
+      city_id: "",
     },
     validateOnChange: false,
     validateOnBlur: false,
@@ -83,13 +101,16 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
       warehouse_name: yup.string().required("Warehouse Name is required"),
       address_warehouse: yup.string().required("Address is required"),
       warehouse_contact: yup.string().required("Contact is required"),
+      province_id: yup.string().required("Province is required"),
+      city_id: yup.string().required("City is required"),
     }),
   });
 
-  const loadCities = async (inputValue) => {
+  const loadCities = async (inputValue = "") => {
     try {
+      if (!selectedProvince) return [];
       const response = await axios.get(
-        `/admin/city/?searchName=${inputValue}&page=1`
+        `/admin/city/?searchName=${inputValue}&page=1&provinceId=${selectedProvince.value}`
       );
       return response.data.cities.map((city) => ({
         value: city.id,
@@ -179,10 +200,11 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                   errorMessage={formik.errors.warehouse_contact}
                 />
                 <AsyncSelect
+                  cacheOptions
                   classNamePrefix="react-select"
                   loadOptions={loadProvinces}
                   value={selectedProvince}
-                  onChange={setSelectedProvince}
+                  onChange={setSelectedProvinceAndForm}
                   placeholder="Select Province"
                   defaultOptions
                   menuPortalTarget={document.body}
@@ -190,26 +212,38 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                     menuPortal: (base) => ({
                       ...base,
                       zIndex: 999,
-                      position: "fixed",
                     }),
                   }}
                 />
+                {formik.errors.province_id && (
+                  <div className="text-red-500">
+                    {formik.errors.province_id}
+                  </div>
+                )}
                 <AsyncSelect
+                  isDisabled={!selectedProvince}
                   classNamePrefix="react-select"
-                  loadOptions={loadCities}
+                  loadOptions={(inputValue) =>
+                    selectedProvince ? loadCities(inputValue) : loadCities("")
+                  }
                   value={selectedCity}
-                  onChange={setSelectedCity}
+                  onChange={setSelectedCityAndForm}
                   placeholder="Select City"
-                  defaultOptions
                   menuPortalTarget={document.body}
                   styles={{
                     menuPortal: (base) => ({
                       ...base,
                       zIndex: 999,
-                      position: "fixed",
                     }),
                   }}
+                  defaultOptions
+                  components={{
+                    NoOptionsMessage: () => <div style={{padding: '8px'}}>Start typing to search for cities.</div>,
+                  }}
                 />
+                {formik.errors.city_id && (
+                  <div className="text-red-500">{formik.errors.city_id}</div>
+                )}
               </form>
               <div className="flex flex-col flex-wrap justify-center items-center mt-2 w-fit">
                 <img

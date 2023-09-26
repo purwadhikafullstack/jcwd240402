@@ -4,8 +4,7 @@ import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 
-const ProductInputs = ({ formik }) => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
 
   const loadCategoryOptions = async (inputValue) => {
     try {
@@ -27,7 +26,7 @@ const ProductInputs = ({ formik }) => {
 
   const handleCategoryChange = (selectedOption) => {
     formik.setFieldValue("category_id", selectedOption.value);
-    setSelectedCategory(selectedOption);
+    setSelectedCategory(selectedOption); // use setSelectedCategory from props
   };
 
   return (

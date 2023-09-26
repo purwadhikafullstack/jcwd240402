@@ -9,6 +9,7 @@ import BarChart from "./Top10Products";
 import { Line } from 'react-chartjs-2';
 import { rupiahFormat } from "../../utils/formatter";
 
+import withAuthAdmin from "./withAuthAdmin";
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
 import calendarlogo from "../../assets/icons/calendarlogo.png";

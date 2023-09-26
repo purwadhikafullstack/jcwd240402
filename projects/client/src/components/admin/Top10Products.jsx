@@ -24,7 +24,8 @@ export const options = (totalSold) => ({
   responsive: true,
   plugins: {
     legend: {
-      position: 'top'
+      position: 'top',
+      display: false,
     },
     title: {
       display: true,
@@ -36,7 +37,14 @@ export const options = (totalSold) => ({
       beginAtZero: true,
       max: totalSold, 
     }
-  }
+  },
+  tooltips: {
+    callbacks: {
+       label: function(tooltipItem) {
+              return tooltipItem.yLabel;
+       }
+    }
+}
 });
 
 export function BarChart() {
@@ -62,7 +70,7 @@ export function BarChart() {
         labels,
         datasets: [
           {
-            label: 'Total Quantity',
+            label: '',
             data,
             backgroundColor: backgroundColors, 
           },

@@ -2,6 +2,8 @@ const bcrypt = require("bcrypt");
 const { Op } = require("sequelize");
 const db = require("../models");
 const moment = require('moment');
+const dayjs = require("dayjs");
+const user = require("../service/user");
 
 module.exports = {
   userStatistic: async (req, res) => {
@@ -154,8 +156,115 @@ module.exports = {
   
 
   incomeGraph: async (req, res) => {
+
+    // const page = Number(req.query.page) || 1;
+    // const perPage = Number(req.query.size) || 10;
+    const warehouse_id = req.query.warehouseId || "";
+
+    const endDate = dayjs()
+
+    const startDate =  dayjs().subtract(12, "month").toDate();
+
+    const filter = {
+      delivery_time: {
+        [db.Sequelize.Op.between] : [startDate, endDate]
+      },
+      order_status_id : 3,
+    }
+
+    const filter2 = {
+      order_status_id : 3,
+    }
+
+    if(warehouse_id){
+      filter.warehouse_id = warehouse_id;
+      filter2.warehouse_id = warehouse_id;
+    }
+
     try {
-      res.json("income graph");
+
+      const totalPerMonth = [];
+      const responsePerMonth = [];
+      const twelveMonthsBefore = [];
+
+      const response = await db.Order.findAll({
+            where: filter,  
+            include: [
+              {
+                model: db.User,
+              },
+              {
+                model: db.Address_user,
+                attributes: { exclude: ["address_user_id"] },
+              },
+              {
+                model: db.Warehouse,
+              },
+            ]
+          },
+          {
+            model: db.Warehouse_stock,
+            include: [
+              {
+                model: db.Product,
+                include: [
+                  {
+                    model: db.Category,
+                    as: "category",
+                  },
+                ],
+              },
+            ],
+
+        order: [["delivery_time", "DESC"]],
+      });
+
+      for(let i = 0; i < 12; i++){
+
+        const startDate2 =  dayjs().subtract(12 - i, "month").toDate();
+
+        const endDate2 = dayjs().subtract(12 - (i + 1), "month").toDate();
+
+        twelveMonthsBefore.push(dayjs(endDate2).format('MMMM YYYY'))
+
+        filter2.delivery_time = {
+          [db.Sequelize.Op.between] : [startDate2, endDate2]
+        }
+        
+        const responseMonth = await db.Order.findAll({
+          where: filter2,  
+        order: [["delivery_time", "DESC"]],
+      });
+
+      responsePerMonth.push(responseMonth);
+
+      const totalOnly2 = [];
+
+        for(let j = 0; j < responsePerMonth[i].length; j++){
+            totalOnly2.push(responsePerMonth[i][j]?.total_price);
+        }
+
+       totalPerMonth.push(totalOnly2.reduce((total, n) => total + n, 0));
+      
+    }
+
+      const totalOnly = [];
+
+      const priceOnly = response.map((m) => {
+        if (m) {
+          totalOnly.push(m.total_price);
+        }
+      });
+
+      const totalPrice = totalOnly.reduce((total, n) => total + n, 0);
+
+      res.json({
+        ok: true,
+        info: "income graph",
+        total: totalPrice,
+        total_per_month: totalPerMonth,
+        monthyear: twelveMonthsBefore,
+      });
     } catch (error) {
       res.status(500).json({
         message: "Fatal error on server",

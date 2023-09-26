@@ -94,7 +94,7 @@ const SalesReport = () => {
 
     axios
       .get(
-        `/admin/sales-report?warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
+        `/admin/sales-report?page=${currentPage}&warehouseId=${warehouseId}&year=${year}&month=${month}&categoryId=${selectedCategory}&productId=${selectedProduct}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -104,6 +104,7 @@ const SalesReport = () => {
       .then((response) => {
         setSalesReport(response?.data?.sales_report);
         setOrderSalesList(response?.data?.order_details);
+        setTotalPages(response?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -311,6 +312,16 @@ const SalesReport = () => {
               Total: {rupiahFormat(salesReport)}
             </div>
           </div>
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+          <DefaultPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              setCurrentPage(page);
+              // navigateWithParams({ page });
+            }}
+          />
+        </div>
         </div>
       </div>
     </div>

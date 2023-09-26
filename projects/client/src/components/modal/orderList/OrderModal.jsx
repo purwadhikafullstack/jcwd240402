@@ -145,11 +145,11 @@ const OrderModal = ({
                       {row.Status}
                     </h1>
                     <h1>
-                      <span className="font-semibold">Total transaction :</span>{" "}
+                      <span className="font-semibold">Delivery Cost :</span>{" "}
                       {row["Delivery Cost"]}
                     </h1>
                     <h1>
-                      <span className="font-semibold">Total transaction :</span>{" "}
+                      <span className="font-semibold">Total Transaction :</span>{" "}
                       {row["Total Transaction"]}
                     </h1>
                   </div>

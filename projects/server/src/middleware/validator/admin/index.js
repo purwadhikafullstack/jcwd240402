@@ -59,19 +59,21 @@ module.exports = {
 
   validateRegistration: validate([
     body("username")
-    .notEmpty()
-    .withMessage("Username is required")
-    .isLength({ min: 3, max: 20 })
-    .withMessage("Username must be between 3 to 20 characters long.")
-    .matches(/^[a-zA-Z0-9_-]+$/)
-    .withMessage("Username can only contain letters, numbers, underscores, and hyphens")
-    .custom(checkUsernameAdmin)
-    .custom((value) => {
-      if (/\s/.test(value)) {
-        throw new Error("Username cannot contain spaces.");
-      }
-      return true;
-    }),
+      .notEmpty()
+      .withMessage("Username is required")
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage(
+        "Username can only contain letters, numbers, underscores, and hyphens"
+      )
+      .custom(checkUsernameAdmin)
+      .custom((value) => {
+        if (/\s/.test(value)) {
+          throw new Error("Username cannot contain spaces.");
+        }
+        return true;
+      }),
     body("first_name")
       .notEmpty()
       .withMessage("First name is required")
@@ -160,52 +162,51 @@ module.exports = {
 
   validateUpdateWarehouse: validate([
     body("address_warehouse")
-        .optional()
-        .notEmpty()
-        .withMessage("Address is required"),
+      .optional()
+      .notEmpty()
+      .withMessage("Address is required"),
     body("warehouse_name")
-        .optional()
-        .notEmpty()
-        .withMessage("Warehouse name is required")
-        .custom(checkWarehouseName),
+      .optional()
+      .notEmpty()
+      .withMessage("Warehouse name is required")
+      .custom(checkWarehouseName),
     body("city_id")
-        .optional()
-        .notEmpty()
-        .withMessage("City ID is required")
-        .isNumeric()
-        .withMessage("City ID must be a number"),
+      .optional()
+      .notEmpty()
+      .withMessage("City ID is required")
+      .isNumeric()
+      .withMessage("City ID must be a number"),
     body("province_id")
-        .optional()
-        .custom((value, { req }) => {
-            if (value && !req.body.city_id) {
-                throw new Error("City ID is required when Province ID is provided");
-            }
-            return true;
-        })
-        .isNumeric()
-        .withMessage("Province ID must be a number"),
+      .optional()
+      .custom((value, { req }) => {
+        if (value && !req.body.city_id) {
+          throw new Error("City ID is required when Province ID is provided");
+        }
+        return true;
+      })
+      .isNumeric()
+      .withMessage("Province ID must be a number"),
     body("latitude")
-        .optional()
-        .notEmpty()
-        .withMessage("Latitude is required")
-        .isNumeric()
-        .withMessage("Latitude must be a number")
-        .isFloat({ min: -90, max: 90 })
-        .withMessage("Latitude should be between -90 and 90"),
+      .optional()
+      .notEmpty()
+      .withMessage("Latitude is required")
+      .isNumeric()
+      .withMessage("Latitude must be a number")
+      .isFloat({ min: -90, max: 90 })
+      .withMessage("Latitude should be between -90 and 90"),
     body("longitude")
-        .optional()
-        .notEmpty()
-        .withMessage("Longitude is required")
-        .isNumeric()
-        .withMessage("Longitude must be a number")
-        .isFloat({ min: -180, max: 180 })
-        .withMessage("Longitude should be between -180 and 180"),
+      .optional()
+      .notEmpty()
+      .withMessage("Longitude is required")
+      .isNumeric()
+      .withMessage("Longitude must be a number")
+      .isFloat({ min: -180, max: 180 })
+      .withMessage("Longitude should be between -180 and 180"),
     body("warehouse_contact")
-        .optional()
-        .notEmpty()
-        .withMessage("Warehouse contact is required")
-        .isNumeric()
-        .withMessage("Contact should be a valid number"),
-]),
-
+      .optional()
+      .notEmpty()
+      .withMessage("Warehouse contact is required")
+      .isNumeric()
+      .withMessage("Contact should be a valid number"),
+  ]),
 };

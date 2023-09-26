@@ -27,30 +27,40 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      await axios.post("/user/auth/register", values).then((res) => {
-        setStatus({ success: true });
-        setValues({
-          first_name: "",
-          last_name: "",
-          phone: "",
-          username: "",
-          email: "",
-          password: "",
-          confirm_password: "",
-        });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
-        });
-        setErrMsg("");
-        setSuccessMsg("Register successful");
-        setDissabledButton(true);
-        setTimeout(() => {
+      await axios
+        .post("/user/auth/register", values)
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            first_name: "",
+            last_name: "",
+            phone: "",
+            username: "",
+            email: "",
+            password: "",
+            confirm_password: "",
+          });
+          setStatus({
+            success: true,
+            message:
+              "Sign up successful. Please check your email for verification.",
+          });
+          setErrMsg("");
+          setSuccessMsg("Register successful");
           setDissabledButton(true);
-          navigate("/verify");
-        }, 2000);
-      });
+          setTimeout(() => {
+            setDissabledButton(true);
+            navigate("/verify");
+          }, 2000);
+        })
+        .catch((err) => {
+          console.log(err.response.data.message);
+          setErrMsg(err.response.data.message);
+
+          if (err.response?.data?.errors[0]?.msg) {
+            setErrMsg(err.response?.data?.errors[0].msg);
+          }
+        });
     } catch (err) {
       setDissabledButton(false);
       if (!err.response) {

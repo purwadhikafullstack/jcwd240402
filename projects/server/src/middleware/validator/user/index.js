@@ -23,8 +23,10 @@ module.exports = {
     body("username")
       .notEmpty()
       .withMessage("Username is required")
-      .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
     body("first_name")
       .notEmpty()
       .withMessage("first name is required")
@@ -151,9 +153,12 @@ module.exports = {
 
   updateProfile: validate([
     body("username")
-      .optional()
-      .isLength({ max: 10 })
-      .withMessage("Maximum character is 10"),
+      .notEmpty()
+      .withMessage("Username is required")
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
     body("first_name")
       .optional()
       .isLength({ max: 50 })

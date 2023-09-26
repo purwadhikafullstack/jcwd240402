@@ -1,5 +1,5 @@
 import React from "react";
-import Tab from "../Tab/TabComponent";
+import Tab from "./TabComponent";
 import { useLocation } from "react-router-dom";
 
 const Tabs = ({ tabData }) => {

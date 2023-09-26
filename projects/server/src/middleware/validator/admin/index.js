@@ -180,7 +180,7 @@ module.exports = {
       .optional()
       .custom((value, { req }) => {
         if (value && !req.body.city_id) {
-          throw new Error("City ID is required when Province ID is provided");
+          throw new Error("City is required when updating Province");
         }
         return true;
       })

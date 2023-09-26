@@ -1,12 +1,9 @@
 import { Modal } from "flowbite-react";
 import React, { useState } from "react";
-
 import { saveAs } from "file-saver";
-import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { FaDownload } from "react-icons/fa";
 import { HiMiniClipboardDocumentCheck } from "react-icons/hi2";
-
 import ConfirmationPaymentModal from "./ConfirmationPaymentModal";
 import waitingpayment from "../../../assets/images/waitingpayment.png";
 import DismissableAlert from "../../DismissableAlert";
@@ -86,16 +83,6 @@ const OrderModal = ({
                   </div>
                 ) : null}
               </div>
-              {/* 
-1 = payment pending
-2 = awaiting payment confirmation
-3 = completed   
-4 = In Process
-5 = cancelled
-6 = shipped
-7 = order confirmed
-*/}
-
               <div className="w-full flex flex-col justify-between items-end ">
                 <div className=" w-full h-full flex flex-col justify-between mb-4">
                   {successMsg ? (

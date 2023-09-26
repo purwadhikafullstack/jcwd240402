@@ -4,13 +4,19 @@ import Button from "../../Button";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 
-const ConfirmDeleteWarehouse = ({ show, onClose, handleSuccessfulDelete, warehouseId }) => {
+const ConfirmDeleteWarehouse = ({
+  show,
+  onClose,
+  handleSuccessfulDelete,
+  warehouseId,
+  warehouseName,
+}) => {
   const access_token = getCookie("access_token");
 
   const handleDelete = async () => {
     try {
       const response = await axios.delete(`/warehouse/${warehouseId}`, {
-        headers: { Authorization: `Bearer ${access_token}` }
+        headers: { Authorization: `Bearer ${access_token}` },
       });
 
       if (response.status === 200) {
@@ -35,7 +41,10 @@ const ConfirmDeleteWarehouse = ({ show, onClose, handleSuccessfulDelete, warehou
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this warehouse?</p>
+        <p>
+          Are you sure you want to delete the warehouse{" "}
+          <strong>{warehouseName}</strong>?
+        </p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"

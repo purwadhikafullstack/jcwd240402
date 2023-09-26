@@ -5,7 +5,7 @@ import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon"
 
-const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId }) => {
+const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId,adminName }) => {
   const access_token = getCookie("access_token");
   const [errMsg, setErrMsg] = useState("");
 
@@ -36,7 +36,7 @@ const ConfirmDeleteAdmin = ({ show, onClose, handleSuccessfulDelete, adminId }) 
       {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Confirm Deletion
+            Confirm Deletion {adminName}
           </h3>
         </div>
       </Modal.Header>

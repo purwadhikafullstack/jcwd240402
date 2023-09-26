@@ -93,7 +93,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
       />
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
-          label="Weight"
+          label="Weight(Grams)"
           placeholder="Enter product weight"
           value={initialProduct.weight}
           name="weight"
@@ -102,7 +102,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           width="w-full"
         />
         <InputForm
-          label="Price"
+          label="Price(Rp)"
           placeholder="Enter product price"
           value={initialProduct.price}
           name="price"

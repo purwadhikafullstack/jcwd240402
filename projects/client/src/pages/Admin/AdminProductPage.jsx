@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Tabs from "../../components/Tab/TabContainer";
+import Tabs from "../../components/tabs/TabContainer";
 import { Outlet } from "react-router-dom";
 import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
 import axios from "../../api/axios";

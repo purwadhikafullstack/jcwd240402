@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       User.hasOne(models.User_detail, { foreignKey: "user_id" });
       User.hasMany(models.Order, { foreignKey: "user_id" });
       User.belongsTo(models.Role, { foreignKey: "role_id" });
-      User.hasMany(models.Address_user, { foreignKey: "address_user_id" });
+      User.hasMany(models.Address_user, { foreignKey: "user_id" });
       User.hasMany(models.Cart, { foreignKey: "user_id" });
       User.hasMany(models.Wishlist, { foreignKey: "user_id" });
     }

@@ -11,6 +11,13 @@ module.exports = {
   async createStockForWarehouse(req, res) {
     const { warehouseId, productId, productStock } = req.body;
 
+    if (req.user.role_id === 2) {
+      if (req.user.warehouse_id !== warehouseId) {
+        return res.status(403).send({
+          message: "You are not authorized to update stock from this warehouse.",
+        });
+      }
+    }
     const t = await db.sequelize.transaction();
 
     try {
@@ -57,6 +64,15 @@ module.exports = {
     const productId = parseInt(req.params.productId);
     const { productStock, operation } = req.body;
     const adminData = req.user
+
+    if (req.user.role_id === 2) {
+      if (req.user.warehouse_id !== warehouseId) {
+        return res.status(403).send({
+          message: "You are not authorized to update stock from this warehouse.",
+        });
+      }
+    }
+
 
     const t = await db.sequelize.transaction();
 
@@ -470,7 +486,15 @@ module.exports = {
   async deleteStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId, 10);
     const productId = parseInt(req.params.productId, 10);
-    const adminData = req.user;
+    const adminData = req.user
+
+    if (req.user.role_id === 2) {
+      if (req.user.warehouse_id !== warehouseId) {
+        return res.status(403).send({
+          message: "You are not authorized to delete stock from this warehouse.",
+        });
+      }
+    }
 
     const t = await db.sequelize.transaction();
     try {

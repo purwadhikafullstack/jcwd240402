@@ -17,6 +17,7 @@ import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const AdminList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
+  const [selectedAdminToDelete, setSelectedAdminToDelete] = useState(null);
   const [admins, setAdmins] = useState([]);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
@@ -24,7 +25,6 @@ const AdminList = () => {
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [selectedAdminId, setSelectedAdminId] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const access_token = getCookie("access_token");
   const loadWarehouseOptions = useWarehouseOptions();
@@ -56,7 +56,7 @@ const AdminList = () => {
     setParam("searchName", searchName);
     setParam("warehouseId", selectedWarehouse);
     setParam("page", currentPage);
-    fetchAdmins()
+    fetchAdmins();
   }, [searchName, selectedWarehouse, currentPage]);
 
   const fetchAdmins = async () => {
@@ -98,7 +98,6 @@ const AdminList = () => {
       </div>
       <div className="flex lg:flex-none ">
         <SidebarAdminMobile />
-
         <div className="lg:px-8 lg:pt-8 lg:w-full mt-4 mx-4">
           <div className="flex items-center">
             <AsyncSelect
@@ -140,7 +139,7 @@ const AdminList = () => {
                 setProfileModalOpen(true);
               }}
               onDelete={(admin) => {
-                setSelectedAdminId(admin.id);
+                setSelectedAdminToDelete(admin);
                 setShowDeleteModal(true);
               }}
             />
@@ -172,7 +171,10 @@ const AdminList = () => {
               refreshAdminList();
               setShowDeleteModal(false);
             }}
-            adminId={selectedAdminId}
+            adminId={selectedAdminToDelete?.id}
+            adminName={
+              selectedAdminToDelete?.username || selectedAdminToDelete?.name
+            }
           />
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
             <DefaultPagination

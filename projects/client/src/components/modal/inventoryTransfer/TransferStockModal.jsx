@@ -79,7 +79,7 @@ const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
     <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header className="flex justify-center">
         <div className="text-center">
-          <h3 className="text-xl font-medium text-gray-900 text-center">Transfer Stock</h3>
+          <h3 className="text-xl font-medium text-gray-900 text-center">Transfer Stock {product?.productName}</h3>
         </div>
       </Modal.Header>
       <Modal.Body>

@@ -9,4 +9,6 @@ router.post("/",authMiddleware.verifyAccessTokenAdmin,validatorMiddlewareWarehou
 router.patch("/:warehouseId/:productId",authMiddleware.verifyAccessTokenAdmin,validatorMiddlewareWarehouseStock.validateUpdateStock,warehouseStockController.updateStockForWarehouse);
 
 router.delete("/:warehouseId/:productId",authMiddleware.verifyAccessTokenAdmin,warehouseStockController.deleteStockForWarehouse);
+router.delete("/:warehouseId/:productId",authMiddleware.verifyAccessTokenAdmin,warehouseStockController.deleteStockForWarehouse);
+
 module.exports = router;

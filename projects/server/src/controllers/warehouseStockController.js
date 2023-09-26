@@ -489,15 +489,15 @@ module.exports = {
         transaction: t,
       });
 
-      const stockHistoryFrom = newStockHistory(
-        existingStock.id,
-        warehouseId,
-        adminData.id,
-        existingStock.product_stock,
-        existingStock.product_stock - existingStock.product_stock,
-        existingStock.product_stock,
-        "Stock Destroy"
-      );
+      // const stockHistoryFrom = newStockHistory(
+      //   existingStock.id,
+      //   warehouseId,
+      //   adminData.id,
+      //   existingStock.product_stock,
+      //   existingStock.product_stock - existingStock.product_stock,
+      //   existingStock.product_stock,
+      //   "Stock Destroy"
+      // );
 
       await t.commit();
       res.status(200).send({

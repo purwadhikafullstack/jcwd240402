@@ -15,6 +15,7 @@ import {
 } from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import withOutAuthUser from "../../components/user/withoutAuthUser";
+import PasswordInput from "../../components/PasswordInput";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -25,7 +26,6 @@ const Register = () => {
   removeLocalStorage("refresh_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
-    setSuccessMsg("Register successful");
     try {
       await axios.post("/user/auth/register", values).then((res) => {
         setStatus({ success: true });
@@ -43,11 +43,16 @@ const Register = () => {
           message:
             "Sign up successful. Please check your email for verification.",
         });
-        setSuccessMsg("Register successful");
         setErrMsg("");
-        navigate("/verify");
+        setSuccessMsg("Register successful");
+        setDissabledButton(true);
+        setTimeout(() => {
+          setDissabledButton(true);
+          navigate("/verify");
+        }, 2000);
       });
     } catch (err) {
+      setDissabledButton(false);
       if (!err.response) {
         setErrMsg("No Server Response");
         setSuccessMsg("");
@@ -186,7 +191,7 @@ const Register = () => {
     setDissabledButton(true);
     setTimeout(() => {
       setDissabledButton(false);
-    }, 6000);
+    }, 7000);
   };
 
   return (
@@ -257,19 +262,33 @@ const Register = () => {
                     />
                   </div>
 
-                  {inputConfigs.map((config, index) => (
-                    <InputForm
-                      key={index}
-                      label={`${config.label}*`}
-                      onChange={handleForm}
-                      placeholder={config.placeholder}
-                      name={config.name}
-                      type={config.type}
-                      value={config.value}
-                      isError={config.error}
-                      errorMessage={config.errorMsg}
-                    />
-                  ))}
+                  {inputConfigs.map((config, index) =>
+                    config.label === "email" ? (
+                      <InputForm
+                        key={index}
+                        label={`${config.label}*`}
+                        onChange={handleForm}
+                        placeholder={config.placeholder}
+                        name={config.name}
+                        type={config.type}
+                        value={config.value}
+                        isError={config.error}
+                        errorMessage={config.errorMsg}
+                      />
+                    ) : (
+                      <PasswordInput
+                        key={index}
+                        label={`${config.label}*`}
+                        onChange={handleForm}
+                        placeholder={config.placeholder}
+                        name={config.name}
+                        type={config.type}
+                        value={config.value}
+                        isError={config.error}
+                        errorMessage={config.errorMsg}
+                      />
+                    )
+                  )}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
                       onClick={() => {

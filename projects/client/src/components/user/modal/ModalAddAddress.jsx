@@ -72,16 +72,22 @@ const ModalAddAddress = () => {
           });
           setSuccessMsg(res.data.message);
           setErrMsg("");
+          formik.resetForm();
+          setSelectedCity(0);
+          setSelectedProvince(0);
           setTimeout(() => {
             props.setOpenModal(undefined);
             setSuccessMsg("");
+            setDissabledButton(false);
           }, 3000);
         })
         .catch((error) => {
+          setDissabledButton(false);
           setSuccessMsg("");
           setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setDissabledButton(false);
       setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -125,7 +131,10 @@ const ModalAddAddress = () => {
   return (
     <>
       <button
-        onClick={() => props.setOpenModal("form-elements")}
+        onClick={() => {
+          props.setOpenModal("form-elements");
+          formik.resetForm();
+        }}
         className="h-10 rounded-lg w-fit px-3 bg-blue3 text-white font-semibold"
       >
         <span className="flex justify-center items-center gap-4">
@@ -142,6 +151,7 @@ const ModalAddAddress = () => {
           props.setOpenModal(undefined);
           setErrMsg("");
           setSuccessMsg("");
+          formik.resetForm();
         }}
       >
         <Modal.Header />

@@ -335,6 +335,7 @@ const CheckOut = () => {
                             options={courierOptions}
                             placeholder={<div>courier</div>}
                             onChange={handleCourier}
+                            className="pb-3"
                           />
                           {chosenCourier && (
                             <Select

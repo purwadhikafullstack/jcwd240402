@@ -18,6 +18,7 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import BarChart from "./Top10Products";
 import { Line } from "react-chartjs-2";
 import { rupiahFormat } from "../../utils/formatter";
+import { getCookie } from "../../utils/tokenSetterGetter";
 
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
@@ -26,6 +27,7 @@ import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
 import withAuthAdmin from "./withAuthAdmin";
+import withAuthAdminWarehouse from "./withAuthAdminWarehouse";
 ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(
   ArcElement,
@@ -52,6 +54,9 @@ const DashboardAdmin = ({ adminData }) => {
   const [incomeTotalYear, setIncomeTotalYear] = useState(0);
   const [dataIncome, setDataIncome] = useState([]);
   const [dataChart, setDataChart] = useState([]);
+  const [warehouseId, setWarehouseId] = useState("");
+
+  const token = getCookie("access_token");
 
   useEffect(() => {
     axios.get("/admin/statistic").then((res) => {
@@ -63,7 +68,14 @@ const DashboardAdmin = ({ adminData }) => {
   }, []);
 
   useEffect(() => {
-    axios.get("/admin/statistic/income-graph").then((res) => {
+    
+    if (adminData.role_id === 2) {
+      setWarehouseId(adminData?.warehouse_id);
+    }
+
+    axios.get(`/admin/statistic/income-graph?warehouseId=${warehouseId}`,{
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
       console.log(res.data);
       setLabelsIncome(res.data.monthyear);
       setDataIncome(res.data.total_per_month);
@@ -326,4 +338,4 @@ const DashboardAdmin = ({ adminData }) => {
   );
 };
 
-export default withAuthAdmin(DashboardAdmin);
+export default withAuthAdminWarehouse(DashboardAdmin);

@@ -13,6 +13,24 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleSuccess = (message) => {
+    setErrorMessage("")
+    setSuccessMessage(message);
+    setSelectedCategory(null);
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 5000);
+  };
+
+  const handleError = (message) => {
+    setSuccessMessage("")
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 3000);
+  };
 
   const handleSubmit = async (values) => {
     try {
@@ -32,12 +50,12 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
       });
       formik.resetForm();
       setUploadedImages([]);
-      setSuccessMessage("Product created successfully");
+      handleSuccess("Product created successfully");
     } catch (error) {
       console.error("Error creating product:", error.response.data);
 
       if (error.response && error.response.data && error.response.data.error) {
-        setErrorMessage(error.response.data.error);
+        handleError(error.response.data.error);
       } else if (
         error.response &&
         error.response.data &&
@@ -97,6 +115,8 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                     product={formik.values}
                     handleInputChange={formik.handleChange}
                     formik={formik}
+                    setSelectedCategory={setSelectedCategory} // pass setSelectedCategory as prop
+                    selectedCategory={selectedCategory}
                   />
                   <div className="flex my-4 justify-center w-full">
                     <Button

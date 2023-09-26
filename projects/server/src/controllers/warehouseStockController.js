@@ -53,10 +53,10 @@ module.exports = {
   },
 
   async updateStockForWarehouse(req, res) {
-    const warehouseId = parseInt(req.params.warehouseId, 10);
-    const productId = parseInt(req.params.productId, 10);
+    const warehouseId = parseInt(req.params.warehouseId);
+    const productId = parseInt(req.params.productId);
     const { productStock, operation } = req.body;
-    const adminData = req.user;
+    const adminData = req.user
 
     const t = await db.sequelize.transaction();
 
@@ -76,31 +76,33 @@ module.exports = {
 
       switch (operation) {
         case "increase":
-          existingStock.product_stock += parseInt(productStock, 10);
 
-          const stockHistoryFrom = newStockHistory(
-            existingStock.id,
-            warehouseId,
-            adminData.id,
-            existingStock.product_stock,
-            existingStock.product_stock + parseInt(productStock, 10),
-            parseInt(productStock, 10),
-            "Stock Update"
-          );
+        const stockHistoryFrom = newStockHistory(
+          existingStock.id,
+          warehouseId,
+          adminData.id,
+          existingStock.product_stock,
+          existingStock.product_stock + parseInt(productStock, 10),
+          parseInt(productStock, 10),
+          "Stock Update"
+        );
+
+          existingStock.product_stock += parseInt(productStock, 10);
 
           break;
         case "decrease":
-          existingStock.product_stock -= parseInt(productStock, 10);
 
-          const stockHistoryFrom2 = newStockHistory(
-            existingStock.id,
-            warehouseId,
-            adminData.id,
-            existingStock.product_stock,
-            existingStock.product_stock - parseInt(productStock, 10),
-            parseInt(productStock, 10),
-            "Stock Update"
-          );
+        const stockHistoryFrom2 = newStockHistory(
+          existingStock.id,
+          warehouseId,
+          adminData.id,
+          existingStock.product_stock,
+          existingStock.product_stock - parseInt(productStock, 10),
+          parseInt(productStock, 10),
+          "Stock Update"
+        );
+
+          existingStock.product_stock -= parseInt(productStock, 10);       
 
           if (existingStock.product_stock < 0) {
             await t.rollback();

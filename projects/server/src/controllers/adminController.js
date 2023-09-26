@@ -304,7 +304,7 @@ module.exports = {
 
   async getProvincesList(req, res) {
     const page = Number(req.query.page) || 1;
-    const pageSize = Number(req.query.size) || 10;
+    const pageSize = Number(req.query.size) || 5;
     const provinceId = req.query.provinceId;
     const searchName = req.query.searchName;
 
@@ -827,7 +827,7 @@ module.exports = {
 
         const stockHistory = newStockHistory(
           reservedStock.WarehouseProductReservation.id,
-          adminData.warehouse_id,
+          reservedStock.WarehouseProductReservation.warehouse_id,
           adminData.id,
           reservedStock.WarehouseProductReservation.product_stock,
           reservedStock.WarehouseProductReservation.product_stock -
@@ -1253,7 +1253,15 @@ module.exports = {
         perPage
       );
 
+      const responseAll = await getAllUserOrderDetails(
+        options,
+        filter3,
+        null,
+        null
+      );
+
       const userOrder = response.data;
+      const userOrderAll = responseAll.data;
 
       const totalOnly = [];
       const availableWarehouseStock = [];
@@ -1264,7 +1272,7 @@ module.exports = {
         }
       });
 
-      const orderMap = userOrder.map((m) => {
+      const orderMap = userOrderAll.map((m) => {
         if (m.Warehouse_stock) {
           totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
         }

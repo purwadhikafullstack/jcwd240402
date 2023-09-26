@@ -45,6 +45,9 @@ export default function ModalForgotPassword() {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(err.response?.data?.message);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 2000);
       }
     }
   };

@@ -33,7 +33,7 @@ export default function SlideOverFilter({
         </div>
       </div>
       <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-30" onClose={setOpen}>
+        <Dialog as="div" className="relative z-50" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"

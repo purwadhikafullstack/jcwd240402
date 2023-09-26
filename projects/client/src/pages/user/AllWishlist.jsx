@@ -39,9 +39,10 @@ const AllWishlist = () => {
   }, [lastId, limit]);
 
   const getList = async () => {
-    if (!access_token || refresh_token || userData.role_id !== 3) {
+    if (!access_token || !refresh_token || userData.role_id !== 3) {
       return;
     }
+
     try {
       const response = await axios.get(
         `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,

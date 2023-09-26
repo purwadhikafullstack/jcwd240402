@@ -16,9 +16,6 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
   const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
-    if (!access_token || !refresh_token || userData.role_id !== 3) {
-      return;
-    }
     axios
       .get(`/user/wishlist/${product}`, {
         headers: { Authorization: `Bearer ${access_token}` },

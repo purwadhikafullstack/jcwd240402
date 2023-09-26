@@ -108,7 +108,7 @@ const OrderModal = ({
                     <h1 className="text-sm">Products :</h1>
                     <div className="grid grid-cols-2">
                       {row.Order_details.map((item) => (
-                        <div className="col-span-1 shadow-card-1 mt-2 rounded-md p-2 text-xs">
+                        <div className="col-span-1 shadow-card-1 mx-2 mt-2 rounded-md p-2 text-xs">
                           <h1>{item.Warehouse_stock?.Product?.name}</h1>
                           <h1>
                             {rupiahFormat(item.Warehouse_stock?.Product?.price)}{" "}

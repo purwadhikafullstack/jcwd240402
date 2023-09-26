@@ -406,38 +406,36 @@ module.exports = {
   async deleteAdmin(req, res) {
     try {
       const adminId = req.params.adminId;
-  
+
       const admin = await db.Admin.findOne({
         where: { id: adminId },
       });
-  
+
       if (!admin) {
         return res.status(404).send({
-          message: "Admin not found"
+          message: "Admin not found",
         });
       }
-  
+
       if (admin.role_id === 1) {
         return res.status(403).send({
-          message: "Cannot delete Super Admin"
+          message: "Cannot delete Super Admin",
         });
       }
-  
+
       await admin.destroy();
-  
+
       res.status(200).send({
-        message: "Admin deleted successfully"
+        message: "Admin deleted successfully",
       });
     } catch (error) {
       console.error(error);
       res.status(500).send({
         message: "An error occurred while deleting admin",
-        error: error.message
+        error: error.message,
       });
     }
   },
-  
-  
 
   /* 
 1 = payment pending
@@ -470,7 +468,7 @@ module.exports = {
     try {
       const isAllowed = await db.Order.findOne({
         where: { id: orderId },
-        transaction: t 
+        transaction: t,
       });
 
       if (isAllowed.order_status_id === 4) {
@@ -546,7 +544,7 @@ module.exports = {
             reservedStock.WarehouseProductReservation.product_id,
             reservedStock.reserve_quantity,
             reservedStock.order_id,
-            adminData,
+            adminData
           );
 
           if (stockTransferResult.status === "error") {
@@ -559,7 +557,6 @@ module.exports = {
           }
 
           await warehouseStock.reload();
-          
         }
         await warehouseStock.save({ transaction: t });
       }
@@ -569,37 +566,37 @@ module.exports = {
       const user = await db.User.findOne({
         where: { id: isAllowed.user_id },
       });
-  
+
       if (!user) {
         throw new Error("User not found");
       }
-  
+
       const user_email = user.email;
-  
+
       const notificationMessage = `
         Your payment has been successfully accepted. 
         Invoice Number: ${isAllowed.no_invoice}
         Thank you for your order!
       `;
-  
+
       const mailData = {
         recipient_email: user_email,
         subject: "Payment Accepted",
-        receiver: user.username, 
+        receiver: user.username,
         message: notificationMessage,
-        redirect:false
+        redirect: false,
       };
-  
+
       Mailer.sendEmail(mailData)
         .then(() => {
-          res
-            .status(200)
-            .json({ ok: true, message: "Payment accepted, order is in process" });
+          res.status(200).json({
+            ok: true,
+            message: "Payment accepted, order is in process",
+          });
         })
         .catch((emailError) => {
           throw new Error(emailError.message);
         });
-  
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -668,47 +665,38 @@ module.exports = {
       if (updatedOrder[0] === 0) {
         throw new Error("Order not found");
       }
-
       await t.commit();
-
       const user = await db.User.findOne({
         where: { id: isAllowed.user_id },
       });
-  
+
       if (!user) {
         throw new Error("User not found");
       }
-  
+
       const user_email = user.email;
-      
+
       const notificationMessage = `
         Your payment has been rejected. 
         Invoice Number: ${isAllowed.no_invoice}
         Please contact customer service for more details.
-      `;
-  
+        `;
+
       const mailData = {
         recipient_email: user_email,
         subject: "Payment Rejected",
-        receiver: user.username, 
+        receiver: user.username,
         message: notificationMessage,
-        redirect:false
+        redirect: false,
       };
-  
-  
+
       Mailer.sendEmail(mailData)
         .then(() => {
-          res
-            .status(200)
-            .json({ ok: true, message: "Payment rejected" });
+          res.status(200).json({ ok: true, message: "Payment rejected" });
         })
         .catch((emailError) => {
           throw new Error(emailError.message);
         });
-
-      res
-        .status(200)
-        .json({ ok: true, message: "Payment rejected" });
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -800,18 +788,17 @@ module.exports = {
       });
 
       for (let reservedStock of reservedStocks) {
-
-        if(reservedStock.WarehouseProductReservation.product_stock -
-          reservedStock.reserve_quantity < 0){
-
+        if (
+          reservedStock.WarehouseProductReservation.product_stock -
+            reservedStock.reserve_quantity <
+          0
+        ) {
           await t.rollback();
           return res.status(400).json({
-          ok: false,
-          message:
-            "cannot send order because there is not enough stock",
-        });
-
-          }
+            ok: false,
+            message: "cannot send order because there is not enough stock",
+          });
+        }
 
         const warehouseStockUpdate = await db.Warehouse_stock.update(
           {
@@ -869,41 +856,38 @@ module.exports = {
       const user = await db.User.findOne({
         where: { id: isAllowed.user_id },
       });
-  
+
       if (!user) {
         throw new Error("User not found");
       }
-  
+
       const user_email = user.email;
-  
+
       const notificationMessage = `
         Your order has been shipped. 
         Invoice Number: ${isAllowed.no_invoice}
         Thank you for your order!
       `;
-  
+
       const mailData = {
         recipient_email: user_email,
         subject: "Order Shipped",
-        receiver: user.username, 
+        receiver: user.username,
         message: notificationMessage,
-        redirect:false
+        redirect: false,
       };
-  
+
       Mailer.sendEmail(mailData)
         .then(() => {
-          res
-            .status(200)
-            .json({
-              ok: true,
-              message: "order has been shipped",
-              test: reservedStocks,
-            });
+          res.status(200).json({
+            ok: true,
+            message: "order has been shipped",
+            test: reservedStocks,
+          });
         })
         .catch((emailError) => {
           throw new Error(emailError.message);
         });
-
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -974,46 +958,41 @@ module.exports = {
 
       await t.commit();
 
-
-      
       const user = await db.User.findOne({
         where: { id: isAllowed.user_id },
       });
-  
+
       if (!user) {
         throw new Error("User not found");
       }
-  
+
       const user_email = user.email;
-  
+
       const notificationMessage = `
         Your order has been cancelled
         Invoice Number: ${isAllowed.no_invoice}
         Please contact customer service for more details.
       `;
-  
+
       const mailData = {
         recipient_email: user_email,
         subject: "Order Cancelled",
-        receiver: user.username, 
+        receiver: user.username,
         message: notificationMessage,
-        redirect:false
+        redirect: false,
       };
-  
+
       Mailer.sendEmail(mailData)
         .then(() => {
-          res
-            .status(200)
-            .json({
-              ok: true,
-              message: "order canceled successful",
-              test: reservedStocks,
-            });
+          res.status(200).json({
+            ok: true,
+            message: "order canceled successful",
+            test: reservedStocks,
+          });
         })
         .catch((emailError) => {
           throw new Error(emailError.message);
         });
-
     } catch (error) {
       if (t && !t.finished) {
         await t.rollback();
@@ -1133,7 +1112,7 @@ module.exports = {
       });
     }
   },
-  
+
   async getUserOrderDetails(req, res) {
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.size) || 10;
@@ -1284,7 +1263,7 @@ module.exports = {
         message: "successfully get sales report",
         sales_report: totalPrice,
         order_details: availableWarehouseStock,
-        pagination: response.pagination
+        pagination: response.pagination,
       });
     } catch (error) {
       res.status(500).send({
@@ -1297,67 +1276,63 @@ module.exports = {
   async getAvailableYear(req, res) {
     const dbChoice = req.query.db || "";
     const timeColumn = req.query.timeColumn || "";
-    
+
     try {
+      if (dbChoice == "order" && timeColumn == "created") {
+        const response = await db.Order.findAll({});
 
-      if(dbChoice == "order" && timeColumn == "created"){
+        const availableYear = response.map((year) => {
+          if (year.createdAt) {
+            return year.createdAt.getFullYear();
+          }
+        });
+
+        const uniqueYear = [...new Set(availableYear)];
+
+        res.json({
+          ok: true,
+          year: uniqueYear.sort(function (a, b) {
+            return b - a;
+          }),
+        });
+      } else if (dbChoice == "history") {
+        const response = await db.History_stock.findAll({});
+
+        const availableYear = response.map((year) => {
+          if (year.timestamp) {
+            return year.timestamp.getFullYear();
+          }
+        });
+
+        const uniqueYear = [...new Set(availableYear)];
+
+        res.json({
+          ok: true,
+          year: uniqueYear.sort(function (a, b) {
+            return b - a;
+          }),
+        });
+      } else {
         const response = await db.Order.findAll({
+          where: {
+            delivery_time: { [Op.not]: null },
+          },
         });
-        
+
         const availableYear = response.map((year) => {
-          if(year.createdAt){
-            return year.createdAt.getFullYear()
+          if (year.delivery_time) {
+            return year.delivery_time.getFullYear();
           }
-        })
-
-        const uniqueYear = [...new Set(availableYear)]
-
-       res.json({
-        ok: true,
-        year: uniqueYear.sort(function(a, b) {
-          return b - a;
-        })
-      });
-
-      }else if(dbChoice == "history"){
-        const response = await db.History_stock.findAll({
         });
-        
-        const availableYear = response.map((year) => {
-          if(year.timestamp){
-            return year.timestamp.getFullYear()
-          }
-        })
 
-        const uniqueYear = [...new Set(availableYear)]
+        const uniqueYear = [...new Set(availableYear)];
 
-       res.json({
-        ok: true,
-        year: uniqueYear.sort(function(a, b) {
-          return b - a;
-        })
-      });
-      }else{
-          const response = await db.Order.findAll({
-            where: {
-              delivery_time: {[Op.not]: null},
-            }
-          });
-          
-          const availableYear = response.map((year) => {
-            if(year.delivery_time){
-              return year.delivery_time.getFullYear()
-            }
-          })
-  
-          const uniqueYear = [...new Set(availableYear)]
-
-       res.json({
-        ok: true,
-        year: uniqueYear.sort(function(a, b) {
-          return b - a;
-        })
-      });
+        res.json({
+          ok: true,
+          year: uniqueYear.sort(function (a, b) {
+            return b - a;
+          }),
+        });
       }
     } catch (error) {
       console.error(error);
@@ -1367,5 +1342,4 @@ module.exports = {
       });
     }
   },
-
 };

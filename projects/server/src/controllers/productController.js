@@ -22,7 +22,6 @@ async function moveUploadedFilesToDestination(images) {
   return filenames;
 }
 
-
 module.exports = {
   async createProduct(req, res) {
     const { name, price, weight, category_id, description, is_active } =
@@ -439,7 +438,7 @@ module.exports = {
             model: db.Product,
             as: "products",
             include: [
-              { model: db.Image_product },
+              { model: db.Image_product, paranoid: false },
               { model: db.Category, as: "category" },
             ],
             where: { is_active: true },
@@ -468,7 +467,6 @@ module.exports = {
       res.json({
         success: true,
         result: formattedData,
-        // productsByCategory: productsByCategory,
       });
     } catch (error) {
       console.error(error);

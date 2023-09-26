@@ -153,8 +153,8 @@ module.exports = {
 
   updateProfile: validate([
     body("username")
-      .notEmpty()
-      .withMessage("Username is required")
+      .optional()
+
       .isLength({ min: 3, max: 20 })
       .withMessage("Username must be between 3 to 20 characters long.")
       .matches(/^[a-zA-Z0-9_-]+$/)

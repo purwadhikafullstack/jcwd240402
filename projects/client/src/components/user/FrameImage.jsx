@@ -35,9 +35,9 @@ const FrameImage = () => {
       <div className="grid gap-2 lg:gap-4 md:gap-4 grid-cols-2 grid-rows-2  row-span-1 md:col-span-1 lg:col-span-1">
         {fourSquare.map((item, idx) => (
           <div className=" cols-span-1 row-span-1 " key={idx}>
-            <a href={item.to} className="cursor-pointer" target="blank">
+            <Link to={item.to} className="cursor-pointer">
               <img src={item.img} alt={item.alt} />
-            </a>
+            </Link>
           </div>
         ))}
       </div>

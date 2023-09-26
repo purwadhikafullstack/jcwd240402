@@ -51,11 +51,11 @@ const ModalEditPasswordUser = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
 
-          removeCookie("access_token");
-          removeLocalStorage("refresh_token");
           setErrMsg(null);
           props.setOpenModal(undefined);
           setTimeout(() => {
+            removeCookie("access_token");
+            removeLocalStorage("refresh_token");
             navigate("/log-in");
           }, 3000);
         });

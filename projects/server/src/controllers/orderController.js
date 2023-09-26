@@ -110,6 +110,7 @@ module.exports = {
                       attributes: {
                         exclude: ["createdAt", "updatedAt"],
                       },
+                      paranoid: false,
                     },
                     {
                       model: db.Category,
@@ -160,6 +161,7 @@ module.exports = {
                       attributes: {
                         exclude: ["createdAt", "updatedAt"],
                       },
+                      paranoid: false,
                     },
                     {
                       model: db.Category,
@@ -559,6 +561,7 @@ module.exports = {
                     attributes: {
                       exclude: ["createdAt", "updatedAt"],
                     },
+                    paranoid: false,
                   },
                   {
                     model: db.Category,

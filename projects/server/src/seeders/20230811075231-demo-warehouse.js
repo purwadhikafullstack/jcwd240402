@@ -47,7 +47,8 @@ module.exports = {
         warehouse_name: "ForniFor Jakarta Timur",
         city_id: 154,
         province_id: 6,
-        latitude: "6.3036",
+
+        latitude: "-6.3036",
         longitude: "106.8621",
         warehouse_contact: "088976786543",
         warehouse_img: "/photo-warehouse/imgwarehousedefault.png",
@@ -59,6 +60,7 @@ module.exports = {
         address_warehouse:
           "Jl. Rajasa No.27, Bumiayu, Kec. Kedungkandang, Kota Malang, Jawa Timur 65116",
         warehouse_name: "ForniFor Malang",
+
         city_id: 256,
         province_id: 11,
         latitude: "-8.0265",

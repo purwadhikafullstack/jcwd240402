@@ -737,6 +737,7 @@ module.exports = {
           where: { username: username },
         });
         if (isUsernameExist) {
+          await transaction.rollback();
           return res.status(400).json({
             ok: false,
             message: "Username already taken",
@@ -817,6 +818,7 @@ module.exports = {
         });
 
         if (isPhoneExist) {
+          await transaction.rollback();
           return res.status(400).json({
             ok: false,
             message: "Phone number already taken",
@@ -907,7 +909,7 @@ module.exports = {
         message: "You did not update anything",
       });
     } catch (error) {
-      await transaction.commit();
+      await transaction.rollback();
       return res.status(500).json({
         ok: false,
         message: "Something bad happened",

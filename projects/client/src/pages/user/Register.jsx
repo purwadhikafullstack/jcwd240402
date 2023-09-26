@@ -27,51 +27,41 @@ const Register = () => {
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      await axios
-        .post("/user/auth/register", values)
-        .then((res) => {
-          setStatus({ success: true });
-          setValues({
-            first_name: "",
-            last_name: "",
-            phone: "",
-            username: "",
-            email: "",
-            password: "",
-            confirm_password: "",
-          });
-          setStatus({
-            success: true,
-            message:
-              "Sign up successful. Please check your email for verification.",
-          });
-          setErrMsg("");
-          setSuccessMsg("Register successful");
-          setDissabledButton(true);
-          setTimeout(() => {
-            setDissabledButton(true);
-            navigate("/verify");
-          }, 2000);
-        })
-        .catch((err) => {
-          console.log(err.response.data.message);
-          setErrMsg(err.response.data.message);
-
-          if (err.response?.data?.errors[0]?.msg) {
-            setErrMsg(err.response?.data?.errors[0].msg);
-          }
+      await axios.post("/user/auth/register", values).then((res) => {
+        setStatus({ success: true });
+        setValues({
+          first_name: "",
+          last_name: "",
+          phone: "",
+          username: "",
+          email: "",
+          password: "",
+          confirm_password: "",
         });
+        setStatus({
+          success: true,
+          message:
+            "Sign up successful. Please check your email for verification.",
+        });
+        setErrMsg("");
+        setSuccessMsg("Register successful");
+        setDissabledButton(true);
+        setTimeout(() => {
+          setDissabledButton(true);
+          navigate("/verify");
+        }, 2000);
+      });
     } catch (err) {
       setDissabledButton(false);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-        setSuccessMsg("");
-      } else {
-        setErrMsg(err.response?.data?.message);
-        setSuccessMsg("");
+      console.log(err.response?.data?.errors[0]?.msg);
+      if (err.response?.data?.errors[0]?.msg) {
+        setErrMsg(err.response?.data?.errors[0].msg);
       }
+
+      setErrMsg(err.response?.data?.message);
     }
   };
+  console.log(errMsg);
 
   const formik = useFormik({
     initialValues: {
@@ -100,7 +90,12 @@ const Register = () => {
           /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
           "Phone number is not valid"
         ),
-      username: yup.string().required("username is required").min(3).max(20),
+      username: yup
+        .string()
+        .required("username is required")
+        .min(3)
+        .max(20)
+        .matches(/^[a-zA-Z0-9_-]+$/, "Username can't contain spaces"),
       email: yup.string().required("email is required").email(),
       password: yup
         .string()

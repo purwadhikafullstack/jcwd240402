@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 const ImageUpload = ({ currentImage, showImage, setShowImage }) => {
   const [image, setImage] = useState(null);
@@ -31,6 +31,7 @@ const ImageUpload = ({ currentImage, showImage, setShowImage }) => {
         })
         .then((res) => {
           setSuccessMsg("image update successful");
+          setErrMsg("");
           setTimeout(() => {
             setSuccessMsg("");
           }, 3000);
@@ -39,6 +40,7 @@ const ImageUpload = ({ currentImage, showImage, setShowImage }) => {
           setErrMsg(err.response?.data?.error);
         });
     } catch (error) {
+      setSuccessMsg("");
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
@@ -50,7 +52,11 @@ const ImageUpload = ({ currentImage, showImage, setShowImage }) => {
   return (
     <div className="md:col-span-1 lg:col-span-1 h-96 flex flex-col justify-center items-center mt-10">
       <img
-        src={showImage ? showImage : `${process.env.REACT_APP_API_BASE_URL}${currentImage}`}
+        src={
+          showImage
+            ? showImage
+            : `${process.env.REACT_APP_API_BASE_URL}${currentImage}`
+        }
         alt=""
         className="w-1/2"
       />

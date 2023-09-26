@@ -24,7 +24,7 @@ const ModalEditUsername = () => {
       username: userData.username || "",
     });
   }, [userData]);
-  console.log(userData);
+
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     formData.append("username", values.username);
@@ -50,23 +50,15 @@ const ModalEditUsername = () => {
             })
             .then((res) => dispatch(profileUser(res.data.result)));
           formik.resetForm();
-          setErrMsg(null);
+          setErrMsg("");
           props.setOpenModal(undefined);
         })
         .catch((err) => {
-          if (err.response?.data?.errors[0].msg) {
-            setErrMsg(err.response?.data?.errors[0].msg);
-          } else {
-            setErrMsg(err.response?.data?.message);
-          }
+          setErrMsg(err.response?.data?.message);
         });
     } catch (err) {
       console.log(err);
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(err.response?.data?.message);
-      }
+      setErrMsg(err.response?.data?.message);
     }
   };
 
@@ -76,7 +68,12 @@ const ModalEditUsername = () => {
     },
     onSubmit: editUsername,
     validationSchema: yup.object().shape({
-      username: yup.string().required("username is required").min(3).max(20),
+      username: yup
+        .string()
+        .required("username is required")
+        .min(3)
+        .max(20)
+        .matches(/^[a-zA-Z0-9_-]+$/, "Username can't contain spaces"),
     }),
     validateOnChange: false,
     validateOnBlur: false,

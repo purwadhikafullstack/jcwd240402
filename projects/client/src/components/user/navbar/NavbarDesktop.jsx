@@ -103,7 +103,7 @@ const NavbarDesktop = () => {
 
   return (
     <div
-      className={`hidden w-full lg:grid bg-white justify-center sticky z-50 top-0 ${
+      className={`hidden w-full lg:grid bg-white justify-center sticky z-40 top-0 ${
         location.pathname === "/register" ||
         location.pathname === "/log-in" ||
         location.pathname === "/sign-up" ||

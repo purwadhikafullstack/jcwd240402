@@ -86,7 +86,7 @@ const NavbarMobile = () => {
     logout();
   };
   return (
-    <div className="sticky top-0 w-full z-50">
+    <div className="sticky top-0 w-full z-40">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
         <Link to="/" className="ml-4 w-12">
           <img src={logo} alt="logo" className="w-full " />

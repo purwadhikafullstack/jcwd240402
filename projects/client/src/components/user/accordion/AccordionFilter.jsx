@@ -75,7 +75,7 @@ const AccordionFilter = ({
               onClick={handleFilterPrice}
               className="bg-blue3 w-fit px-7 text-white text-xs text-center py-1 font-semibold rounded-lg"
             >
-              apply
+              Apply
             </button>
           </Accordion.Content>
         </Accordion.Panel>

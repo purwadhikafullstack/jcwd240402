@@ -3,6 +3,7 @@
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import { Link } from "react-router-dom";
 
 export default function ModalNotification({ is_verify, address_user }) {
   const [openModal, setOpenModal] = useState("pop-up");
@@ -46,15 +47,31 @@ export default function ModalNotification({ is_verify, address_user }) {
               </p>
             ) : null}
 
-            <div className="flex justify-center gap-4">
-              <Button>Yes, I'm sure</Button>
+            <div className="flex justify-center gap-4 mt-4">
+              <Link
+                to={
+                  !is_verify
+                    ? "/user/setting"
+                    : !address_user
+                    ? "/user/setting/address"
+                    : "/user/setting"
+                }
+                className="bg-blue3 flex justify-center items-center px-4 rounded-lg text-white font-semibold text-sm"
+              >
+                {!is_verify
+                  ? "Setting Profile"
+                  : !address_user
+                  ? "Setting Address"
+                  : "Completing My Profile"}
+              </Link>
+
               <Button
                 color="gray"
                 onClick={() => {
                   props.setOpenModal(undefined);
                 }}
               >
-                No, cancel
+                I'll do it later
               </Button>
             </div>
           </div>

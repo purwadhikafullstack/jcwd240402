@@ -19,6 +19,7 @@ const NotifVerifiedByPassword = () => {
   const [errMsg, setErrMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
@@ -86,6 +87,13 @@ const NotifVerifiedByPassword = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 4000);
+  };
+
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center">
       {errMsg ? (
@@ -108,18 +116,16 @@ const NotifVerifiedByPassword = () => {
           <div className="mb-4 flex justify-center">
             <button
               type="submit"
-              className="bg-blue3 px-3 text-white py-1 rounded-md text-xs font-semibold"
+              onClick={() => {
+                formik.handleSubmit();
+                handleDissabled();
+              }}
+              className={`${
+                dissabledButton ? "bg-gray-500 hover:bg-gray-500" : "bg-blue3"
+              } px-3 text-white py-1 rounded-md text-xs font-semibold`}
             >
               verify my account
             </button>
-            {/*  <Button
-              buttonSize="small"
-              buttonText="verify my account"
-              type="submit"
-              bgColor="bg-blue3"
-              colorText="text-white"
-              fontWeight="font-semibold"
-            /> */}
           </div>
         </div>
       </form>

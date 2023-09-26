@@ -32,33 +32,34 @@ const Cart = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    if (refresh_token && access_token && userData.role_id === 3) {
-      axios
-        .get("/user/cart", {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          dispatch(cartsUser(res.data?.result));
-          setTotal(res.data?.total);
-          setLoading(false);
-        })
-        .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
-        });
+    if (!refresh_token || !access_token || userData.role_id !== 3) {
+      return;
     }
-  }, [access_token, dispatch, newAccessToken, refresh_token]);
+    axios
+      .get("/user/cart", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(cartsUser(res.data?.result));
+        setTotal(res.data?.total);
+        setLoading(false);
+      })
+      .catch((error) => {
+        if (
+          error.response?.data?.message === "Invalid token" &&
+          error.response?.data?.error?.name === "TokenExpiredError"
+        ) {
+          axios
+            .get("/user/auth/keep-login", {
+              headers: { Authorization: `Bearer ${refresh_token}` },
+            })
+            .then((res) => {
+              setNewAccessToken(res.data?.accessToken);
+              setCookie("access_token", newAccessToken, 1);
+            });
+        }
+      });
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
 
   const productsData = cartsData.map((cart) => {
     return {

@@ -35,7 +35,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "password and confirm password have to match",
+          message: "Password and confirm password have to match",
         });
       }
       const salt = await bcrypt.genSalt();
@@ -48,7 +48,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "email already used",
+          message: "Email already used",
         });
       }
 
@@ -56,7 +56,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "username already used",
+          message: "Username already used",
         });
       }
 
@@ -64,7 +64,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "phone already used",
+          message: "Phone already used",
         });
       }
 
@@ -126,7 +126,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -154,7 +154,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "email already taken",
+          message: "Email already taken",
         });
       }
 
@@ -162,7 +162,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "phone already taken",
+          message: "Phone already taken",
         });
       }
       const first_name = fullname.split(" ")[0];
@@ -177,7 +177,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "username already taken",
+          message: "Username already taken",
         });
       }
 
@@ -226,7 +226,7 @@ module.exports = {
       await transaction.commit();
       res.status(201).json({
         ok: true,
-        message: "register successful",
+        message: "Register successful",
         accessToken,
         refreshToken,
       });
@@ -234,61 +234,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  updateVerify: async (req, res) => {
-    const { verify_token } = req.params;
-    const { password } = req.body;
-
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      const isVerifyTokenExist = await db.User.findOne({
-        where: { verify_token: verify_token },
-      });
-
-      if (!isVerifyTokenExist) {
-        await transaction.rollback();
-        return res.json({
-          ok: false,
-          message: "token invalid",
-        });
-      }
-      if (isVerifyTokenExist.is_verify) {
-        await transaction.rollback();
-        return res.status(400).send({
-          ok: false,
-          message: "user already verified",
-        });
-      }
-
-      await db.User.update(
-        {
-          is_verify: true,
-          verify_token: null,
-        },
-        {
-          where: {
-            verify_token: verify_token,
-          },
-          transaction,
-        }
-      );
-
-      await transaction.commit();
-      res.json({
-        ok: true,
-        message: "verification successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happeneded",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -309,14 +255,15 @@ module.exports = {
         await transaction.rollback();
         return res.json({
           ok: false,
-          message: "token invalid",
+          message:
+            "Your verify token already expired! Please, Login to resend verify request on your profile page",
         });
       }
       if (isVerifyTokenExist.is_verify) {
         await transaction.rollback();
         return res.status(400).send({
           ok: false,
-          message: "user already verified",
+          message: "User already verified",
         });
       }
 
@@ -326,7 +273,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "wrong password",
+          message: "Wrong password",
         });
       }
 
@@ -346,13 +293,13 @@ module.exports = {
       await transaction.commit();
       res.json({
         ok: true,
-        message: "verification successful",
+        message: "Verification successful",
       });
     } catch (error) {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happeneded",
+        message: "Something bad happeneded",
         error: error.message,
       });
     }
@@ -372,14 +319,14 @@ module.exports = {
       if (!user) {
         return res.status(401).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
         return res.status(400).json({
           ok: false,
-          message: "wrong password",
+          message: "Wrong password",
         });
       }
       const accessToken = Generate.token(
@@ -410,7 +357,7 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -425,7 +372,7 @@ module.exports = {
       if (!isUserExist) {
         return res.status(403).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
       const accessToken = Generate.token(
@@ -455,7 +402,7 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -471,7 +418,7 @@ module.exports = {
       if (!isRefreshTokenExist) {
         return res.status(401).json({
           ok: false,
-          message: "token unauthorized",
+          message: "Token unauthorized",
         });
       }
       const accessToken = Generate.token(
@@ -492,7 +439,7 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -510,14 +457,14 @@ module.exports = {
         await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "wrong email",
+          message: "Wrong email",
         });
       }
       if (isVerified.is_verify) {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "user already verified",
+          message: "User already verified",
         });
       }
 
@@ -564,7 +511,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -584,7 +531,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
 
@@ -593,7 +540,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "this email registered by gmail. please login instead",
+          message: "This email registered by gmail. please login instead",
         });
       }
 
@@ -646,7 +593,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -665,7 +612,7 @@ module.exports = {
       if (!tokenVerification) {
         return res.status(400).json({
           ok: false,
-          message: "invalid token",
+          message: "Invalid token",
         });
       }
 
@@ -676,14 +623,14 @@ module.exports = {
       if (!isResetPasswordTokenValid) {
         return res.status(404).json({
           ok: false,
-          message: "reset password code not valid",
+          message: "Reset password code not valid",
         });
       }
 
       if (new_password !== confirm_password)
         return res.status(400).json({
           ok: false,
-          message: "password and confirm password have to match",
+          message: "Password and confirm password have to match",
         });
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(new_password, salt);
@@ -698,7 +645,7 @@ module.exports = {
       await transaction.commit();
       res.json({
         ok: true,
-        message: "reset password successful",
+        message: "Reset password successful",
       });
     } catch (error) {
       await transaction.rollback();
@@ -709,10 +656,6 @@ module.exports = {
         error: error.message,
       });
     }
-  },
-
-  closeAccount: (req, res) => {
-    res.json("deleteAccount");
   },
 
   userInformation: async (req, res) => {
@@ -749,14 +692,14 @@ module.exports = {
       if (!user) {
         return res.status(401).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
       res.json({ ok: true, result: user });
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -785,7 +728,7 @@ module.exports = {
       if (!user) {
         return res.status(404).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
 
@@ -796,7 +739,7 @@ module.exports = {
         if (isUsernameExist) {
           return res.status(400).json({
             ok: false,
-            message: "username already taken",
+            message: "Username already taken",
           });
         }
 
@@ -808,7 +751,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change username successful",
+          message: "Change username successful",
         });
       }
 
@@ -820,7 +763,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change first name successful",
+          message: "Change first name successful",
         });
       }
 
@@ -829,7 +772,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "password and confirm password have to match",
+            message: "Password and confirm password have to match",
           });
         }
 
@@ -838,7 +781,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "wrong password",
+            message: "Wrong password",
           });
         }
 
@@ -852,7 +795,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change password successful",
+          message: "Change password successful",
         });
       }
 
@@ -864,7 +807,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change last name successful",
+          message: "Change last name successful",
         });
       }
 
@@ -876,7 +819,7 @@ module.exports = {
         if (isPhoneExist) {
           return res.status(400).json({
             ok: false,
-            message: "phone number already taken",
+            message: "Phone number already taken",
           });
         }
 
@@ -887,7 +830,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change phone successful",
+          message: "Change phone successful",
         });
       }
 
@@ -900,7 +843,7 @@ module.exports = {
           await transaction.rollback();
           res.status(401).json({
             ok: false,
-            message: "user data not found",
+            message: "User data not found",
           });
         }
 
@@ -956,18 +899,18 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change photo profile successful",
+          message: "Change photo profile successful",
         });
       }
       return res.json({
         ok: false,
-        message: "you did not update anything",
+        message: "You did not update anything",
       });
     } catch (error) {
       await transaction.commit();
       return res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }

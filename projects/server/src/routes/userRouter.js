@@ -22,7 +22,7 @@ router.post(
   validatorMiddleware.registration,
   UserController.registerUser
 );
-router.get("/auth/verify/:verify_token", UserController.updateVerify);
+
 router.post(
   "/auth/verify/:verify_token",
   UserController.updateVerifyByPassword
@@ -59,8 +59,6 @@ router.post(
   validatorMiddleware.loginByOAuth,
   UserController.loginByEmail
 );
-
-router.patch("/auth/close-account", UserController.closeAccount);
 
 /* PROFILING USER */
 

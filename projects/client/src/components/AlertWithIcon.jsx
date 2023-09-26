@@ -12,7 +12,8 @@ export default function AlertWithIcon({ errMsg, color = "failure" }) {
     >
       <span>
         <p>
-          <span className="font-medium">Info alert!</span> {errMsg}
+          <span className="font-medium font-semibold">Info alert!</span>{" "}
+          {errMsg}
         </p>
       </span>
     </Alert>

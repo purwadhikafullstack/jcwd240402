@@ -33,9 +33,9 @@ const CardWishlist = ({ item }) => {
               {item.category}
             </Badge>
             <p>{item.desc}</p>
-            <p className="text-base font-bold">Rp.{rupiahFormat(item.price)}</p>
-            <p>stock: {item.stock} pcs</p>
-            <p>weight: {weightFormat(item.weight)} </p>
+            <p className="text-base font-bold">{rupiahFormat(item.price)}</p>
+            <p>Stock: {item.stock} pcs</p>
+            <p>Weight: {weightFormat(item.weight)} </p>
           </div>
         </div>
       </div>

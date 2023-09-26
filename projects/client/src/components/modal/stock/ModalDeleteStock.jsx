@@ -16,7 +16,6 @@ const ConfirmDeleteStock = ({
     try {
       const response = await axios.delete(
         `/warehouse-stock/${warehouseId}/${productId}`,
-        {},
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }

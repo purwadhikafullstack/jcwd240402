@@ -86,7 +86,6 @@ const ProductPerCategory = () => {
         `/user/warehouse-stock/filter?perPage=10&page=${currentPagination}&product=&category=${categoryName}&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
-        console.log(res);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -162,7 +161,7 @@ const ProductPerCategory = () => {
       </div>
     );
   }
-
+  console.log(imageDisplay);
   return (
     <div
     // id="back-to-the-top"
@@ -179,7 +178,7 @@ const ProductPerCategory = () => {
         ]}
       />
       <div className="min-h-screen mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32">
-        {productData.length === 0 ? (
+        {imageDisplay.length === 0 ? (
           <div className="flex flex-col justify-center items-center h-screen">
             <img
               src={productpercategorynotfound}
@@ -189,15 +188,6 @@ const ProductPerCategory = () => {
             <h1 className="font-bold text-grayText text-xs">
               product not found
             </h1>
-          </div>
-        ) : imageDisplay.length === 0 && errMsg ? (
-          <div className="w-full h-full flex flex-col justify-center items-center ">
-            <img
-              src={productNotFound}
-              alt="product not found"
-              className="w-1/2 lg:w-1/3"
-            />
-            <p>{errMsg}</p>
           </div>
         ) : (
           <div>
@@ -330,10 +320,13 @@ const ProductPerCategory = () => {
             <div className="flex flex-col justify-center  mb-4">
               <div className=" lg:h-[42rem] md:h-[72rem]  mt-4 mb-4 md:mb-0 lg:mb-0">
                 <div className="flex flex-wrap justify-center ">
-                  {errMsg ? (
+                  {errMsg || productData.length === 0 ? (
                     <div className=" flex flex-col justify-center items-center">
-                      <AlertWithIcon errMsg={errMsg} />
+                      <AlertWithIcon errMsg={errMsg || "product not found"} />
                       <img src={productNotFound} alt="" className="w-96" />
+                      <h1 className="text-xs font-bold text-grayText">
+                        Please reset your filter to find another products
+                      </h1>
                     </div>
                   ) : (
                     <div className="flex flex-wrap justify-center">

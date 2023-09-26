@@ -104,7 +104,7 @@ const SalesReport = () => {
       .then((response) => {
         setSalesReport(response?.data?.sales_report);
         setOrderSalesList(response?.data?.order_details);
-        setTotalPages(response?.pagination?.totalPages);
+        setTotalPages(response?.data?.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response.message);

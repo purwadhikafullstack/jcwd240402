@@ -43,6 +43,7 @@ const ShowCaseProduct = ({ perPage }) => {
         `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
+        console.log(res.data);
         setProductData(res.data?.data);
         setTotalPage(Math.ceil(res.data?.pagination?.totalPages));
         setRangePriceMin(res.data?.pagination?.rangePriceMin);
@@ -55,6 +56,7 @@ const ShowCaseProduct = ({ perPage }) => {
         setLoading(false);
       })
       .catch((error) => {
+        console.log(error);
         setErrMsg("product not found");
         setLoading(false);
         setTimeout(() => {
@@ -86,6 +88,8 @@ const ShowCaseProduct = ({ perPage }) => {
     setSearchParams({});
     setCurrentPage(1);
   }
+
+  console.log(errMsg);
 
   if (loading) {
     return (
@@ -119,16 +123,16 @@ const ShowCaseProduct = ({ perPage }) => {
         />
       </div>
       <div className="flex flex-col justify-center">
-        {errMsg ? (
+        {errMsg || productData.length === 0 ? (
           <div className="mb-4 flex flex-col justify-center items-center">
-            <AlertWithIcon errMsg={errMsg} />
+            <AlertWithIcon errMsg={errMsg || "product not found"} />
             <img
               src={productNotFound}
               alt="product not found"
               className="w-96"
             />
             <h1 className="text-xs font-bold text-grayText">
-              you will be redirect soon
+              please reset filter to find another products
             </h1>
           </div>
         ) : (

@@ -85,6 +85,7 @@ module.exports = {
               [Op.like]: `%${search}%`,
             },
           },
+
           include: [
             {
               model: db.Order_status,
@@ -96,11 +97,13 @@ module.exports = {
               include: {
                 model: db.Warehouse_stock,
                 attributes: { exclude: ["createdAt", "updatedAt"] },
+                paranoid: false,
                 include: {
                   model: db.Product,
                   attributes: {
                     exclude: ["createdAt", "updatedAt"],
                   },
+                  paranoid: false,
                   include: [
                     {
                       model: db.Image_product,
@@ -144,11 +147,13 @@ module.exports = {
               include: {
                 model: db.Warehouse_stock,
                 attributes: { exclude: ["createdAt", "updatedAt"] },
+                paranoid: false,
                 include: {
                   model: db.Product,
                   attributes: {
                     exclude: ["createdAt", "updatedAt"],
                   },
+                  paranoid: false,
                   include: [
                     {
                       model: db.Image_product,
@@ -308,46 +313,52 @@ module.exports = {
         //   },
         // });
 
-        let closestWarehouseStock = await db.Warehouse_stock.findOne({
-          where: {
-            warehouse_id: warehouse_id,
-            product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+        let closestWarehouseStock = await db.Warehouse_stock.findOne(
+          {
+            where: {
+              warehouse_id: warehouse_id,
+              product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+            },
           },
-        },
-        { transaction: t }
+          { transaction: t }
         );
 
-        if(closestWarehouseStock){
+        if (closestWarehouseStock) {
+          newWarehouseStockArr.push(closestWarehouseStock);
+        } else {
           newWarehouseStockArr.push(
-            closestWarehouseStock
+            await db.Warehouse_stock.create(
+              {
+                warehouse_id: warehouse_id,
+                product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
+                product_stock: 0,
+              },
+              { transaction: t }
+            )
           );
-        }else{
-          newWarehouseStockArr.push(await db.Warehouse_stock.create({
-            warehouse_id: warehouse_id,
-            product_id: cart_data.cart_data[i]?.Warehouse_stock?.product_id,
-            product_stock: 0,
-          },
-          { transaction: t }));
         }
 
         newReservedStock.push(
-          await db.Reserved_stock.create({
-            order_id,
-            warehouse_stock_id: newWarehouseStockArr[i].id,
-            reserve_quantity: cart_data.cart_data[i]?.quantity,
-          },
-          { transaction: t })
+          await db.Reserved_stock.create(
+            {
+              order_id,
+              warehouse_stock_id: newWarehouseStockArr[i].id,
+              reserve_quantity: cart_data.cart_data[i]?.quantity,
+            },
+            { transaction: t }
+          )
         );
 
         newOrderDetails.push(
-          await db.Order_detail.create({
-            order_id,
-            warehouse_stock_id: newWarehouseStockArr[i].id,
-            quantity: cart_data.cart_data[i]?.quantity,
-          },
-          { transaction: t })
+          await db.Order_detail.create(
+            {
+              order_id,
+              warehouse_stock_id: newWarehouseStockArr[i].id,
+              quantity: cart_data.cart_data[i]?.quantity,
+            },
+            { transaction: t }
+          )
         );
-
       }
 
       await t.commit();
@@ -535,11 +546,13 @@ module.exports = {
             include: {
               model: db.Warehouse_stock,
               attributes: { exclude: ["createdAt", "updatedAt"] },
+              paranoid: false,
               include: {
                 model: db.Product,
                 attributes: {
                   exclude: ["createdAt", "updatedAt", "deletedAt"],
                 },
+                paranoid: false,
                 include: [
                   {
                     model: db.Image_product,

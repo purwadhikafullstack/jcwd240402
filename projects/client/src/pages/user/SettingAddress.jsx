@@ -31,8 +31,6 @@ const SettingAddress = () => {
   const [loading, setLoading] = useState(true);
   const userData = useSelector((state) => state.profiler.value);
 
-  console.log(addressData);
-
   useEffect(() => {
     if (!access_token && refresh_token && userData.role_id === 3) {
       axios

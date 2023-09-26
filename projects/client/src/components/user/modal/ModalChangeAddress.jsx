@@ -52,6 +52,9 @@ const ModalChangeAddress = ({ idAddress }) => {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
+          setSelectedCity(res.data?.result?.city_id);
+          setSelectedProvince(res.data?.result?.city_id);
+          console.log(res.data.result);
           const addressData = res.data?.result;
 
           const InitialFormValues = {
@@ -111,13 +114,16 @@ const ModalChangeAddress = ({ idAddress }) => {
           setTimeout(() => {
             props.setOpenModal(undefined);
             setSuccessMsg("");
+            setDissabledButton(false);
           }, 3000);
         })
         .catch((error) => {
+          setDissabledButton(false);
           setSuccessMsg("");
           setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setDissabledButton(false);
       setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");

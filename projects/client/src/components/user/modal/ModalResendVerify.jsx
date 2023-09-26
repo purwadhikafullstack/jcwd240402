@@ -59,12 +59,18 @@ const ModalResendVerify = () => {
           setErrMsg(null);
           setTimeout(() => {
             props.setOpenModal(undefined);
+            setDissabledButton(false);
             removeCookie("access_token");
             removeLocalStorage("refresh_token");
             navigate("/verify");
           }, 2000);
+        })
+        .catch((err) => {
+          setDissabledButton(false);
+          setErrMsg(err.response?.data?.message);
         });
     } catch (err) {
+      setDissabledButton(false);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {

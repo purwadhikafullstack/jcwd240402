@@ -47,8 +47,8 @@ module.exports = {
     <hr style="border:none;border-top:1px solid #eee" />
     <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
       <p>FURNITURE FORTUNE</p>
-      <p>MSIG TOWER</p>
-      <p>JC Web Development</p>
+      <p>FURNIFOR</p>
+      <p>Special Capital Region of Jakarta</p>
     </div>
   </div>
 </div>

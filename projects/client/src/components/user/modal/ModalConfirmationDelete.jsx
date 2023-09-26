@@ -26,7 +26,7 @@ export default function ModalConfirmationDelete({
     setDissabledButton(true);
     setTimeout(() => {
       setDissabledButton(false);
-    }, 4000);
+    }, 6000);
   };
 
   return (

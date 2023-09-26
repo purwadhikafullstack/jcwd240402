@@ -6,11 +6,31 @@ import ProductInputs from "../product/ProductInputs";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import AlertWithIcon from "../../AlertWithIcon";
 
-const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
+const ProductRegister = ({ initialData, isEditMode = false }) => {
   const access_token = getCookie("access_token");
   const [uploadedImages, setUploadedImages] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleSuccess = (message) => {
+    setErrorMessage("")
+    setSuccessMessage(message);
+    setSelectedCategory(null);
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 5000);
+  };
+
+  const handleError = (message) => {
+    setSuccessMessage("")
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage("");
+    }, 3000);
+  };
 
   const handleSubmit = async (values) => {
     try {
@@ -30,12 +50,20 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
       });
       formik.resetForm();
       setUploadedImages([]);
-      setSuccessMessage("Product created successfully");
+      handleSuccess("Product created successfully");
     } catch (error) {
       console.error("Error creating product:", error.response.data);
-      if (error.response && error.response.data && error.response.data.errors) {
+
+      if (error.response && error.response.data && error.response.data.error) {
+        handleError(error.response.data.error);
+      } else if (
+        error.response &&
+        error.response.data &&
+        error.response.data.errors
+      ) {
         const serverErrors = error.response.data.errors;
         const formikErrors = {};
+
         serverErrors.forEach((err) => {
           if (err.path) {
             formikErrors[err.path] = err.msg;
@@ -70,13 +98,13 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="flex-1 flex items-center justify-center">
+    <div className=" lg:flex lg:h-screen">
+      <div className="lg:flex-1 lg:flex lg:items-center lg:justify-center">
         <div className="text-gray-700 body-font bg-white">
-          <div className="container mx-auto">
+          <div className="container lg:mx-auto">
             <form onSubmit={formik.handleSubmit}>
-              <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
-                <div className="w-full flex flex-col justify-center items-center mt-6">
+              <div className="lg:flex flex-col lg:flex-row justify-center items-start lg:p-10 border-rounded">
+                <div className="w-full flex flex-col justify-center items-center lg:mt-6">
                   <ImageGallery
                     images={uploadedImages}
                     onUpload={updateImages}
@@ -87,8 +115,10 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                     product={formik.values}
                     handleInputChange={formik.handleChange}
                     formik={formik}
+                    setSelectedCategory={setSelectedCategory}
+                    selectedCategory={selectedCategory}
                   />
-                  <div className="flex mt-6 justify-center w-full">
+                  <div className="flex my-4 justify-center w-full">
                     <Button
                       type="submit"
                       buttonText={isEditMode ? "Update Product" : "Add Product"}
@@ -100,6 +130,9 @@ const ProductRegister = ({ initialData, onSubmit, isEditMode = false }) => {
                   </div>
                   {successMessage && (
                     <p className="text-green-500 mt-3">{successMessage}</p>
+                  )}
+                  {errorMessage && (
+                    <AlertWithIcon errMsg={errorMessage} color="bg-red-500" />
                   )}
                 </div>
               </div>

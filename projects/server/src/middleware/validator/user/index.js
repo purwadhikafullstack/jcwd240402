@@ -23,8 +23,10 @@ module.exports = {
     body("username")
       .notEmpty()
       .withMessage("Username is required")
-      .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
     body("first_name")
       .notEmpty()
       .withMessage("first name is required")
@@ -39,12 +41,12 @@ module.exports = {
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
     body("phone", "phone cannot be empty")
       .notEmpty()
       .withMessage("phone is required")
       .isMobilePhone()
-      .withMessage("must to in valid phone number"),
+      .withMessage("must be valid phone number"),
     body("img_profile").optional(),
     body("password", "password cannot be empty")
       .notEmpty()
@@ -64,6 +66,21 @@ module.exports = {
       .withMessage("You must type a confirmation password")
       .custom((value, { req }) => value === req.body.password)
       .withMessage("The passwords do not match"),
+  ]),
+
+  registrationByOAuth: validate([
+    body("fullname")
+      .notEmpty()
+      .withMessage("fullname is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("email", "email cannot be empty")
+      .notEmpty()
+      .withMessage("email is required")
+      .isEmail()
+      .withMessage("must be valid email"),
+    body("phone").optional(),
+    body("img_profile").optional(),
   ]),
 
   login: validate([
@@ -87,12 +104,20 @@ module.exports = {
       ),
   ]),
 
+  loginByOAuth: validate([
+    body("email")
+      .notEmpty()
+      .withMessage("Username or email is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+  ]),
+
   emailInput: validate([
     body("email", "email cannot be empty")
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
   ]),
 
   resetPassword: validate([
@@ -129,9 +154,11 @@ module.exports = {
   updateProfile: validate([
     body("username")
       .optional()
-      .isLength({ max: 10 })
-      .withMessage("Maximum character is 10"),
 
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
     body("first_name")
       .optional()
       .isLength({ max: 50 })
@@ -144,7 +171,7 @@ module.exports = {
     body("phone")
       .optional()
       .isMobilePhone()
-      .withMessage("must to in valid phone number"),
+      .withMessage("must be valid phone number"),
     body("password")
       .optional()
       .isStrongPassword({

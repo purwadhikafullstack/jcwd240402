@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,14 +19,17 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import withOutAuthUser from "../../components/user/withoutAuthUser";
+import { UserAuth } from "../../context/AuthContext";
+import google from "../../assets/icons/google.png";
 
 const Login = () => {
-  removeCookie("access_token");
-  removeLocalStorage("refresh_token");
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const { googleSignIn, user, logOutAuth } = UserAuth();
 
   const loginUser = async (values, { setStatus, setValues }) => {
+    removeCookie("access_token");
+    removeLocalStorage("refresh_token");
     try {
       await axios.post("/user/auth/login", values).then((res) => {
         const accessToken = res.data?.accessToken;
@@ -50,9 +53,38 @@ const Login = () => {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(err.response?.data?.message);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 3000);
       }
     }
   };
+
+  useEffect(() => {
+    if (user != null && Object.keys(user).length !== 0) {
+      axios
+        .post("user/auth/login/oAuth", {
+          email: user.email,
+        })
+        .then((res) => {
+          setLocalStorage("refresh_token", res.data?.refreshToken);
+          setCookie("access_token", res.data?.accessToken);
+          setErrMsg("");
+          navigate("/");
+        })
+        .catch((error) => {
+          if (!error.response) {
+            setErrMsg("No Server Response");
+          } else {
+            setErrMsg(error.response?.data?.message);
+            logOutAuth();
+            setTimeout(() => {
+              setErrMsg("");
+            }, 4000);
+          }
+        });
+    }
+  }, [logOutAuth, navigate, user]);
 
   const formik = useFormik({
     initialValues: {
@@ -70,7 +102,7 @@ const Login = () => {
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[-_+=!@#$%^&*])(?=.{8,})/,
-          "password is required"
+          "password must to contain at least 8 character, 1 number and 1 symbol"
         ),
     }),
     validateOnChange: false,
@@ -80,6 +112,14 @@ const Login = () => {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
+  };
+
+  const handleGoogleSign = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      setErrMsg(error.response?.data?.message);
+    }
   };
 
   return (
@@ -98,7 +138,7 @@ const Login = () => {
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
                 {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
 
-                <div className="mt-5 px-6 grid gap-y-4 lg:rounded-xl">
+                <div className="mt-5 px-6 grid gap-y-2 lg:rounded-xl">
                   <InputForm
                     onChange={handleForm}
                     label="username/email"
@@ -121,7 +161,7 @@ const Login = () => {
 
                   <ModalForgotPassword />
 
-                  <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
+                  <div className="mb-4 flex justify-center">
                     <Button
                       buttonSize="medium"
                       buttonText="Log in"
@@ -130,15 +170,34 @@ const Login = () => {
                       colorText="text-white"
                       fontWeight="font-semibold"
                     />
-                    <h1 className="mt-2 text-xs lg:text-base my-4">
-                      Dont have an account yet?{" "}
-                      <Link to="/sign-up" className="font-semibold">
-                        Sign Up
-                      </Link>
-                    </h1>
                   </div>
                 </div>
               </form>
+              <div className="flex flex-col justify-center items-center mx-8 lg:rounded-lg ">
+                <div className="flex justify-center items-center w-full">
+                  <hr className="border-2 border-gray-200 rounded-full w-full" />
+                  <h1 className="text-gray-300">OR</h1>
+                  <hr className="border-2 border-gray-200 rounded-full w-full" />
+                </div>
+
+                <button
+                  className="border-2 gap-x-2 bg-base_bg_grey rounded-lg w-full flex items-center"
+                  onClick={handleGoogleSign}
+                  type="button"
+                >
+                  <div className="flex justify-center items-center w-full">
+                    <img src={google} alt="google" className="w-10 " />
+                    <h1 className="text-sm">Login with Google </h1>
+                  </div>
+                </button>
+
+                <h1 className="mt-2 text-xs my-4 text-grayText">
+                  Dont have an account yet?{" "}
+                  <Link to="/sign-up" className="font-semibold">
+                    Sign Up
+                  </Link>
+                </h1>
+              </div>
             </div>
           </div>
         </div>

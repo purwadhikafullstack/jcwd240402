@@ -6,13 +6,15 @@ import { useSearchParams } from "react-router-dom";
 import AlertWithIcon from "../AlertWithIcon";
 import NavbarFilterPagination from "./navbar/NavbarFilterPagination";
 import productNotFound from "../../assets/images/productNotFound.png";
+import Loading from "../Loading";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
-const ShowCaseProduct = () => {
+const ShowCaseProduct = ({ perPage }) => {
   const [productData, setProductData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
+  const [loading, setLoading] = useState(true);
 
-  const [openAlert, setOpenAlert] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [limitPrice, setLimitPrice] = useState(0);
   const [limitWeight, setLimitWeight] = useState(0);
@@ -31,7 +33,7 @@ const ShowCaseProduct = () => {
   useEffect(() => {
     axios
       .get(
-        `/user/warehouse-stock/filter?perPage=20&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
+        `/user/warehouse-stock/filter?perPage=${perPage}&page=${currentPagination}&product=&category=&&weightMin=${currentWeightMin}&weightMax=${currentWeightMax}&stockMin=&stockMax=&priceMin=${currentPriceMin}&priceMax=${currentPriceMax}`
       )
       .then((res) => {
         setProductData(res.data?.data);
@@ -43,9 +45,11 @@ const ShowCaseProduct = () => {
         setLimitPrice(res.data?.pagination?.limitPriceMax);
         setLimitWeight(res.data?.pagination?.limitWeightMax);
         setErrMsg("");
+        setLoading(false);
       })
       .catch((error) => {
         setErrMsg("product not found");
+        setLoading(false);
         setTimeout(() => {
           setSearchParams({});
         }, 4000);
@@ -57,6 +61,7 @@ const ShowCaseProduct = () => {
     currentPriceMin,
     currentWeightMax,
     currentWeightMin,
+    perPage,
     setSearchParams,
   ]);
 
@@ -73,6 +78,14 @@ const ShowCaseProduct = () => {
   function handleResetFilter() {
     setSearchParams({});
     setCurrentPage(1);
+  }
+
+  if (loading) {
+    return (
+      <div className=" w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -99,20 +112,31 @@ const ShowCaseProduct = () => {
         />
       </div>
       <div className="flex flex-col justify-center">
-        {errMsg ? (
-          <div className=" flex flex-col justify-center items-center">
-            <AlertWithIcon errMsg={errMsg} />
-            <img src={productNotFound} alt="" className="w-96" />
+        {errMsg || productData.length === 0 ? (
+          <div className="mb-4 flex flex-col justify-center items-center">
+            <AlertWithIcon errMsg={errMsg || "product not found"} />
+            <img
+              src={productNotFound}
+              alt="product not found"
+              className="w-96"
+            />
+            <h1 className="text-xs font-bold text-grayText">
+              please reset filter to find another products
+            </h1>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center">
             {productData.map((productItem) => (
               <CardProduct
-                src={`${process.env.REACT_APP_API_BASE_URL}${productItem?.Product?.Image_products[0]?.img_product}`}
-                category={productItem.Product?.category?.name}
-                name={productItem.Product?.name}
-                desc={productItem.Product?.description}
-                price={productItem.Product?.price}
+                src={
+                  productItem?.Image_products[0]?.img_product
+                    ? `${process.env.REACT_APP_API_BASE_URL}${productItem?.Image_products[0]?.img_product}`
+                    : emptyImage
+                }
+                category={productItem?.category?.name}
+                name={productItem?.name}
+                desc={productItem?.description}
+                price={productItem?.price}
                 key={productItem.id}
               />
             ))}

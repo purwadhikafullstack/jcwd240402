@@ -20,7 +20,7 @@ module.exports = {
     }
   },
 
-  getAllProvinces: async (filter = {}, page = 1, pageSize = 10) => {
+  getAllProvinces: async (filter = {}, page = 1, pageSize = 5) => {
     const options = {
       where: filter,
       offset: (page - 1) * pageSize,

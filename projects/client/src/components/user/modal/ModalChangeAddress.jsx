@@ -7,11 +7,7 @@ import { useDispatch } from "react-redux";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
@@ -19,8 +15,6 @@ const ModalChangeAddress = ({ idAddress }) => {
   const dispatch = useDispatch();
 
   const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-  const [newAccessToken, setNewAccessToken] = useState("");
 
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");
@@ -29,6 +23,13 @@ const ModalChangeAddress = ({ idAddress }) => {
   const [selectedProvince, setSelectedProvince] = useState(0);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(0);
+  const [initialFormValues, setInitialFormValues] = useState({
+    address_details: "",
+    postal_code: "",
+    address_title: "",
+  });
+  const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -39,6 +40,31 @@ const ModalChangeAddress = ({ idAddress }) => {
   }, []);
 
   useEffect(() => {
+    if (idAddress) {
+      axios
+        .get(`/user/profile/address/${idAddress}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setSelectedCity(res.data?.result?.city_id);
+          setSelectedProvince(res.data?.result?.city_id);
+
+          const addressData = res.data?.result;
+
+          const InitialFormValues = {
+            address_details: addressData.address_details,
+            postal_code: addressData.postal_code,
+            address_title: addressData.address_title,
+            city_id: addressData.city_id.toString(),
+            province_id: addressData.province_id.toString(),
+          };
+          formik.setValues(InitialFormValues);
+          setInitialFormValues(InitialFormValues);
+        });
+    }
+  }, [access_token, idAddress]);
+
+  useEffect(() => {
     axios
       .get(`/user/region-city?province_id=${selectedProvince}`)
       .then((res) => setCities(res.data?.result));
@@ -47,6 +73,7 @@ const ModalChangeAddress = ({ idAddress }) => {
   const addAddress = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     values.city_id = Number(selectedCity);
+    values.province_id = Number(selectedProvince);
     formData.append("address_details", values.address_details);
     formData.append("postal_code", values.postal_code);
     formData.append("address_title", values.address_title);
@@ -67,6 +94,7 @@ const ModalChangeAddress = ({ idAddress }) => {
             postal_code: "",
             address_title: "",
             city_id: "",
+            province_id: "",
           });
           axios
             .get("/user/profile/address", {
@@ -75,25 +103,22 @@ const ModalChangeAddress = ({ idAddress }) => {
             .then((res) => {
               dispatch(addressUser(res.data?.result));
             });
-          setErrMsg(null);
-          props.setOpenModal(undefined);
+          setErrMsg("");
+          setSuccessMsg(res.data.message);
+          setTimeout(() => {
+            props.setOpenModal(undefined);
+            setSuccessMsg("");
+            setDissabledButton(false);
+          }, 3000);
         })
         .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
+          setDissabledButton(false);
+          setSuccessMsg("");
+          setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setDissabledButton(false);
+      setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -103,16 +128,14 @@ const ModalChangeAddress = ({ idAddress }) => {
   };
 
   const formik = useFormik({
-    initialValues: {
-      address_details: "",
-      postal_code: "",
-      address_title: "",
-    },
+    initialValues: initialFormValues,
     onSubmit: addAddress,
     validationSchema: yup.object().shape({
       address_details: yup.string().optional(),
       postal_code: yup.string().optional(),
       address_title: yup.string().optional(),
+      city_id: yup.string().optional(),
+      province_id: yup.string().optional(),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -121,6 +144,13 @@ const ModalChangeAddress = ({ idAddress }) => {
   const handleForm = (event) => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
+  };
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
   };
 
   return (
@@ -145,7 +175,11 @@ const ModalChangeAddress = ({ idAddress }) => {
               Change Address
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon errMsg={successMsg} color="success" />
+              ) : null}
 
               {/* drop down province */}
               <div className="flex flex-col gap-y-2 mb-3">
@@ -156,6 +190,11 @@ const ModalChangeAddress = ({ idAddress }) => {
                   value={selectedProvince}
                   onChange={(e) => {
                     setSelectedProvince(e.target.value);
+
+                    formik.setFieldValue(
+                      "province_id",
+                      e.target.value.toString()
+                    );
                   }}
                 >
                   <option value={0}>select a province</option>
@@ -178,6 +217,8 @@ const ModalChangeAddress = ({ idAddress }) => {
                   value={selectedCity}
                   onChange={(e) => {
                     setSelectedCity(e.target.value);
+
+                    formik.setFieldValue("city_id", e.target.value.toString());
                   }}
                 >
                   <option value={0}>select a city</option>
@@ -232,12 +273,21 @@ const ModalChangeAddress = ({ idAddress }) => {
 
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

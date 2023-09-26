@@ -13,12 +13,6 @@ const validate = (validations) => {
       return next();
     }
 
-    // if (!errors.isEmpty()) {
-    //     return res.status(422).json({
-    //       message: "Validation failed",
-    //       errors: errors.array()[0].msg  double check later
-    //   }
-
     res
       .status(400)
       .send({ message: "An error occurs", errors: errors.array() });
@@ -39,19 +33,6 @@ const checkProductName = async (value, { req }) => {
   }
 };
 
-const checkProduct = async (value, { req }) => {
-  try {
-    const id = await db.Product.findOne({
-      where: { id: value },
-    });
-    if (!id) {
-      throw new Error("Product not found");
-    }
-    return true;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
 
 const checkCategory = async (value, { req }) => {
   try {

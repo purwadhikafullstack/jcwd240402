@@ -19,6 +19,8 @@ import { addressUser } from "../../features/userAddressSlice";
 import { profileUser } from "../../features/userDataSlice";
 import addressEmpty from "../../assets/images/addressEmpty.png";
 import withAuthUser from "../../components/user/withAuthUser";
+import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 
 const SettingAddress = () => {
   const refresh_token = getLocalStorage("refresh_token");
@@ -26,11 +28,11 @@ const SettingAddress = () => {
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
   const addressData = useSelector((state) => state.addresser.value);
-
-  console.log(addressData);
+  const [loading, setLoading] = useState(true);
+  const userData = useSelector((state) => state.profiler.value);
 
   useEffect(() => {
-    if (!access_token && refresh_token) {
+    if (!access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/auth/keep-login", {
           headers: { Authorization: `Bearer ${refresh_token}` },
@@ -40,31 +42,52 @@ const SettingAddress = () => {
           setCookie("access_token", newAccessToken, 1);
         });
     }
-  }, [access_token, newAccessToken, refresh_token]);
+  }, [access_token, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/profile", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => dispatch(profileUser(res.data?.result)));
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(profileUser(res.data?.result));
+          setLoading(false);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    axios
-      .get("/user/profile/address", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        dispatch(addressUser(res.data?.result));
-        console.log(res.data);
-      });
-  }, [access_token, dispatch]);
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get("/user/profile/address", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(addressUser(res.data?.result));
+          setLoading(false);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb
+        crumbs={[
+          { title: ["Profile"], link: "/user/setting" },
+          { title: ["Address"], link: "/user/setting/address" },
+        ]}
+      />
       <div className="min-h-screen mt-4 mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 ">
         <div className=" lg:grid lg:grid-cols-5 gap-4 mb-4 lg:mb-0 ">
           <CardProfile />

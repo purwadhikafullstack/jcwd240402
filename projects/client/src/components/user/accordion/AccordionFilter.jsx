@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Accordion } from "flowbite-react";
-import toRupiah from "@develoka/angka-rupiah-js";
+import { rupiahFormat } from "../../../utils/formatter";
+import { weightFormat } from "../../../utils/formatter";
 
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
@@ -16,9 +17,6 @@ const AccordionFilter = ({
 }) => {
   const [price, setPrice] = useState([rangePriceMin, limitPrice]);
   const [weight, setWeight] = useState([rangeWeightMin, limitWeight]);
-
-  const currentPage = searchParams.get("page");
-  console.log(currentPage);
 
   const handleChangeRangePrice = (event, newPrice) => {
     setPrice(newPrice);
@@ -61,7 +59,7 @@ const AccordionFilter = ({
           </Accordion.Title>
           <Accordion.Content>
             <span className="text-xs font-bold">
-              From {toRupiah(priceMin)} to {toRupiah(priceMax)}
+              From {rupiahFormat(priceMin)} to {rupiahFormat(priceMax)}
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>
@@ -77,7 +75,7 @@ const AccordionFilter = ({
               onClick={handleFilterPrice}
               className="bg-blue3 w-fit px-7 text-white text-xs text-center py-1 font-semibold rounded-lg"
             >
-              apply
+              Apply
             </button>
           </Accordion.Content>
         </Accordion.Panel>
@@ -87,7 +85,7 @@ const AccordionFilter = ({
           </Accordion.Title>
           <Accordion.Content>
             <span className="text-xs font-bold">
-              From {weightMin} gr to {weightMax} gr
+              From {weightFormat(weightMin)} to {weightFormat(weightMax)}
             </span>
             <div className="flex flex-col justify-center items-center">
               <Box sx={{ width: 250 }}>
@@ -106,14 +104,6 @@ const AccordionFilter = ({
             >
               apply
             </button>
-          </Accordion.Content>
-        </Accordion.Panel>
-        <Accordion.Panel>
-          <Accordion.Title className="hover:bg-blue2 bg-blue3 text-white">
-            STOCK
-          </Accordion.Title>
-          <Accordion.Content>
-            <p className="mb-2 text-gray-500 dark:text-gray-400">STOCK</p>
           </Accordion.Content>
         </Accordion.Panel>
       </Accordion>

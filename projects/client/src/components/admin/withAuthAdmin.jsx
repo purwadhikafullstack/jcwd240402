@@ -8,6 +8,7 @@ import {
 import { profileAdmin } from "../../features/adminDataSlice";
 import { useNavigate } from "react-router-dom";
 import axios from "../../api/axios";
+import Loading from "../Loading";
 
 function withAuthAdmin(Component) {
   return (props) => {
@@ -68,12 +69,16 @@ function withAuthAdmin(Component) {
     };
 
     if (loading) {
-      return <div>Loading...</div>;
+      return (
+        <div className="w-full h-screen flex justify-center items-center">
+          <Loading />
+        </div>
+      );
     }
 
     if (!adminData) {
       if (access_token) {
-        navigate("/admin/dashboard");
+        navigate("/admin/admin-dashboard");
       } else {
         navigate("/admin/login");
       }
@@ -81,7 +86,7 @@ function withAuthAdmin(Component) {
     }
 
     if (adminData.role_id !== 1) {
-      navigate("/admin/dashboard");
+      navigate("/admin/admin-dashboard");
       return null;
     }
 

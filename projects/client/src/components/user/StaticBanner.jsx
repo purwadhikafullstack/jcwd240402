@@ -10,7 +10,7 @@ const StaticBanner = () => {
         <div className="col-span-3 relative">
           <img
             src={banner6}
-            alt=""
+            alt="static banner"
             className="relative object-cover rounded-lg"
           />
           <h1 className="absolute inset-0 lg:text-2xl md:text-lg text-xs p-4 text-white text-center font-semibold flex items-center justify-center">
@@ -20,7 +20,7 @@ const StaticBanner = () => {
         <div className="col-span-2 relative flex justify-center items-center">
           <img
             src={banner7}
-            alt=""
+            alt="static banner"
             className="object-cover h-full rounded-lg"
           />
           <h1 className="absolute inset-0 lg:text-2xl md:text-lg text-xs p-4 text-white text-center font-semibold flex items-center justify-center">

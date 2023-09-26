@@ -27,7 +27,7 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
       },
       address_user_id: {

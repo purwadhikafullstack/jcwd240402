@@ -1,5 +1,6 @@
 const db = require("../models");
 const { getAllInventoryTransfers } = require("../service/inventoryTransfer");
+const { newStockHistory } = require("../service/warehouse_stock");
 
 module.exports = {
   async stockTransfer(req, res) {
@@ -7,6 +8,14 @@ module.exports = {
 
     try {
       const { fromWarehouseId, toWarehouseId, productId, quantity } = req.body;
+
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== fromWarehouseId) {
+          return res.status(403).send({
+            message: "You are not authorized to transfer stock from this warehouse.",
+          });
+        }
+      }
 
       if (!fromWarehouseId || !toWarehouseId || !productId || !quantity) {
         return res.status(400).json({
@@ -47,7 +56,7 @@ module.exports = {
           quantity: quantity,
           status: "Pending",
           transaction_code: "TRX" + Date.now(),
-          timestamp: db.Sequelize.fn('NOW'),
+          timestamp: db.Sequelize.fn("NOW"),
         },
         { transaction: t }
       );
@@ -70,6 +79,8 @@ module.exports = {
   },
 
   async approveStockTransfer(req, res) {
+    const adminData = req.user;
+
     const t = await db.sequelize.transaction();
 
     try {
@@ -88,6 +99,14 @@ module.exports = {
         ],
         transaction: t,
       });
+
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== transfer.to_warehouse_id) {
+          return res.status(403).send({
+            message: "You are not authorized to approve transfer stock from this warehouse.",
+          });
+        }
+      }
 
       if (!transfer || transfer.status !== "Pending") {
         await t.rollback();
@@ -147,12 +166,36 @@ module.exports = {
       transfer.status = "Approve";
       await transfer.save({ transaction: t });
 
+      const stockHistoryFrom = newStockHistory(
+        fromStock.id,
+        fromStock.warehouse_id,
+        adminData.id,
+        fromStock.product_stock,
+        fromStock.product_stock - transfer.quantity,
+        transfer.quantity,
+        "Stock Transfer"
+      );
+
+      const stockHistoryTo = newStockHistory(
+        toStock[0].id,
+        toStock[0].warehouse_id,
+        adminData.id,
+        toStock[0].product_stock,
+        toStock[0].product_stock + transfer.quantity,
+        transfer.quantity,
+        "Stock Transfer"
+      );
+
       await t.commit();
 
       return res.status(200).json({
         success: true,
         message: "Stock transfer approved and stock updated",
         transfer: transfer,
+        from: fromStock,
+        to: toStock,
+        fromHis: fromStock,
+        toHis: toStock,
       });
     } catch (error) {
       await t.rollback();
@@ -183,6 +226,14 @@ module.exports = {
         ],
         transaction: t,
       });
+
+      if (req.user.role_id === 2) {
+        if (req.user.warehouse_id !== transfer.to_warehouse_id) {
+          return res.status(403).send({
+            message: "You are not authorized to reject transfer stock from this warehouse.",
+          });
+        }
+      }
 
       if (!transfer || transfer.status !== "Pending") {
         await t.rollback();
@@ -216,29 +267,34 @@ module.exports = {
   async getInventoryTransferList(req, res) {
     const page = Number(req.query.page) || 1;
     const perPage = Number(req.query.size) || 10;
-    const productId = req.query.productId;
-  
-    let options = {
-      where: {}
-    };
-  
-    if (productId) {
-      const warehouseStocks = await db.Warehouse_stock.findAll({
-        where: { product_id: productId },
-        attributes: ["id"]
-      });
-      const warehouseStockIds = warehouseStocks.map((stock) => stock.id);
-      options.where.warehouse_stock_id = warehouseStockIds;
+    const productName = req.query.productName;
+    let to_warehouse_id = req.query.warehouseId;
+    const sort = req.query.sort === "asc" ? "ASC" : "DESC";
+    const status = req.query.status;
+    const year = Number(req.query.year);
+    const month = Number(req.query.month);
+
+    if (req.user.role_id == 2) {
+      to_warehouse_id = req.user.warehouse_id;
     }
-  
+
+    let options = {
+      order: [["createdAt", sort]],
+      productName: productName,
+      warehouseId: to_warehouse_id,
+      status: status,
+      year: year,
+      month: month
+    };
+
     try {
       const response = await getAllInventoryTransfers(options, page, perPage);
-  
+
       if (response.success) {
         res.status(200).send({
           message: "Inventory transfer list retrieved successfully",
           transfers: response.data,
-          pagination: response.pagination
+          pagination: response.pagination,
         });
       } else {
         throw new Error(response.error);
@@ -247,9 +303,8 @@ module.exports = {
       console.error(error);
       res.status(500).send({
         message: "Fatal error on server",
-        errors: error.message
+        errors: error.message,
       });
     }
   },
-  
 };

@@ -61,19 +61,37 @@ module.exports = {
     body("username")
       .notEmpty()
       .withMessage("Username is required")
-      .isLength({ max: 50 })
-      .withMessage("Maximum character is 50")
-      .custom(checkUsernameAdmin),
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage(
+        "Username can only contain letters, numbers, underscores, and hyphens"
+      )
+      .custom(checkUsernameAdmin)
+      .custom((value) => {
+        if (/\s/.test(value)) {
+          throw new Error("Username cannot contain spaces.");
+        }
+        return true;
+      }),
     body("first_name")
       .notEmpty()
-      .withMessage("first name is required")
+      .withMessage("First name is required")
       .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .withMessage("Maximum character is 50")
+      .matches(/^[a-zA-Z\s'-]+$/)
+      .withMessage(
+        "First name can only contain letters, spaces, hyphens, and apostrophes"
+      ),
     body("last_name")
       .notEmpty()
-      .withMessage("last name is required")
+      .withMessage("Last name is required")
       .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .withMessage("Maximum character is 50")
+      .matches(/^[a-zA-Z\s'-]+$/)
+      .withMessage(
+        "Last name can only contain letters, spaces, hyphens, and apostrophes"
+      ),
     body("password")
       .notEmpty()
       .withMessage("Password is required")
@@ -138,6 +156,8 @@ module.exports = {
       .withMessage("Warehouse contact is required")
       .isNumeric()
       .withMessage("Contact should be a valid number"),
+    body("province_id").notEmpty().withMessage("Province is required"),
+    body("city_id").notEmpty().withMessage("City is required"),
   ]),
 
   validateUpdateWarehouse: validate([
@@ -156,6 +176,16 @@ module.exports = {
       .withMessage("City ID is required")
       .isNumeric()
       .withMessage("City ID must be a number"),
+    body("province_id")
+      .optional()
+      .custom((value, { req }) => {
+        if (value && !req.body.city_id) {
+          throw new Error("City is required when updating Province");
+        }
+        return true;
+      })
+      .isNumeric()
+      .withMessage("Province ID must be a number"),
     body("latitude")
       .optional()
       .notEmpty()

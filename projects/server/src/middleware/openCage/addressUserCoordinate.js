@@ -11,7 +11,6 @@ const addressUserCoordinate = async (req, res, next) => {
         address
       )}&key=${process.env.KEY_OPENCAGE}`
     );
-    console.log(response);
 
     const location = response.data?.results[0]?.geometry;
 
@@ -21,7 +20,7 @@ const addressUserCoordinate = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(500).send({
-      message: "Error fetching coordinates",
+      message: "Please input valid address",
       errors: error.message,
     });
   }

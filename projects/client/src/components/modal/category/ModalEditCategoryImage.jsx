@@ -5,12 +5,14 @@ import { Modal } from "flowbite-react";
 import Button from "../../Button";
 import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon"
 
 const EditCategoryImageModal = ({
   show,
   onClose,
   categoryId,
   handleSuccessfulEdit,
+  categoryName,
 }) => {
   const hasResetForm = useRef(false);
   const access_token = getCookie("access_token");
@@ -44,20 +46,10 @@ const EditCategoryImageModal = ({
         throw new Error("Edit Category Image Failed");
       }
     } catch (err) {
-      let displayedError = false;
-      if (err.response?.data?.errors) {
-        err.response.data.errors.forEach((error) => {
-          if (error.path === "categoryImage") {
-            formik.setFieldError("categoryImage", error.msg);
-            displayedError = true;
-          }
-        });
-      }
-      if (!displayedError) {
-        setErrMsg(
-          err.response?.data?.message ||
-            "An unexpected error occurred. Please try again."
-        );
+      if (err.response?.data?.error) {
+        setErrMsg(err.response.data.error);
+      } else if (err.response?.data?.message) {
+        setErrMsg(err.response.data.errors[0].msg);
       }
     }
   };
@@ -88,18 +80,14 @@ const EditCategoryImageModal = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Edit Category Image
+            Edit Category Image {categoryName}
           </h3>
         </div>
       </Modal.Header>
       <Modal.Body>
+      {errMsg && <AlertWithIcon errMsg={errMsg}/>}
         <form onSubmit={formik.handleSubmit} encType="multipart/form-data">
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p>{errMsg}</p>
-            </div>
-          )}
-          <div className="px-6 grid gap-y-3">
+          <div className="px-6 grid gap-y-3 pt-2">
             <div className="relative">
               <input
                 id="categoryImageInput"

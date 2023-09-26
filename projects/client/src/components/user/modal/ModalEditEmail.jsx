@@ -18,6 +18,7 @@ import { profileUser } from "../../../features/userDataSlice";
 
 const ModalEditEmail = () => {
   const access_token = getCookie("access_token");
+
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };

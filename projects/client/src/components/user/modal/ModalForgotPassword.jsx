@@ -15,10 +15,17 @@ export default function ModalForgotPassword() {
   const props = { openModal, setOpenModal, email, setEmail };
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
+  };
 
   const forgotPassword = async (values, { setStatus, setValues }) => {
     try {
-      console.log(values);
       await axios.post("/user/auth/forgot-password", values).then((res) => {
         setStatus({ success: true });
         setValues({
@@ -38,6 +45,9 @@ export default function ModalForgotPassword() {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(err.response?.data?.message);
+        setTimeout(() => {
+          setErrMsg("");
+        }, 2000);
       }
     }
   };
@@ -100,12 +110,21 @@ export default function ModalForgotPassword() {
               </div>
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

@@ -25,15 +25,15 @@ export default function SlideOverFilter({
         <div>
           <button
             onClick={() => setOpen(true)}
-            className=" flex justify-start items-center px-3 py-1 rounded-full w-fit gap-2 border-2"
+            className=" flex justify-start items-center px-3 py-1.5 rounded-full w-fit gap-2 border-2"
           >
             <VscSettings />
-            <span className="text-sm">Filter</span>
+            <span className="text-xs">Filter</span>
           </button>
         </div>
       </div>
       <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-30" onClose={setOpen}>
+        <Dialog as="div" className="relative z-50" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"
@@ -88,7 +88,7 @@ export default function SlideOverFilter({
                         <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                           <img
                             src={logo}
-                            alt=""
+                            alt="logo"
                             className=" h-8 md:h-10 lg:h-8"
                           />
                         </Dialog.Title>

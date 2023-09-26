@@ -86,7 +86,7 @@ const ModalSetPrimaryAddress = () => {
               {addressData.length === 0 ? (
                 <div className="p-4 w-full flex flex-col justify-center items-center">
                   <div>
-                    <img src={addressEmpty} alt="" />
+                    <img src={addressEmpty} alt="address empty" />
                   </div>
                   <div className="text-center text-xs ">
                     <h4>

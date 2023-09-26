@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { BsFillCartFill } from "react-icons/bs";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { CgClose } from "react-icons/cg";
 import { GiHamburgerMenu } from "react-icons/gi";
+import { RiBookmark3Fill, RiBookmark3Line } from "react-icons/ri";
 
 import SearchBar from "../../SearchBar";
 import {
@@ -15,17 +16,26 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../../api/axios";
 import { cartsUser } from "../../../features/cartSlice";
+import logo from "../../../assets/images/furnifor.png";
+import { UserAuth } from "../../../context/AuthContext";
+import { wishlistUser } from "../../../features/wishlistDataSlice";
 
 const NavbarMobile = () => {
+  const location = useLocation();
   const cartsData = useSelector((state) => state.carter.value);
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
   const [newAccessToken, setNewAccessToken] = useState("");
+  let [open, setOpen] = useState(false);
   const userData = useSelector((state) => state.profiler.value);
-  const dispatch = useDispatch();
+  const [errMsg, setErrMsg] = useState("");
 
+  const wishlistData = useSelector((state) => state.wishlister.value);
+
+  const dispatch = useDispatch();
+  const { logOutAuth } = UserAuth();
   useEffect(() => {
-    if (access_token && refresh_token) {
+    if (access_token && refresh_token && userData.role_id === 3) {
       axios
         .get("/user/cart", {
           headers: { Authorization: `Bearer ${access_token}` },
@@ -49,21 +59,42 @@ const NavbarMobile = () => {
           }
         });
     }
-  }, [access_token, dispatch, newAccessToken, refresh_token]);
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
+
+  useEffect(() => {
+    if (access_token && refresh_token && userData.role_id) {
+      axios
+        .get("/user/wishlist", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(wishlistUser(res.data?.result));
+        })
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+        });
+    }
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   let Links = [
     { name: "HOME", to: "/" },
-    { name: "PROFILE", to: "/user/setting" },
-    { name: "CART", to: "/cart" },
-    { name: "ORDER", to: "/checkout" },
+    { name: "CATEGORIES", to: "/product-category" },
+    { name: "PRODUCTS", to: "/all-products" },
   ];
-  let [open, setOpen] = useState(false);
+
+  const handleLogOut = () => {
+    logOutAuth();
+    logout();
+  };
   return (
-    <div className="sticky top-0 w-full z-20">
+    <div className="sticky top-0 w-full z-40">
       <div className="lg:hidden  left-9 h-14 bg-white flex justify-between items-center ">
+        <Link to="/" className="ml-4 w-12">
+          <img src={logo} alt="logo" className="w-full " />
+        </Link>
         <div className="w-full">
           <SearchBar
-            width="w-52 md:w-[700px]"
+            width="w-52 md:w-[600px]"
             position="left-44 md:left-[670px]"
             rounded="rounded-md"
             height="h-7"
@@ -73,7 +104,13 @@ const NavbarMobile = () => {
         <div className="flex w-24 justify-evenly gap-2 items-center">
           {cartsData && access_token && refresh_token ? (
             <Link to="/cart" className="relative">
-              <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+              <BsFillCartFill
+                className={`w-6 h-6 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/cart"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                }`}
+              />
               <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
                 {cartsData.length === 0 ? null : cartsData.length}
               </span>
@@ -83,9 +120,25 @@ const NavbarMobile = () => {
               <BsFillCartFill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
             </Link>
           )}
-          <button>
-            <BiSolidPurchaseTag className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
-          </button>
+
+          {wishlistData && access_token && refresh_token ? (
+            <Link to="/all-wishlist" className="relative">
+              <RiBookmark3Fill
+                className={`w-6 h-6 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/all-wishlist"
+                    ? "text-blue-500 font-semibold"
+                    : "text-gray-500"
+                }`}
+              />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {wishlistData.length === 0 ? null : wishlistData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/all-wishlist">
+              <RiBookmark3Fill className="w-6 h-6 hover:text-blue3 text-base_grey transition-all" />
+            </Link>
+          )}
         </div>
         <div className="mr-2 mt-1">
           <button onClick={() => setOpen(!open)} className="cursor-pointer ">
@@ -100,7 +153,11 @@ const NavbarMobile = () => {
               <li className="my-4 font-semibold text-sm" key={idx}>
                 <Link
                   to={link.to}
-                  className="text-gray-800 hover:text-blue-400 duration-500 "
+                  className={`text-gray-800 hover:text-blue-400 duration-500 ${
+                    location.pathname === link.to
+                      ? "text-blue-500 font-semibold"
+                      : "text-gray-500"
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -111,7 +168,7 @@ const NavbarMobile = () => {
                 <Link
                   to="/"
                   onClick={() => {
-                    logout();
+                    handleLogOut();
                     setOpen(false);
                   }}
                 >

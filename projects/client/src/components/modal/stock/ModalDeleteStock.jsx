@@ -10,13 +10,13 @@ const ConfirmDeleteStock = ({
   warehouseId,
   productId,
   onSuccessfulDelete,
+  productName,
 }) => {
   const handleDelete = async () => {
     const access_token = getCookie("access_token");
     try {
       const response = await axios.delete(
         `/warehouse-stock/${warehouseId}/${productId}`,
-        {},
         {
           headers: { Authorization: `Bearer ${access_token}` },
         }
@@ -42,7 +42,7 @@ const ConfirmDeleteStock = ({
         </div>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this stock?</p>
+        <p>Are you sure you want to delete  <strong>{productName}</strong> stock?</p>
         <div className="flex justify-center mt-4 gap-4">
           <Button
             buttonSize="medium"

@@ -33,43 +33,88 @@ module.exports = {
     }
   },
 
-  getAllWarehouseStocks: async (options = {}, page = 1, pageSize = 20) => {
-    const filter = options.where || {};
-
-    const defaultInclude = [
+  getAllWarehouseStocks: async (options) => {
+    const { page, pageSize, warehouseId, categoryId, productName } = options;
+  
+    const filter = {};
+  
+    const productCondition = {};
+    if (productName) {
+      productCondition.name = {
+        [db.Sequelize.Op.like]: `%${productName}%`,
+      };
+    } else {
+      productCondition.id = {
+        [db.Sequelize.Op.not]: null,
+      };
+    }
+  
+    const categoryCondition = {};
+    if (categoryId) {
+      categoryCondition.id = categoryId;
+    }
+  
+    const warehouseCondition = {};
+    if (warehouseId) {
+      warehouseCondition.id = warehouseId;
+    }
+  
+    const includeOptions = [
       {
         model: db.Product,
         as: "Product",
-        attributes: ["id", "name", "description"],
+        required: true,
+        attributes: ["id", "name", "price", "weight", "category_id", "description", "is_active", "createdAt", "updatedAt", "deletedAt"],
+        where: Object.keys(productCondition).length ? productCondition : undefined,
+        paranoid: false,
         include: [
           {
+            model: db.Category,
+            as: "category",
+            where: Object.keys(categoryCondition).length ? categoryCondition : undefined,
+            paranoid: false,
+          },
+          {
             model: db.Image_product,
-            attributes: ['img_product'],
+            attributes: ["img_product"],
           },
         ],
       },
       {
         model: db.Warehouse,
         as: "Warehouse",
-        attributes: ["id", "warehouse_name"],
+        attributes: ["id", "warehouse_name", "deletedAt"],
+        where: Object.keys(warehouseCondition).length ? warehouseCondition : undefined,
+        paranoid: false,
       },
     ];
-
-    const includeOptions = options.include
-      ? [...defaultInclude, ...options.include]
-      : defaultInclude;
-
+  
     const queryOptions = {
       where: filter,
       include: includeOptions,
       offset: (page - 1) * pageSize,
       limit: pageSize,
     };
-
+  
     try {
       const results = await db.Warehouse_stock.findAll(queryOptions);
-      const totalItems = await db.Warehouse_stock.count({ where: filter });
-
+  
+      results.forEach(stock => {
+        if (stock.Product && stock.Product.deletedAt) {
+          stock.Product.name = `${stock.Product.name} (DELETED)`;
+        }
+        if (stock.Warehouse && stock.Warehouse.deletedAt) {
+          stock.Warehouse.warehouse_name = `${stock.Warehouse.warehouse_name} (DELETED)`;
+        }
+      });
+  
+      const totalItems = await db.Warehouse_stock.count({
+        distinct: true,
+        where: filter,
+        include: includeOptions
+    });
+    
+  
       return {
         success: true,
         data: results,
@@ -88,6 +133,9 @@ module.exports = {
       };
     }
   },
+  
+  
+  
 
   newStockHistory: async (
     warehouseStockId,
@@ -131,13 +179,18 @@ module.exports = {
 
     const queryOptions = {
       where: filter,
+      paranoid: false,
       include: [
-        { model: db.Admin, attributes: ["username"], as: "Admin" },
+        { model: db.Admin, attributes: ["username"], as: "Admin", paranoid: false, },
+        { model: db.Warehouse, 
+          attributes: ["warehouse_name", "address_warehouse", "warehouse_contact"], 
+          paranoid: false,},
         {
           model: db.Warehouse_stock,
           attributes: ["product_stock"],
           as: "Warehouse_stock",
           include: [{ model: db.Product, attributes: ["name"], as: "Product" }],
+          paranoid: false,
         },
       ],
       offset: (page - 1) * pageSize,

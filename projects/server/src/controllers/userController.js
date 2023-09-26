@@ -10,6 +10,7 @@ const path = require("path");
 const { default: axios } = require("axios");
 const { getAllWarehouses } = require("../service/warehouse");
 const qs = require("qs");
+const { autoStockTransfer } = require("../utils");
 
 module.exports = {
   /* AUTH */
@@ -25,15 +26,16 @@ module.exports = {
         is_verify = false,
         first_name,
         last_name,
-        img_profile = "photo-profile/imgprofiledefault.png",
+        img_profile = "/photo-profile/imgprofiledefault.png",
         phone,
+        by_form = true,
       } = req.body;
 
       if (password !== confirm_password) {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "password and confirm password have to match",
+          message: "Password and confirm password have to match",
         });
       }
       const salt = await bcrypt.genSalt();
@@ -46,7 +48,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "email already used",
+          message: "Email already used",
         });
       }
 
@@ -54,7 +56,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "username already used",
+          message: "Username already used",
         });
       }
 
@@ -62,13 +64,14 @@ module.exports = {
         await transaction.rollback();
         return res.status(409).json({
           ok: false,
-          message: "phone already used",
+          message: "Phone already used",
         });
       }
 
       const verifyToken =
         crypto.randomBytes(16).toString("hex") +
         Math.random() +
+        "-" +
         new Date().getTime();
 
       const newUser = await db.User.create(
@@ -79,6 +82,7 @@ module.exports = {
           password: hashPassword,
           verify_token: verifyToken,
           is_verify,
+          by_form,
         },
         { transaction }
       );
@@ -96,7 +100,7 @@ module.exports = {
 
       const link = `${process.env.BASEPATH_FE_REACT}/verify/${newUser.verify_token}`;
       const message =
-        "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.!";
+        "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.! Remember, you only have 20 minutes to verify your account";
       const mailing = {
         recipient_email: email,
         link,
@@ -122,14 +126,124 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
   },
 
-  updateVerify: async (req, res) => {
+  registerUserByEmail: async (req, res) => {
+    const {
+      role_id = 3,
+      email,
+      password = "1234-Purwadhika",
+      fullname,
+      is_verify,
+      phone,
+      img_profile = "/photo-profile/imgprofiledefault.png",
+      by_form = false,
+    } = req.body;
+    const transaction = await db.sequelize.transaction();
+    try {
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(password, salt);
+      const isEmailExist = await db.User.findOne({ where: { email } });
+      const isPhoneExist = await db.User_detail.findOne({ where: { phone } });
+
+      if (isEmailExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "Email already taken",
+        });
+      }
+
+      if (isPhoneExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "Phone already taken",
+        });
+      }
+      const first_name = fullname.split(" ")[0];
+      const last_name = fullname.split(" ")[1];
+      const newUsername = fullname.replace(" ", "_");
+
+      const isUsernameExist = await db.User.findOne({
+        where: { username: newUsername },
+      });
+
+      if (isUsernameExist) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "Username already taken",
+        });
+      }
+
+      const newUser = await db.User.create(
+        {
+          role_id,
+          username: newUsername,
+          email,
+          password: hashPassword,
+          is_verify,
+          by_form,
+        },
+        { transaction }
+      );
+
+      await db.User_detail.create(
+        {
+          user_id: newUser.id,
+          first_name,
+          last_name,
+          img_profile,
+          phone,
+        },
+        { transaction }
+      );
+
+      const accessToken = Generate.token(
+        {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          role_id: newUser.role_id,
+          is_verify: newUser.is_verify,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        "1h"
+      );
+      const refreshToken = Generate.token(
+        {
+          id: newUser.id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        "24h"
+      );
+
+      await transaction.commit();
+      res.status(201).json({
+        ok: true,
+        message: "Register successful",
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      await transaction.rollback();
+      res.status(500).json({
+        ok: false,
+        message: "Something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  updateVerifyByPassword: async (req, res) => {
     const { verify_token } = req.params;
+    const { password } = req.body;
+
     const transaction = await db.sequelize.transaction();
 
     try {
@@ -141,13 +255,25 @@ module.exports = {
         await transaction.rollback();
         return res.json({
           ok: false,
-          message: "token invalid",
+          message:
+            "Your verify token already expired! Please, Login to resend verify request on your profile page",
         });
       }
       if (isVerifyTokenExist.is_verify) {
         await transaction.rollback();
         return res.status(400).send({
-          message: "user already verified",
+          ok: false,
+          message: "User already verified",
+        });
+      }
+
+      const match = await bcrypt.compare(password, isVerifyTokenExist.password);
+
+      if (!match) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "Wrong password",
         });
       }
 
@@ -167,13 +293,13 @@ module.exports = {
       await transaction.commit();
       res.json({
         ok: true,
-        message: "verification successful",
+        message: "Verification successful",
       });
     } catch (error) {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happeneded",
+        message: "Something bad happeneded",
         error: error.message,
       });
     }
@@ -193,14 +319,14 @@ module.exports = {
       if (!user) {
         return res.status(401).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
       const match = await bcrypt.compare(password, user.password);
       if (!match) {
         return res.status(400).json({
           ok: false,
-          message: "wrong password",
+          message: "Wrong password",
         });
       }
       const accessToken = Generate.token(
@@ -231,7 +357,52 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
+        error: error.message,
+      });
+    }
+  },
+
+  loginByEmail: async (req, res) => {
+    const { email } = req.body;
+    try {
+      const isUserExist = await db.User.findOne({
+        where: { email, by_form: false },
+      });
+      if (!isUserExist) {
+        return res.status(403).json({
+          ok: false,
+          message: "User not found",
+        });
+      }
+      const accessToken = Generate.token(
+        {
+          id: isUserExist.id,
+          username: isUserExist.username,
+          email: isUserExist.email,
+          role_id: isUserExist.role_id,
+          is_verify: isUserExist.is_verify,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        "1h"
+      );
+      const refreshToken = Generate.token(
+        {
+          id: isUserExist.id,
+        },
+        process.env.REFRESH_TOKEN_SECRET,
+        "24h"
+      );
+      res.json({
+        ok: true,
+        message: "Log in successful",
+        accessToken,
+        refreshToken,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -247,7 +418,7 @@ module.exports = {
       if (!isRefreshTokenExist) {
         return res.status(401).json({
           ok: false,
-          message: "token unauthorized",
+          message: "Token unauthorized",
         });
       }
       const accessToken = Generate.token(
@@ -268,7 +439,7 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -277,24 +448,41 @@ module.exports = {
   resendVerifyAccount: async (req, res) => {
     const userData = req.user;
     const { email } = req.body;
+    const transaction = await db.sequelize.transaction();
     try {
       const isVerified = await db.User.findOne({
         where: { email, id: userData.id },
       });
       if (!isVerified) {
+        await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "wrong email",
+          message: "Wrong email",
         });
       }
       if (isVerified.is_verify) {
+        await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "user already verified",
+          message: "User already verified",
         });
       }
-      if (isVerified.verify_token && !isVerified.is_verify) {
-        const link = `${process.env.BASEPATH_FE_REACT}/verify/${isVerified.verify_token}`;
+
+      const verifyToken =
+        crypto.randomBytes(16).toString("hex") +
+        Math.random() +
+        "-" +
+        new Date().getTime();
+
+      if (!isVerified.is_verify) {
+        await db.User.update(
+          {
+            verify_token: verifyToken,
+          },
+          { where: { id: userData.id }, transaction }
+        );
+
+        const link = `${process.env.BASEPATH_FE_REACT}/verify/${verifyToken}`;
         const message =
           "Welcome to WareHouse! We're excited to have you with us. Explore our wide range of products and enjoy a seamless shopping experience. If you need any help, don't hesitate to reach out.!";
         const mailing = {
@@ -304,12 +492,13 @@ module.exports = {
           receiver: isVerified.username,
           message,
         };
+        await transaction.commit();
         Mailer.sendEmail(mailing)
           .then((response) =>
             res.status(201).json({
               ok: true,
               message: `${response.message}, registration ${isVerified.username} successful `,
-              verify_token: isVerified.verify_token,
+              verify_token: verifyToken,
             })
           )
           .catch((error) =>
@@ -319,9 +508,10 @@ module.exports = {
           );
       }
     } catch (error) {
+      await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -338,9 +528,18 @@ module.exports = {
       });
 
       if (!isUserExist) {
+        await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
+        });
+      }
+
+      if (!isUserExist.by_form) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "This email registered by gmail. please login instead",
         });
       }
 
@@ -373,6 +572,7 @@ module.exports = {
         subject: "RESET PASSWORD",
         receiver: isUserExist.username,
         message,
+        buttonText: "Reset Password",
       };
       await transaction.commit();
       Mailer.sendEmail(mailing)
@@ -392,7 +592,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -411,7 +611,7 @@ module.exports = {
       if (!tokenVerification) {
         return res.status(400).json({
           ok: false,
-          message: "invalid token",
+          message: "Invalid token",
         });
       }
 
@@ -422,14 +622,14 @@ module.exports = {
       if (!isResetPasswordTokenValid) {
         return res.status(404).json({
           ok: false,
-          message: "reset password code not valid",
+          message: "Reset password code not valid",
         });
       }
 
       if (new_password !== confirm_password)
         return res.status(400).json({
           ok: false,
-          message: "password and confirm password have to match",
+          message: "Password and confirm password have to match",
         });
       const salt = await bcrypt.genSalt(10);
       const hashPassword = await bcrypt.hash(new_password, salt);
@@ -444,20 +644,17 @@ module.exports = {
       await transaction.commit();
       res.json({
         ok: true,
-        message: "reset password successful",
+        message: "Reset password successful",
       });
     } catch (error) {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message:
+          "This reset password code is expired. You only have 10 minutes to use it",
         error: error.message,
       });
     }
-  },
-
-  closeAccount: (req, res) => {
-    res.json("deleteAccount");
   },
 
   userInformation: async (req, res) => {
@@ -494,14 +691,14 @@ module.exports = {
       if (!user) {
         return res.status(401).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
       res.json({ ok: true, result: user });
     } catch (error) {
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -530,7 +727,7 @@ module.exports = {
       if (!user) {
         return res.status(404).json({
           ok: false,
-          message: "user not found",
+          message: "User not found",
         });
       }
 
@@ -539,9 +736,10 @@ module.exports = {
           where: { username: username },
         });
         if (isUsernameExist) {
+          await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "username already taken",
+            message: "Username already taken",
           });
         }
 
@@ -553,7 +751,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change username successful",
+          message: "Change username successful",
         });
       }
 
@@ -565,7 +763,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change first name successful",
+          message: "Change first name successful",
         });
       }
 
@@ -574,7 +772,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "password and confirm password have to match",
+            message: "Password and confirm password have to match",
           });
         }
 
@@ -583,7 +781,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "wrong password",
+            message: "Wrong password",
           });
         }
 
@@ -597,7 +795,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change password successful",
+          message: "Change password successful",
         });
       }
 
@@ -609,7 +807,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change last name successful",
+          message: "Change last name successful",
         });
       }
 
@@ -619,9 +817,10 @@ module.exports = {
         });
 
         if (isPhoneExist) {
+          await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "phone number already taken",
+            message: "Phone number already taken",
           });
         }
 
@@ -632,7 +831,7 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change phone successful",
+          message: "Change phone successful",
         });
       }
 
@@ -645,18 +844,18 @@ module.exports = {
           await transaction.rollback();
           res.status(401).json({
             ok: false,
-            message: "user data not found",
+            message: "User data not found",
           });
         }
 
         const previousImageName = userDetail
           .getDataValue("img_profile")
-          ?.split("/")[1];
+          ?.split("/")[2];
 
         if (!previousImageName) {
           await db.User_detail.update(
             {
-              img_profile: `photo-profile/${image}`,
+              img_profile: `/photo-profile/${image}`,
             },
             { where: { user_id: user.id }, transaction }
           );
@@ -666,7 +865,7 @@ module.exports = {
           if (previousImageName === "imgprofiledefault.png") {
             await db.User_detail.update(
               {
-                img_profile: `photo-profile/${image}`,
+                img_profile: `/photo-profile/${image}`,
               },
               { where: { user_id: user.id }, transaction }
             );
@@ -686,14 +885,14 @@ module.exports = {
             fs.unlinkSync(imagePath);
             await db.User_detail.update(
               {
-                img_profile: `photo-profile/${image}`,
+                img_profile: `/photo-profile/${image}`,
               },
               { where: { user_id: user.id }, transaction }
             );
           }
           await db.User_detail.update(
             {
-              img_profile: `photo-profile/${image}`,
+              img_profile: `/photo-profile/${image}`,
             },
             { where: { user_id: user.id }, transaction }
           );
@@ -701,840 +900,18 @@ module.exports = {
         await transaction.commit();
         return res.status(201).json({
           ok: true,
-          message: "change photo profile successful",
+          message: "Change photo profile successful",
         });
       }
       return res.json({
         ok: false,
-        message: "you did not update anything",
+        message: "You did not update anything",
       });
     } catch (error) {
-      await transaction.commit();
+      await transaction.rollback();
       return res.status(500).json({
         ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  /* PROFILING USER ADDRESS */
-  userAddress: async (req, res) => {
-    const userData = req.user;
-    try {
-      const userAddressData = await db.Address_user.findAll({
-        where: { user_id: userData.id },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      res.status(200).json({
-        ok: true,
-        result: userAddressData,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  registerAddress: async (req, res) => {
-    const userData = req.user;
-    const {
-      city_id,
-      user_id = userData.id,
-      longitude,
-      latitude,
-      address_details,
-      postal_code,
-      address_title,
-    } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const newAddress = await db.Address_user.create(
-        {
-          city_id,
-          user_id,
-          longitude,
-          latitude,
-          address_details,
-          postal_code,
-          address_title,
-        },
-        { transaction }
-      );
-
-      if (!newAddress) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "register address failed",
-        });
-      }
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "register address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  changeAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    let data;
-    if (req.body.data) {
-      data = JSON.parse(req.body.data);
-    }
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      if (data.city_id) {
-        await db.Address_user.update(
-          {
-            city_id: data.city_id,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.address_details) {
-        await db.Address_user.update(
-          {
-            address_details: data.address_details,
-            longitude: data.longitude,
-            latitude: data.latitude,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.postal_code) {
-        await db.Address_user.update(
-          {
-            postal_code: data.postal_code,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      if (data.address_title) {
-        await db.Address_user.update(
-          {
-            address_title: data.address_title,
-          },
-          { where: { user_id: userData.id, id: address_id }, transaction }
-        );
-      }
-
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "change address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  changePrimaryAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isPrimary = await db.User_detail.findOne({
-        where: { address_user_id: address_id },
-      });
-
-      if (isPrimary) {
-        await transaction.rollback();
-        return res.status(400).json({
-          ok: false,
-          message: "this address already primary",
-        });
-      }
-
-      const isAddressExist = await db.Address_user.findOne({
-        where: { id: address_id, user_id: userData.id },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-      if (!isAddressExist) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: false,
-          message: "address not found",
-        });
-      }
-
-      await db.User_detail.update(
-        { address_user_id: address_id },
-        {
-          where: { user_id: userData.id },
-          transaction,
-        }
-      );
-
-      await transaction.commit();
-      return res.status(201).json({
-        ok: true,
-        message: "set primary address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  deleteAddress: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    const transaction = await db.sequelize.transaction();
-
-    try {
-      const address = await db.Address_user.findOne({
-        where: { id: address_id, user_id: userData.id },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      if (!address) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: false,
-          message: "Address not found",
-        });
-      }
-
-      const isPrimaryAddress = await db.User_detail.findOne({
-        where: { user_id: userData.id, address_user_id: address_id },
-      });
-
-      if (isPrimaryAddress) {
-        await db.User_detail.update(
-          { address_user_id: null },
-          {
-            where: { user_id: userData.id, address_user_id: address_id },
-            transaction,
-          }
-        );
-      }
-
-      await db.Address_user.destroy({
-        where: { id: address_id, user_id: userData.id },
-        transaction,
-      });
-
-      await transaction.commit();
-
-      res.status(200).json({
-        ok: true,
-        message: "Delete address successful",
-      });
-    } catch (error) {
-      await transaction.rollback();
-      res.status(500).json({
-        ok: false,
         message: "Something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getAddressById: async (req, res) => {
-    const userData = req.user;
-    const { address_id } = req.params;
-    console.log(userData);
-    try {
-      const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, id: address_id },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      if (!userAddressData) {
-        return res.status(404).json({
-          ok: false,
-          message: "address not found",
-        });
-      }
-
-      res.status(200).json({
-        ok: true,
-        result: userAddressData,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForProvince: async (req, res) => {
-    try {
-      const result = await db.Province.findAll();
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  regionUserForCity: async (req, res) => {
-    const { province_id } = req.query;
-
-    try {
-      let result;
-
-      if (province_id) {
-        const cityListInProvince = await db.City.findAll({
-          where: { province_id },
-        });
-        result = cityListInProvince;
-      } else {
-        const allProvince = await db.Province.findAll();
-        result = allProvince;
-      }
-
-      res.json({
-        ok: true,
-        result: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  /* CART */
-
-  addToCart: async (req, res) => {
-    const userData = req.user;
-    const { product_name, qty } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isUserVerify = await db.User.findOne({
-        where: { id: userData.id },
-      });
-
-      if (!isUserVerify.is_verify) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you have to verify your account",
-        });
-      }
-
-      const productIdByName = await db.Product.findOne({
-        where: { name: product_name },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-
-      if (isCartExist) {
-        await db.Cart.update(
-          {
-            quantity: isCartExist.quantity + Number(qty),
-          },
-          {
-            where: {
-              user_id: userData.id,
-              warehouse_stock_id: getWarehouseStockIdByProductName.id,
-            },
-            transaction,
-          }
-        );
-        await transaction.commit();
-        return res.status(201).json({
-          ok: true,
-          message: "cart updated",
-        });
-      }
-
-      const limitMaxFive = await db.Cart.findAll({
-        where: { user_id: userData.id },
-      });
-
-      if (limitMaxFive.length >= 5) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you only can add 5 item to your cart",
-        });
-      }
-      await db.Cart.create(
-        {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-          quantity: Number(qty),
-        },
-        { transaction }
-      );
-      await transaction.commit();
-      res.status(201).json({
-        ok: true,
-        message: "add to cart successful",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getUserCart: async (req, res) => {
-    const userData = req.user;
-    try {
-      const result = await db.Cart.findAll({
-        where: { user_id: userData.id },
-        attributes: { exclude: ["createdAt", "updatedAt"] },
-        include: [
-          {
-            model: db.Warehouse_stock,
-            attributes: { exclude: ["createdAt", "updatedAt"] },
-            include: [
-              {
-                model: db.Product,
-                attributes: { exclude: ["createdAt", "updatedAt"] },
-                include: [
-                  {
-                    model: db.Category,
-                    as: "category",
-                    attributes: {
-                      exclude: ["createdAt", "updatedAt", "deletedAt"],
-                    },
-                  },
-                  {
-                    model: db.Image_product,
-                    attributes: { exclude: ["updatedAt", "createdAt"] },
-                  },
-                ],
-              },
-              {
-                model: db.Warehouse,
-                as: "Warehouse",
-                attributes: {
-                  exclude: ["createdAt", "updatedAt"],
-                },
-              },
-            ],
-          },
-        ],
-      });
-
-      let total = 0;
-      let totalweight = 0;
-      for (const item of result) {
-        total +=
-          Number(item.Warehouse_stock.Product.price) * Number(item.quantity);
-      }
-
-      for (const item of result) {
-        totalweight +=
-          Number(item.Warehouse_stock.Product.weight) * Number(item.quantity);
-      }
-
-      res.json({
-        ok: true,
-        result,
-        total: total,
-        total_weight: totalweight,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  cancelCart: async (req, res) => {
-    const userData = req.user;
-    const { productName } = req.params;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const productIdByName = await db.Product.findOne({
-        where: { name: productName },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-
-      if (!isCartExist) {
-        await transaction.rollback();
-        return res.status(404).json({
-          ok: true,
-          message: "cart is empty",
-        });
-      }
-
-      await db.Cart.destroy({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-        transaction,
-      });
-      await transaction.commit();
-      res.status(200).json({
-        ok: true,
-        message: "cart deleted",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  updateCart: async (req, res) => {
-    const userData = req.user;
-    const { product_name, qty } = req.body;
-    const transaction = await db.sequelize.transaction();
-    try {
-      const isUserVerify = await db.User.findOne({
-        where: { id: userData.id },
-      });
-
-      if (!isUserVerify.is_verify) {
-        await transaction.rollback();
-        return res.status(401).json({
-          ok: false,
-          message: "you have to verify your account",
-        });
-      }
-
-      const productIdByName = await db.Product.findOne({
-        where: { name: product_name },
-      });
-
-      if (!productIdByName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "product not found",
-        });
-      }
-      const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
-        {
-          where: { product_id: productIdByName.id },
-        }
-      );
-
-      if (!getWarehouseStockIdByProductName) {
-        await transaction.rollback();
-        res.status(404).json({
-          ok: false,
-          message: "the product stock is not available ",
-        });
-      }
-
-      const isCartExist = await db.Cart.findOne({
-        where: {
-          user_id: userData.id,
-          warehouse_stock_id: getWarehouseStockIdByProductName.id,
-        },
-      });
-      if (!isCartExist) {
-        await db.Cart.create(
-          {
-            user_id: userData.id,
-            warehouse_stock_id: getWarehouseStockIdByProductName.id,
-            quantity: Number(qty),
-          },
-          { transaction }
-        );
-        await transaction.commit();
-        res.status(201).json({
-          ok: true,
-          message: "add to cart successful",
-        });
-      }
-      await db.Cart.update(
-        {
-          quantity: Number(qty),
-        },
-        {
-          where: {
-            user_id: userData.id,
-            warehouse_stock_id: getWarehouseStockIdByProductName.id,
-          },
-          transaction,
-        }
-      );
-      await transaction.commit();
-      return res.status(201).json({
-        ok: true,
-        message: "cart updated",
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  getOrderList: async (req, res) => {
-    const userId = req.user.id;
-    try {
-      const orderList = await db.Order.findAll({
-        where: { user_id: userId },
-      });
-
-      res.json({
-        ok: true,
-        order: orderList,
-      });
-    } catch (error) {
-      res.status(500).send({
-        message: "An error occurred while fetching order list",
-        error: error.message,
-      });
-    }
-  },
-
-  getCity: async (req, res) => {
-    const cityId = req.query.id;
-    const provinceId = req.query.province;
-
-    try {
-      const response = await axios.get(
-        `https://api.rajaongkir.com/starter/city?id=${cityId}&province=${provinceId}`,
-        {
-          headers: { key: `${process.env.KEY_RAJAONGKIR}` },
-        }
-      );
-      res.json({ ok: true, result: response.data });
-    } catch (error) {
-      res.status(500).json({ ok: false, message: error.message });
-    }
-  },
-
-  getCost: async (req, res) => {
-    const { origin, destination, weight, courier } = req.body;
-
-    const data = {
-      origin: origin,
-      destination: destination,
-      weight: weight,
-      courier: courier,
-    };
-
-    try {
-      const response = await axios({
-        method: "post",
-        url: "https://api.rajaongkir.com/starter/cost",
-        headers: {
-          key: `${process.env.KEY_RAJAONGKIR}`,
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        data: qs.stringify(data),
-      });
-      res.json({ ok: true, result: response.data });
-    } catch (error) {
-      res.status(500).json({ ok: false, message: error });
-    }
-  },
-
-  createNewOrder: async (req, res) => {
-    const {
-      user_id,
-      order_status_id,
-      total_price,
-      delivery_price,
-      delivery_courier,
-      delivery_time,
-      tracking_code,
-      no_invoice,
-      address_user_id,
-      warehouse_id,
-    } = req.body;
-
-    try {
-      const newOrder = await db.Order.create({
-        user_id,
-        order_status_id,
-        total_price,
-        delivery_price,
-        delivery_courier,
-        delivery_time,
-        tracking_code,
-        no_invoice,
-        address_user_id,
-        warehouse_id,
-      });
-
-      res.status(200).json({
-        ok: true,
-        order: newOrder,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
-        error: error.message,
-      });
-    }
-  },
-
-  findClosestWarehouse: async (req, res) => {
-    const userData = req.user;
-    const address_title = req.body.address_title || "ehehe";
-
-    try {
-      const userAddressData = await db.Address_user.findOne({
-        where: { user_id: userData.id, address_title },
-        include: { model: db.City },
-        attributes: {
-          exclude: ["address_user_id", "createdAt", "updatedAt", "user_id"],
-        },
-      });
-
-      const allWarehouseData = await getAllWarehouses();
-
-      const distanceKm = (lat1, lon1, lat2, lon2) => {
-        const r = 6371; // km
-        const p = Math.PI / 180;
-        console.log(lat1);
-        const a =
-          0.5 -
-          Math.cos((lat2 - lat1) * p) / 2 +
-          (Math.cos(lat1 * p) *
-            Math.cos(lat2 * p) *
-            (1 - Math.cos((lon2 - lon1) * p))) /
-            2;
-
-        return 2 * r * Math.asin(Math.sqrt(a));
-      };
-
-      let closestWarehouse = {
-        latitude: allWarehouseData.data[0].latitude,
-        longitude: allWarehouseData.data[0].longitude,
-      };
-
-      for (let i = 0; i < allWarehouseData.data.length; i++) {
-        if (
-          distanceKm(
-            allWarehouseData.data[i].latitude,
-            allWarehouseData.data[i].longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
-          ) <=
-          distanceKm(
-            closestWarehouse.latitude,
-            closestWarehouse.longitude,
-            userAddressData.latitude,
-            userAddressData.longitude
-          )
-        ) {
-          closestWarehouse = allWarehouseData.data[i];
-        }
-      }
-
-      res.status(200).json({
-        ok: true,
-        address: userAddressData,
-        warehouse: allWarehouseData,
-        closest_warehouse: closestWarehouse,
-      });
-    } catch (error) {
-      res.status(500).json({
-        ok: false,
-        message: "something bad happened",
         error: error.message,
       });
     }

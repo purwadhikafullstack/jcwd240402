@@ -5,7 +5,7 @@ const AuthImageCard = ({ imageSrc }) => {
     <div className="lg:col-span-1 lg:grid">
       <img
         src={imageSrc}
-        alt=""
+        alt="display login"
         className="hidden lg:block lg:w-1/2 lg:ml-52"
       />
       <div className="hidden lg:grid lg:justify-center ">

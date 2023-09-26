@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "flowbite-react";
 import { Link } from "react-router-dom";
-import toRupiah from "@develoka/angka-rupiah-js";
+import { rupiahFormat } from "../../../utils/formatter";
 
 import SlideOverProduct from "../slide/SlideOverProduct";
 
@@ -15,7 +15,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
         >
           <img
             src={src}
-            alt=""
+            alt="product"
             className="w-full h-full object-center object-cover"
           />
         </Link>
@@ -36,7 +36,7 @@ const CardProduct = ({ src, category, name, desc, price, id }) => {
             <h4 className="text-xs text-ellipsis text-gray-400">{desc}</h4>
           )}
           <p className="text-xs md:text-xl lg:text-xl font-semibold mt-2">
-            {toRupiah(price)}
+            {rupiahFormat(price)}
           </p>
           <div className="flex justify-end ">
             <SlideOverProduct name={name} />

@@ -1,19 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Pagination } from 'flowbite-react';
 
-const DefaultPagination = ({ totalPages, onPageChange }) => {
-  const [currentPage, setCurrentPage] = useState(1);
+const DefaultPagination = ({ currentPage, totalPages, onPageChange }) => {
+  
   const handlePageChange = (page) => {
-    setCurrentPage(page);
     onPageChange(page);
   };
+
+  const adjustedTotalPages = totalPages || 1;
+  
+  if (currentPage > adjustedTotalPages && adjustedTotalPages > 1) {
+    onPageChange(adjustedTotalPages);
+  }
 
   return (
     <div className='shadow-lg'>
       <Pagination
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        totalPages={totalPages}
+        showIcons
+        totalPages={adjustedTotalPages}
       />
     </div>
   );

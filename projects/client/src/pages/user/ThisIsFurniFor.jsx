@@ -3,25 +3,21 @@ import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";
 import NavbarMobile from "../../components/user/navbar/NavbarMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
+import wh1 from "../../assets/images/wh1.webp";
+import wh2 from "../../assets/images/wh2.webp";
+import wh3 from "../../assets/images/wh3.webp";
+import wh4 from "../../assets/images/wh4.webp";
+import whfooter1 from "../../assets/images/whfooter1.webp";
 
 const ThisIsFurniFor = () => {
-  const imgHeadlineDesktop =
-    "https://images.unsplash.com/photo-1565891741441-64926e441838?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80";
-
-  const imgHeadline =
-    "https://images.unsplash.com/photo-1592228533283-d78f7c1cf453?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1979&q=80";
-
   const imgData = [
     {
-      img: "https://images.unsplash.com/photo-1633959592096-9d9a339b99fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
+      img: wh3,
     },
     {
-      img: "https://images.unsplash.com/photo-1622127739239-1905bbaa21b8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1933&q=80",
+      img: wh4,
     },
   ];
-
-  const imgFooter =
-    "https://images.unsplash.com/photo-1589792923962-537704632910?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
 
   const textProfile = [
     {
@@ -85,15 +81,15 @@ const ThisIsFurniFor = () => {
               selected soothing, inviting hues that transform your living spaces
               into havens of relaxation and style.
             </h3>
-            <img src={imgHeadlineDesktop} alt="" className="float-left" />
-            <img src={imgHeadline} alt="" className=" float-left" />
+            <img src={wh1} alt="banner warehouse" className="float-left" />
+            <img src={wh2} alt="banner warehouse" className=" float-left" />
           </div>
           <div className="grid grid-cols-2 w-full h-full">
             {imgData.map((item, idx) => (
               <img
                 src={item.img}
                 key={idx}
-                alt=""
+                alt="banner warehouse"
                 className="object-cover h-full"
               />
             ))}
@@ -107,7 +103,7 @@ const ThisIsFurniFor = () => {
             </div>
           ))}
         </div>
-        <img src={imgFooter} alt="" className="" />
+        <img src={whfooter1} alt="banner warehouse" />
       </div>
       <FooterDesktop />
       <NavigatorMobile />

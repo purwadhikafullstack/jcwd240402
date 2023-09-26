@@ -7,19 +7,13 @@ import { BsFillPlusSquareFill } from "react-icons/bs";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useDispatch } from "react-redux";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalAddAddress = () => {
   const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-  const [newAccessToken, setNewAccessToken] = useState("");
 
   const dispatch = useDispatch();
 
@@ -30,6 +24,8 @@ const ModalAddAddress = () => {
   const [selectedProvince, setSelectedProvince] = useState(0);
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(0);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal, email, setEmail };
 
@@ -47,6 +43,7 @@ const ModalAddAddress = () => {
 
   const addAddress = async (values, { setStatus, setValues }) => {
     values.city_id = Number(selectedCity);
+    values.province_id = Number(selectedProvince);
 
     try {
       await axios
@@ -54,7 +51,6 @@ const ModalAddAddress = () => {
           headers: { Authorization: `Bearer ${access_token}` },
         })
         .then((res) => {
-          props.setOpenModal(undefined);
           axios
             .get("/user/profile/address", {
               headers: { Authorization: `Bearer ${access_token}` },
@@ -72,26 +68,27 @@ const ModalAddAddress = () => {
             postal_code: "",
             address_title: "",
             city_id: "",
+            province_id: "",
           });
-
-          setErrMsg(null);
+          setSuccessMsg(res.data.message);
+          setErrMsg("");
+          formik.resetForm();
+          setSelectedCity(0);
+          setSelectedProvince(0);
+          setTimeout(() => {
+            props.setOpenModal(undefined);
+            setSuccessMsg("");
+            setDissabledButton(false);
+          }, 3000);
         })
         .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
+          setDissabledButton(false);
+          setSuccessMsg("");
+          setErrMsg(error.response?.data?.message);
         });
     } catch (err) {
+      setDissabledButton(false);
+      setSuccessMsg("");
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -125,10 +122,19 @@ const ModalAddAddress = () => {
     formik.setFieldValue(target.name, target.value);
   };
 
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
+  };
   return (
     <>
       <button
-        onClick={() => props.setOpenModal("form-elements")}
+        onClick={() => {
+          props.setOpenModal("form-elements");
+          formik.resetForm();
+        }}
         className="h-10 rounded-lg w-fit px-3 bg-blue3 text-white font-semibold"
       >
         <span className="flex justify-center items-center gap-4">
@@ -143,7 +149,9 @@ const ModalAddAddress = () => {
         popup
         onClose={() => {
           props.setOpenModal(undefined);
-          setErrMsg(false);
+          setErrMsg("");
+          setSuccessMsg("");
+          formik.resetForm();
         }}
       >
         <Modal.Header />
@@ -153,7 +161,11 @@ const ModalAddAddress = () => {
               Register Address
             </h1>
             <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-              {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+              {errMsg ? (
+                <AlertWithIcon errMsg={errMsg} />
+              ) : successMsg ? (
+                <AlertWithIcon errMsg={successMsg} color="success" />
+              ) : null}
 
               {/* drop down province */}
               <div className="flex flex-col gap-y-2 mb-3">
@@ -240,12 +252,21 @@ const ModalAddAddress = () => {
 
               <div className="w-full">
                 <Button
+                  onClick={() => {
+                    formik.handleSubmit();
+                    handleDissabled();
+                  }}
                   buttonSize="small"
                   buttonText="submit"
                   type="submit"
-                  bgColor="bg-blue3"
+                  bgColor={`${
+                    dissabledButton
+                      ? "bg-gray-500 hover:bg-gray-500"
+                      : "bg-blue3"
+                  }`}
                   colorText="text-white"
                   fontWeight="font-semibold"
+                  disabled={dissabledButton}
                 />
               </div>
             </form>

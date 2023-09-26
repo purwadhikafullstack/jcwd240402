@@ -2,45 +2,38 @@ import React, { useState, useEffect } from "react";
 import AdminCardProduct from "../card/AdminCardProduct";
 import DefaultPagination from "../../Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import debounce from "lodash/debounce";
+import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
+import ConfirmDeleteProduct from "../../modal/product/ModalDeleteProduct";
+import withAuthAdminWarehouse from "../../admin/withAuthAdminWarehouse";
+import { useCategoryOptions } from "../../../utils/loadCategoryOptions";
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const loadCategories = useCategoryOptions();
 
-  const debouncedNavigate = debounce((updatedParams) => {
+  const navigateWithParams = (updatedParams) => {
     for (const key in updatedParams) {
       searchParams.set(key, updatedParams[key]);
     }
     navigate({ search: searchParams.toString() });
-  }, 150);
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get("/admin/categories");
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
   };
 
-  const fetchProducts = async (
-    page = 1,
-    productName = search,
-    category = selectedCategory
-  ) => {
+  const fetchProducts = async () => {
     try {
       const response = await axios.get("/admin/products", {
         params: {
-          category_id: category,
-          product_name: productName,
-          page: page,
+          category_id: selectedCategory,
+          product_name: search,
+          page: currentPage,
         },
       });
       setProducts(response.data.data);
@@ -52,7 +45,7 @@ const ProductList = () => {
   };
 
   useEffect(() => {
-    fetchProducts(currentPage, search, selectedCategory);
+    fetchProducts();
   }, [currentPage, search, selectedCategory]);
 
   useEffect(() => {
@@ -62,27 +55,34 @@ const ProductList = () => {
     setSearch(productNameFromUrl);
     setSelectedCategory(categoryIdFromUrl);
     setCurrentPage(Number(pageFromUrl));
-    fetchProducts(Number(pageFromUrl), productNameFromUrl, categoryIdFromUrl);
   }, [searchParams.toString()]);
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
-    debouncedNavigate({ product_name: e.target.value });
+    setCurrentPage(1);
+    navigateWithParams({ product_name: e.target.value, page: 1 });
   };
 
-  const handleCategoryChange = (newCategory) => {
-    setSelectedCategory(newCategory);
-    debouncedNavigate({ category_id: newCategory });
+  const handleCategoryChange = (selectedOption) => {
+    const selectedCategoryId = selectedOption ? selectedOption.value : "";
+    setSelectedCategory(selectedCategoryId);
+    setCurrentPage(1);
+    navigateWithParams({ category_id: selectedCategoryId, page: 1 });
+  };
+
+  const handleShowDeleteModal = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleSuccessfulDelete = () => {
+    fetchProducts();
   };
 
   return (
-    <div className="h-full lg:h-screen lg:w-full lg:grid">
-      <div className="px-8 pt-1">
-        <div className="flex items-center mb-5">
+    <div className="h-full w-full lg:h-screen lg:w-full lg:grid">
+      <div className="px-4 mr-8 lg:mr-0 lg:px-8 pt-1">
+        <div className="flex relative mb-5">
           <input
             type="text"
             placeholder="Search Product"
@@ -90,30 +90,22 @@ const ProductList = () => {
             value={search}
             onChange={handleSearchChange}
           />
-          <select
-            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mr-4"
-            value={selectedCategory}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <AsyncSelect
+            className="flex-1 z-20"
+            cacheOptions
+            defaultOptions
+            loadOptions={loadCategories}
+            onChange={handleCategoryChange}
+            placeholder="Select a category"
+            menuPortalTarget={document.body}
+          />
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-3">
           {products.map((product) => (
             <AdminCardProduct
               key={product.id}
-              src={`${process.env.REACT_APP_API_BASE_URL}${product.Image_products[0]?.img_product}`}
-              category={product.category.name}
-              name={product.name}
-              price={product.price}
-              isActive={product.is_active}
-              onEdit={() => console.log("Edit product:", product.name)}
-              onDelete={() => console.log("Delete product:", product.name)}
+              product={product}
+              onDelete={() => handleShowDeleteModal(product)}
               setActive={(value) => {
                 const index = products.findIndex((p) => p.id === product.id);
                 if (index !== -1) {
@@ -125,13 +117,22 @@ const ProductList = () => {
             />
           ))}
         </div>
+        {showDeleteModal && (
+          <ConfirmDeleteProduct
+            show={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            handleSuccessfulDelete={handleSuccessfulDelete}
+            productId={productToDelete ? productToDelete.id : null}
+            productName={productToDelete ? productToDelete.name : null}
+          />
+        )}
         <div className="flex justify-center items-center w-full bottom-0 position-absolute">
           <DefaultPagination
+            currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={(page) => {
               setCurrentPage(page);
-              searchParams.set("page", page);
-              navigate({ search: searchParams.toString() });
+              navigateWithParams({ page });
             }}
           />
         </div>
@@ -140,4 +141,4 @@ const ProductList = () => {
   );
 };
 
-export default ProductList;
+export default withAuthAdminWarehouse(ProductList);

@@ -5,7 +5,7 @@ const { sequelize } = require("../src/models");
 describe("TEST Call API", () => {
   test("GET main route", async () => {
     const res = await request(app).get("/api");
-    console.log(res);
+
     expect(res).toBeTruthy();
     expect(res.status).toBe(200);
     expect(res.text).toMatch("Hello, this is my API");

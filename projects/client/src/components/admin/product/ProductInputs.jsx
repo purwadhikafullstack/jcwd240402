@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import InputForm from "../../InputForm";
 import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 
-const ProductInputs = ({ formik }) => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
+const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
   const loadCategoryOptions = async (inputValue) => {
     try {
       const response = await axios.get(`/admin/categories`, {
@@ -27,7 +25,7 @@ const ProductInputs = ({ formik }) => {
 
   const handleCategoryChange = (selectedOption) => {
     formik.setFieldValue("category_id", selectedOption.value);
-    setSelectedCategory(selectedOption);
+    setSelectedCategory(selectedOption); // use setSelectedCategory from props
   };
 
   return (
@@ -55,7 +53,7 @@ const ProductInputs = ({ formik }) => {
       />
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
-          label="Weight"
+          label="Weight(Grams)"
           placeholder="Enter product weight"
           value={formik.values.weight}
           name="weight"
@@ -65,7 +63,7 @@ const ProductInputs = ({ formik }) => {
           width="w-full"
         />
         <InputForm
-          label="Price"
+          label="Price(Rp)"
           placeholder="Enter product price"
           value={formik.values.price}
           name="price"
@@ -92,7 +90,7 @@ const ProductInputs = ({ formik }) => {
           placeholder="Select a category"
         />
         {formik.touched.category_id && formik.errors.category_id && (
-          <p className="text-red-500 mt-2">{formik.errors.category_id}</p>
+          <p className="text-red-500">{formik.errors.category_id}</p>
         )}
       </div>
     </div>

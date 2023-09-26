@@ -19,14 +19,17 @@ import ModalEditUsername from "../../components/user/modal/ModalEditUsername";
 import ModalEditFirstName from "../../components/user/modal/ModalEditFirstName";
 import ModalEditLastName from "../../components/user/modal/ModalEditLastName";
 import ModalEditPhone from "../../components/user/modal/ModalEditPhone";
-import ModalEditEmail from "../../components/user/modal/ModalEditEmail";
 import ModalEditPasswordUser from "../../components/user/modal/ModalEditPasswordUser";
 import ModalUploadProfileImage from "../../components/user/modal/ModalUploadProfileImage";
 import withAuthUser from "../../components/user/withAuthUser";
+import Loading from "../../components/Loading";
+import BreadCrumb from "../../components/user/navbar/BreadCrumb";
+import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const SettingProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
   const [newAccessToken, setNewAccessToken] = useState("");
+  const [loading, setLoading] = useState(true);
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");
   const dispatch = useDispatch();
@@ -49,13 +52,25 @@ const SettingProfile = () => {
       .get("/user/profile", {
         headers: { Authorization: `Bearer ${access_token}` },
       })
-      .then((res) => dispatch(profileUser(res.data.result)));
+      .then((res) => {
+        dispatch(profileUser(res.data.result));
+        setLoading(false);
+      });
   }, [access_token, dispatch]);
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div>
       <NavbarDesktop />
       <NavbarMobile />
+      <BreadCrumb crumbs={[{ title: ["Profile"], link: "/user/setting" }]} />
       <div className="min-h-screen mt-4 mx-6 space-y-4 md:space-y-8 lg:space-y-8 lg:mx-32 ">
         <div className="lg:grid lg:grid-cols-5 gap-4 mb-4 md:mb-0 lg:mb-0 ">
           <CardProfile />
@@ -65,8 +80,12 @@ const SettingProfile = () => {
               {/* CARD PHOTO */}
               <div className=" rounded-lg shadow-card-1 p-2 m-4 w-fit">
                 <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}/${userData?.User_detail?.img_profile}`}
-                  alt=""
+                  src={
+                    userData?.User_detail?.img_profile
+                      ? `${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`
+                      : emptyImage
+                  }
+                  alt="profile"
                   className="p-2 w-72"
                 />
 
@@ -124,17 +143,34 @@ const SettingProfile = () => {
 
                       <tr className="h-10">
                         <td>phone</td>
-                        <td>
-                          {userData.User_detail?.phone} <ModalEditPhone />
-                        </td>
+
+                        {userData.User_detail?.phone ? (
+                          <td>
+                            {userData.User_detail?.phone}
+                            <ModalEditPhone />
+                          </td>
+                        ) : (
+                          <td>
+                            unregistered
+                            <ModalEditPhone />
+                          </td>
+                        )}
                       </tr>
                       <tr className="h-10">
                         <td>address</td>
                         <td>
-                          {userData?.User_detail?.Address_user?.address_details
-                            ? userData?.User_detail?.Address_user
-                                ?.address_details
-                            : "unregistered"}
+                          {userData?.User_detail?.Address_user
+                            ?.address_details ? (
+                            <span>
+                              {userData?.User_detail?.Address_user?.address_details?.slice(
+                                0,
+                                60
+                              )}
+                              ...
+                            </span>
+                          ) : (
+                            "unregistered"
+                          )}
                           <button className="ml-4">
                             <Link
                               to="/user/setting/address"
@@ -145,18 +181,23 @@ const SettingProfile = () => {
                           </button>
                         </td>
                       </tr>
-                      <tr>
-                        <td className="font-semibold text-gray-500 text-sm ">
-                          Change Password
-                        </td>
-                      </tr>
-                      <tr className="h-10">
-                        <td>password</td>
-                        <td>
-                          •••••••••
-                          <ModalEditPasswordUser />
-                        </td>
-                      </tr>
+                      {userData.by_form ? (
+                        <>
+                          <tr>
+                            <td className="font-semibold text-gray-500 text-sm ">
+                              Change Password
+                            </td>
+                          </tr>
+                          <tr className="h-10">
+                            <td>password</td>
+
+                            <td>
+                              •••••••••
+                              <ModalEditPasswordUser />
+                            </td>
+                          </tr>
+                        </>
+                      ) : null}
                     </tbody>
                   </table>
                 </div>

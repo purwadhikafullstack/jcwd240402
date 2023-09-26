@@ -9,6 +9,20 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const access_token = getCookie("access_token");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [defaultCategories, setDefaultCategories] = useState([]);
+  const [displayedCategory, setDisplayedCategory] = useState(null);
+  const [actualCategory, setActualCategory] = useState(null);
+
+  useEffect(() => {
+    const fetchDefaultCategories = async () => {
+      try {
+        const categories = await loadCategoryOptions("");
+        setDefaultCategories(categories);
+      } catch (error) {
+        console.error("Error fetching default categories:", error);
+      }
+    };
+    fetchDefaultCategories();
+  }, []);
 
   useEffect(() => {
     if (
@@ -47,10 +61,10 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   };
 
   const handleCategoryChange = (selectedOption) => {
-    handleInputChange({
-      target: { name: "category_id", value: selectedOption.value },
-    });
+    handleInputChange("category_id", selectedOption.value);
     setSelectedCategory(selectedOption);
+    setDisplayedCategory(selectedOption); 
+    setActualCategory(selectedOption.value); 
   };
 
   const getErrorMessage = (field) => {
@@ -81,7 +95,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
       />
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
-          label="Weight"
+          label="Weight(Grams)"
           placeholder="Enter product weight"
           value={initialProduct.weight}
           name="weight"
@@ -90,7 +104,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           width="w-full"
         />
         <InputForm
-          label="Price"
+          label="Price(Rp)"
           placeholder="Enter product price"
           value={initialProduct.price}
           name="price"
@@ -107,7 +121,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           cacheOptions
           defaultOptions={defaultCategories}
           loadOptions={loadCategoryOptions}
-          value={selectedCategory || null}
+          value={displayedCategory || null}
           onChange={handleCategoryChange}
           placeholder="Select a category"
         />

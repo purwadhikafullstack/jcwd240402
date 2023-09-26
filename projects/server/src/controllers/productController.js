@@ -22,16 +22,6 @@ async function moveUploadedFilesToDestination(images) {
   return filenames;
 }
 
-async function moveUploadedFileToDestination(image) {
-  const sourcePath = image.path;
-  const filename = `${new Date().getTime()}-${image.originalname}`;
-  const destinationPath = getAbsoluteProductImagePath(filename);
-
-  await fs.rename(sourcePath, destinationPath);
-
-  return filename;
-}
-
 module.exports = {
   async createProduct(req, res) {
     const { name, price, weight, category_id, description, is_active } =
@@ -223,7 +213,7 @@ module.exports = {
 
       return res.status(200).send({
         message: "Product image updated successfully",
-        data: updatedImage, // Use the updatedImage variable instead of 'product'
+        data: updatedImage,
       });
     } catch (error) {
       await t.rollback();
@@ -388,7 +378,6 @@ module.exports = {
   getProductByProductName: async (req, res) => {
     const { name } = req.params;
     try {
-      console.log(name);
       const productById = await db.Product.findOne({
         where: { name },
         attributes: { exclude: ["createdAt", "updatedAt"] },
@@ -448,7 +437,7 @@ module.exports = {
             model: db.Product,
             as: "products",
             include: [
-              { model: db.Image_product },
+              { model: db.Image_product, paranoid: false },
               { model: db.Category, as: "category" },
             ],
             where: { is_active: true },
@@ -477,7 +466,6 @@ module.exports = {
       res.json({
         success: true,
         result: formattedData,
-        // productsByCategory: productsByCategory,
       });
     } catch (error) {
       console.error(error);
@@ -543,7 +531,7 @@ module.exports = {
             attributes: {
               exclude: ["updatedAt", "deletedAt", "createdAt"],
             },
-            where: whereCondition, // Menggunakan kondisi pencarian di sini
+            where: whereCondition,
           },
           {
             model: db.Image_product,

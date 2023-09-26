@@ -22,6 +22,7 @@ module.exports = {
      */
     return queryInterface.bulkInsert("Admins", [
       {
+        id: 1,
         username: "andret",
         role_id: 1,
         first_name: "Andre",
@@ -32,6 +33,7 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 2,
         username: "esule",
         role_id: 2,
         first_name: "Eddy",
@@ -42,12 +44,35 @@ module.exports = {
         updatedAt: new Date(),
       },
       {
+        id: 3,
         username: "danielk",
         role_id: 2,
         first_name: "Daniel",
         last_name: "Kevin",
         password: password,
         warehouse_id: 2,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 4,
+        username: "arka",
+        role_id: 2,
+        first_name: "arka",
+        last_name: "ardy",
+        password: password,
+        warehouse_id: 3,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: 5,
+        username: "aka",
+        role_id: 2,
+        first_name: "Aka",
+        last_name: "Shiro",
+        password: password,
+        warehouse_id: 4,
         createdAt: new Date(),
         updatedAt: new Date(),
       },

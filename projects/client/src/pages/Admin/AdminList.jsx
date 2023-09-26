@@ -3,66 +3,75 @@ import TableComponent from "../../components/Table";
 import AsyncSelect from "react-select/async";
 import Sidebar from "../../components/SidebarAdminDesktop";
 import RegisterAdminModal from "../../components/modal/admin/ModalRegisterAdmin";
+import ConfirmDeleteAdmin from "../../components/modal/admin/ModalDeleteAdmin";
 import Button from "../../components/Button";
 import AdminProfileModal from "../../components/modal/admin/ModalAdminEdit";
 import DefaultPagination from "../../components/Pagination";
 import moment from "moment";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import axios from "../../api/axios";
+import { getCookie } from "../../utils/tokenSetterGetter";
+import { useWarehouseOptions } from "../../utils/loadWarehouseOptions";
+import useURLParams from "../../utils/useUrlParams";
+import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 
 const AdminList = () => {
+  const { syncStateWithParams, setParam } = useURLParams();
+  const [selectedAdminToDelete, setSelectedAdminToDelete] = useState(null);
   const [admins, setAdmins] = useState([]);
-  const [selectedWarehouse, setSelectedWarehouse] = useState("");
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [searchName, setSearchName] = useState("");
   const [isRegisterModalOpen, setRegisterModalOpen] = useState(false);
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
   const [isPasswordModalOpen, setPasswordModalOpen] = useState(false);
   const [isWarehouseModalOpen, setWarehouseModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [totalPages, setTotalPages] = useState(1);
-  
+  const access_token = getCookie("access_token");
+  const loadWarehouseOptions = useWarehouseOptions();
+  const [searchName, setSearchName] = useState(
+    syncStateWithParams("searchName", "")
+  );
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouseId", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
 
   useEffect(() => {
-    refreshAdminList();
-  }, [searchName, selectedWarehouse, currentPage]);
+    const pageParam = syncStateWithParams("page", null);
+    setCurrentPage(pageParam !== null ? parseInt(pageParam) : 1);
+  }, []);
 
   const handleWarehouseChange = (selectedOption) => {
     setSelectedWarehouse(selectedOption.value);
+    resetPage();
   };
 
-  const loadWarehouseOptions = async (inputValue) => {
-    try {
-      const response = await axios.get(
-        `/warehouse/warehouse-list?searchName=${inputValue}`
-      );
-      const warehouseOptions = [
-        { value: "", label: "All Warehouses" },
-        ...response.data.warehouses.map((warehouse) => ({
-          value: warehouse.id,
-          label: warehouse.warehouse_name,
-        })),
-      ];
-      return warehouseOptions;
-    } catch (error) {
-      console.error("Error loading warehouses:", error);
-      return [];
-    }
+  const resetPage = () => {
+    setCurrentPage(1);
   };
+
+  useEffect(() => {
+    setParam("searchName", searchName);
+    setParam("warehouseId", selectedWarehouse);
+    setParam("page", currentPage);
+    fetchAdmins();
+  }, [searchName, selectedWarehouse, currentPage]);
 
   const fetchAdmins = async () => {
     try {
       const warehouseId = selectedWarehouse || "";
       const response = await axios.get(
-        `/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`
+        `/admin/?searchName=${searchName}&warehouseId=${warehouseId}&page=${currentPage}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
       );
       setAdmins(response.data.admins);
       if (response.data.pagination) {
         const { totalPages } = response.data.pagination;
         setTotalPages(totalPages);
-        if (currentPage > totalPages) {
-          setCurrentPage(totalPages);
-        }
       }
     } catch (error) {
       console.error("Error loading admins:", error);
@@ -87,73 +96,93 @@ const AdminList = () => {
       <div className="lg:flex lg:flex-col lg:justify-start">
         <Sidebar />
       </div>
-      <div className="px-8 pt-8">
-        <div className="flex items-center">
-          <AsyncSelect
-            cacheOptions
-            defaultOptions
-            loadOptions={loadWarehouseOptions}
-            onChange={handleWarehouseChange}
-            placeholder="All Warehouses"
-            className="flex-1"
-          />
-          <input
-            type="text"
-            placeholder="Search Admin name"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-            className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
-          />
-          <Button
-            buttonSize="medium"
-            buttonText="Register"
-            onClick={() => setRegisterModalOpen(true)}
-            bgColor="bg-blue3"
-            colorText="text-white"
-            fontWeight="font-semibold"
-          />
-        </div>
-        <div className="py-4">
-          <TableComponent
-            headers={[
-              "username",
-              "first name",
-              "last name",
-              "warehouse name",
-              "Created at",
-            ]}
-            data={formattedAdmins}
-            onEdit={(admin) => {
-              setSelectedAdmin(admin);
-              setProfileModalOpen(true);
+      <div className="flex lg:flex-none ">
+        <SidebarAdminMobile />
+        <div className="lg:px-8 lg:pt-8 lg:w-full mt-4 mx-4">
+          <div className="flex items-center">
+            <AsyncSelect
+              cacheOptions
+              defaultOptions
+              loadOptions={loadWarehouseOptions}
+              onChange={handleWarehouseChange}
+              placeholder="All Warehouses"
+              className="lg:flex-1"
+            />
+            <input
+              type="text"
+              placeholder="Search Admin name"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+              className="lg:flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
+            />
+            <Button
+              buttonSize="medium"
+              buttonText="Register"
+              onClick={() => setRegisterModalOpen(true)}
+              bgColor="bg-blue3"
+              colorText="text-white"
+              fontWeight="font-semibold"
+            />
+          </div>
+          <div className="py-4 mr-4">
+            <TableComponent
+              headers={[
+                "username",
+                "first name",
+                "last name",
+                "warehouse name",
+                "Created at",
+              ]}
+              data={formattedAdmins}
+              onEdit={(admin) => {
+                setSelectedAdmin(admin);
+                setProfileModalOpen(true);
+              }}
+              onDelete={(admin) => {
+                setSelectedAdminToDelete(admin);
+                setShowDeleteModal(true);
+              }}
+            />
+          </div>
+          <RegisterAdminModal
+            show={isRegisterModalOpen}
+            onClose={() => setRegisterModalOpen(false)}
+            onSuccessfulRegister={() => {
+              refreshAdminList();
+              setRegisterModalOpen(false);
             }}
           />
-        </div>
-        <RegisterAdminModal
-          show={isRegisterModalOpen}
-          onClose={() => setRegisterModalOpen(false)}
-          onSuccessfulRegister={() => {
-            refreshAdminList();
-            setRegisterModalOpen(false);
-          }}
-        />
-        <AdminProfileModal
-          show={isProfileModalOpen}
-          onClose={() => setProfileModalOpen(false)}
-          title={`Edit ${selectedAdmin?.username}`}
-          setProfileModalOpen={setProfileModalOpen}
-          selectedAdmin={selectedAdmin}
-          setPasswordModalOpen={setPasswordModalOpen}
-          setWarehouseModalOpen={setWarehouseModalOpen}
-          isPasswordModalOpen={isPasswordModalOpen}
-          isWarehouseModalOpen={isWarehouseModalOpen}
-          refreshAdminList={refreshAdminList}
-        />
-        <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
+          <AdminProfileModal
+            show={isProfileModalOpen}
+            onClose={() => setProfileModalOpen(false)}
+            title={`Edit ${selectedAdmin?.username}`}
+            setProfileModalOpen={setProfileModalOpen}
+            selectedAdmin={selectedAdmin}
+            setPasswordModalOpen={setPasswordModalOpen}
+            setWarehouseModalOpen={setWarehouseModalOpen}
+            isPasswordModalOpen={isPasswordModalOpen}
+            isWarehouseModalOpen={isWarehouseModalOpen}
+            refreshAdminList={refreshAdminList}
           />
+          <ConfirmDeleteAdmin
+            show={showDeleteModal}
+            onClose={() => setShowDeleteModal(false)}
+            handleSuccessfulDelete={() => {
+              refreshAdminList();
+              setShowDeleteModal(false);
+            }}
+            adminId={selectedAdminToDelete?.id}
+            adminName={
+              selectedAdminToDelete?.username || selectedAdminToDelete?.name
+            }
+          />
+          <div className="flex justify-center items-center w-full bottom-0 position-absolute">
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       </div>
     </div>

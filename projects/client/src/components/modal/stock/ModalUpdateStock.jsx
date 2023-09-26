@@ -3,9 +3,9 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
-import InputForm from "../../InputForm";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon";
 
 const UpdateStock = ({
   show,
@@ -13,6 +13,7 @@ const UpdateStock = ({
   warehouseId,
   productId,
   handleSuccessfulEdit,
+  productName,
 }) => {
   const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
@@ -30,16 +31,16 @@ const UpdateStock = ({
           headers: { Authorization: `Bearer ${access_token}` },
         }
       );
-      console.log("Response from server:", response);
+
       if (response.status === 200) {
         onClose();
         formik.resetForm();
+        setErrMsg("");
         handleSuccessfulEdit();
       } else {
         throw new Error("Update Stock Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -71,6 +72,7 @@ const UpdateStock = ({
   useEffect(() => {
     if (!show && !hasResetForm.current) {
       formik.resetForm();
+      setErrMsg("");
       hasResetForm.current = true;
     } else if (show) {
       hasResetForm.current = false;
@@ -82,19 +84,15 @@ const UpdateStock = ({
       <Modal.Header>
         <div className="text-center">
           <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-            Update Stock
+            Update Stock {productName}
           </h3>
         </div>
       </Modal.Header>
       <Modal.Body>
         <form onSubmit={formik.handleSubmit}>
-          {errMsg && (
-            <div className="bg-red-200 text-red-700 h-10 flex justify-center items-center mt-2">
-              <p className="bg-inherit">{errMsg}</p>
-            </div>
-          )}
+          {errMsg && <AlertWithIcon errMsg={errMsg} color="failure" />}
           <div className="mt-5 px-6 grid gap-y-3">
-            <InputForm
+            <input
               label="Product Stock"
               name="productStock"
               type="number"
@@ -102,6 +100,7 @@ const UpdateStock = ({
               onChange={formik.handleChange}
               value={formik.values.productStock}
               errorMessage={formik.errors.productStock}
+              min="1"
             />
             <div>
               <label className="block text-sm font-medium text-gray-700">

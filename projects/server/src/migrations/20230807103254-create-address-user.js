@@ -9,6 +9,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      province_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Cities",
+          key: "id",
+        },
+      },
       city_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
@@ -53,7 +61,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
       },
+      deletedAt: {
+        allowNull: true,
+        type: Sequelize.DATE,
+      },
     });
+
+    await queryInterface.addIndex("Address_users", ["deletedAt"]);
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Address_users");

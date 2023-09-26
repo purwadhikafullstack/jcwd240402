@@ -6,8 +6,8 @@ import {
   AiFillMinusSquare,
   AiFillPlusSquare,
 } from "react-icons/ai";
-import { FaCartArrowDown } from "react-icons/fa";
-import toRupiah from "@develoka/angka-rupiah-js";
+
+import { rupiahFormat } from "../../../utils/formatter";
 
 import axios from "../../../api/axios";
 import CarouselProductDetail from "../carousel/CarouselProductDetail";
@@ -18,7 +18,7 @@ import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
 import { cartsUser } from "../../../features/cartSlice";
-import Alert from "../Alert";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 export default function SlideOverCart({ name, quantity }) {
   const access_token = getCookie("access_token");
@@ -35,7 +35,6 @@ export default function SlideOverCart({ name, quantity }) {
   const [openAlert, setOpenAlert] = useState(false);
 
   const handleAddProductToCart = async (name, qty) => {
-    console.log(qty);
     try {
       await axios
         .patch(
@@ -54,6 +53,11 @@ export default function SlideOverCart({ name, quantity }) {
               headers: { Authorization: `Bearer ${access_token}` },
             })
             .then((res) => dispatch(cartsUser(res.data?.result)));
+        })
+        .catch((error) => {
+          setErrMsg(error.response?.data?.message);
+          setOpenAlert(true);
+          setQty(0);
         });
     } catch (error) {
       if (!error.response) {
@@ -68,8 +72,8 @@ export default function SlideOverCart({ name, quantity }) {
 
   useEffect(() => {
     axios.get(`/user/warehouse-stock/product/${name}`).then((res) => {
-      setDetailProduct(res.data?.result.Product);
-      setDataImage(res.data?.result.Product.Image_products);
+      setDetailProduct(res.data?.result);
+      setDataImage(res.data?.result?.Image_products);
       setStock(res.data?.result?.product_stock);
     });
   }, [name]);
@@ -81,7 +85,9 @@ export default function SlideOverCart({ name, quantity }) {
   const product = dataImage?.map((item) => {
     let image;
     image = {
-      image: `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`,
+      image: item?.img_product
+        ? `${process.env.REACT_APP_API_BASE_URL}${item?.img_product}`
+        : emptyImage,
     };
     return image;
   });
@@ -95,7 +101,7 @@ export default function SlideOverCart({ name, quantity }) {
         Edit Cart
       </button>
       <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-30" onClose={setOpen}>
+        <Dialog as="div" className="relative z-50" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"
@@ -150,25 +156,37 @@ export default function SlideOverCart({ name, quantity }) {
                         <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                           <img
                             src={logo}
-                            alt=""
+                            alt="logo"
                             className=" h-8 md:h-10 lg:h-8"
                           />
                         </Dialog.Title>
                       </div>
                       <div className="relative mt-4 flex-1 px-4 sm:px-6">
-                        <Alert
-                          successMsg={successMsg}
-                          setOpenAlert={setOpenAlert}
-                          openAlert={openAlert}
-                          errMsg={errMsg}
-                        />
+                        {successMsg ? (
+                          <div className="mx-4 md:mx-0 lg:mx-0 absolute left-0 right-0 flex justify-center items-start z-10">
+                            <DismissableAlert
+                              successMsg={successMsg}
+                              openAlert={openAlert}
+                              setOpenAlert={setOpenAlert}
+                            />
+                          </div>
+                        ) : errMsg ? (
+                          <div className="mx-4 md:mx-0 lg:mx-0  absolute left-0 right-0 flex justify-center items-start z-10">
+                            <DismissableAlert
+                              successMsg={errMsg}
+                              openAlert={openAlert}
+                              setOpenAlert={setOpenAlert}
+                              color="failure"
+                            />
+                          </div>
+                        ) : null}
                         <CarouselProductDetail data={product} />
                         <div>
                           <h1 className="font-bold text-xl md:text-3xl lg:text-2xl">
                             {detailProduct?.name}
                           </h1>
                           <h1 className="font-bold text-lg md:text-xl lg:text-xl">
-                            {toRupiah(detailProduct?.price)}
+                            {rupiahFormat(detailProduct?.price)}
                           </h1>
                         </div>
                         <div className="flex justify-between mt-4">
@@ -190,7 +208,11 @@ export default function SlideOverCart({ name, quantity }) {
                               onClick={() => setQty(qty + 1)}
                               className="px-1"
                             >
-                              <AiFillPlusSquare className="text-blue3 text-2xl" />
+                              <AiFillPlusSquare
+                                className={` ${
+                                  qty === stock ? "text-gray-400" : "text-blue3"
+                                } text-2xl`}
+                              />
                             </button>
                           </div>
                         </div>
@@ -205,7 +227,9 @@ export default function SlideOverCart({ name, quantity }) {
                             </h1>
                           ) : (
                             <button
-                              onClick={() => handleAddProductToCart(name, qty)}
+                              onClick={() => {
+                                handleAddProductToCart(name, qty);
+                              }}
                               className={` ${
                                 stock === 0 || qty === 0
                                   ? "bg-gray-400 cursor-not-allowed"

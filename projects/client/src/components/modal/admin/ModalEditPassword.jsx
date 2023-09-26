@@ -6,6 +6,7 @@ import axios from "../../../api/axios";
 import PasswordInput from "../../PasswordInput";
 import InputForm from "../../InputForm";
 import Button from "../../Button";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 
 const ChangePasswordModal = ({
   show,
@@ -13,16 +14,18 @@ const ChangePasswordModal = ({
   adminId,
   handleSuccessfulEdit,
 }) => {
+  const access_token = getCookie("access_token");
   const hasResetForm = useRef(false);
   const [errMsg, setErrMsg] = useState("");
 
   const changePassword = async (values) => {
     try {
       const response = await axios.patch(
-        `/api/admin/change-pass/${adminId}`,
-        values
+        `/admin/change-pass/${adminId}`,
+        values,
+        { headers: { Authorization: `Bearer ${access_token}` } }
       );
-      console.log("Response from server:", response);
+
       if (response.status === 200) {
         onClose();
         formik.resetForm();
@@ -31,7 +34,6 @@ const ChangePasswordModal = ({
         throw new Error("Change Password Failed");
       }
     } catch (err) {
-      console.log("Error in request:", err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -57,7 +59,7 @@ const ChangePasswordModal = ({
         ),
       confirmPassword: yup
         .string()
-        .oneOf([yup.ref("Password"), null], "Passwords must match")
+        .oneOf([yup.ref("newPassword"), null], "Passwords must match")
         .required("Confirm Password is required"),
     }),
     validateOnChange: false,

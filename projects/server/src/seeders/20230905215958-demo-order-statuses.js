@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,7 +11,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("Order_statuses", [
       {
         id: 1,
@@ -49,6 +49,12 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date(),
       },
+      {
+        id: 7,
+        name: "Rejected",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
     ]);
   },
 
@@ -59,6 +65,8 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    await queryInterface.bulkDelete("Order_details", null, {});
+    await queryInterface.bulkDelete("Orders", null, {});
     return queryInterface.bulkDelete("Order_statuses", null, {});
   },
 };

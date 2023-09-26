@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
@@ -17,6 +17,13 @@ const ModalEditFirstName = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
+  const userData = useSelector((state) => state.profiler.value);
+
+  useEffect(() => {
+    formik.setValues({
+      first_name: userData.User_detail?.first_name || "",
+    });
+  }, [userData]);
 
   const editFirstName = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
@@ -74,6 +81,7 @@ const ModalEditFirstName = () => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
   };
+
   return (
     <>
       <button

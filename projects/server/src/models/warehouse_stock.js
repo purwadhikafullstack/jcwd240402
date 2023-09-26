@@ -40,14 +40,11 @@ module.exports = (sequelize, DataTypes) => {
       warehouse_id: DataTypes.INTEGER,
       product_id: DataTypes.INTEGER,
       product_stock: DataTypes.INTEGER,
-      status: {
-        type: DataTypes.ENUM("Empty", "In Stock"),
-      },
     },
     {
       sequelize,
       modelName: "Warehouse_stock",
-      paranoid: true, 
+      paranoid: true,
     }
   );
   return Warehouse_stock;

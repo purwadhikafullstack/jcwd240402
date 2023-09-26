@@ -14,6 +14,7 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import login from "../../assets/images/furnifor.png";
+import withOutAuth from "../../components/admin/withoutAuthAdmin";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -140,4 +141,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default withOutAuth(AdminLogin);

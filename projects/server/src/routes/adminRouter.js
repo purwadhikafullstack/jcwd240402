@@ -222,6 +222,6 @@ router.get("/province", adminController.getProvincesList);
 router.get("/statistic", statisticController.userStatistic);
 router.get("/statistic/pie-chart", statisticController.pieChart);
 router.get("/statistic/top-ten-product", statisticController.topTenProduct);
-router.get("/statistic/income-graph", statisticController.incomeGraph);
+router.get("/statistic/income-graph", authMiddleware.verifyAccessTokenAdmin, statisticController.incomeGraph);
 
 module.exports = router;

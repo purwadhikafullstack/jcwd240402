@@ -30,10 +30,7 @@ const SalesReport = () => {
   const [defaultProducts, setDefaultProducts] = useState([]);
   const [defaultYear, setDefaultYear] = useState([]);
 
-  const getCookieValue = (name) =>
-    document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)")?.pop() || "";
-
-  const token = getCookieValue("access_token");
+  const token = getCookie("access_token");
 
   const monthOptions = [
     { value: "", label: "any month" },

@@ -141,4 +141,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default withOutAuth(AdminLogin);

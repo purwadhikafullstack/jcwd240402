@@ -23,8 +23,10 @@ module.exports = {
 
   getAllUsers: async (options = {}, page = 1, pageSize = 10) => {
     const filter = options.where || {};
-    const include = options.include || [];
-
+    const include = options.include || [{
+      model: db.User_detail,
+    }];
+  
     const queryOptions = {
       where: filter,
       include: include,
@@ -32,10 +34,13 @@ module.exports = {
       attributes: { exclude: ["password", "verify_token", "reset_password_token"] },
       limit: pageSize,
     };
-
+  
     try {
       const results = await db.User.findAll(queryOptions); 
-      const totalItems = await db.User.count({ where: filter }); 
+      const totalItems = await db.User.count({ 
+        where: filter, 
+        include: include 
+      }); 
       return {
         success: true,
         data: results,
@@ -54,4 +59,5 @@ module.exports = {
       };
     }
   },
+  
 };

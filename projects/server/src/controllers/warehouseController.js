@@ -9,6 +9,7 @@ module.exports = {
       address_warehouse,
       warehouse_name,
       city_id,
+      province_id,
       latitude,
       longitude,
       warehouse_contact,
@@ -27,6 +28,7 @@ module.exports = {
           address_warehouse,
           warehouse_name,
           city_id,
+          province_id,
           latitude,
           longitude,
           warehouse_contact,
@@ -56,6 +58,7 @@ module.exports = {
       "city_id",
       "warehouse_contact",
       "address_warehouse",
+      "province_id",
       "latitude",
       "longitude",
     ];
@@ -240,6 +243,13 @@ module.exports = {
         {
           model: db.City,
           attributes: ["name"],
+          include: [
+            {
+              model: db.Province,
+              attributes: ["name"],
+              
+            },
+          ],
         },
       ],
     };

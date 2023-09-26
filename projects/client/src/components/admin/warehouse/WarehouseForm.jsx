@@ -23,7 +23,6 @@ const WarehouseInputsEdit = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const [initialWarehouseData, setInitialWarehouseData] = useState(null);
   const [currentImage, setCurrentImage] = useState(null);
-  const [showImage, setShowImage] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const { warehouseName } = useParams();
   const access_token = getCookie("access_token");
@@ -135,7 +134,7 @@ const WarehouseInputsEdit = () => {
             value: warehouse.province_id,
             label: warehouse.City.Province.name,
           });
-          setProvinceChanged(true);
+          setProvinceChanged(true); 
           setLoading(false);
         }
       } catch (error) {
@@ -192,12 +191,6 @@ const WarehouseInputsEdit = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div className="h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-[auto,1fr]">
-      <div className="lg:flex lg:flex-col lg:justify-start">
-        <Sidebar />
-      </div>
-      <div className="flex lg:flex-none">
-        <SidebarAdminMobile />
         <div className="w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0 px-6">
           <h2 className="text-xl font-semibold mb-5">Edit Warehouse</h2>
           {errMsg && <AlertWithIcon errMsg={errMsg} />}
@@ -304,16 +297,10 @@ const WarehouseInputsEdit = () => {
                 </div>
               </form>
             </div>
-            <ImageUpload
-              currentImage={currentImage}
-              showImage={showImage}
-              setShowImage={setShowImage}
-            />
           </div>
         </div>
-      </div>
-    </div>
   );
 };
 
 export default withAuthAdmin(WarehouseInputsEdit);
+

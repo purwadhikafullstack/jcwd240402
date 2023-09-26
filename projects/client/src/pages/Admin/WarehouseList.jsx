@@ -51,6 +51,7 @@ const WarehouseList = () => {
   const formattedWarehouses = warehouses.map((warehouse) => ({
     id: warehouse.id,
     city: warehouse.City?.name || "",
+    province:warehouse.City?.Province.name,
     "Warehouse Name": warehouse.warehouse_name || "",
     "Warehouse Address": warehouse.address_warehouse || "",
     "Warehouse Contact": warehouse.warehouse_contact || "",
@@ -108,9 +109,10 @@ const WarehouseList = () => {
               fontWeight="font-semibold"
             />
           </div>
-          <div className="py-4 mr-4">
+          <div className="py-4 mx-4">
             <TableComponent
               headers={[
+                "province",
                 "city",
                 "Warehouse Name",
                 "Warehouse Address",

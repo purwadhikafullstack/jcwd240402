@@ -79,9 +79,9 @@ const UserList = () => {
               className="flex-1 p-2 border rounded text-base bg-white border-gray-300 shadow-sm mx-4"
             />
           </div>
-          <div className="py-4 mr-4">
+          <div className="py-4 mx-4">
             <TableComponent
-              headers={["username", "email", "is_verify", "Created at"]}
+              headers={["username", "email", "verified", "Created at"]}
               data={formattedUsers}
               showIcon={false}
             />

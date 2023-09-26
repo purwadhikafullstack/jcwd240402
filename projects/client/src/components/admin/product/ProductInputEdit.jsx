@@ -59,9 +59,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   };
 
   const handleCategoryChange = (selectedOption) => {
-    handleInputChange({
-      target: { name: "category_id", value: selectedOption.value },
-    });
+    handleInputChange("category_id", selectedOption.value);
     setSelectedCategory(selectedOption);
   };
 
@@ -116,13 +114,13 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           Category
         </label>
         <AsyncSelect
-          cacheOptions
-          defaultOptions={defaultCategories}
-          loadOptions={loadCategoryOptions}
-          value={selectedCategory || null}
-          onChange={handleCategoryChange}
-          placeholder="Select a category"
-        />
+  cacheOptions
+  defaultOptions={defaultCategories}
+  loadOptions={loadCategoryOptions}
+  value={selectedCategory || null}
+  onChange={handleCategoryChange}
+  placeholder="Select a category"
+/>
         {getErrorMessage("category_id") && (
           <p className="text-red-500 mt-2">{getErrorMessage("category_id")}</p>
         )}

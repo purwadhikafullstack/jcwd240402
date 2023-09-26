@@ -1,5 +1,5 @@
 import React from "react";
-import Tabs from "../../components/tabs/TabContainer";
+import Tabs from "../../components/tab/TabComponent";
 import { Outlet } from "react-router-dom";
 import SidebarAdminDesktop from "../../components/SidebarAdminDesktop";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";

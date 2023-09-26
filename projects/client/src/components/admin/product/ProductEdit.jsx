@@ -77,8 +77,10 @@ const ProductEdit = () => {
     return () => clearTimeout(timer);
   }, [successMessage]);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (name, value) => {
+    if (typeof name === "object" && name.target) {
+      ({ name, value } = name.target);
+    }
     setProduct((prevProduct) => ({
       ...prevProduct,
       [name]: value,

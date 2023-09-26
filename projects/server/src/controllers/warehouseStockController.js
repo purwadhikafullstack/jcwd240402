@@ -63,6 +63,7 @@ module.exports = {
     const warehouseId = parseInt(req.params.warehouseId);
     const productId = parseInt(req.params.productId);
     const { productStock, operation } = req.body;
+    const adminData = req.user
 
     if (req.user.role_id === 2) {
       if (req.user.warehouse_id !== warehouseId) {
@@ -91,31 +92,33 @@ module.exports = {
 
       switch (operation) {
         case "increase":
-          existingStock.product_stock += parseInt(productStock, 10);
 
-          // const stockHistoryFrom = newStockHistory(
-          //   existingStock.id,
-          //   warehouseId,
-          //   adminData.id,
-          //   existingStock.product_stock,
-          //   existingStock.product_stock + parseInt(productStock, 10),
-          //   parseInt(productStock, 10),
-          //   "Stock Update"
-          // );
+        const stockHistoryFrom = newStockHistory(
+          existingStock.id,
+          warehouseId,
+          adminData.id,
+          existingStock.product_stock,
+          existingStock.product_stock + parseInt(productStock, 10),
+          parseInt(productStock, 10),
+          "Stock Update"
+        );
+
+          existingStock.product_stock += parseInt(productStock, 10);
 
           break;
         case "decrease":
-          existingStock.product_stock -= parseInt(productStock, 10);
 
-          // const stockHistoryFrom2 = newStockHistory(
-          //   existingStock.id,
-          //   warehouseId,
-          //   adminData.id,
-          //   existingStock.product_stock,
-          //   existingStock.product_stock - parseInt(productStock, 10),
-          //   parseInt(productStock, 10),
-          //   "Stock Update"
-          // );
+        const stockHistoryFrom2 = newStockHistory(
+          existingStock.id,
+          warehouseId,
+          adminData.id,
+          existingStock.product_stock,
+          existingStock.product_stock - parseInt(productStock, 10),
+          parseInt(productStock, 10),
+          "Stock Update"
+        );
+
+          existingStock.product_stock -= parseInt(productStock, 10);       
 
           if (existingStock.product_stock < 0) {
             await t.rollback();

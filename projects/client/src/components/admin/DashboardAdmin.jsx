@@ -26,6 +26,7 @@ import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
 import withAuthAdmin from "./withAuthAdmin";
+import withAuthAdminWarehouse from "./withAuthAdminWarehouse";
 ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(
   ArcElement,

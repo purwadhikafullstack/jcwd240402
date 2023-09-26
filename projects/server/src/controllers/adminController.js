@@ -1253,7 +1253,15 @@ module.exports = {
         perPage
       );
 
+      const responseAll = await getAllUserOrderDetails(
+        options,
+        filter3,
+        null,
+        null
+      );
+
       const userOrder = response.data;
+      const userOrderAll = responseAll.data;
 
       const totalOnly = [];
       const availableWarehouseStock = [];
@@ -1264,7 +1272,7 @@ module.exports = {
         }
       });
 
-      const orderMap = userOrder.map((m) => {
+      const orderMap = userOrderAll.map((m) => {
         if (m.Warehouse_stock) {
           totalOnly.push(m.Warehouse_stock.Product.price * m.quantity);
         }

@@ -161,9 +161,9 @@ module.exports = {
     // const perPage = Number(req.query.size) || 10;
     const warehouse_id = req.query.warehouseId || "";
 
-    const endDate = dayjs()
+    const endDate = moment();
 
-    const startDate =  dayjs().subtract(12, "month").toDate();
+    const startDate =  moment().subtract(12, "month").toDate();
 
     const filter = {
       delivery_time: {
@@ -221,9 +221,9 @@ module.exports = {
 
       for(let i = 0; i < 12; i++){
 
-        const startDate2 =  dayjs().subtract(12 - i, "month").toDate();
+        const startDate2 =  moment().subtract(12 - i, "month").toDate();
 
-        const endDate2 = dayjs().subtract(12 - (i + 1), "month").toDate();
+        const endDate2 = moment().subtract(12 - (i + 1), "month").toDate();
 
         twelveMonthsBefore.push(dayjs(endDate2).format('MMMM YYYY'))
 

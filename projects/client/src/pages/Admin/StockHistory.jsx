@@ -122,7 +122,7 @@ const StockHistory = () => {
         setTotalLastStock(response?.data?.total_last_stock);
         setTotalIncrement(response?.data?.total_increment);
         setTotalDecrement(response?.data?.total_decrement);
-        setTotalPages(response?.pagination?.totalPages);
+        setTotalPages(response?.data.pagination?.totalPages);
       })
       .catch((err) => {
         setError(err.response.message);
@@ -197,25 +197,19 @@ const StockHistory = () => {
                 "Increment/Decrement": history?.increment_decrement || "",
                 Quantity: history?.quantity || "",
                 Journal: history?.journal || "",
-                Timestamp:
-                  history?.timestamp.slice(0, 10) +
-                    ", " +
-                    history?.timestamp.slice(11, 19) || "",
+                Timestamp: dayjs(history?.timestamp).format("D MMMM YYYY HH:mm:ss") || ""
               }))}
               showIcon={false}
             />
           </div>
           {error && <div className="text-red-500">{error}</div>}
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              // navigateWithParams({ page });
-            }}
-          />
-        </div>
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       </div>
     </div>

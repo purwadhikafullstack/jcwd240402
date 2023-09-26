@@ -362,7 +362,7 @@ const UserOrder = () => {
             />
             <Select
               options={monthOptions}
-              placeholder={<div>month</div>}
+              placeholder={<div>select a month</div>}
               onChange={handleChangeMonth}
               className="flex-1  rounded text-base bg-white  shadow-sm pl-4 pr-2"
             />

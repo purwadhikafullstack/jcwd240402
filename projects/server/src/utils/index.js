@@ -167,10 +167,6 @@ module.exports = {
           },
           { transaction: t }
         );
-  
-        sourceWarehouseStock.product_stock -= stockToTransfer;
-        currentWarehouseStock.product_stock += stockToTransfer;
-        remainingDeficit -= stockToTransfer;
 
         const stockHistoryFrom = newStockHistory(
           sourceWarehouseStock.id,
@@ -189,6 +185,10 @@ module.exports = {
           currentWarehouseStock.product_stock + stockToTransfer,
           stockToTransfer,
           "Stock Transfer")
+  
+        sourceWarehouseStock.product_stock -= stockToTransfer;
+        currentWarehouseStock.product_stock += stockToTransfer;
+        remainingDeficit -= stockToTransfer;
 
         await sourceWarehouseStock.save({ transaction: t });
 

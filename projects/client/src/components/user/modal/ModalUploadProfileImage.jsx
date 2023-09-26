@@ -20,11 +20,6 @@ const ModalUploadProfileImage = () => {
   const [showImage, setShowImage] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const props = { openModal, setOpenModal };
-  const [dissabledButton, setDissabledButton] = useState(false);
-
-  const handleDissabled = () => {
-    setDissabledButton(true);
-  };
 
   const editImageProfile = async (e) => {
     e.preventDefault();

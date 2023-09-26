@@ -3,7 +3,6 @@ import { RiBookmark3Fill } from "react-icons/ri";
 import axios from "../../api/axios";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useDispatch, useSelector } from "react-redux";
-import Loading from "../Loading";
 import { wishlistUser } from "../../features/wishlistDataSlice";
 
 const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {

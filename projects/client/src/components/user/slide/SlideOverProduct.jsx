@@ -21,14 +21,11 @@ import { cartsUser } from "../../../features/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import ShareButton from "../ShareButton";
 import Wishlist from "../Wishlist";
-import Loading from "../../Loading";
 import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 export default function SlideOverProduct({ name }) {
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
-
-  // const stock = useSelector((state) => state.stocker.value);
 
   const [open, setOpen] = useState(false);
   const [stock, setStock] = useState(0);
@@ -38,7 +35,7 @@ export default function SlideOverProduct({ name }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
-  const [reservedStock, setReservedStock] = useState(0);
+
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 

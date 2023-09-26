@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
+import { useFormik } from "formik";
 
-import verified from "../../../assets/images/verified.webp";
 import axios from "../../../api/axios";
 import {
   removeCookie,
   removeLocalStorage,
 } from "../../../utils/tokenSetterGetter";
-import NotifVerifies from "./NotifVerifies";
-import { useFormik } from "formik";
-import Button from "../../Button";
+
 import PasswordInput from "../../PasswordInput";
 import AlertWithIcon from "../../AlertWithIcon";
 

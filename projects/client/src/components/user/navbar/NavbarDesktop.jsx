@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { BsFillCartFill } from "react-icons/bs";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RiBookmark3Fill } from "react-icons/ri";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";

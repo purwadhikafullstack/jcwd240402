@@ -3,7 +3,6 @@ import { FaShippingFast, FaTruckPickup, FaReceipt } from "react-icons/fa";
 import { BsFillTelephoneFill, BsWrenchAdjustable } from "react-icons/bs";
 import { MdDraw } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { GrLinkTop } from "react-icons/gr";
 
 import CarouselBanner from "../../components/user/carousel/CarouselBanner";
 import NavbarDesktop from "../../components/user/navbar/NavbarDesktop";

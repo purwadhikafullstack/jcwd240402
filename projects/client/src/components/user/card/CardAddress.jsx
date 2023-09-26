@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CiMenuKebab } from "react-icons/ci";
 
@@ -77,8 +77,6 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
     setShowMenu(false);
   };
 
-  const domNode = useClickOutside(clickClose);
-
   return (
     <div className="w-full pb-4">
       <div
@@ -96,13 +94,11 @@ const CardAddress = ({ address_title, address_details, city, idAddress }) => {
           <h4>{address_details}</h4>
         </div>
         <div className="flex flex-col items-end w-52">
-          {/* <BurgerSettingAddress idAddress={idAddress} /> */}
           <button onClick={() => setShowMenu(!showMenu)}>
             <CiMenuKebab className="text-xl" />
           </button>
           {showMenu ? (
             <div
-              // ref={domNode}
               className={`${
                 location.pathname === "/user/setting/address"
                   ? "absolute mt-5 z-10"

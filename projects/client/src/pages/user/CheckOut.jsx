@@ -11,11 +11,7 @@ import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import ModalSetPrimaryAddress from "../../components/user/modal/ModalSetPrimaryAddress";
 import axios from "../../api/axios";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../utils/tokenSetterGetter";
+import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";

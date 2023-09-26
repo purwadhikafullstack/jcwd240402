@@ -7,11 +7,7 @@ import { useDispatch } from "react-redux";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
@@ -19,8 +15,6 @@ const ModalChangeAddress = ({ idAddress }) => {
   const dispatch = useDispatch();
 
   const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-  const [newAccessToken, setNewAccessToken] = useState("");
 
   const [openModal, setOpenModal] = useState();
   const [email, setEmail] = useState("");

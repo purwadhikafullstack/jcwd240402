@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import verified from "../../../assets/images/verified.webp";
-import axios from "../../../api/axios";
+
 import {
   removeCookie,
   removeLocalStorage,

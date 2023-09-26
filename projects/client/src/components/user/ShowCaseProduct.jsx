@@ -15,7 +15,6 @@ const ShowCaseProduct = ({ perPage }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const [openAlert, setOpenAlert] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [limitPrice, setLimitPrice] = useState(0);
   const [limitWeight, setLimitWeight] = useState(0);

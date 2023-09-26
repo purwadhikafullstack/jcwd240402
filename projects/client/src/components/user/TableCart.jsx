@@ -1,10 +1,8 @@
 import React, { useState } from "react";
+
 import { rupiahFormat } from "../../utils/formatter";
 import { weightFormat } from "../../utils/formatter";
-
 import { CiMenuKebab } from "react-icons/ci";
-
-import { Badge } from "flowbite-react";
 import SlideOverCart from "./slide/SlideOverCart";
 import emptyImage from "../../assets/images/emptyImage.jpg";
 

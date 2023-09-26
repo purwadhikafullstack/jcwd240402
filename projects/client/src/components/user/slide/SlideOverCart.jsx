@@ -6,10 +6,9 @@ import {
   AiFillMinusSquare,
   AiFillPlusSquare,
 } from "react-icons/ai";
-import { FaCartArrowDown } from "react-icons/fa";
 
 import { rupiahFormat } from "../../../utils/formatter";
-import { weightFormat } from "../../../utils/formatter";
+
 import axios from "../../../api/axios";
 import CarouselProductDetail from "../carousel/CarouselProductDetail";
 import AccordionProduct from "../accordion/AccordionProduct";
@@ -19,7 +18,6 @@ import ModalLogin from "../modal/ModalLogin";
 import DismissableAlert from "../../DismissableAlert";
 import { useDispatch } from "react-redux";
 import { cartsUser } from "../../../features/cartSlice";
-import Alert from "../Alert";
 import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 export default function SlideOverCart({ name, quantity }) {

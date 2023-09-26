@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Accordion } from "flowbite-react";
 import { rupiahFormat } from "../../../utils/formatter";
 import { weightFormat } from "../../../utils/formatter";

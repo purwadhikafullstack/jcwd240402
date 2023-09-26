@@ -2,7 +2,6 @@ import React from "react";
 import { Badge } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { rupiahFormat } from "../../../utils/formatter";
-import { weightFormat } from "../../../utils/formatter";
 
 import SlideOverProduct from "../slide/SlideOverProduct";
 

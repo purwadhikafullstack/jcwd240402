@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import InputForm from "../../InputForm";
 import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 
 const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
-
   const loadCategoryOptions = async (inputValue) => {
     try {
       const response = await axios.get(`/admin/categories`, {

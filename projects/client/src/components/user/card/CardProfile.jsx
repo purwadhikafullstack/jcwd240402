@@ -6,9 +6,8 @@ import coupon from "../../../assets/icons/coupon.png";
 import BadgeTag from "../../BadgeTag";
 import ModalResendVerify from "../modal/ModalResendVerify";
 import emptyImage from "../../../assets/images/emptyImage.jpg";
-import { Link } from "react-router-dom";
 
-const CardProfile = ({ inputPhotoRef }) => {
+const CardProfile = () => {
   const userData = useSelector((state) => state.profiler.value);
   return (
     <div className="md:col-span-1 lg:col-span-1 rounded-xl h-56 md:h-52 md:mb-4 items-center lg:h-fit shadow-card-1 ">

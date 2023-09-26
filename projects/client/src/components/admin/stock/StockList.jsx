@@ -11,14 +11,22 @@ import ProductDetailsModal from "../../modal/stock/ModalProductDetails";
 import axios from "../../../api/axios";
 import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
 import { useCategoryOptions } from "../../../utils/loadCategoryOptions";
-import  useURLParams  from "../../../utils/useUrlParams";
+import useURLParams from "../../../utils/useUrlParams";
 
 const StockList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
-  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", ""));
-  const [selectedCategory, setSelectedCategory] = useState(syncStateWithParams("category", ""));
-  const [searchProductName, setSearchProductName] = useState(syncStateWithParams("productName", "") );
-  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouse", "")
+  );
+  const [selectedCategory, setSelectedCategory] = useState(
+    syncStateWithParams("category", "")
+  );
+  const [searchProductName, setSearchProductName] = useState(
+    syncStateWithParams("productName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
   const [stocks, setStocks] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -88,7 +96,7 @@ const StockList = () => {
     const product = {
       warehouseId: row["Warehouse ID"],
       productId: row["Product ID"],
-      productName: row.Product
+      productName: row.Product,
     };
     setSelectedProduct(product);
     switch (action) {
@@ -122,7 +130,7 @@ const StockList = () => {
     setProductToTransfer({
       fromWarehouseId: row["Warehouse ID"],
       productId: row["Product ID"],
-      productName: row.Product
+      productName: row.Product,
     });
     setShowTransferModal(true);
   };
@@ -139,7 +147,9 @@ const StockList = () => {
             setCurrentPage(1);
           }}
           placeholder="Select a warehouse"
-          className={`flex-1 ${adminData.role_id !== 1 ? "hidden" : ""}`}
+          className={`flex-1 ${
+            adminData.role_id !== 1 ? "hidden" : ""
+          } relative z-50`}
         />
         <AsyncSelect
           cacheOptions
@@ -150,7 +160,9 @@ const StockList = () => {
             setCurrentPage(1);
           }}
           placeholder="Select a category"
-          className={`flex-1 ${adminData.role_id !== 1 ? "" : "ml-4"}`}
+          className={`flex-1 ${
+            adminData.role_id !== 1 ? "" : "ml-4"
+          } relative z-50`}
         />
         <input
           type="text"
@@ -197,7 +209,7 @@ const StockList = () => {
         onClose={() => setShowDeleteModal(false)}
         warehouseId={selectedProduct?.warehouseId}
         productId={selectedProduct?.productId}
-        productName={selectedProduct?.productName} 
+        productName={selectedProduct?.productName}
         onSuccessfulDelete={handleSuccessfulDelete}
       />
       <TransferStockModal

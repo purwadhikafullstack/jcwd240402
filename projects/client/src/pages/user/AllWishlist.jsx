@@ -11,8 +11,7 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import axios from "../../api/axios";
 import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
-import Loading from "../../components/Loading";
-import { wishlistUser } from "../../features/wishlistDataSlice";
+
 import wishlistempty from "../../assets/images/wishlistempty.png";
 import CardWishlist from "../../components/user/card/CardWishlist";
 import withAuthUser from "../../components/user/withAuthUser";
@@ -20,7 +19,7 @@ import loadingfurnifor from "../../assets/icons/iconfurnifor.png";
 
 const AllWishlist = () => {
   const [errMsg, setErrMsg] = useState("");
-  const [loading, setLoading] = useState(true);
+
   const access_token = getCookie("access_token");
   const refresh_token = getLocalStorage("refresh_token");
   const userData = useSelector((state) => state.profiler.value);
@@ -31,7 +30,6 @@ const AllWishlist = () => {
   const [limit, setLimit] = useState(3);
   const [hasMore, setHasMore] = useState(true);
 
-  const dispatch = useDispatch();
   const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {

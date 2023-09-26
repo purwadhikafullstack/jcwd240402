@@ -10,11 +10,7 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../api/axios";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../utils/tokenSetterGetter";
+import { getCookie, getLocalStorage } from "../../utils/tokenSetterGetter";
 import { profileUser } from "../../features/userDataSlice";
 import { addressUser } from "../../features/userAddressSlice";
 import { cartsUser } from "../../features/cartSlice";

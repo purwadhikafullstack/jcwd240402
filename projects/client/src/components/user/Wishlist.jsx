@@ -16,30 +16,32 @@ const Wishlist = ({ product, setErrMsg, setOpenAlert, setSuccessMsg }) => {
   const [isAdded, setIsAdded] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(`/user/wishlist/${product}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      })
-      .then((res) => {
-        console.log(res.data?.result);
-        if (res.data?.result === null) {
+    if (access_token && refresh_token && userData.role_id === 3) {
+      axios
+        .get(`/user/wishlist/${product}`, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          console.log(res.data?.result);
+          if (res.data?.result === null) {
+            setIsAdded(false);
+          } else {
+            setIsAdded(true);
+          }
+        })
+        .catch((error) => {
           setIsAdded(false);
-        } else {
-          setIsAdded(true);
-        }
-      })
-      .catch((error) => {
-        setIsAdded(false);
 
-        if (!error.response) {
-          setErrMsg("No Server Response");
-          setIsAdded(false);
-        } else {
-          setErrMsg(error.response?.data?.message);
-          setIsAdded(false);
-        }
-      });
-  }, [access_token, product, setErrMsg]);
+          if (!error.response) {
+            setErrMsg("No Server Response");
+            setIsAdded(false);
+          } else {
+            setErrMsg(error.response?.data?.message);
+            setIsAdded(false);
+          }
+        });
+    }
+  }, [access_token, product, refresh_token, setErrMsg, userData.role_id]);
 
   const handleAddWishlist = async () => {
     try {

@@ -128,7 +128,7 @@ module.exports = {
           }
           break;
       }
-      
+
       await existingStock.save({ transaction: t });
 
       await t.commit();
@@ -368,7 +368,7 @@ module.exports = {
 
       res.json({
         ok: true,
-        message: "success get products",
+        message: "Success get products",
         pagination: {
           ...pagination,
           totalPages: totalPage,
@@ -641,7 +641,7 @@ module.exports = {
 
       if (response.success) {
         res.status(200).send({
-          message: "stock history retrieved successfully",
+          message: "Stock history retrieved successfully",
           history: stockHistory,
           total_last_stock: totalLastStock,
           total_increment: totalIncrement,

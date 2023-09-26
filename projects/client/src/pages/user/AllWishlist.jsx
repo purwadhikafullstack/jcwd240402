@@ -39,22 +39,23 @@ const AllWishlist = () => {
   }, [lastId, limit]);
 
   const getList = async () => {
-    if (access_token && refresh_token && userData.role_id === 3) {
-      try {
-        const response = await axios.get(
-          `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,
-          {
-            headers: { Authorization: `Bearer ${access_token}` },
-          }
-        );
+    if (!access_token || refresh_token || userData.role_id !== 3) {
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `/user/show-wishlist?lastId=${lastId}&limit=${limit}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
 
-        const newList = response.data.result;
-        setList([...list, ...newList]);
-        setTempId(response.data.lastId);
-        setHasMore(response.data.hasMore);
-      } catch (error) {
-        setErrMsg(error.response.data.message);
-      }
+      const newList = response.data.result;
+      setList([...list, ...newList]);
+      setTempId(response.data.lastId);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      setErrMsg(error.response.data.message);
     }
   };
 

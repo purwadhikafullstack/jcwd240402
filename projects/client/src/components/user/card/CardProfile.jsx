@@ -38,7 +38,7 @@ const CardProfile = ({ inputPhotoRef }) => {
           {userData.is_verify ? (
             <BadgeTag msg="verified" color="success" />
           ) : (
-            <div className="">
+            <div className="flex flex-col gap-2">
               <BadgeTag msg="unverified" color="failure" />
               <ModalResendVerify />
             </div>

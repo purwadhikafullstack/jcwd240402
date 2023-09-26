@@ -30,6 +30,9 @@ const AllWarehouse = () => {
   const primaryAddress = userData.User_detail?.address_user_id;
 
   useEffect(() => {
+    if (!access_token || !refresh_token || userData.role_id !== 3) {
+      return;
+    }
     axios
       .post(
         "/user/warehouse-closest",
@@ -59,7 +62,13 @@ const AllWarehouse = () => {
             });
         }
       });
-  }, [access_token, newAccessToken, primaryAddress, refresh_token]);
+  }, [
+    access_token,
+    newAccessToken,
+    primaryAddress,
+    refresh_token,
+    userData.role_id,
+  ]);
 
   useEffect(() => {
     axios.get("/user/all-warehouse").then((res) => {

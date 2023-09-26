@@ -159,10 +159,18 @@ const SettingProfile = () => {
                       <tr className="h-10">
                         <td>address</td>
                         <td>
-                          {userData?.User_detail?.Address_user?.address_details
-                            ? userData?.User_detail?.Address_user
-                                ?.address_details
-                            : "unregistered"}
+                          {userData?.User_detail?.Address_user
+                            ?.address_details ? (
+                            <span>
+                              {userData?.User_detail?.Address_user?.address_details?.slice(
+                                0,
+                                60
+                              )}
+                              ...
+                            </span>
+                          ) : (
+                            "unregistered"
+                          )}
                           <button className="ml-4">
                             <Link
                               to="/user/setting/address"

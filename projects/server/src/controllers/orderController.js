@@ -373,7 +373,7 @@ module.exports = {
       await t.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened 1",
+        message: "Something bad happened 1",
         error: error.message,
       });
     }
@@ -493,7 +493,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "payment image required",
+          message: "Payment image required",
         });
       }
 
@@ -515,14 +515,14 @@ module.exports = {
       await transaction.commit();
       res.status(200).json({
         ok: true,
-        message: "payment image uploaded",
+        message: "Payment image uploaded",
         order: orderDataWithPaymentProof,
       });
     } catch (error) {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -626,7 +626,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "you cannot update order status twice",
+          message: "You cannot update order status twice",
         });
       }
 
@@ -640,7 +640,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "you have to upload payment proof first",
+            message: "You have to upload payment proof first",
           });
         }
       }
@@ -650,14 +650,14 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "you cannot go back to pending payment",
+            message: "You cannot go back to pending payment",
           });
         }
         if (statusId === 6 || statusId === 3) {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "you have to get payment approval from admin",
+            message: "You have to get payment approval from admin",
           });
         }
       }
@@ -675,7 +675,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "your order has been completed, you cannot update any status order",
+              "Your order has been completed, You cannot update any status order",
           });
         }
       }
@@ -686,7 +686,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "your order has been proceed, you cannot cancel the payment",
+              "Your order has been proceed, You cannot cancel the payment",
           });
         }
         if (statusId === 1 || statusId === 2) {
@@ -694,7 +694,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "your order has been proceed, you cannot go back to pending payment or awaiting payment confirmation",
+              "Your order has been proceed, You cannot go back to pending payment or awaiting payment confirmation",
           });
         }
         if (statusId === 3) {
@@ -709,7 +709,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "the payment has been approved by the admin, you cannot reject it on this stage",
+              "The payment has been approved by the admin, You cannot reject it on this stage",
           });
         }
       }
@@ -726,7 +726,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "the order has been canceled, you cannot cancel it twice",
+            message: "The order has been canceled, You cannot cancel it twice",
           });
         }
       }
@@ -737,7 +737,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "the order has been shipped, you cannot cancel or reject it",
+              "The order has been shipped, You cannot cancel or reject it",
           });
         }
 
@@ -746,7 +746,7 @@ module.exports = {
           return res.status(400).json({
             ok: false,
             message:
-              "the order has been shipped, you cannot go back to the last stage",
+              "The order has been shipped, You cannot go back to the last stage",
           });
         }
       }
@@ -756,7 +756,7 @@ module.exports = {
           await transaction.rollback();
           return res.status(400).json({
             ok: false,
-            message: "you have to get payment approval from admin",
+            message: "You have to get payment approval from admin",
           });
         }
       }
@@ -765,7 +765,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "order not found",
+          message: "Order not found",
         });
       }
 
@@ -773,7 +773,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "status order not found",
+          message: "Status order not found",
         });
       }
 
@@ -923,7 +923,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }
@@ -942,7 +942,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "user have not ordered this product yet",
+          message: "User have not ordered this product yet",
         });
       }
 
@@ -954,7 +954,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(404).json({
           ok: false,
-          message: "reserved stock not found",
+          message: "Reserved stock not found",
         });
       }
 
@@ -972,7 +972,7 @@ module.exports = {
       await transaction.rollback();
       res.status(500).json({
         ok: false,
-        message: "something bad happened",
+        message: "Something bad happened",
         error: error.message,
       });
     }

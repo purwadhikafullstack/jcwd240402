@@ -3,7 +3,7 @@ const dayjs = require("dayjs");
 const db = require("../models");
 const { Op } = require("sequelize");
 
-const job = schedule.scheduleJob("*/30 * * * * *", async () => {
+const job = schedule.scheduleJob("*/20 * * * * *", async () => {
   const transaction = await db.sequelize.transaction();
   try {
     const tokenValue = await db.User.findAll({

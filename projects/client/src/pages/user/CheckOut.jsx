@@ -23,6 +23,7 @@ import BreadCrumb from "../../components/user/navbar/BreadCrumb";
 import emptycheckout from "../../assets/images/emptycheckout.png";
 import { rupiahFormat } from "../../utils/formatter";
 import emptyImage from "../../assets/images/emptyImage.jpg";
+import withAuthUser from "../../components/user/withAuthUser";
 
 const CheckOut = () => {
   const userData = useSelector((state) => state.profiler.value);
@@ -44,19 +45,7 @@ const CheckOut = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
   const [invoiceUniqCode, setInvoiceUniqCode] = useState("");
-
-  useEffect(() => {
-    if (!access_token && refresh_token) {
-      axios
-        .get("/user/auth/keep-login", {
-          headers: { Authorization: `Bearer ${refresh_token}` },
-        })
-        .then((res) => {
-          setNewAccessToken(res.data?.accessToken);
-          setCookie("access_token", newAccessToken, 1);
-        });
-    }
-  }, [access_token, newAccessToken, refresh_token]);
+  console.log(!access_token && !refresh_token && userData.role_id !== 3);
 
   useEffect(() => {
     axios
@@ -69,6 +58,9 @@ const CheckOut = () => {
   }, [access_token, dispatch]);
 
   useEffect(() => {
+    if (!access_token && !refresh_token && userData.role_id !== 3) {
+      return;
+    }
     axios
       .get("/user/profile/address", {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -76,9 +68,12 @@ const CheckOut = () => {
       .then((res) => {
         dispatch(addressUser(res.data?.result));
       });
-  }, [access_token, dispatch]);
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   useEffect(() => {
+    if (!access_token && !refresh_token && userData.role_id !== 3) {
+      return;
+    }
     axios
       .get("/user/cart", {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -88,9 +83,12 @@ const CheckOut = () => {
         setTotalCart(res.data?.total);
         setTotalWeight(res.data?.total_weight);
       });
-  }, [access_token, dispatch]);
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   useEffect(() => {
+    if (!access_token && !refresh_token && userData.role_id !== 3) {
+      return;
+    }
     axios
       .post(
         "/user/closest",
@@ -105,9 +103,12 @@ const CheckOut = () => {
         setClosestWarehouse(res.data?.closest_warehouse);
       })
       .catch((error) => setErrMsg(error));
-  }, [access_token, dispatch, userData]);
+  }, [access_token, dispatch, refresh_token, userData]);
 
   const handleCourier = (courier) => {
+    if (!access_token && !refresh_token && userData.role_id !== 3) {
+      return;
+    }
     axios
       .post(
         "/user/rajaongkir/cost",
@@ -138,6 +139,9 @@ const CheckOut = () => {
   };
 
   const handlePaymentClick = () => {
+    if (!access_token && !refresh_token && userData.role_id !== 3) {
+      return;
+    }
     axios
       .post(
         "/user/check-out",
@@ -325,8 +329,8 @@ const CheckOut = () => {
                     </div>
                     <div className="col-span-1 w-full text-xs border-2 p-4 h-fit rounded-lg md:col-span-1 md:sticky md:top-16 lg:col-span-1 lg:sticky lg:top-16 flex flex-col gap-4">
                       {userData.User_detail?.Address_user?.id ? (
-                        <div className="">
-                          <h1>Choose Courier</h1>
+                        <div className=" flex flex-col gap-4">
+                          <h1 className="font-semibold">Choose Courier</h1>
                           <Select
                             options={courierOptions}
                             placeholder={<div>courier</div>}
@@ -395,4 +399,4 @@ const CheckOut = () => {
   );
 };
 
-export default CheckOut;
+export default withAuthUser(CheckOut);

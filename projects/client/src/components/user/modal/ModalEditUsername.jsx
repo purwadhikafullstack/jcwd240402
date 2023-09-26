@@ -28,7 +28,7 @@ const ModalEditUsername = () => {
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
     formData.append("username", values.username);
-    console.log(formData);
+
     try {
       await axios
         .patch("/user/profile", formData, {
@@ -49,11 +49,19 @@ const ModalEditUsername = () => {
               headers: { Authorization: `Bearer ${access_token}` },
             })
             .then((res) => dispatch(profileUser(res.data.result)));
-
+          formik.resetForm();
           setErrMsg(null);
           props.setOpenModal(undefined);
+        })
+        .catch((err) => {
+          if (err.response?.data?.errors[0].msg) {
+            setErrMsg(err.response?.data?.errors[0].msg);
+          } else {
+            setErrMsg(err.response?.data?.message);
+          }
         });
     } catch (err) {
+      console.log(err);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -95,7 +103,11 @@ const ModalEditUsername = () => {
         show={props.openModal === "form-elements"}
         size="md"
         popup
-        onClose={() => props.setOpenModal(undefined)}
+        onClose={() => {
+          props.setOpenModal(undefined);
+          formik.resetForm();
+          setErrMsg("");
+        }}
       >
         <Modal.Header />
         <Modal.Body>

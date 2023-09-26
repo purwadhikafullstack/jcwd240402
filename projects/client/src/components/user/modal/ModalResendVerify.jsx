@@ -102,7 +102,7 @@ const ModalResendVerify = () => {
           props.setOpenModal("form-elements");
         }}
         type="button"
-        className="bg-blue3 px-2 text-xs text-white rounded-full font-semibold  py-1"
+        className="bg-blue3 px-2 text-xs text-white rounded-lg font-semibold  py-1"
       >
         Verify my account
       </button>

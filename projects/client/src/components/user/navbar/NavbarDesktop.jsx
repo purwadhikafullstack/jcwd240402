@@ -44,45 +44,47 @@ const NavbarDesktop = () => {
   const wishlistData = useSelector((state) => state.wishlister.value);
 
   useEffect(() => {
-    if (access_token && refresh_token && userData.role_id === 3) {
-      axios
-        .get("/user/cart", {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          dispatch(cartsUser(res.data?.result));
-        })
-        .catch((error) => {
-          if (
-            error.response?.data?.message === "Invalid token" &&
-            error.response?.data?.error?.name === "TokenExpiredError"
-          ) {
-            axios
-              .get("/user/auth/keep-login", {
-                headers: { Authorization: `Bearer ${refresh_token}` },
-              })
-              .then((res) => {
-                setNewAccessToken(res.data?.accessToken);
-                setCookie("access_token", newAccessToken, 1);
-              });
-          }
-        });
+    if (!access_token || refresh_token || userData.role_id !== 3) {
+      return;
     }
+    axios
+      .get("/user/cart", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(cartsUser(res.data?.result));
+      })
+      .catch((error) => {
+        if (
+          error.response?.data?.message === "Invalid token" &&
+          error.response?.data?.error?.name === "TokenExpiredError"
+        ) {
+          axios
+            .get("/user/auth/keep-login", {
+              headers: { Authorization: `Bearer ${refresh_token}` },
+            })
+            .then((res) => {
+              setNewAccessToken(res.data?.accessToken);
+              setCookie("access_token", newAccessToken, 1);
+            });
+        }
+      });
   }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
 
   useEffect(() => {
-    if (access_token && refresh_token && userData.role_id === 3) {
-      axios
-        .get("/user/wishlist", {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          dispatch(wishlistUser(res.data?.result));
-        })
-        .catch((error) => {
-          setErrMsg(error.response?.data?.message);
-        });
+    if (!access_token || refresh_token || userData.role_id !== 3) {
+      return;
     }
+    axios
+      .get("/user/wishlist", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(wishlistUser(res.data?.result));
+      })
+      .catch((error) => {
+        setErrMsg(error.response?.data?.message);
+      });
   }, [access_token, dispatch, refresh_token, userData.role_id]);
 
   const userNavigation = [
@@ -146,7 +148,10 @@ const NavbarDesktop = () => {
           />
         </div>
         <div className="flex justify-between w-20 items-center cursor-pointer">
-          {cartsData ? (
+          {cartsData &&
+          access_token &&
+          refresh_token &&
+          userData.role_id === 3 ? (
             <Link to="/cart" className="relative">
               <BsFillCartFill
                 className={`w-7 h-7 text-base_grey hover:text-blue3 transition-all ${
@@ -165,7 +170,10 @@ const NavbarDesktop = () => {
             </Link>
           )}
 
-          {wishlistData && access_token && refresh_token ? (
+          {wishlistData &&
+          access_token &&
+          refresh_token &&
+          userData.role_id === 3 ? (
             <Link to="/all-wishlist" className="relative">
               <RiBookmark3Fill
                 className={`w-7 h-7 hover:text-blue3 text-base_grey transition-all ${
@@ -185,7 +193,7 @@ const NavbarDesktop = () => {
           )}
         </div>
         <div className="flex gap-4">
-          {access_token && userData.role_id === 3 ? (
+          {access_token && refresh_token && userData.role_id === 3 ? (
             <>
               <Menu as="div" className="relative">
                 <div>

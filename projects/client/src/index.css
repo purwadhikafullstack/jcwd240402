@@ -4,6 +4,7 @@
 
 * {
   scroll-behavior: smooth;
+  font-family: "poppins";
 }
 
 ::-webkit-scrollbar {

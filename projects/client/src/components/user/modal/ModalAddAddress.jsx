@@ -7,20 +7,13 @@ import { BsFillPlusSquareFill } from "react-icons/bs";
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
 import InputForm from "../../InputForm";
-import {
-  getCookie,
-  getLocalStorage,
-  setCookie,
-} from "../../../utils/tokenSetterGetter";
+import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useDispatch } from "react-redux";
 import Button from "../../Button";
 import { addressUser } from "../../../features/userAddressSlice";
 
 const ModalAddAddress = () => {
   const access_token = getCookie("access_token");
-  const refresh_token = getLocalStorage("refresh_token");
-  const [isLoading, setIsLoading] = useState(false);
-  const [newAccessToken, setNewAccessToken] = useState("");
 
   const dispatch = useDispatch();
 

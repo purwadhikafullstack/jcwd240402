@@ -14,6 +14,7 @@ export default function ConfirmationPaymentModal({
   bgConfirmColor = "failure",
 }) {
   const [openModal, setOpenModal] = useState();
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal };
 
@@ -22,6 +23,13 @@ export default function ConfirmationPaymentModal({
       onActionConfirmation(id),
       props.setOpenModal(undefined),
     ]);
+  };
+
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
   };
 
   return (
@@ -53,8 +61,10 @@ export default function ConfirmationPaymentModal({
                 color="failure"
                 onClick={() => {
                   handleAction(row.id);
+                  handleDissabled();
                 }}
                 className={bgConfirmColor}
+                disabled={dissabledButton}
               >
                 Yes, I'm sure
               </Button>

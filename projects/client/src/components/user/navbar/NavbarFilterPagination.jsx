@@ -49,8 +49,8 @@ const NavbarFilterPagination = ({
                   <TbZoomMoney className="text-xl" />
                 </span>
                 <p className="text-xs">
-                  from {rupiahFormat(rangePriceMin)} to{" "}
-                  {rupiahFormat(rangePriceMax)}
+                  from {rupiahFormat(currentPriceMin)} to{" "}
+                  {rupiahFormat(currentPriceMax)}
                 </p>
               </div>
             ) : null}
@@ -60,8 +60,8 @@ const NavbarFilterPagination = ({
                   <RiScales2Fill className="text-xl" />
                 </span>
                 <p className="text-xs">
-                  from {weightFormat(rangeWeightMin)} to{" "}
-                  {weightFormat(rangeWeightMax)}
+                  from {weightFormat(currentWeightMax)} to{" "}
+                  {weightFormat(currentWeightMin)}
                 </p>
               </div>
             ) : null}

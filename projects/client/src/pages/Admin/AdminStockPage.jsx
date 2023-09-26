@@ -19,7 +19,8 @@ const AdminStockPage = () => {
     },
     {
       label: "Inventory Transfer",
-      isActive: window.location.pathname === "/admin/stock-list/inventory-transfers",
+      isActive:
+        window.location.pathname === "/admin/stock-list/inventory-transfers",
       to: "/admin/stock-list/inventory-transfers",
     },
   ];

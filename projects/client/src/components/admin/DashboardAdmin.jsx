@@ -2,29 +2,47 @@ import React, { useEffect, useState } from "react";
 import { BiSolidCategoryAlt } from "react-icons/bi";
 import { BsFillBox2HeartFill } from "react-icons/bs";
 import { FaUsers, FaWarehouse } from "react-icons/fa";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend,
-  CategoryScale, LinearScale, PointElement, LineElement, Title, Filler} from "chart.js";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Filler,
+} from "chart.js";
 import { Bar, Doughnut } from "react-chartjs-2";
 import BarChart from "./Top10Products";
-import { Line } from 'react-chartjs-2';
+import { Line } from "react-chartjs-2";
 import { rupiahFormat } from "../../utils/formatter";
 
-import withAuthAdmin from "./withAuthAdmin";
 import welcomeadmin from "../../assets/images/welcomeadmin.png";
 import whlogo from "../../assets/icons/whlogo.png";
 import calendarlogo from "../../assets/icons/calendarlogo.png";
 import dayjs from "dayjs";
 import axios from "../../api/axios";
 import UserAmountBasedOnLocation from "./UserAmountBasedOnLocation";
-import withAuthAdminWarehouse from "./withAuthAdminWarehouse";
-ChartJS.register(ArcElement, CategoryScale, LinearScale, PointElement, LineElement,
-  Title, Tooltip, Filler, Legend);
-
+import withAuthAdmin from "./withAuthAdmin";
+ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+);
 
 const DashboardAdmin = ({ adminData }) => {
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
-  const [loading, setLoading] =  useState(true)
+  const [loading, setLoading] = useState(true);
   const [totalUser, setTotalUser] = useState(0);
   const [totalProduct, setTotalProduct] = useState(0);
   const [totalWarehouse, setTotalWarehouse] = useState(0);
@@ -86,11 +104,11 @@ const DashboardAdmin = ({ adminData }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: "top",
       },
       title: {
         display: true,
-        text: 'Income in the Past Year',
+        text: "Income in the Past Year",
       },
     },
   };
@@ -100,10 +118,10 @@ const DashboardAdmin = ({ adminData }) => {
     datasets: [
       {
         fill: true,
-        label: 'Income (in Rupiah)',
+        label: "Income (in Rupiah)",
         data: dataIncome,
-        borderColor: 'rgb(53, 162, 235)',
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        borderColor: "rgb(53, 162, 235)",
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
     ],
   };
@@ -289,10 +307,10 @@ const DashboardAdmin = ({ adminData }) => {
           <h1>Total Warehouse {totalWarehouse}</h1>
         </div>
       </div>
-      <div className="col-span-8 h-full row-span-4 p-4">
-        <div className="bg-white w-full h-full rounded-md shadow-card-1">
-        <Line options={incomeOptions} data={incomeData} />
-        <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
+      <div className="col-span-8 h-full row-span-4 p-7">
+        <div className="bg-white w-full h-full rounded-md shadow-card-1 p-4">
+          <Line options={incomeOptions} data={incomeData} />
+          <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>
       </div>
       <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">

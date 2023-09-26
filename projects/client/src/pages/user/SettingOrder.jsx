@@ -9,7 +9,6 @@ import FooterDesktop from "../../components/user/footer/FooterDesktop";
 import NavigatorMobile from "../../components/user/footer/NavigatorMobile";
 import NavigatorSetting from "../../components/user/navbar/NavigatorSetting";
 import CardProfile from "../../components/user/card/CardProfile";
-import { profileUser } from "../../features/userDataSlice";
 import axios from "../../api/axios";
 import {
   getCookie,
@@ -32,7 +31,6 @@ import { rupiahFormat } from "../../utils/formatter";
 import emptyImage from "../../assets/images/emptyImage.jpg";
 
 const SettingOrder = () => {
-  const userData = useSelector((state) => state.profiler.value);
   const [newAccessToken, setNewAccessToken] = useState("");
   const refresh_token = getLocalStorage("refresh_token");
   const access_token = getCookie("access_token");

@@ -63,8 +63,8 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
   const handleCategoryChange = (selectedOption) => {
     handleInputChange("category_id", selectedOption.value);
     setSelectedCategory(selectedOption);
-    setDisplayedCategory(selectedOption); 
-    setActualCategory(selectedOption.value); 
+    setDisplayedCategory(selectedOption);
+    setActualCategory(selectedOption.value);
   };
 
   const getErrorMessage = (field) => {
@@ -124,6 +124,7 @@ const ProductInputsEdit = ({ initialProduct, handleInputChange, errors }) => {
           value={displayedCategory || null}
           onChange={handleCategoryChange}
           placeholder="Select a category"
+          className="relative z-50"
         />
         {getErrorMessage("category_id") && (
           <p className="text-red-500 mt-2">{getErrorMessage("category_id")}</p>

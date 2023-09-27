@@ -70,9 +70,14 @@ const ReassignWarehouseModal = ({
               onChange={setSelectedWarehouse}
               placeholder="Search for Warehouse by Name"
               menuPortalTarget={document.body}
-                styles={{
-                  menuPortal: base => ({ ...base, zIndex: 9999, position: 'fixed' })
-               }}
+              styles={{
+                menuPortal: (base) => ({
+                  ...base,
+                  zIndex: 9999,
+                  position: "fixed",
+                }),
+              }}
+              className="relative z-50"
             />
           </div>
           <div className="flex flex-col justify-center items-center mt-3">

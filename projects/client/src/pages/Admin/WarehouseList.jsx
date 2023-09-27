@@ -10,7 +10,7 @@ import DefaultPagination from "../../components/Pagination";
 import withAuthAdmin from "../../components/admin/withAuthAdmin";
 import ConfirmDeleteWarehouse from "../../components/modal/warehouse/ModalDeleteWarehouse";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
-import useURLParams from "../../utils/useUrlParams"; 
+import useURLParams from "../../utils/useUrlParams";
 
 const WarehouseList = () => {
   const navigate = useNavigate();
@@ -20,10 +20,16 @@ const WarehouseList = () => {
   const [deleteWarehouseId, setDeleteWarehouseId] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
   const { syncStateWithParams, setParam } = useURLParams();
-  const [selectedCity, setSelectedCity] = useState(syncStateWithParams("city", null));
-  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", null));
+  const [selectedCity, setSelectedCity] = useState(
+    syncStateWithParams("city", null)
+  );
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouse", null)
+  );
   const [deleteWarehouseName, setDeleteWarehouseName] = useState(null);
-  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
 
   useEffect(() => {
     const pageParam = syncStateWithParams("page", null);
@@ -41,7 +47,7 @@ const WarehouseList = () => {
       },
     });
     setWarehouses(response.data.warehouses);
-    const { totalPages = 1 } = response.data.pagination || {}; 
+    const { totalPages = 1 } = response.data.pagination || {};
     setTotalPages(totalPages);
     if (currentPage > totalPages) setCurrentPage(totalPages);
   };
@@ -110,7 +116,7 @@ const WarehouseList = () => {
               onChange={handleCityChange}
               value={selectedCity}
               placeholder="All Cities"
-              className="flex-1"
+              className="flex-1 relative z-50"
             />
             <input
               type="text"

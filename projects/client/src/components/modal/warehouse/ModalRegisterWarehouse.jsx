@@ -210,6 +210,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                       zIndex: 999,
                     }),
                   }}
+                  className="relative z-50"
                 />
                 {formik.errors.province_id && (
                   <div className="text-red-500">
@@ -240,6 +241,7 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
                       </div>
                     ),
                   }}
+                  className="relative z-50"
                 />
                 {formik.errors.city_id && (
                   <div className="text-red-500">{formik.errors.city_id}</div>

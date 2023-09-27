@@ -24,7 +24,7 @@ const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
         clearTimeout(timeoutId);
       }
     };
-  }, [errorMessage])
+  }, [errorMessage]);
 
   useEffect(() => {
     if (!show) {
@@ -79,11 +79,15 @@ const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
     <Modal show={show} size="md" popup onClose={onClose}>
       <Modal.Header className="flex justify-center">
         <div className="text-center">
-          <h3 className="text-xl font-medium text-gray-900 text-center">Transfer Stock {product?.productName}</h3>
+          <h3 className="text-xl font-medium text-gray-900 text-center">
+            Transfer Stock {product?.productName}
+          </h3>
         </div>
       </Modal.Header>
       <Modal.Body>
-      {errorMessage && <AlertWithIcon errMsg={errorMessage} color="failure" />}
+        {errorMessage && (
+          <AlertWithIcon errMsg={errorMessage} color="failure" />
+        )}
         <div className="px-6 grid gap-y-3 pt-2">
           <div className="flex-1">
             <AsyncSelect
@@ -92,6 +96,7 @@ const TransferStockModal = ({ show, onClose, product, fetchStocks }) => {
               loadOptions={loadWarehouses}
               value={selectedWarehouse}
               onChange={setSelectedWarehouse}
+              className="relative z-50"
               placeholder="Select destination warehouse"
             />
           </div>

@@ -106,7 +106,7 @@ const AdminList = () => {
               loadOptions={loadWarehouseOptions}
               onChange={handleWarehouseChange}
               placeholder="All Warehouses"
-              className="lg:flex-1"
+              className="lg:flex-1 relative z-50"
             />
             <input
               type="text"

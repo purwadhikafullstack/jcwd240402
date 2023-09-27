@@ -88,6 +88,7 @@ const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
           }}
           onBlur={formik.handleBlur}
           placeholder="Select a category"
+          className="relative z-50"
         />
         {formik.touched.category_id && formik.errors.category_id && (
           <p className="text-red-500">{formik.errors.category_id}</p>

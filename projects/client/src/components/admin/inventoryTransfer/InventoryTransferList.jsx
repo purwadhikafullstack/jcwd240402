@@ -8,17 +8,29 @@ import axios from "../../../api/axios";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
 import { useWarehouseOptions } from "../../../utils/loadWarehouseOptions";
-import  useURLParams  from "../../../utils/useUrlParams";
+import useURLParams from "../../../utils/useUrlParams";
 import moment from "moment";
 
 const InventoryTransferList = () => {
   const { syncStateWithParams, setParam } = useURLParams();
-  const [selectedWarehouse, setSelectedWarehouse] = useState(syncStateWithParams("warehouse", ""));
-  const [selectedStatus, setSelectedStatus] = useState(syncStateWithParams("status", ""));
-  const [searchProductName, setSearchProductName] = useState(syncStateWithParams("productName", ""));
-  const [currentPage, setCurrentPage] = useState(syncStateWithParams("page", 1));
-  const [selectedYear, setSelectedYear] = useState(syncStateWithParams("year", new Date().getFullYear()));
-  const [selectedMonth, setSelectedMonth] = useState(syncStateWithParams("month", new Date().getMonth() + 1));
+  const [selectedWarehouse, setSelectedWarehouse] = useState(
+    syncStateWithParams("warehouse", "")
+  );
+  const [selectedStatus, setSelectedStatus] = useState(
+    syncStateWithParams("status", "")
+  );
+  const [searchProductName, setSearchProductName] = useState(
+    syncStateWithParams("productName", "")
+  );
+  const [currentPage, setCurrentPage] = useState(
+    syncStateWithParams("page", 1)
+  );
+  const [selectedYear, setSelectedYear] = useState(
+    syncStateWithParams("year", new Date().getFullYear())
+  );
+  const [selectedMonth, setSelectedMonth] = useState(
+    syncStateWithParams("month", new Date().getMonth() + 1)
+  );
   const [transfers, setTransfers] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [showTransferModal, setShowTransferModal] = useState(false);
@@ -35,16 +47,36 @@ const InventoryTransferList = () => {
     setParam("page", currentPage);
     setParam("year", selectedYear);
     setParam("month", selectedMonth);
-  }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
-  
+  }, [
+    selectedWarehouse,
+    selectedStatus,
+    searchProductName,
+    currentPage,
+    selectedYear,
+    selectedMonth,
+  ]);
+
   useEffect(() => {
     fetchTransfers();
-  }, [selectedWarehouse, selectedStatus, searchProductName, currentPage, selectedYear, selectedMonth]);
+  }, [
+    selectedWarehouse,
+    selectedStatus,
+    searchProductName,
+    currentPage,
+    selectedYear,
+    selectedMonth,
+  ]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedWarehouse, selectedStatus, searchProductName, selectedYear, selectedMonth]);
-  
+  }, [
+    selectedWarehouse,
+    selectedStatus,
+    searchProductName,
+    selectedYear,
+    selectedMonth,
+  ]);
+
   const loadStatusOptions = async () => {
     return [
       { value: "", label: "All Status" },
@@ -57,10 +89,13 @@ const InventoryTransferList = () => {
   const fetchTransfers = async () => {
     try {
       const status = selectedStatus.value;
-      const warehouseId = selectedWarehouse ? selectedWarehouse.value : ""
-      const response = await axios.get(`/admin/transfers?page=${currentPage}&status=${status}&warehouseId=${warehouseId}&productName=${searchProductName}&year=${selectedYear}&month=${selectedMonth}`, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      const warehouseId = selectedWarehouse ? selectedWarehouse.value : "";
+      const response = await axios.get(
+        `/admin/transfers?page=${currentPage}&status=${status}&warehouseId=${warehouseId}&productName=${searchProductName}&year=${selectedYear}&month=${selectedMonth}`,
+        {
+          headers: { Authorization: `Bearer ${access_token}` },
+        }
+      );
       if (response.data && response.data.transfers) {
         setTransfers(response.data.transfers);
       }
@@ -81,16 +116,20 @@ const InventoryTransferList = () => {
           loadOptions={loadWarehouses}
           onChange={setSelectedWarehouse}
           placeholder="Select a warehouse"
-          className={`flex-1 ${adminData.role_id !== 1 ? "hidden" : ""}`}
+          className={`flex-1 ${
+            adminData.role_id !== 1 ? "hidden" : ""
+          } relative z-50`}
         />
         <AsyncSelect
           cacheOptions
           defaultOptions
           loadOptions={loadStatusOptions}
-          onChange={setSelectedStatus} 
-          value={selectedStatus} 
+          onChange={setSelectedStatus}
+          value={selectedStatus}
           placeholder="Select a status"
-          className={`flex-1 ${adminData.role_id === 1 ? "ml-4" : ""}`}
+          className={`flex-1 ${
+            adminData.role_id === 1 ? "ml-4" : ""
+          } relative z-50`}
           isSearchable={false}
         />
         <input

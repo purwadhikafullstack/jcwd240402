@@ -195,6 +195,7 @@ const WarehouseInputsEdit = () => {
                     setSelectedCity(null);
                   }}
                   placeholder="Select a province"
+                  className="relative z-50"
                 />
                 <label className="block font-poppins mb-1 text-gray-700">
                   City
@@ -222,6 +223,7 @@ const WarehouseInputsEdit = () => {
                       </div>
                     ),
                   }}
+                  className="relative z-50"
                 />
                 <div className="flex mt-4 justify-center gap-2">
                   <Button

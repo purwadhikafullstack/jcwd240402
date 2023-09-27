@@ -164,8 +164,13 @@ const RegisterAdminModal = ({ show, onClose, onSuccessfulRegister }) => {
                 defaultOptions
                 menuPortalTarget={document.body}
                 styles={{
-                  menuPortal: base => ({ ...base, zIndex: 9999, position: 'fixed' })
-               }}
+                  menuPortal: (base) => ({
+                    ...base,
+                    zIndex: 9999,
+                    position: "fixed",
+                  }),
+                }}
+                className="relative z-50"
               />
             </div>
             <div className="flex flex-col justify-center items-center mt-3 ">

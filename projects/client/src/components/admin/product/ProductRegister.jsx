@@ -7,6 +7,7 @@ import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AlertWithIcon from "../../AlertWithIcon";
+import withAuthAdmin from "../withAuthAdmin";
 
 const ProductRegister = ({ initialData, isEditMode = false }) => {
   const access_token = getCookie("access_token");
@@ -144,4 +145,4 @@ const ProductRegister = ({ initialData, isEditMode = false }) => {
   );
 };
 
-export default ProductRegister;
+export default withAuthAdmin(ProductRegister);

@@ -470,7 +470,7 @@ module.exports = {
         return res.status(404).json({
           ok: false,
           id,
-          message: "order not found",
+          message: "Order is not found, Please refresh",
         });
       }
 
@@ -749,7 +749,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "Order not found",
+          message: "Order is not found! Please refresh",
         });
       }
 

@@ -14,7 +14,7 @@ import AlertWithIcon from "../../AlertWithIcon";
 const RegisterWarehouseModal = ({ show, onClose }) => {
   const access_token = getCookie("access_token");
   const [selectedCity, setSelectedCity] = useState(null);
-  const [selectedProvince, setSelectedProvince] = useState(0);
+  const [selectedProvince, setSelectedProvince] = useState(null);
   const [errMsg, setErrMsg] = useState("");
   const [image, setImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
@@ -26,6 +26,8 @@ const RegisterWarehouseModal = ({ show, onClose }) => {
   const handleModalClose = () => {
     formik.resetForm();
     setErrMsg("");
+    setSelectedCity(null)
+    setSelectedProvince(null)
     onClose();
   };
 

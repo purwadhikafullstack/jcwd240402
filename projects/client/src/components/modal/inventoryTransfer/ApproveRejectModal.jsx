@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { Modal } from "flowbite-react";
 import axios from "../../../api/axios";
 import Button from "../../Button";
 import { getCookie } from "../../../utils/tokenSetterGetter";
+import AlertWithIcon from "../../AlertWithIcon";
 
 const ApproveRejectModal = ({
   show,
@@ -11,6 +12,13 @@ const ApproveRejectModal = ({
   onSuccessfulAction,
 }) => {
   const access_token = getCookie("access_token");
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => {
+    if (!show) {
+      setErrorMessage(null);
+    }
+  }, [show]);
 
   const handleApprove = async () => {
     try {
@@ -25,13 +33,21 @@ const ApproveRejectModal = ({
       if (response.status === 200) {
         onSuccessfulAction();
         onClose();
-      } else {
-        throw new Error("Approval Failed");
       }
     } catch (error) {
-      console.error("Error approving transfer:", error);
-    }
+        console.log("Caught Error", error); 
+        if (error.response) {
+          setErrorMessage(error.response.data.message || "An unknown error occurred.");
+        } else if (error.message) {
+          setErrorMessage(error.message);
+        } else {
+          setErrorMessage("Network Error.");
+        }
+      }
+      
   };
+
+  console.log(errorMessage);
 
   const handleReject = async () => {
     try {
@@ -50,7 +66,7 @@ const ApproveRejectModal = ({
         throw new Error("Rejection Failed");
       }
     } catch (error) {
-      console.error("Error rejecting transfer:", error);
+      setErrorMessage(error.response?.data.message || "Transfer failed");
     }
   };
 
@@ -64,6 +80,9 @@ const ApproveRejectModal = ({
         </div>
       </Modal.Header>
       <Modal.Body>
+        {errorMessage && (
+          <AlertWithIcon errMsg={errorMessage} color="failure" />
+        )}
         {transfer && (
           <div className="mb-4">
             <p>

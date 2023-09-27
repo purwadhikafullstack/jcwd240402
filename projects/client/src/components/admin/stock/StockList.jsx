@@ -149,7 +149,7 @@ const StockList = () => {
           placeholder="Select a warehouse"
           className={`flex-1 ${
             adminData.role_id !== 1 ? "hidden" : ""
-          } relative z-50`}
+          } relative z-50 `}
         />
         <AsyncSelect
           cacheOptions

@@ -91,7 +91,7 @@ const ProductList = () => {
             onChange={handleSearchChange}
           />
           <AsyncSelect
-            className="flex-1 z-20"
+            className="flex-1 relative z-50"
             cacheOptions
             defaultOptions
             loadOptions={loadCategories}

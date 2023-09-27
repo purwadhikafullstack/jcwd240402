@@ -6,6 +6,7 @@ import ProductInputsEdit from "./ProductInputEdit";
 import { getCookie } from "../../../utils/tokenSetterGetter";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import withAuthAdmin from "../withAuthAdmin";
 
 const ProductEdit = () => {
   const access_token = getCookie("access_token");
@@ -146,4 +147,4 @@ const ProductEdit = () => {
   );
 };
 
-export default ProductEdit;
+export default withAuthAdmin(ProductEdit);

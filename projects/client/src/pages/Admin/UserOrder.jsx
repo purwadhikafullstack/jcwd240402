@@ -351,20 +351,20 @@ const UserOrder = () => {
                 loadOptions={loadWarehouseOptions}
                 onChange={handleChangeWarehouseId}
                 placeholder="All Warehouses"
-                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4 relative z-50"
               />
             )}
             <Select
               options={orderStatusOptions}
               placeholder="Order Status"
               onChange={handleChangeStatus}
-              className="flex-1 rounded text-base bg-white  shadow-sm"
+              className="flex-1 rounded text-base bg-white  shadow-sm relative z-50"
             />
             <Select
               options={monthOptions}
               placeholder={<div>select a month</div>}
               onChange={handleChangeMonth}
-              className="flex-1  rounded text-base bg-white  shadow-sm pl-4 pr-2"
+              className="flex-1  rounded text-base bg-white  shadow-sm pl-4 pr-2 relative z-50"
             />
             <AsyncSelect
               cacheOptions
@@ -373,7 +373,7 @@ const UserOrder = () => {
               value={year || null}
               onChange={handleChangeYear}
               placeholder="Select year"
-              className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+              className="flex-1  rounded text-base bg-white  shadow-sm pr-4 relative z-50"
             />
           </div>
           <div className="pt-4">
@@ -387,6 +387,7 @@ const UserOrder = () => {
                 "Delivering to",
                 "Delivering From",
                 "Delivery Time",
+                "Order Date",
               ]}
               data={userOrderList.map((order) => ({
                 id: order?.id || "",
@@ -398,9 +399,14 @@ const UserOrder = () => {
                 invoiceId: order?.no_invoice,
                 "Delivering From": order?.Warehouse?.warehouse_name || "",
                 "Delivering to": order?.Address_user?.address_details || "",
-                "Delivery Time": (order?.delivery_time ? dayjs(order?.delivery_time).format("D MMMM YYYY HH:mm:ss") : "not yet delivered"),
+                "Delivery Time": order?.delivery_time
+                  ? dayjs(order?.delivery_time).format("D MMMM YYYY HH:mm:ss")
+                  : "not yet delivered",
                 order_status_id: order?.order_status_id,
                 Order_details: order?.Order_details,
+                "Order Date": dayjs(order?.createdAt).format(
+                  "DD MMMM YYYY hh:mm:ss"
+                ),
               }))}
               showIcon={false}
               showApprove={true}
@@ -420,15 +426,15 @@ const UserOrder = () => {
             />
           </div>
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              // navigateWithParams({ page });
-            }}
-          />
-        </div>
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                // navigateWithParams({ page });
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

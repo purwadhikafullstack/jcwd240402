@@ -157,6 +157,7 @@ const StockHistory = () => {
               value={year || null}
               onChange={handleChangeYear}
               placeholder="Select year"
+              className="relative z-50"
             />
             {adminData.role_id == 1 && (
               <AsyncSelect
@@ -165,7 +166,7 @@ const StockHistory = () => {
                 loadOptions={loadWarehouseOptions}
                 onChange={handleChangeWarehouseId}
                 placeholder="All Warehouses"
-                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4 relative z-50"
               />
             )}
             <div>Last Stock: {totalLastStock}</div>
@@ -194,7 +195,9 @@ const StockHistory = () => {
                 "Increment/Decrement": history?.increment_decrement || "",
                 Quantity: history?.quantity || "",
                 Journal: history?.journal || "",
-                Timestamp: dayjs(history?.timestamp).format("D MMMM YYYY HH:mm:ss") || ""
+                Timestamp:
+                  dayjs(history?.timestamp).format("D MMMM YYYY HH:mm:ss") ||
+                  "",
               }))}
               showIcon={false}
             />

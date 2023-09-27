@@ -241,6 +241,7 @@ const SalesReport = () => {
               options={monthOptions}
               placeholder={<div>select month</div>}
               onChange={handleChangeMonth}
+              className="relative z-50"
             />
             <AsyncSelect
               cacheOptions
@@ -249,6 +250,7 @@ const SalesReport = () => {
               value={year || null}
               onChange={handleChangeYear}
               placeholder="Select year"
+              className="relative z-50"
             />
             <AsyncSelect
               cacheOptions
@@ -257,6 +259,7 @@ const SalesReport = () => {
               value={selectedCategory || null}
               onChange={handleCategoryChange}
               placeholder="Select a category"
+              className="relative z-50"
             />
             <AsyncSelect
               cacheOptions
@@ -265,6 +268,7 @@ const SalesReport = () => {
               value={selectedProduct || null}
               onChange={handleProductChange}
               placeholder="Select a product"
+              className="relative z-50"
             />
             {adminData.role_id == 1 && (
               <AsyncSelect
@@ -273,7 +277,7 @@ const SalesReport = () => {
                 loadOptions={loadWarehouseOptions}
                 onChange={handleChangeWarehouseId}
                 placeholder="All Warehouses"
-                className="flex-1  rounded text-base bg-white  shadow-sm pr-4"
+                className="flex-1  rounded text-base bg-white  shadow-sm pr-4 relative z-50"
               />
             )}
           </div>
@@ -310,15 +314,15 @@ const SalesReport = () => {
             </div>
           </div>
           <div className="flex justify-center items-center w-full bottom-0 position-absolute">
-          <DefaultPagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              // navigateWithParams({ page });
-            }}
-          />
-        </div>
+            <DefaultPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                // navigateWithParams({ page });
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>

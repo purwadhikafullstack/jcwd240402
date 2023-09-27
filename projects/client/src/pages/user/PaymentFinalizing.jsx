@@ -143,7 +143,7 @@ const PaymentFinalizing = () => {
       })
       .catch((error) => {
         setSuccessMsg("");
-        setErrMsg(error.response.data.error);
+        setErrMsg(error.response?.data?.message);
         setLoading(false);
       });
   };

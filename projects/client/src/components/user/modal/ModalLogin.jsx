@@ -150,6 +150,7 @@ export default function ModalLogin({
         size="md"
         popup
         onClose={() => {
+          formik.resetForm();
           props.setOpenModal(undefined);
           setErrMsg(false);
         }}

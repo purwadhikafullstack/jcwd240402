@@ -387,6 +387,7 @@ const UserOrder = () => {
                 "Delivering to",
                 "Delivering From",
                 "Delivery Time",
+                "Order Date",
               ]}
               data={userOrderList.map((order) => ({
                 id: order?.id || "",
@@ -403,6 +404,9 @@ const UserOrder = () => {
                   : "not yet delivered",
                 order_status_id: order?.order_status_id,
                 Order_details: order?.Order_details,
+                "Order Date": dayjs(order?.createdAt).format(
+                  "DD MMMM YYYY hh:mm:ss"
+                ),
               }))}
               showIcon={false}
               showApprove={true}

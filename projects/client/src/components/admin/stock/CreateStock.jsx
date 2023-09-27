@@ -124,7 +124,7 @@ const CreateStock = () => {
                 }
               : selectedWarehouse
           }
-          className="relative z-50"
+          className=""
         />
       </div>
       <div className="lg:w-1/3  mx-auto mt-4">
@@ -134,7 +134,7 @@ const CreateStock = () => {
           loadOptions={loadProducts}
           onChange={setSelectedProduct}
           placeholder="Select a product"
-          className="relative z-50"
+          className=""
         />
       </div>
       <div className="flex mt-4 items-center justify-center space-x-4">

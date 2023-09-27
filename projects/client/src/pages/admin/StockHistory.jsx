@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import Select from "react-select";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import AsyncSelect from "react-select/async";

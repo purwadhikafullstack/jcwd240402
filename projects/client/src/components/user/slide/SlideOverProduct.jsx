@@ -35,6 +35,7 @@ export default function SlideOverProduct({ name }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [openAlert, setOpenAlert] = useState(false);
+  const userData = useSelector((state) => state.profiler.value);
 
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -248,11 +249,17 @@ export default function SlideOverProduct({ name }) {
                             <button
                               onClick={() => handleAddProductToCart(name, qty)}
                               className={` ${
-                                stock === 0 || qty === 0
+                                stock === 0 ||
+                                qty === 0 ||
+                                userData.role_id !== 3
                                   ? "bg-gray-400 cursor-not-allowed"
                                   : "bg-blue3 cursor-pointer"
                               } text-white w-full h-10 rounded-full`}
-                              disabled={stock === 0 || qty === 0}
+                              disabled={
+                                stock === 0 ||
+                                qty === 0 ||
+                                userData.role_id !== 3
+                              }
                             >
                               add to cart
                             </button>

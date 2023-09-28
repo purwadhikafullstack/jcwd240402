@@ -9,7 +9,7 @@ const setCoordinates = async (req, res, next) => {
     const response = await axios.get(
       `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(
         address
-      )}&key=f2f57cc907854a3cb36d25b445d148e6`
+      )}&key=${process.env.KEY_OPENCAGE}`
     );
     
     const location = response.data.results[0].geometry;

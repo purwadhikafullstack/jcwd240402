@@ -191,7 +191,7 @@ const StockHistory = () => {
                 "Admin Username": history?.Admin?.username || "",
                 Warehouse: history?.Warehouse?.warehouse_name || "",
                 "Stock Before": history?.stock_before_transfer || "0",
-                "Stock After": history?.stock_after_transfer || "",
+                "Stock After": history?.stock_after_transfer || "0",
                 "Increment/Decrement": history?.increment_decrement || "",
                 Quantity: history?.quantity || "",
                 Journal: history?.journal || "",

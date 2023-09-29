@@ -91,6 +91,13 @@ module.exports = {
         });
       }
 
+      if (existingStock.product_stock < 0) {
+        await t.rollback();
+        return res.status(400).send({
+          message: "Unable to reduce stock to negative value",
+        });
+      }
+
       switch (operation) {
         case "increase":
           const stockHistoryFrom = newStockHistory(
@@ -118,14 +125,7 @@ module.exports = {
           );
 
           existingStock.product_stock -= parseInt(productStock, 10);
-
-          if (existingStock.product_stock < 0) {
-            await t.rollback();
-            return res.status(400).send({
-              message: "Unable to reduce stock to negative value",
-            });
-          }
-          break;
+    
       }
 
       await existingStock.save({ transaction: t });

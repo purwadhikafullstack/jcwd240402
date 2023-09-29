@@ -44,6 +44,16 @@ module.exports = {
         { transaction: t }
       );
 
+      const stockHistoryFrom = newStockHistory(
+        newStock.id,
+        warehouseId,
+        req.user.id,
+        0,
+        0 + productStock,
+        productStock,
+        "Stock Create"
+      );
+
       await t.commit();
 
       res.status(201).send({

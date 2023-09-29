@@ -3,53 +3,36 @@
 import { Button, Modal } from "flowbite-react";
 import { useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { useDispatch } from "react-redux";
-
-import axios from "../../../api/axios";
-import { getCookie } from "../../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../AlertWithIcon";
-import { addressUser } from "../../../features/userAddressSlice";
 
-export default function ModalConfirmationDelete({ idAddress }) {
-  console.log(idAddress);
-  const dispatch = useDispatch();
-  const access_token = getCookie("access_token");
-
+export default function ModalConfirmationDelete({
+  handleDelete,
+  errMsg,
+  topic,
+  deleteFor,
+  purpose = "delete",
+  styling,
+  setErrMsg,
+  setSuccessMsg,
+  successMsg,
+  styleConfirmButton = " px-3 py-1 rounded-md text-white font-semibold hover:bg-blue-400",
+}) {
   const [openModal, setOpenModal] = useState();
-  const [errMsg, setErrMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
 
   const props = { openModal, setOpenModal };
 
-  const deleteAddress = () => {
-    try {
-      axios
-        .delete(`/user/profile/address/${idAddress}`, {
-          headers: { Authorization: `Bearer ${access_token}` },
-        })
-        .then((res) => {
-          props.setOpenModal(undefined);
-          axios
-            .get("/user/profile/address", {
-              headers: { Authorization: `Bearer ${access_token}` },
-            })
-            .then((res) => {
-              dispatch(addressUser(res.data?.result));
-            });
-        })
-        .catch((error) => setErrMsg(error));
-    } catch (error) {
-      if (!error.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(error);
-      }
-    }
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 6000);
   };
 
   return (
     <>
-      <button onClick={() => props.setOpenModal("pop-up")}>
-        <p className="text-xs">delete address</p>
+      <button onClick={() => props.setOpenModal("pop-up")} className={styling}>
+        <p className="text-xs">{deleteFor}</p>
       </button>
       <Modal
         show={props.openModal === "pop-up"}
@@ -59,25 +42,37 @@ export default function ModalConfirmationDelete({ idAddress }) {
       >
         <Modal.Header />
         <Modal.Body>
-          {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+          {errMsg ? (
+            <AlertWithIcon errMsg={errMsg} />
+          ) : successMsg ? (
+            <AlertWithIcon errMsg={successMsg} color="success" />
+          ) : null}
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">
-              remember, you can't delete your primary address. Are you sure you
-              want to delete this address?
+              remember, you can't undo {purpose}. Are you sure you want to{" "}
+              {purpose} this {topic}?
             </h3>
             <div className="flex justify-center gap-4">
-              <Button
-                color="failure"
+              <button
+                className={`${styleConfirmButton} ${
+                  dissabledButton ? "bg-gray-500 hover:bg-gray-500" : "bg-blue3"
+                }`}
                 onClick={() => {
-                  deleteAddress();
+                  handleDelete();
+                  handleDissabled();
                 }}
+                disabled={dissabledButton}
               >
                 Yes, I'm sure
-              </Button>
+              </button>
               <Button
                 color="gray"
-                onClick={() => props.setOpenModal(undefined)}
+                onClick={() => {
+                  props.setOpenModal(undefined);
+                  setErrMsg("");
+                  setSuccessMsg("");
+                }}
               >
                 No, cancel
               </Button>

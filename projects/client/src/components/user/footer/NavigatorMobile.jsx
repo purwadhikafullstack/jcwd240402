@@ -1,18 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineHome, AiFillHome } from "react-icons/ai";
-import { BiPurchaseTag, BiSolidPurchaseTag } from "react-icons/bi";
 import { BsCart, BsCartFill } from "react-icons/bs";
-import { FaRegUser, FaUser } from "react-icons/fa";
+import { FaRegUser } from "react-icons/fa";
+import { RiBookmark3Fill, RiBookmark3Line } from "react-icons/ri";
 
-import { getCookie } from "../../../utils/tokenSetterGetter";
+import {
+  getCookie,
+  getLocalStorage,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "../../../api/axios";
+import { profileUser } from "../../../features/userDataSlice";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 const NavigatorMobile = () => {
   const location = useLocation();
   const access_token = getCookie("access_token");
 
+  const refresh_token = getLocalStorage("refresh_token");
+
+  const userData = useSelector((state) => state.profiler.value);
+
+  const [newAccessToken, setNewAccessToken] = useState("");
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (access_token && refresh_token) {
+      axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => dispatch(profileUser(res.data.result)))
+        .catch((error) => {
+          if (
+            error.response?.data?.message === "Invalid token" &&
+            error.response?.data?.error?.name === "TokenExpiredError"
+          ) {
+            axios
+              .get("/user/auth/keep-login", {
+                headers: { Authorization: `Bearer ${refresh_token}` },
+              })
+              .then((res) => {
+                setNewAccessToken(res.data?.accessToken);
+                setCookie("access_token", newAccessToken, 1);
+              });
+          }
+        });
+    }
+  }, [access_token, dispatch, newAccessToken, refresh_token]);
+
   return (
-    <div className="sticky bottom-0 lg:hidden ">
+    <div className="sticky bottom-0 z-20 lg:hidden ">
       <div className="bg-blue4 w-full h-12 grid grid-cols-4 justify-center items-center">
         {/* HOME */}
         <div
@@ -65,24 +106,26 @@ const NavigatorMobile = () => {
         {/* ORDER */}
         <div
           className={`bg-inherit ${
-            location.pathname === "/order" ? "text-yellow2" : "text-white"
+            location.pathname === "/all-wishlist"
+              ? "text-yellow2"
+              : "text-white"
           } col-span-1`}
         >
-          {location.pathname === "/order" ? (
+          {location.pathname === "/all-wishlist" ? (
             <Link
-              to={`${access_token ? "/order" : "/redirect-login"}`}
+              to={`${access_token ? "/all-wishlist" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
-              <BiSolidPurchaseTag />
-              <h1 className="bg-inherit text-xs ">My Order</h1>
+              <RiBookmark3Fill />
+              <h1 className="bg-inherit text-xs ">My Wishlist</h1>
             </Link>
           ) : (
             <Link
-              to={`${access_token ? "/order" : "/redirect-login"}`}
+              to={`${access_token ? "/all-wishlist" : "/redirect-login"}`}
               className="bg-inherit flex flex-col justify-center items-center"
             >
-              <BiPurchaseTag />
-              <h1 className="bg-inherit text-xs ">My Order</h1>
+              <RiBookmark3Line />
+              <h1 className="bg-inherit text-xs ">My Wishlist</h1>
             </Link>
           )}
         </div>
@@ -95,23 +138,29 @@ const NavigatorMobile = () => {
               : "text-white"
           } col-span-1`}
         >
-          {location.pathname === "/user/setting" ? (
-            <Link
-              to={`${access_token ? "/user/setting" : "/redirect-login"}`}
-              className="bg-inherit flex flex-col justify-center items-center"
-            >
-              <FaUser />
-              <h1 className="bg-inherit text-xs ">My Profile</h1>
-            </Link>
-          ) : (
-            <Link
-              to={`${access_token ? "/user/setting" : "/redirect-login"}`}
-              className="bg-inherit flex flex-col justify-center items-center"
-            >
-              <FaRegUser />
-              <h1 className="bg-inherit text-xs ">My Profile</h1>
-            </Link>
-          )}
+          <Link
+            to={`${access_token ? "/user/setting" : "/redirect-login"}`}
+            className="bg-inherit flex flex-col justify-center items-center"
+          >
+            {access_token && refresh_token && userData.role_id === 3 ? (
+              <div className="relative w-8 h-8  flex flex-col max-w-xs items-center rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
+                <img
+                  className="w-full h-full object-cover rounded-full "
+                  src={
+                    userData.User_detail?.img_profile
+                      ? `${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`
+                      : emptyImage
+                  }
+                  alt="profile"
+                />
+              </div>
+            ) : (
+              <>
+                <FaRegUser />
+                <h1 className="bg-inherit text-xs ">My Profile</h1>
+              </>
+            )}
+          </Link>
         </div>
       </div>
     </div>

@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import InputForm from "../../InputForm";
-import TextArea from "../../TextArea";
+import TextAreaForm from "../../TextAreaForm";
 import AsyncSelect from "react-select/async";
 import axios from "../../../api/axios";
 
-const ProductInputs = ({ formik }) => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
+const ProductInputs = ({ formik, setSelectedCategory, selectedCategory }) => {
   const loadCategoryOptions = async (inputValue) => {
     try {
-      const response = await axios.get(
-        `/admin/categories`,
-        {
-          params: {
-            name: inputValue,
-          },
-        }
-      );
+      const response = await axios.get(`/admin/categories`, {
+        params: {
+          name: inputValue,
+        },
+      });
       const categoryOptions = response.data.data.map((category) => ({
         value: category.id,
         label: category.name,
@@ -30,7 +25,7 @@ const ProductInputs = ({ formik }) => {
 
   const handleCategoryChange = (selectedOption) => {
     formik.setFieldValue("category_id", selectedOption.value);
-    setSelectedCategory(selectedOption);
+    setSelectedCategory(selectedOption); // use setSelectedCategory from props
   };
 
   return (
@@ -45,22 +40,20 @@ const ProductInputs = ({ formik }) => {
         errorMessage={formik.touched.name && formik.errors.name}
         width="w-full"
       />
-      
       <div className="flex mt-4">
         <div className="block font-poppins">Description</div>
       </div>
-      <TextArea
+      <TextAreaForm
         placeholder="Enter product description"
         value={formik.values.description}
         name="description"
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        error={formik.touched.description && formik.errors.description}
+        errorMessage={formik.touched.description && formik.errors.description}
       />
-
       <div className="flex my-4 gap-5 justify-center content-evenly">
         <InputForm
-          label="Weight"
+          label="Weight(Grams)"
           placeholder="Enter product weight"
           value={formik.values.weight}
           name="weight"
@@ -70,7 +63,7 @@ const ProductInputs = ({ formik }) => {
           width="w-full"
         />
         <InputForm
-          label="Price"
+          label="Price(Rp)"
           placeholder="Enter product price"
           value={formik.values.price}
           name="price"
@@ -80,9 +73,10 @@ const ProductInputs = ({ formik }) => {
           width="w-full"
         />
       </div>
-
       <div className="mb-4">
-        <label className="block font-poppins mb-1 text-gray-700">Category</label>
+        <label className="block font-poppins mb-1 text-gray-700">
+          Category
+        </label>
         <AsyncSelect
           cacheOptions
           defaultOptions
@@ -94,9 +88,10 @@ const ProductInputs = ({ formik }) => {
           }}
           onBlur={formik.handleBlur}
           placeholder="Select a category"
+          className="relative z-50"
         />
         {formik.touched.category_id && formik.errors.category_id && (
-          <p className="text-red-500 mt-2">{formik.errors.category_id}</p>
+          <p className="text-red-500">{formik.errors.category_id}</p>
         )}
       </div>
     </div>

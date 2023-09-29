@@ -1,10 +1,8 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 
 const NavigatorSetting = () => {
   const location = useLocation();
-  const userData = useSelector((state) => state.profiler.value);
 
   return (
     <>
@@ -31,19 +29,11 @@ const NavigatorSetting = () => {
         </Link>
         <Link
           className={`${
-            location.pathname === "/user/cart"
+            location.pathname === "/user/setting/order"
               ? " text-blue2 underline underline-offset-8 decoration-4"
               : " text-gray-600"
           } font-semibold`}
-        >
-          <h2>Cart</h2>
-        </Link>
-        <Link
-          className={`${
-            location.pathname === "/user/order"
-              ? " text-blue2 underline underline-offset-8 decoration-4"
-              : " text-gray-600"
-          } font-semibold`}
+          to="/user/setting/order"
         >
           <h2>Order</h2>
         </Link>

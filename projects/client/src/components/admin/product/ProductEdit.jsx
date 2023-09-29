@@ -3,18 +3,20 @@ import Button from "../../Button";
 import ImageGalleryEdit from "../image/ImageGalleryEdit";
 import axios from "../../../api/axios";
 import ProductInputsEdit from "./ProductInputEdit";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProductDetails } from "../../../features/actions/productActions";
+import { getCookie } from "../../../utils/tokenSetterGetter";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import withAuthAdmin from "../withAuthAdmin";
 
 const ProductEdit = () => {
+  const access_token = getCookie("access_token");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { productName: encodedProductName } = useParams();
-  const productName = decodeURIComponent(encodedProductName);
-
+  const [changedFields, setChangedFields] = useState({});
+  const [serverErrors, setServerErrors] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
-  const productDetails = useSelector((state) => state.product.productDetails);
-
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [product, setProduct] = useState({
     name: "",
     description: "",
@@ -23,7 +25,7 @@ const ProductEdit = () => {
     price: "",
     images: [],
   });
-
+  const [isFormValid, setIsFormValid] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
@@ -34,7 +36,7 @@ const ProductEdit = () => {
         });
         const productData = response.data;
         const imagesURL = productData.Image_products.map(
-          (img) => `http://localhost:8000${img.img_product}`
+          (img) => `${process.env.REACT_APP_API_BASE_URL}${img.img_product}`
         );
         setProduct({ ...productData, images: imagesURL });
         dispatch({ type: "UPDATE_PRODUCT_DETAILS", payload: productData });
@@ -47,20 +49,24 @@ const ProductEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!isFormValid) {
+      console.error("Form is not valid");
+      return;
+    }
     try {
-      const updatedProduct = {
-        name: product.name,
-        description: product.description,
-        weight: product.weight,
-        category_id: product.category_id,
-        price: product.price,
-      };
-
-      await axios.patch(`/admin/product/${product.id}`, updatedProduct);
-
-      fetchProductDetails(encodedProductName);
+      await axios.patch(`/admin/product/${product.id}`, changedFields, {
+        headers: { Authorization: `Bearer ${access_token}` },
+      });
       setSuccessMessage("Product updated successfully");
+      setIsSubmitted(true); 
+      setTimeout(() => {
+        navigate("/admin/products");
+      }, 5000);
+      setServerErrors([]);
+      setChangedFields({});
     } catch (error) {
+      setSuccessMessage("");
+      setServerErrors(error.response.data.errors);
       console.error("Error updating product:", error.response.data);
     }
   };
@@ -72,22 +78,32 @@ const ProductEdit = () => {
     return () => clearTimeout(timer);
   }, [successMessage]);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (name, value) => {
+    if (typeof name === "object" && name.target) {
+      ({ name, value } = name.target);
+    }
     setProduct((prevProduct) => ({
       ...prevProduct,
       [name]: value,
     }));
+    setChangedFields((prevFields) => ({
+      ...prevFields,
+      [name]: value,
+    }));
+  };
+
+  const handleCancel = () => {
+    navigate("/admin/products");
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex lg:h-screen">
       <div className="flex-1 flex items-center justify-center">
         <div className="text-gray-700 body-font bg-white">
           <div className="container mx-auto">
             <form onSubmit={handleSubmit}>
-              <div className="flex flex-col lg:flex-row justify-center items-start p-10 border-rounded">
-                <div className="w-full flex flex-col justify-center items-center mt-6">
+              <div className="flex flex-col lg:flex-row justify-center items-start  lg:p-10 border-rounded">
+                <div className="w-full flex flex-col justify-center items-center lg:mt-6">
                   <ImageGalleryEdit
                     productData={product}
                     onImagesChange={setUploadedImages}
@@ -97,15 +113,25 @@ const ProductEdit = () => {
                   <ProductInputsEdit
                     initialProduct={product}
                     handleInputChange={handleInputChange}
+                    errors={serverErrors}
                   />
-                  <div className="flex mt-6 justify-center w-full">
+                  <div className="flex my-4 lg:mt-6 justify-center w-full gap-4">
+                    <Button
+                      onClick={handleCancel}
+                      buttonText="Cancel"
+                      bgColor="bg-gray-300"
+                      colorText="text-black"
+                      fontWeight="font-bold"
+                      buttonSize="medium"
+                      className="ml-4"
+                    />
                     <Button
                       type="submit"
-                      buttonText="Update"
+                      buttonText="Save"
                       bgColor="bg-blue3"
                       colorText="text-white"
                       fontWeight="font-bold"
-                      buttonSize="large"
+                      buttonSize="medium"
                     />
                   </div>
                   {successMessage && (
@@ -121,4 +147,4 @@ const ProductEdit = () => {
   );
 };
 
-export default ProductEdit;
+export default withAuthAdmin(ProductEdit);

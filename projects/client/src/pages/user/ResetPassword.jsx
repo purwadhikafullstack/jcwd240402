@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import AlertWithIcon from "../../components/AlertWithIcon";
 import { removeCookie } from "../../utils/tokenSetterGetter";
+import PasswordInput from "../../components/PasswordInput";
 
 const ResetPassword = () => {
   const { resetToken } = useParams();
@@ -17,29 +18,22 @@ const ResetPassword = () => {
 
   const resetPassword = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.patch(
-        `/user/auth/reset-password/${resetToken}`,
-        values
-      );
-      console.log(response);
-
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          reset_password_token: "",
-          new_password: "",
-          confirm_password: "",
+      await axios
+        .patch(`/user/auth/reset-password/${resetToken}`, values)
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            reset_password_token: "",
+            new_password: "",
+            confirm_password: "",
+          });
+          setStatus({
+            success: true,
+            message:
+              "Sign up successful. Please check your email for verification.",
+          });
+          navigate("/reset-password-success");
         });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
-        });
-        console.log("success");
-        navigate("/reset-password-success");
-      } else {
-        throw new Error("Login Failed");
-      }
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -125,19 +119,33 @@ const ResetPassword = () => {
           {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
 
           <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
-            {config.map((item, idx) => (
-              <InputForm
-                key={idx}
-                label={item.label}
-                onChange={handleForm}
-                placeholder={item.placeholder}
-                name={item.name}
-                type={item.type}
-                value={item.value}
-                isError={item.error}
-                errorMessage={item.errorMsg}
-              />
-            ))}
+            {config.map((item, idx) =>
+              item.label === "reset password code" ? (
+                <InputForm
+                  key={idx}
+                  label={item.label}
+                  onChange={handleForm}
+                  placeholder={item.placeholder}
+                  name={item.name}
+                  type={item.type}
+                  value={item.value}
+                  isError={item.error}
+                  errorMessage={item.errorMsg}
+                />
+              ) : (
+                <PasswordInput
+                  key={idx}
+                  label={item.label}
+                  onChange={handleForm}
+                  placeholder={item.placeholder}
+                  name={item.name}
+                  type={item.type}
+                  value={item.value}
+                  isError={item.error}
+                  errorMessage={item.errorMsg}
+                />
+              )
+            )}
             <div className="flex flex-col my-4 justify-center items-center mt-3 lg:rounded-lg">
               <Button
                 buttonSize="medium"

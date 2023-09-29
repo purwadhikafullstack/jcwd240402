@@ -2,7 +2,7 @@ import { Modal } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
@@ -17,44 +17,47 @@ const ModalEditUsername = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("update username successful");
+  const userData = useSelector((state) => state.profiler.value);
+
+  useEffect(() => {
+    formik.setValues({
+      username: userData.username || "",
+    });
+  }, [userData]);
 
   const editUsername = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("username", values.username);
+
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          username: "",
-        });
-        setStatus({
-          success: true,
-          message: "Successful. Please check your email for verification.",
-        });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            username: "",
+          });
+          setStatus({
+            success: true,
+            message: "Successful. Please check your email for verification.",
+          });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
-
-        setIsSuccess("update username successful");
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
+          formik.resetForm();
+          setErrMsg("");
+          props.setOpenModal(undefined);
+        })
+        .catch((err) => {
+          setErrMsg(err.response?.data?.message);
+        });
     } catch (err) {
-      if (!err.response) {
-        setErrMsg("No Server Response");
-      } else {
-        setErrMsg(err.response?.data?.message);
-      }
+      setErrMsg(err.response?.data?.message);
     }
   };
 
@@ -64,7 +67,12 @@ const ModalEditUsername = () => {
     },
     onSubmit: editUsername,
     validationSchema: yup.object().shape({
-      username: yup.string().required("username is required").min(3).max(20),
+      username: yup
+        .string()
+        .required("username is required")
+        .min(3)
+        .max(20)
+        .matches(/^[a-zA-Z0-9_-]+$/, "Username can't contain spaces"),
     }),
     validateOnChange: false,
     validateOnBlur: false,
@@ -91,7 +99,11 @@ const ModalEditUsername = () => {
         show={props.openModal === "form-elements"}
         size="md"
         popup
-        onClose={() => props.setOpenModal(undefined)}
+        onClose={() => {
+          props.setOpenModal(undefined);
+          formik.resetForm();
+          setErrMsg("");
+        }}
       >
         <Modal.Header />
         <Modal.Body>

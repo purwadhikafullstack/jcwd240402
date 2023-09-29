@@ -12,8 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       Order.belongsTo(models.User, { foreignKey: "user_id" });
       Order.hasMany(models.Order_detail, { foreignKey: "order_id" });
       Order.belongsTo(models.Order_status, { foreignKey: "order_status_id" });
-      Order.hasOne(models.Address_user, { foreignKey: "address_user_id" });
+      Order.belongsTo(models.Address_user, { foreignKey: "address_user_id" });
       Order.belongsTo(models.Warehouse, { foreignKey: "warehouse_id" });
+      Order.hasMany(models.Reserved_stock, { foreignKey: "order_id", as: 'Reservations' });
     }
   }
   Order.init({
@@ -24,10 +25,10 @@ module.exports = (sequelize, DataTypes) => {
     delivery_courier: {
       type: DataTypes.ENUM('jne', 'pos', 'tiki'),
     },
-    delivery_time: DataTypes.STRING,
+    delivery_time: DataTypes.DATE,
     tracking_code: DataTypes.STRING,
     no_invoice: DataTypes.STRING,
-    user_address_id: DataTypes.INTEGER,
+    address_user_id: DataTypes.INTEGER,
     warehouse_id: DataTypes.INTEGER,
     img_payment: DataTypes.STRING
   }, {

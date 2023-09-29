@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  scroll-behavior: smooth;
+  font-family: "poppins";
+}
+
 ::-webkit-scrollbar {
   height: 0.3em;
   width: 0.3em;
@@ -34,7 +39,3 @@
 }
 
 /* Table border styles */
-
-
-
-

@@ -1,35 +1,109 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BsFillCartFill } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
-import { BiSolidPurchaseTag } from "react-icons/bi";
+import { RiBookmark3Fill } from "react-icons/ri";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import SearchBar from "../../SearchBar";
 import ModalLogin from "../modal/ModalLogin";
 import ButtonLink from "../../ButtonLink";
 import logo from "../../../assets/images/furniforNav.png";
-import { getCookie, logout } from "../../../utils/tokenSetterGetter";
-
-const userNavigation = [
-  { name: "Your Profile", to: "/user/setting", onClick: {} },
-  { name: "Settings", to: "/checkout", onClick: {} },
-  { name: "Sign out", to: "/log-in", onClick: () => logout() },
-];
+import {
+  getCookie,
+  getLocalStorage,
+  logout,
+  setCookie,
+} from "../../../utils/tokenSetterGetter";
+import axios from "../../../api/axios";
+import { cartsUser } from "../../../features/cartSlice";
+import { UserAuth } from "../../../context/AuthContext";
+import { wishlistUser } from "../../../features/wishlistDataSlice";
+import emptyImage from "../../../assets/images/emptyImage.jpg";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 const NavbarDesktop = () => {
-  const userData = useSelector((state) => state.profiler.value);
-  const location = useLocation();
+  const { logOutAuth } = UserAuth();
+
   const access_token = getCookie("access_token");
+  const refresh_token = getLocalStorage("refresh_token");
+
+  const cartsData = useSelector((state) => state.carter.value);
+  const userData = useSelector((state) => state.profiler.value);
+
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [errMsg, setErrMsg] = useState("");
+
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  const wishlistData = useSelector((state) => state.wishlister.value);
+
+  useEffect(() => {
+    if (!access_token || refresh_token || userData.role_id !== 3) {
+      return;
+    }
+    axios
+      .get("/user/cart", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(cartsUser(res.data?.result));
+      })
+      .catch((error) => {
+        if (
+          error.response?.data?.message === "Invalid token" &&
+          error.response?.data?.error?.name === "TokenExpiredError"
+        ) {
+          axios
+            .get("/user/auth/keep-login", {
+              headers: { Authorization: `Bearer ${refresh_token}` },
+            })
+            .then((res) => {
+              setNewAccessToken(res.data?.accessToken);
+              setCookie("access_token", newAccessToken, 1);
+            });
+        }
+      });
+  }, [access_token, dispatch, newAccessToken, refresh_token, userData.role_id]);
+
+  useEffect(() => {
+    if (!access_token || refresh_token || userData.role_id !== 3) {
+      return;
+    }
+    axios
+      .get("/user/wishlist", {
+        headers: { Authorization: `Bearer ${access_token}` },
+      })
+      .then((res) => {
+        dispatch(wishlistUser(res.data?.result));
+      })
+      .catch((error) => {
+        setErrMsg(error.response?.data?.message);
+      });
+  }, [access_token, dispatch, refresh_token, userData.role_id]);
+
+  const userNavigation = [
+    { name: "Profile", to: "/user/setting", onClick: {} },
+    { name: "Cart", to: "/cart", onClick: {} },
+    { name: "Order", to: "/user/setting/order", onClick: {} },
+    {
+      name: "Sign out",
+      to: "/log-in",
+      onClick: () => {
+        logOutAuth();
+        logout();
+      },
+    },
+  ];
 
   return (
     <div
-      className={`hidden w-full lg:grid bg-white justify-center sticky z-10 top-0 ${
+      className={`hidden w-full lg:grid bg-white justify-center sticky z-40 top-0 ${
         location.pathname === "/register" ||
         location.pathname === "/log-in" ||
         location.pathname === "/sign-up" ||
@@ -40,11 +114,29 @@ const NavbarDesktop = () => {
     >
       <div className="flex w-[1200px] justify-evenly items-center h-16">
         <Link to="/" className="">
-          <img src={logo} alt="" className=" h-10" />
+          <img src={logo} alt="logo" className=" h-10" />
         </Link>
         <div className="flex w-60 justify-around">
-          <Link to="/product-category">Category</Link>
-          <Link to="">Inspiration</Link>
+          <Link
+            to="/product-category"
+            className={`${
+              location.pathname === "/product-category"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-500"
+            }`}
+          >
+            Categories
+          </Link>
+          <Link
+            to="/all-products"
+            className={`${
+              location.pathname === "/all-products"
+                ? "text-blue-500 font-semibold"
+                : "text-gray-500"
+            }`}
+          >
+            Products
+          </Link>
         </div>
         <div className="w-96">
           <SearchBar
@@ -56,15 +148,52 @@ const NavbarDesktop = () => {
           />
         </div>
         <div className="flex justify-between w-20 items-center cursor-pointer">
-          <Link to="/cart">
-            <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
-          </Link>
-          <button>
-            <BiSolidPurchaseTag className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
-          </button>
+          {cartsData &&
+          access_token &&
+          refresh_token &&
+          userData.role_id === 3 ? (
+            <Link to="/cart" className="relative">
+              <BsFillCartFill
+                className={`w-7 h-7 text-base_grey hover:text-blue3 transition-all ${
+                  location.pathname === "/cart"
+                    ? "text-blue-500 font-semibold"
+                    : "text-base_grey"
+                }`}
+              />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {cartsData.length === 0 ? null : cartsData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/cart">
+              <BsFillCartFill className="w-7 h-7 text-base_grey hover:text-blue3 transition-all" />
+            </Link>
+          )}
+
+          {wishlistData &&
+          access_token &&
+          refresh_token &&
+          userData.role_id === 3 ? (
+            <Link to="/all-wishlist" className="relative">
+              <RiBookmark3Fill
+                className={`w-7 h-7 hover:text-blue3 text-base_grey transition-all ${
+                  location.pathname === "/all-wishlist"
+                    ? "text-blue-500 font-semibold"
+                    : "text-base_grey"
+                } `}
+              />
+              <span className="absolute top-0 right-0 bg-red-500 rounded-full px-1 text-white text-xs">
+                {wishlistData.length === 0 ? null : wishlistData.length}
+              </span>
+            </Link>
+          ) : (
+            <Link to="/all-wishlist">
+              <RiBookmark3Fill className="w-7 h-7 hover:text-blue3 text-base_grey transition-all" />
+            </Link>
+          )}
         </div>
         <div className="flex gap-4">
-          {access_token ? (
+          {access_token && refresh_token && userData.role_id === 3 ? (
             <>
               <Menu as="div" className="relative">
                 <div>
@@ -73,8 +202,12 @@ const NavbarDesktop = () => {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={`${process.env.REACT_APP_API_BASE_URL}/${userData.User_detail?.img_profile}`}
-                      alt=""
+                      src={
+                        userData.User_detail?.img_profile
+                          ? `${process.env.REACT_APP_API_BASE_URL}${userData.User_detail?.img_profile}`
+                          : emptyImage
+                      }
+                      alt="profile"
                     />
                   </Menu.Button>
                 </div>

@@ -30,11 +30,12 @@ const ButtonLink = ({
 
   return (
     <>
-      <button
-        className={`${bgColor} ${fontWeight}  text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
+      <Link
+        className={`${bgColor} ${fontWeight} flex flex-col justify-center items-center text-center ${colorText} rounded-lg hover:border-black hover:border-2 transition duration-200 ${sizeClasses}`}
+        to={to}
       >
-        <Link to={to}>{buttonText}</Link>
-      </button>
+        {buttonText}
+      </Link>
     </>
   );
 };

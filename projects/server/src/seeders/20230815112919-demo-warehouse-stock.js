@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,75 +11,57 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("Warehouse_stocks", [
       {
         id: 1,
         warehouse_id: 1,
         product_id: 1,
-        product_stock: 70,
-        status: "In Stock",
+        product_stock: 100,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 2,
         warehouse_id: 1,
         product_id: 2,
-        product_stock: 30,
-        status: "In Stock",
+        product_stock: 100,
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 3,
         warehouse_id: 1,
-        product_id: 4,
+        product_id: 3,
         product_stock: 30,
-        status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 4,
         warehouse_id: 1,
-        product_id: 3,
+        product_id: 4,
         product_stock: 10,
-        status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
+        deletedAt: null,
       },
       {
         id: 5,
-        warehouse_id: 2,
-        product_id: 4,
-        product_stock: 15,
-        status: "In Stock",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: 6,
-        warehouse_id: 2,
+        warehouse_id: 1,
         product_id: 5,
         product_stock: 15,
-        status: "In Stock",
         createdAt: new Date(),
         updatedAt: new Date(),
-      },
-      {
-        id: 7,
-        warehouse_id: 2,
-        product_id: 3,
-        product_stock: 30,
-        status: "In Stock",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        deletedAt: null,
       },
     ]);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
@@ -87,5 +69,5 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     return queryInterface.bulkDelete("Warehouse_stocks", null, {});
-  }
+  },
 };

@@ -23,8 +23,10 @@ module.exports = {
     body("username")
       .notEmpty()
       .withMessage("Username is required")
-      .isLength({ max: 50 })
-      .withMessage("Maximum character is 50"),
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
     body("first_name")
       .notEmpty()
       .withMessage("first name is required")
@@ -39,12 +41,12 @@ module.exports = {
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
     body("phone", "phone cannot be empty")
       .notEmpty()
       .withMessage("phone is required")
       .isMobilePhone()
-      .withMessage("must to in valid phone number"),
+      .withMessage("must be valid phone number"),
     body("img_profile").optional(),
     body("password", "password cannot be empty")
       .notEmpty()
@@ -64,6 +66,21 @@ module.exports = {
       .withMessage("You must type a confirmation password")
       .custom((value, { req }) => value === req.body.password)
       .withMessage("The passwords do not match"),
+  ]),
+
+  registrationByOAuth: validate([
+    body("fullname")
+      .notEmpty()
+      .withMessage("fullname is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("email", "email cannot be empty")
+      .notEmpty()
+      .withMessage("email is required")
+      .isEmail()
+      .withMessage("must be valid email"),
+    body("phone").optional(),
+    body("img_profile").optional(),
   ]),
 
   login: validate([
@@ -87,12 +104,20 @@ module.exports = {
       ),
   ]),
 
+  loginByOAuth: validate([
+    body("email")
+      .notEmpty()
+      .withMessage("Username or email is required")
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+  ]),
+
   emailInput: validate([
     body("email", "email cannot be empty")
       .notEmpty()
       .withMessage("email is required")
       .isEmail()
-      .withMessage("must to in valid email"),
+      .withMessage("must be valid email"),
   ]),
 
   resetPassword: validate([
@@ -127,40 +152,58 @@ module.exports = {
   ]),
 
   updateProfile: validate([
-    body("data")
-      .notEmpty()
-      .withMessage("edit form cannot be empty")
-      .custom((value) => {
-        try {
-          const jsonData = JSON.parse(value);
-          if (!jsonData.username) {
-            throw new Error("username is required");
-          }
-          if (!isEmail(jsonData.email)) {
-            throw new Error("email is required");
-          }
-          if (!jsonData.first_name) {
-            throw new Error("first name is required");
-          }
-          if (!jsonData.last_name) {
-            throw new Error("last name is required");
-          }
-          if (!isMobilePhone(jsonData.phone)) {
-            throw new Error("invalid phone number");
-          }
-          if (!jsonData.password) {
-            throw new Error("invalid phone number");
-          }
-          return true;
-        } catch (error) {
-          throw new Error(`${error}`);
-        }
-      }),
-    body("file").custom((value, { req }) => {
-      if (!req.file) {
-        throw new Error("Photo is required");
-      }
-      return true;
-    }),
+    body("username")
+      .optional()
+
+      .isLength({ min: 3, max: 20 })
+      .withMessage("Username must be between 3 to 20 characters long.")
+      .matches(/^[a-zA-Z0-9_-]+$/)
+      .withMessage("Username can't contain spaces"),
+    body("first_name")
+      .optional()
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("last_name")
+      .optional()
+      .isLength({ max: 50 })
+      .withMessage("Maximum character is 50"),
+    body("email").optional().isEmail().withMessage("must to in valid email"),
+    body("phone")
+      .optional()
+      .isMobilePhone()
+      .withMessage("must be valid phone number"),
+    body("password")
+      .optional()
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "password have to contains 8 character with lowercase, uppercase, number, dan special character"
+      ),
+    body("new_password")
+      .optional()
+      .isStrongPassword({
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage(
+        "password have to contains 8 character with lowercase, uppercase, number, dan special character"
+      ),
+    body("new_confirm_password")
+      .optional()
+      .custom((value, { req }) => value === req.body.new_password)
+      .withMessage("The passwords do not match"),
+  ]),
+
+  addToCart: validate([
+    body("qty").notEmpty().withMessage("quantity is required"),
+    body("product_name").notEmpty().withMessage("product name is required"),
   ]),
 };

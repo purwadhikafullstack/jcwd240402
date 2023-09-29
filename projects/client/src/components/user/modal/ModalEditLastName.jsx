@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "flowbite-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import AlertWithIcon from "../../AlertWithIcon";
 import axios from "../../../api/axios";
@@ -17,38 +17,41 @@ const ModalEditLastName = () => {
   const [openModal, setOpenModal] = useState();
   const props = { openModal, setOpenModal };
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("update username successful");
+  const userData = useSelector((state) => state.profiler.value);
+
+  useEffect(() => {
+    formik.setValues({
+      last_name: userData.User_detail?.last_name || "",
+    });
+  }, [userData]);
 
   const editLastName = async (values, { setStatus, setValues }) => {
     const formData = new FormData();
-    formData.append("data", JSON.stringify(values));
+    formData.append("last_name", values.last_name);
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          last_name: "",
-        });
-        setStatus({
-          success: true,
-          message: "Successful. Please check your email for verification.",
-        });
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            last_name: "",
+          });
+          setStatus({
+            success: true,
+            message: "Successful. Please check your email for verification.",
+          });
 
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
 
-        setIsSuccess("update last name successful");
-        setErrMsg(null);
-        props.setOpenModal(undefined);
-      } else {
-        console.log("error");
-        throw new Error("Login Failed");
-      }
+          setErrMsg(null);
+          props.setOpenModal(undefined);
+        });
     } catch (err) {
       if (!err.response) {
         setErrMsg("No Server Response");
@@ -74,6 +77,7 @@ const ModalEditLastName = () => {
     const { target } = event;
     formik.setFieldValue(target.name, target.value);
   };
+
   return (
     <>
       <button

@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,7 +11,7 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("History_stocks", [
       {
         id: 1,
@@ -85,7 +85,7 @@ module.exports = {
       },
       {
         id: 6,
-        warehouse_stock_id: 6,
+        warehouse_stock_id: 1,
         warehouse_id: 2,
         admin_id: 3,
         stock_before_transfer: 0,
@@ -99,7 +99,7 @@ module.exports = {
       },
       {
         id: 7,
-        warehouse_stock_id: 7,
+        warehouse_stock_id: 5,
         warehouse_id: 2,
         admin_id: 3,
         stock_before_transfer: 0,
@@ -141,7 +141,7 @@ module.exports = {
       },
       {
         id: 10,
-        warehouse_stock_id: 6,
+        warehouse_stock_id: 5,
         warehouse_id: 2,
         admin_id: 3,
         stock_before_transfer: 15,
@@ -156,13 +156,14 @@ module.exports = {
     ]);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
+    await queryInterface.bulkDelete("carts", null, {});
     return queryInterface.bulkDelete("History_stocks", null, {});
-  }
+  },
 };

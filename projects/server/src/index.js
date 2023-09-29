@@ -5,6 +5,8 @@ const { join } = require("path");
 const router = require("./routes");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+require("./schedule/cancelledOrder");
+require("./schedule/clearVerifyToken");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const PORT = process.env.PORT || 8000;
@@ -28,10 +30,27 @@ app.use(
   })
 );
 
+app.use(
+  "/api/rajaongkir/cost",
+  createProxyMiddleware({
+    target: "https://api.rajaongkir.com/starter/cost",
+    changeOrigin: true,
+  })
+);
+
 app.use(cors());
 app.use(
   "/api/photo-profile",
   express.static(path.join(__dirname, "public", "imgProfile"))
+);
+app.use(
+  "/api/payment-proof",
+  express.static(path.join(__dirname, "public", "imgPayment"))
+);
+
+app.use(
+  "/api/photo-warehouse",
+  express.static(path.join(__dirname, "public", "imgWarehouse"))
 );
 
 app.use(
@@ -109,3 +128,5 @@ app.listen(PORT, (err) => {
     console.log(`APP RUNNING at ${PORT} ✅`);
   }
 });
+
+module.exports = app;

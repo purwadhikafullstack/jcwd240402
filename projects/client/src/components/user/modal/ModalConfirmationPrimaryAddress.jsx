@@ -27,18 +27,20 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
         }
       );
 
-      const profileResponse = await axios.get("/user/profile", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      await axios
+        .get("/user/profile", {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          dispatch(profileUser(res.data?.result));
+        });
 
-      dispatch(profileUser(profileResponse.data?.result));
       setOpenModal(false);
     } catch (error) {
       if (!error.response) {
         setErrMsg("No Server Response");
       } else {
         setErrMsg(error.response?.data?.message);
-        console.log(error.response?.data?.message);
       }
     }
   };
@@ -46,7 +48,7 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
   return (
     <>
       <button onClick={() => setOpenModal(true)}>
-        <p className="text-xs">Set as Primary Address</p>
+        <p className="text-xs  rounded-lg">Set as Primary Address</p>
       </button>
       <Modal
         show={openModal}
@@ -57,7 +59,6 @@ export default function ModalConfirmationPrimaryAddress({ idAddress }) {
         <Modal.Header />
         <Modal.Body>
           {errMsg && <AlertWithIcon errMsg={errMsg} />}{" "}
-          {/* Menggunakan && untuk menggantikan ternary */}
           <div className="text-center">
             <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
             <h3 className="mb-5 text-sm font-normal text-gray-500 dark:text-gray-400">

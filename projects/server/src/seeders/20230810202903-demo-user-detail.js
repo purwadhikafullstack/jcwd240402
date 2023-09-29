@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     /**
      * Add seed commands here.
      *
@@ -11,56 +11,52 @@ module.exports = {
      *   name: 'John Doe',
      *   isBetaMember: false
      * }], {});
-    */
+     */
     return queryInterface.bulkInsert("User_details", [
       {
-        id: 1,
         user_id: 1,
         first_name: "Kevin",
         last_name: "Smith",
         phone: "081116347887",
         address_user_id: 1,
-        img_profile: null,
+        img_profile: "/photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id: 2,
         user_id: 2,
         first_name: "Adrian",
         last_name: "Adams",
         phone: "0813114590",
         address_user_id: 2,
-        img_profile: null,
+        img_profile: "/photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id: 3,
         user_id: 3,
         first_name: "John",
         last_name: "Wibowo",
         phone: "0812293309",
         address_user_id: 3,
-        img_profile: null,
+        img_profile: "/photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        id: 4,
         user_id: 4,
         first_name: "Cynthia",
         last_name: "Shirona",
         phone: "0822365788",
         address_user_id: 4,
-        img_profile: null,
+        img_profile: "/photo-profile/imgprofiledefault.png",
         createdAt: new Date(),
         updatedAt: new Date(),
       },
     ]);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *
@@ -68,5 +64,5 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     return queryInterface.bulkDelete("User_details", null, {});
-  }
+  },
 };

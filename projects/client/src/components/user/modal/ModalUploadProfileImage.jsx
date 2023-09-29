@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Modal } from "flowbite-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -19,8 +19,6 @@ const ModalUploadProfileImage = () => {
   const [image, setImage] = useState(null);
   const [showImage, setShowImage] = useState(false);
   const [errMsg, setErrMsg] = useState("");
-  const [isSuccess, setIsSuccess] = useState("");
-
   const props = { openModal, setOpenModal };
 
   const editImageProfile = async (e) => {
@@ -35,27 +33,27 @@ const ModalUploadProfileImage = () => {
     formData.append("file", image);
 
     try {
-      const response = await axios.patch("/user/profile", formData, {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
-
-      if (response.status === 201) {
-        axios
-          .get("/user/profile", {
-            headers: { Authorization: `Bearer ${access_token}` },
-          })
-          .then((res) => dispatch(profileUser(res.data.result)));
-
-        setIsSuccess("update image successful");
-        setShowImage(URL.createObjectURL(image));
-        navigate("/user/setting");
-        setOpenModal(false);
-      } else {
-        console.log("Error updating image");
-        setErrMsg("file type not supported");
-      }
+      await axios
+        .patch("/user/profile", formData, {
+          headers: { Authorization: `Bearer ${access_token}` },
+        })
+        .then((res) => {
+          axios
+            .get("/user/profile", {
+              headers: { Authorization: `Bearer ${access_token}` },
+            })
+            .then((res) => dispatch(profileUser(res.data.result)));
+          setErrMsg("");
+          setShowImage(URL.createObjectURL(image));
+          navigate("/user/setting");
+          setOpenModal(false);
+        });
     } catch (err) {
-      console.error("Error updating image:", err);
+      if (!err.response) {
+        setErrMsg("No Server Response");
+      } else {
+        setErrMsg(err.response?.data?.error);
+      }
     }
   };
 
@@ -64,6 +62,8 @@ const ModalUploadProfileImage = () => {
     setShowImage(URL.createObjectURL(selectedImage));
     setImage(selectedImage);
   };
+
+  const inputPhotoRef = useRef();
 
   return (
     <>
@@ -89,9 +89,9 @@ const ModalUploadProfileImage = () => {
                 src={
                   showImage
                     ? showImage
-                    : `${process.env.REACT_APP_API_BASE_URL}/${userData?.User_detail?.img_profile}`
+                    : `${process.env.REACT_APP_API_BASE_URL}${userData?.User_detail?.img_profile}`
                 }
-                alt=""
+                alt="upload profile"
               />
               <input
                 type="file"
@@ -99,12 +99,23 @@ const ModalUploadProfileImage = () => {
                 name="image"
                 accept="image/png, image/jpg, image/jpeg"
                 required
-                className="rounded-full m-4"
+                className="rounded-full m-4 hidden"
+                ref={inputPhotoRef}
               />
+
               <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                 Are you sure you want to upload this image?
               </h3>
               <div className="flex justify-center gap-4">
+                <Button
+                  onClick={() => inputPhotoRef.current.click()}
+                  buttonSize="small"
+                  buttonText="Choose"
+                  type="button"
+                  bgColor="bg-green-400"
+                  colorText="text-white"
+                  fontWeight="font-semibold"
+                />
                 <Button
                   buttonSize="small"
                   buttonText="Submit"

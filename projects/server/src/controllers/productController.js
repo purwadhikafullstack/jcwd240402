@@ -22,16 +22,6 @@ async function moveUploadedFilesToDestination(images) {
   return filenames;
 }
 
-async function moveUploadedFileToDestination(image) {
-  const sourcePath = image.path;
-  const filename = `${new Date().getTime()}-${image.originalname}`;
-  const destinationPath = getAbsoluteProductImagePath(filename);
-
-  await fs.rename(sourcePath, destinationPath);
-
-  return filename;
-}
-
 module.exports = {
   async createProduct(req, res) {
     const { name, price, weight, category_id, description, is_active } =
@@ -223,7 +213,7 @@ module.exports = {
 
       return res.status(200).send({
         message: "Product image updated successfully",
-        data: updatedImage, // Use the updatedImage variable instead of 'product'
+        data: updatedImage,
       });
     } catch (error) {
       await t.rollback();
@@ -385,9 +375,8 @@ module.exports = {
     }
   },
 
-  getProductById: async (req, res) => {
+  getProductByProductName: async (req, res) => {
     const { name } = req.params;
-
     try {
       const productById = await db.Product.findOne({
         where: { name },
@@ -441,14 +430,42 @@ module.exports = {
   },
 
   getProductPerCategory: async (req, res) => {
-    const { category } = req.params;
     try {
-      const productByCategory = await db.Product.findAll({
-        include: ["Category"],
+      const productsByCategory = await db.Category.findAll({
+        include: [
+          {
+            model: db.Product,
+            as: "products",
+            include: [
+              { model: db.Image_product, paranoid: false },
+              { model: db.Category, as: "category" },
+            ],
+            where: { is_active: true },
+          },
+        ],
       });
+
+      const formattedData = productsByCategory.map((category) => {
+        return {
+          id: category.id,
+          category: category.name,
+          category_img: category.category_img,
+          products: category.products.map((product) => ({
+            id: product.id,
+            name: product.name,
+            description: product.description,
+            category: product.category.name,
+            price: product.price,
+            product_img: product.Image_products.map((item) => ({
+              img: item.img_product,
+            }))[0],
+          })),
+        };
+      });
+
       res.json({
-        ok: true,
-        result: productByCategory,
+        success: true,
+        result: formattedData,
       });
     } catch (error) {
       console.error(error);
@@ -458,28 +475,80 @@ module.exports = {
     }
   },
 
-  getProductById: async (req, res) => {
-    const { id } = req.params;
+  getAllProductForSearchSuggestion: async (req, res) => {
+    const { searchProduct } = req.query;
     try {
-      const productById = await db.Product.findByPk(id, {
-        attributes: { exclude: ["createdAt", "updatedAt"] },
+      const productsData = await db.Product.findAll({
+        include: [
+          { model: db.Image_product },
+          { model: db.Category, as: "category" },
+        ],
+        where: {
+          name: { [db.Sequelize.Op.like]: `${searchProduct}%` },
+        },
+      });
+
+      const productName = productsData.map((item) => {
+        return {
+          name: item.name,
+          img: item.Image_products[0]?.img_product,
+          category: item.category?.name,
+        };
+      });
+
+      res.json({
+        ok: true,
+        result: productName,
+      });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Internal Server Error" });
+    }
+  },
+
+  getAllProductCategoryWithParanoid: async (req, res) => {
+    const searchCategory = req.query.category || undefined;
+
+    try {
+      let whereCondition = {};
+
+      if (searchCategory) {
+        whereCondition = {
+          name: {
+            [db.Sequelize.Op.like]: `%${searchCategory}%`,
+          },
+        };
+      }
+
+      const result = await db.Product.findAll({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        paranoid: false,
         include: [
           {
+            model: db.Category,
+            as: "category",
+            attributes: {
+              exclude: ["updatedAt", "deletedAt", "createdAt"],
+            },
+            where: whereCondition,
+          },
+          {
             model: db.Image_product,
-            as: "Image_products",
-            attributes: ["img_product"],
+            attributes: { exclude: ["updatedAt", "createdAt"] },
           },
         ],
       });
-      res.status(200).json({
-        ok: true,
-        result: productById,
+
+      res.status(200).send({
+        message: "success get products",
+        data: result,
       });
     } catch (error) {
+      console.error(error);
       res.status(500).send({
-        success: false,
-        message: "Fatal error on server.",
-        errors: error.message,
+        message: "An error occurred while fetching warehouse stocks",
+        error: error.message,
       });
     }
   },

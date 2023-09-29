@@ -14,40 +14,50 @@ import {
   removeLocalStorage,
 } from "../../utils/tokenSetterGetter";
 import AlertWithIcon from "../../components/AlertWithIcon";
-import withOutAuth from "../../components/user/withoutAuth";
+import withOutAuthUser from "../../components/user/withoutAuthUser";
+import PasswordInput from "../../components/PasswordInput";
 
 const Register = () => {
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [dissabledButton, setDissabledButton] = useState(false);
   removeCookie("access_token");
   removeLocalStorage("refresh_token");
 
   const registerUser = async (values, { setStatus, setValues }) => {
     try {
-      const response = await axios.post("/user/auth/register", values);
-
-      if (response.status === 201) {
-        setStatus({ success: true });
-        setValues({
-          first_name: "",
-          last_name: "",
-          phone: "",
-          username: "",
-          email: "",
-          password: "",
-          confirm_password: "",
+      await axios
+        .post("/user/auth/register", values)
+        .then((res) => {
+          setStatus({ success: true });
+          setValues({
+            first_name: "",
+            last_name: "",
+            phone: "",
+            username: "",
+            email: "",
+            password: "",
+            confirm_password: "",
+          });
+          setStatus({
+            success: true,
+            message:
+              "Sign up successful. Please check your email for verification.",
+          });
+          setErrMsg("");
+          setSuccessMsg("Register successful");
+          setDissabledButton(true);
+          setTimeout(() => {
+            setDissabledButton(true);
+            navigate("/verify");
+          }, 2000);
+        })
+        .catch((err) => {
+          setErrMsg(err.response?.data?.message);
         });
-        setStatus({
-          success: true,
-          message:
-            "Sign up successful. Please check your email for verification.",
-        });
-
-        navigate("/verify");
-      } else {
-        throw new Error("Register Failed");
-      }
     } catch (err) {
+      setDissabledButton(false);
       if (!err.response) {
         setErrMsg("No Server Response");
       } else {
@@ -83,7 +93,12 @@ const Register = () => {
           /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/,
           "Phone number is not valid"
         ),
-      username: yup.string().required("username is required").min(3).max(20),
+      username: yup
+        .string()
+        .required("username is required")
+        .min(3)
+        .max(20)
+        .matches(/^[a-zA-Z0-9_-]+$/, "Username can't contain spaces"),
       email: yup.string().required("email is required").email(),
       password: yup
         .string()
@@ -180,6 +195,13 @@ const Register = () => {
     },
   ];
 
+  const handleDissabled = () => {
+    setDissabledButton(true);
+    setTimeout(() => {
+      setDissabledButton(false);
+    }, 7000);
+  };
+
   return (
     <div className="bg-white h-full lg:h-screen lg:w-full lg:grid lg:grid-cols-2 lg:items-center ">
       <AuthImageCard imageSrc={register} />
@@ -193,7 +215,11 @@ const Register = () => {
             </div>
             <div className="lg:rounded-lg">
               <form onSubmit={formik.handleSubmit} className="lg:rounded-xl">
-                {errMsg ? <AlertWithIcon errMsg={errMsg} /> : null}
+                {errMsg ? (
+                  <AlertWithIcon errMsg={errMsg} />
+                ) : successMsg ? (
+                  <AlertWithIcon errMsg={successMsg} color="success" />
+                ) : null}
                 <div className="mt-5 px-6 grid gap-y-3 lg:rounded-xl">
                   <div className="flex gap-x-4 ">
                     <InputForm
@@ -244,27 +270,50 @@ const Register = () => {
                     />
                   </div>
 
-                  {inputConfigs.map((config, index) => (
-                    <InputForm
-                      key={index}
-                      label={`${config.label}*`}
-                      onChange={handleForm}
-                      placeholder={config.placeholder}
-                      name={config.name}
-                      type={config.type}
-                      value={config.value}
-                      isError={config.error}
-                      errorMessage={config.errorMsg}
-                    />
-                  ))}
+                  {inputConfigs.map((config, index) =>
+                    config.label === "email" ? (
+                      <InputForm
+                        key={index}
+                        label={`${config.label}*`}
+                        onChange={handleForm}
+                        placeholder={config.placeholder}
+                        name={config.name}
+                        type={config.type}
+                        value={config.value}
+                        isError={config.error}
+                        errorMessage={config.errorMsg}
+                      />
+                    ) : (
+                      <PasswordInput
+                        key={index}
+                        label={`${config.label}*`}
+                        onChange={handleForm}
+                        placeholder={config.placeholder}
+                        name={config.name}
+                        type={config.type}
+                        value={config.value}
+                        isError={config.error}
+                        errorMessage={config.errorMsg}
+                      />
+                    )
+                  )}
                   <div className="flex flex-col justify-center items-center mt-3  lg:rounded-lg">
                     <Button
+                      onClick={() => {
+                        formik.handleSubmit();
+                        handleDissabled();
+                      }}
                       buttonSize="medium"
                       buttonText="Register"
                       type="submit"
-                      bgColor="bg-blue3"
+                      bgColor={`${
+                        dissabledButton
+                          ? "bg-gray-500 hover:bg-gray-500"
+                          : "bg-blue3"
+                      }`}
                       colorText="text-white"
                       fontWeight="font-semibold"
+                      disabled={dissabledButton}
                     />
 
                     <h1 className="mt-2 lg:my-4">
@@ -287,4 +336,4 @@ const Register = () => {
   );
 };
 
-export default withOutAuth(Register);
+export default withOutAuthUser(Register);

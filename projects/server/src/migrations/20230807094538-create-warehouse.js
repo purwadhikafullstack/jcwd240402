@@ -16,13 +16,21 @@ module.exports = {
       warehouse_name: {
         allowNull: false,
         type: Sequelize.STRING,
-        unique: true,
+        // unique: true,
       },
       city_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: "Cities",
+          key: "id",
+        },
+      },
+      province_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Provinces",
           key: "id",
         },
       },
@@ -38,12 +46,20 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      warehouse_img: {
+        allowNull: false,
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
+        type: Sequelize.DATE,
+      },
+      deletedAt: {
+        allowNull: true,
         type: Sequelize.DATE,
       },
     });

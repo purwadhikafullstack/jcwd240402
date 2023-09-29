@@ -18,7 +18,7 @@ import tiki from "../../assets/icons/tiki.png";
 import pos from "../../assets/icons/pos.png";
 import jne from "../../assets/icons/jne.png";
 import { OrderButton } from "../../components/user/OrderButton";
-import { rupiahFormat } from "../../utils/formatter";
+import { rupiahFormat, weightFormat } from "../../utils/formatter";
 import { profileUser } from "../../features/userDataSlice";
 import datanofound from "../../assets/images/productpercategorynotfound.png";
 import emptyImage from "../../assets/images/emptyImage.jpg";
@@ -169,17 +169,18 @@ const OrderConfirmReview = () => {
                       </div>
                       <div className="mt-2">
                         <h1>
-                          Rp.{" "}
                           {rupiahFormat(item.Warehouse_stock?.Product?.price)} x{" "}
                           {item.quantity} unit
                         </h1>
                         <h1>
-                          {item.Warehouse_stock?.Product?.weight *
-                            item.quantity}{" "}
+                          {weightFormat(
+                            item.Warehouse_stock?.Product?.weight *
+                              item.quantity
+                          )}{" "}
                           gr
                         </h1>
                         <h1 className="font-semibold text-right">
-                          subtotal: Rp.{" "}
+                          subtotal:
                           {rupiahFormat(
                             item.Warehouse_stock?.Product?.price * item.quantity
                           )}
@@ -191,10 +192,10 @@ const OrderConfirmReview = () => {
               </div>
               <div>
                 <h4 className="font-bold text-sm">
-                  delivery price: {yourOrder.delivery_price}
+                  delivery price: {rupiahFormat(yourOrder.delivery_price)}
                 </h4>
                 <h4 className="font-bold text-sm">
-                  total price: Rp.{yourOrder.total_price}
+                  total price:{rupiahFormat(yourOrder.total_price)}
                 </h4>
                 {yourOrder.delivery_courier === "jne" ? (
                   <div className="font-bold text-sm">
@@ -299,17 +300,20 @@ const OrderConfirmReview = () => {
                       </div>
                       <div className="mt-2">
                         <h1>
-                          Rp. {item.Warehouse_stock?.Product?.price} x{" "}
+                          {rupiahFormat(item.Warehouse_stock?.Product?.price)} x{" "}
                           {item.quantity} unit
                         </h1>
                         <h1>
-                          {item.Warehouse_stock?.Product?.weight *
-                            item.quantity}{" "}
-                          gr
+                          {weightFormat(
+                            item.Warehouse_stock?.Product?.weight *
+                              item.quantity
+                          )}{" "}
                         </h1>
                         <h1 className="font-semibold text-right">
-                          subtotal: Rp.{" "}
-                          {item.Warehouse_stock?.Product?.price * item.quantity}
+                          subtotal:
+                          {rupiahFormat(
+                            item.Warehouse_stock?.Product?.price * item.quantity
+                          )}
                         </h1>
                       </div>
                     </div>

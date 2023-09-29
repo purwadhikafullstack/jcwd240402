@@ -160,6 +160,8 @@ const ProductPerCategory = () => {
     );
   }
 
+  console.log(imageDisplay);
+
   return (
     <div
     // id="back-to-the-top"

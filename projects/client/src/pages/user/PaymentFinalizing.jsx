@@ -25,7 +25,7 @@ import ordership from "../../assets/images/ordership.png";
 import ordercompleted from "../../assets/images/ordercompleted.png";
 import orderwaitingpayment from "../../assets/images/orderwaitingpayment.png";
 import orderinprocess from "../../assets/images/orderinprocess.png";
-import { rupiahFormat } from "../../utils/formatter";
+import { rupiahFormat, weightFormat } from "../../utils/formatter";
 import datanofound from "../../assets/images/productpercategorynotfound.png";
 import withAuthUser from "../../components/user/withAuthUser";
 
@@ -187,7 +187,7 @@ const PaymentFinalizing = () => {
               <h1>{yourOrder?.delivery_time}</h1>
               <div className="flex  w-full justify-between items-center font-bold text-sm text-grayText">
                 <h1 className="py-1">
-                  Order Total: Rp. {rupiahFormat(yourOrder?.total_price)}
+                  Order Total: {rupiahFormat(yourOrder?.total_price)}
                 </h1>
 
                 <h1 className="py-1">Invoice ID: {invoiceId}</h1>
@@ -230,17 +230,20 @@ const PaymentFinalizing = () => {
                       </div>
                       <div className="mt-2">
                         <h1>
-                          Rp. {item.Warehouse_stock?.Product?.price} x{" "}
+                          {rupiahFormat(item.Warehouse_stock?.Product?.price)} x{" "}
                           {item.quantity} unit
                         </h1>
                         <h1>
-                          {item.Warehouse_stock?.Product?.weight *
-                            item.quantity}{" "}
-                          gr
+                          {weightFormat(
+                            item.Warehouse_stock?.Product?.weight *
+                              item.quantity
+                          )}{" "}
                         </h1>
                         <h1 className="font-semibold text-right">
-                          subtotal: Rp.{" "}
-                          {item.Warehouse_stock?.Product?.price * item.quantity}
+                          subtotal:
+                          {rupiahFormat(
+                            item.Warehouse_stock?.Product?.price * item.quantity
+                          )}
                         </h1>
                       </div>
                     </div>

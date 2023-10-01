@@ -73,6 +73,7 @@ const AllWarehouse = () => {
   useEffect(() => {
     axios.get("/user/all-warehouse").then((res) => {
       setWarehouseList(res.data?.result);
+      setLoading(false);
     });
   }, []);
 

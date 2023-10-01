@@ -3,6 +3,7 @@ const dayjs = require("dayjs");
 const db = require("../models");
 
 const job = schedule.scheduleJob("*/15 * * * *", async () => {
+  const t = await db.sequelize.transaction();
   try {
     const sevenDaysAgo = dayjs().subtract(7, "day").toDate();
 
@@ -15,7 +16,7 @@ const job = schedule.scheduleJob("*/15 * * * *", async () => {
       },
     });
 
-    const t = await db.sequelize.transaction();
+    
 
     for (let order of unpaidOrders) {
       await db.Order.update(

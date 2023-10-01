@@ -1,16 +1,17 @@
-require("dotenv/config");
+const path = require("path");
+require("dotenv").config({
+  path: path.resolve(__dirname, "../.env")
+});
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
 const router = require("./routes");
-const path = require("path");
 const cookieParser = require("cookie-parser");
 require("./schedule/cancelledOrder");
 require("./schedule/clearVerifyToken");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
-// const PORT = process.env.PORT || 8000;
-const PORT = 8402 || 8000;
+const PORT = process.env.PORT || 8000;
 const app = express();
 
 //#region API ROUTES

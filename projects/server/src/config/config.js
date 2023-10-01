@@ -1,24 +1,28 @@
-require("dotenv").config({path: `../.env`});
+const path = require("path");
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../.env")
+});
+
 module.exports = {
   development: {
-    username: 'jcwd2442',
-    password: 'jcwd2442',
-    database: 'jcwd240402',
-    host: 'adminer2.purwadhikabootcamp.com',
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE_DEV,
+    host: process.env.DB_HOST,
     dialect: 'mysql',
   },
   test: {
-    username: 'jcwd2442',
-    password: 'jcwd2442',
-    database: 'jcwd240402',
-    host: 'adminer2.purwadhikabootcamp.com',
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE_TEST,
+    host: process.env.DB_HOST,
     dialect: 'mysql',
   },
   production: {
-    username: 'jcwd2442',
-    password: 'jcwd2442',
-    database: 'jcwd240402',
-    host: 'adminer2.purwadhikabootcamp.com',
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE_PROD,
+    host: process.env.DB_HOST,
     dialect: 'mysql',
   },
 };

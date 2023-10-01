@@ -9,7 +9,8 @@ require("./schedule/cancelledOrder");
 require("./schedule/clearVerifyToken");
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const PORT = process.env.PORT || 8000;
+// const PORT = process.env.PORT || 8000;
+const PORT = 3000 || 8000;
 const app = express();
 
 //#region API ROUTES

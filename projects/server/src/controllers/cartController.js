@@ -29,6 +29,59 @@ module.exports = {
           message: "product not found",
         });
       }
+
+      const reservedStock = await db.Reserved_stock.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        include: {
+          model: db.Warehouse_stock,
+          as: "WarehouseProductReservation",
+          where: { product_id: productIdByName.id },
+          attributes: { exclude: ["createdAt", "updatedAt"] },
+        },
+      });
+
+      const getReservedStockValue = reservedStock.map((item) => {
+        return item.reserve_quantity;
+      });
+      let reservedStockTotal = 0;
+      if (getReservedStockValue.length !== 0) {
+        reservedStockTotal = getReservedStockValue.reduce((acc, cv) => {
+          return acc + cv;
+        });
+      }
+
+      const countTotalStock = await db.Warehouse_stock.findAll({
+        attributes: { exclude: ["updatedAt", "createdAt"] },
+        include: [
+          {
+            model: db.Product,
+            as: "Product",
+            attributes: { exclude: ["updatedAt"] },
+            where: { name: product_name, is_active: true },
+          },
+        ],
+      });
+
+      const getTotalStockValue = countTotalStock.map((item) => {
+        return item.product_stock;
+      });
+      let totalStockValue = 0;
+      if (getTotalStockValue.length !== 0) {
+        totalStockValue = getTotalStockValue.reduce((acc, cv) => {
+          return acc + cv;
+        });
+      }
+
+      const remainingStock = totalStockValue - reservedStockTotal;
+
+      if (qty > remainingStock) {
+        await transaction.rollback();
+        return res.status(400).json({
+          ok: false,
+          message: "Stock unavailable! Please refresh page.",
+        });
+      }
+
       const getWarehouseStockIdByProductName = await db.Warehouse_stock.findOne(
         {
           where: { product_id: productIdByName.id },

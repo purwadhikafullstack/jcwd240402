@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import TableComponent from "../../components/Table";
 import Select from "react-select";
 import Sidebar from "../../components/SidebarAdminDesktop";
-import Button from "../../components/Button";
 import DefaultPagination from "../../components/Pagination";
 import { getCookie } from "../../utils/tokenSetterGetter";
 import { useSelector } from "react-redux";
@@ -10,6 +9,7 @@ import AsyncSelect from "react-select/async";
 import dayjs from "dayjs";
 import { rupiahFormat } from "../../utils/formatter";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
 import axios from "../../api/axios";
 
 const SalesReport = () => {
@@ -330,4 +330,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default withAuthAdminWarehouse(SalesReport);

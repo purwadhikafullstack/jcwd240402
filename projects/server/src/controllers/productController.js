@@ -466,6 +466,7 @@ module.exports = {
       res.json({
         success: true,
         result: formattedData,
+        productsByCategory,
       });
     } catch (error) {
       console.error(error);

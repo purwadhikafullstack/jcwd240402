@@ -122,7 +122,6 @@ module.exports = {
             "Stock Update"
           );
 
-
           break;
         case "decrease":
           existingStock.product_stock -= parseInt(productStock, 10);
@@ -133,7 +132,7 @@ module.exports = {
               message: "Unable to reduce stock to negative value",
             });
           }
-          
+
           const stockHistoryFrom2 = newStockHistory(
             existingStock.id,
             warehouseId,
@@ -143,8 +142,6 @@ module.exports = {
             parseInt(productStock, 10),
             "Stock Update"
           );
-
-    
       }
 
       await existingStock.save({ transaction: t });
@@ -486,7 +483,10 @@ module.exports = {
         result,
         countTotalStock,
         totalStockValue,
-        remainingStock: totalStockValue - reservedStockTotal,
+        remainingStock:
+          totalStockValue - reservedStockTotal <= 0
+            ? 0
+            : totalStockValue - reservedStockTotal,
       });
     } catch (error) {
       res.status(500).json({

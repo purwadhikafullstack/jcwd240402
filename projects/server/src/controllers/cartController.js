@@ -78,7 +78,7 @@ module.exports = {
         await transaction.rollback();
         return res.status(400).json({
           ok: false,
-          message: "Stock unavailable! Please refresh page.",
+          message: "Stock limited! Please refresh page.",
         });
       }
 

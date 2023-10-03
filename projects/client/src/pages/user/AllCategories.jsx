@@ -27,6 +27,7 @@ const AllCategories = () => {
       </div>
     );
   }
+  console.log("category product", categoryProducts);
 
   return (
     <div>

@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import { rupiahFormat } from "../../utils/formatter";
 import SidebarAdminMobile from "../../components/SidebarAdminMobile";
 import axios from "../../api/axios";
+import withAuthAdminWarehouse from "../../components/admin/withAuthAdminWarehouse";
+
 
 const SalesReport = () => {
   const [month, setMonth] = useState("");
@@ -330,4 +332,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default withAuthAdminWarehouse(SalesReport);

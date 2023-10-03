@@ -70,7 +70,7 @@ module.exports = {
     }
   },
 
-  async updateStockForWarehouse(req, res) {
+ async updateStockForWarehouse(req, res) {
     const warehouseId = parseInt(req.params.warehouseId);
     const productId = parseInt(req.params.productId);
     const { productStock, operation } = req.body;
@@ -101,15 +101,17 @@ module.exports = {
         });
       }
 
-      if (existingStock.product_stock < 0) {
-        await t.rollback();
-        return res.status(400).send({
-          message: "Unable to reduce stock to negative value",
-        });
-      }
-
       switch (operation) {
         case "increase":
+          existingStock.product_stock += parseInt(productStock, 10);
+
+          if (existingStock.product_stock < 0) {
+            await t.rollback();
+            return res.status(400).send({
+              message: "Unable to reduce stock to negative value",
+            });
+          }
+
           const stockHistoryFrom = newStockHistory(
             existingStock.id,
             warehouseId,
@@ -118,12 +120,21 @@ module.exports = {
             existingStock.product_stock + parseInt(productStock, 10),
             parseInt(productStock, 10),
             "Stock Update"
+            
           );
 
-          existingStock.product_stock += parseInt(productStock, 10);
 
           break;
         case "decrease":
+          existingStock.product_stock -= parseInt(productStock, 10);
+
+          if (existingStock.product_stock < 0) {
+            await t.rollback();
+            return res.status(400).send({
+              message: "Unable to reduce stock to negative value",
+            });
+          }
+          
           const stockHistoryFrom2 = newStockHistory(
             existingStock.id,
             warehouseId,
@@ -134,7 +145,6 @@ module.exports = {
             "Stock Update"
           );
 
-          existingStock.product_stock -= parseInt(productStock, 10);
     
       }
 

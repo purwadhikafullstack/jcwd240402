@@ -210,7 +210,6 @@ const DashboardAdmin = ({ adminData }) => {
       <div className="col-span-8 h-full row-span-4 p-4">
         <div className="bg-white w-full h-full rounded-md shadow-card-1 p-4">
           <Line options={incomeOptions} data={incomeData} />
-          <h1 className="font-bold">Total: {rupiahFormat(incomeTotalYear)}</h1>
         </div>
       </div>
       <div className="col-span-4 row-span-2 w-full h-60 p-4 flex flex-col justify-center items-center ">
